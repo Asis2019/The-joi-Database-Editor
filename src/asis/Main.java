@@ -16,7 +16,7 @@ public class Main extends Application {
 
         Controller controller = fxmlLoader.getController();
         Scene main_scene = new Scene(root, 1280, 720);
-        controller.inflater(main_scene);
+        controller.inflater();
 
         primaryStage.getIcons().add(new Image(Main.class.getResourceAsStream("images/icon.png")));
         primaryStage.setScene(main_scene);

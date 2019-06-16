@@ -37,8 +37,8 @@ public class Controller {
 
     }
 
-    void inflater(Scene scene) {
-         sceneNodeMainController = new SceneNodeMainController(scene);
+    void inflater() {
+         sceneNodeMainController = new SceneNodeMainController();
          sceneNodeMainController.setPane(anchorPane);
 
         addScene();

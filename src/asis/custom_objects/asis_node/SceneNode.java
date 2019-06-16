@@ -1,5 +1,6 @@
 package asis.custom_objects.asis_node;
 
+import javafx.geometry.Insets;
 import javafx.geometry.Pos;
 import javafx.scene.control.Label;
 import javafx.scene.layout.BorderPane;
@@ -26,8 +27,6 @@ public class SceneNode extends Region {
         this.sceneId = sceneId;
         this.sceneNodeMainController = sceneNodeMainController;
 
-        //sceneNodeMainController.setCurrentNode(Integer.valueOf(sceneId));
-
         initializeVBoxes();
 
         borderPane.setMinSize(width, height);
@@ -48,24 +47,29 @@ public class SceneNode extends Region {
         borderPane.setCenter(titleLabel);
 
         if(!sceneId.equals("metaData")) {
-            createNewInputConnectionPoint();
+            if(!sceneId.equals("1")) {
+                createNewInputConnectionPoint();
+            }
+
             createNewOutputConnectionPoint();
         }
     }
 
     private void createNewOutputConnectionPoint() {
-        AsisConnectionButton connection = new AsisConnectionButton(sceneNodeMainController.getPane());
+        AsisConnectionButton connection = new AsisConnectionButton(sceneNodeMainController.getPane(), false, sceneId);
         attachHandlers(connection);
 
         //Add button to list
         outputConnections.add(connection);
+
+        connection.setConnectionId(sceneId+"_"+outputConnections.size());
 
         outputContainer.getChildren().add(connection);
 
     }
 
     private void createNewInputConnectionPoint() {
-        inputConnection = new AsisConnectionButton(sceneNodeMainController.getPane());
+        inputConnection = new AsisConnectionButton(sceneNodeMainController.getPane(), true, sceneId);
 
         //Add button to lookup list
         sceneNodeMainController.addInputConnection(inputConnection);
@@ -79,7 +83,7 @@ public class SceneNode extends Region {
 
         connection.setOnMouseDragged(e -> sceneNodeMainController.mouseMoved(e));
 
-        connection.setOnMousePressed(e -> sceneNodeMainController.mousePressed(connection, e));
+        connection.setOnMousePressed(e -> sceneNodeMainController.mousePressed(connection));
 
         connection.setOnMouseReleased(e -> sceneNodeMainController.mouseReleased(e));
     }
@@ -87,6 +91,7 @@ public class SceneNode extends Region {
     private void initializeVBoxes() {
         outputContainer.setAlignment(Pos.CENTER_RIGHT);
         outputContainer.setSpacing(5);
+        outputContainer.setPadding(new Insets(20, 0, 20, 0));
         borderPane.setRight(outputContainer);
 
         inputContainer.setAlignment(Pos.CENTER_LEFT);

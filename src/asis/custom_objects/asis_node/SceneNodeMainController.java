@@ -4,7 +4,6 @@ import javafx.beans.binding.Bindings;
 import javafx.beans.property.DoubleProperty;
 import javafx.beans.property.SimpleDoubleProperty;
 import javafx.geometry.Bounds;
-import javafx.scene.Scene;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.Pane;
 
@@ -16,16 +15,15 @@ public class SceneNodeMainController {
     private Pane root = new Pane();
 
     private List<AsisConnectionButton> inputConnections = new ArrayList<>();
-    private List<BoundLine> boundLines = new ArrayList<>();
 
-    private int index = 0;
+    private AsisConnectionButton currentOutputConnection;
 
     private DoubleProperty mouseX = new SimpleDoubleProperty();
     private DoubleProperty mouseY = new SimpleDoubleProperty();
 
     private boolean dragActive = false;
 
-    public SceneNodeMainController(Scene scene) {
+    public SceneNodeMainController() {
 
     }
 
@@ -48,63 +46,66 @@ public class SceneNodeMainController {
         return Optional.empty();
     }
 
-    public void addInputConnection(AsisConnectionButton asisConnectionButton) {
+    void addInputConnection(AsisConnectionButton asisConnectionButton) {
         inputConnections.add(asisConnectionButton);
     }
 
-    private void startDrag(AsisConnectionButton asisConnectionButton) {
+    private void startDrag() {
         if (dragActive)
             return;
 
         dragActive = true;
 
-        boundLines.add(index, new BoundLine(asisConnectionButton.centerXProperty(), asisConnectionButton.centerYProperty()));
-        boundLines.get(index).controlX1Property().bind(
-                Bindings.add(boundLines.get(index).startXProperty(), 100)
-        );
-
-        boundLines.get(index).controlX2Property().bind(
-                Bindings.add(boundLines.get(index).endXProperty(), -100)
-        );
-
-        boundLines.get(index).controlY1Property().bind(
-                Bindings.add(boundLines.get(index).startYProperty(), 0)
-        );
-
-        boundLines.get(index).controlY2Property().bind(
-                Bindings.add(boundLines.get(index).endYProperty(), 0)
-        );
-
-        boundLines.get(index).setUserData(asisConnectionButton);
-        boundLines.get(index).endXProperty().bind(mouseX);
-        boundLines.get(index).endYProperty().bind(mouseY);
-
-        root.getChildren().add(0, boundLines.get(index));
-    }
-
-    private void stopDrag(AsisConnectionButton asisConnectionButton) {
-        dragActive = false;
-
-        if(asisConnectionButton != null) {
-            // distinct node
-            boundLines.get(index).endXProperty().unbind();
-            boundLines.get(index).endYProperty().unbind();
-            boundLines.get(index).endXProperty().bind(asisConnectionButton.centerXProperty());
-            boundLines.get(index).endYProperty().bind(asisConnectionButton.centerYProperty());
-        } else {
-            // same node
-            stopDrag();
-        }
-    }
-
-    private void stopDrag() {
-        if(dragActive) {
-            boundLines.get(index).endXProperty().unbind();
-            boundLines.get(index).endYProperty().unbind();
-            root.getChildren().remove(boundLines.get(index));
+        if(currentOutputConnection.hasBoundLine()) {
+            root.getChildren().remove(currentOutputConnection.getBoundLine());
         }
 
+        BoundLine boundLine = new BoundLine(currentOutputConnection.centerXProperty(), currentOutputConnection.centerYProperty());
+        currentOutputConnection.setBoundLine(boundLine);
+
+        boundLine.controlX1Property().bind(Bindings.add(boundLine.startXProperty(), 100));
+        boundLine.controlX2Property().bind(Bindings.add(boundLine.endXProperty(), -100));
+        boundLine.controlY1Property().bind(Bindings.add(boundLine.startYProperty(), 0));
+        boundLine.controlY2Property().bind(Bindings.add(boundLine.endYProperty(), 0));
+
+        boundLine.setUserData(currentOutputConnection);
+        boundLine.endXProperty().bind(mouseX);
+        boundLine.endYProperty().bind(mouseY);
+
+        root.getChildren().add(0, boundLine);
+    }
+
+    private void stopDrag(AsisConnectionButton inputConnection) {
+        if(!inputConnection.getConnectionType()) {
+            BoundLine boundLine = inputConnection.getBoundLine();
+            boundLine.endXProperty().unbind();
+            boundLine.endYProperty().unbind();
+            root.getChildren().remove(boundLine);
+            inputConnection.setBoundLine(null);
+        }
+
+        /*if(currentOutputConnection.getParentSceneId().equals(inputConnection.getParentSceneId())) {
+            System.out.println("Found same scene");
+            BoundLine boundLine = currentOutputConnection.getBoundLine();
+            boundLine.endXProperty().unbind();
+            boundLine.endYProperty().unbind();
+            root.getChildren().remove(boundLine);
+            currentOutputConnection.setBoundLine(null);
+            currentOutputConnection = null;
+        }*/
+
+        if(currentOutputConnection != null) {
+            if (currentOutputConnection.hasBoundLine()) {
+                BoundLine boundLine = currentOutputConnection.getBoundLine();
+                boundLine.endXProperty().unbind();
+                boundLine.endYProperty().unbind();
+                boundLine.endXProperty().bind(inputConnection.centerXProperty());
+                boundLine.endYProperty().bind(inputConnection.centerYProperty());
+            }
+        }
+
         dragActive = false;
+        currentOutputConnection = null;
     }
 
     void mouseMoved(MouseEvent mouseEvent) {
@@ -112,8 +113,9 @@ public class SceneNodeMainController {
         mouseY.set(mouseEvent.getSceneY());
     }
 
-    void mousePressed(AsisConnectionButton asisConnectionButton, MouseEvent mouseEvent) {
-        startDrag(asisConnectionButton);
+    void mousePressed(AsisConnectionButton asisConnectionButton) {
+        currentOutputConnection = asisConnectionButton;
+        startDrag();
     }
 
     void mouseReleased(MouseEvent mouseEvent) {
@@ -121,7 +123,7 @@ public class SceneNodeMainController {
         if (asisConnectionButton.isPresent()) {
             stopDrag(asisConnectionButton.get());
         } else {
-            stopDrag();
+            stopDrag(currentOutputConnection);
         }
     }
 }

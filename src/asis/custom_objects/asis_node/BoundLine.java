@@ -4,7 +4,7 @@ import javafx.beans.property.ReadOnlyDoubleProperty;
 import javafx.scene.shape.CubicCurve;
 import javafx.scene.shape.StrokeLineCap;
 
-public class BoundLine extends CubicCurve {
+class BoundLine extends CubicCurve {
 
     private static final String lineStyle =
             "-fx-stroke: rgb(115, 115, 115);" +
@@ -14,20 +14,10 @@ public class BoundLine extends CubicCurve {
             "-fx-effect: dropshadow(three-pass-box, black, 10, 0, 0, 1);" +
             "-fx-fill: transparent;";
 
-    private String lineId;
-
-    BoundLine(ReadOnlyDoubleProperty startX, ReadOnlyDoubleProperty startY/*, ReadOnlyDoubleProperty endX, ReadOnlyDoubleProperty endY*/) {
+    BoundLine(ReadOnlyDoubleProperty startX, ReadOnlyDoubleProperty startY) {
         startXProperty().bind(startX);
         startYProperty().bind(startY);
         setStyle(lineStyle);
         setStrokeLineCap(StrokeLineCap.BUTT);
-    }
-
-    public String getLineId() {
-        return lineId;
-    }
-
-    public void setLineId(String lineId) {
-        this.lineId = lineId;
     }
 }
