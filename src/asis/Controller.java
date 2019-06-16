@@ -134,7 +134,6 @@ public class Controller {
     }
 
     private void removeScene(SceneNode sceneNode) {
-        //TODO Fix issue with the whole pane thing
         numberOfScenes--;
 
         story.removeScene(sceneNode.getSceneId());
@@ -184,7 +183,6 @@ public class Controller {
     }
 
     public void actionSaveProject() {
-        //TODO export story objects core json to folder
         writeJsonToFile(story.getMetadataObject(), "info_en.json", story.getProjectDirectory());
         writeJsonToFile(story.getStoryDataJson(), "joi_text_en.json", story.getProjectDirectory());
 

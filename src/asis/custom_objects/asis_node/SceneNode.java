@@ -72,8 +72,6 @@ public class SceneNode extends Region {
 
 
         inputContainer.getChildren().add(inputConnection);
-
-
     }
 
     private void attachHandlers(AsisConnectionButton connection) {
