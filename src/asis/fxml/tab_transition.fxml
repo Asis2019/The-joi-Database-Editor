@@ -1,0 +1,86 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.geometry.Insets?>
+<?import javafx.scene.control.Button?>
+<?import javafx.scene.control.ColorPicker?>
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.control.Separator?>
+<?import javafx.scene.control.SplitPane?>
+<?import javafx.scene.control.TextField?>
+<?import javafx.scene.control.TitledPane?>
+<?import javafx.scene.control.ToolBar?>
+<?import javafx.scene.layout.AnchorPane?>
+<?import javafx.scene.layout.BorderPane?>
+<?import javafx.scene.layout.HBox?>
+<?import javafx.scene.layout.Pane?>
+<?import javafx.scene.layout.StackPane?>
+<?import javafx.scene.layout.VBox?>
+<?import javafx.scene.paint.Color?>
+<?import javafx.scene.text.Font?>
+
+<BorderPane stylesheets="@../css/scene_details_stylesheet.css" xmlns="http://javafx.com/javafx/8.0.172-ea" xmlns:fx="http://javafx.com/fxml/1" fx:controller="asis.TabTransitionController">
+<center>
+    <SplitPane id="darkThemeBackground" dividerPositions="0.77875" styleClass="edge-to-edge">
+        <items>
+            <AnchorPane>
+                <children>
+                    <BorderPane prefHeight="500.0" prefWidth="780.0" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
+                     <center>
+                        <StackPane fx:id="mainView" BorderPane.alignment="CENTER">
+                           <children>
+                              <Pane fx:id="transitionPaneMask" opacity="0.0" prefHeight="200.0" prefWidth="200.0" style="-fx-background-color: black;" />
+                              <Label id="transitionTextLabel" fx:id="transitionTextLabel" alignment="CENTER" contentDisplay="CENTER" layoutX="191.0" layoutY="213.0" lineSpacing="5.0" text="Transition Text" textAlignment="CENTER" textFill="WHITE" wrapText="true">
+                                 <font>
+                                    <Font size="130.0" />
+                                 </font>
+                                 <opaqueInsets>
+                                    <Insets />
+                                 </opaqueInsets>
+                              </Label>
+                           </children>
+                        </StackPane>
+                     </center></BorderPane>
+                </children>
+            </AnchorPane>
+            <VBox minHeight="0.0" minWidth="0.0" stylesheets="@../css/titled_pane_stylesheet.css">
+                <children>
+                    <TitledPane animated="false" text="Scene Transition Properties" wrapText="true">
+                        <content>
+                            <VBox spacing="5.0">
+                                <children>
+                                    <TextField fx:id="transitionTextField" onKeyTyped="#actionTransitionText" promptText="Transition Text" />
+                                    <Label fx:id="transitionTextColorLabel" text="Text Color" />
+                                    <ColorPicker fx:id="transitionTextColor" onAction="#actionTransitionTextColor" promptText="Transition Text Color" />
+                                    <Label fx:id="transitionTextOutlineColorLabel" layoutX="20.0" layoutY="72.0" text="Text Outline Color" />
+                                    <ColorPicker fx:id="transitionTextOutlineColor" promptText="Transition Text Outline Color">
+                                        <value>
+                                            <Color />
+                                        </value>
+                                    </ColorPicker>
+                                    <Separator prefWidth="200.0" />
+                                    <TextField fx:id="waitTimeField" onKeyTyped="#actionTransitionWaitTime" promptText="Wait Time (default 0)" />
+                                    <TextField fx:id="fadeSpeedField" onKeyTyped="#actionTransitionFadeSpeed" promptText="Fade Speed (default 1)" />
+                                    <Label fx:id="transitionFadeColorLabel" text="Fade Color:" />
+                                    <ColorPicker fx:id="transitionFadeColor" onAction="#actionFadeColor" promptText="Fade Color">
+                                        <value>
+                                            <Color />
+                                        </value>
+                                    </ColorPicker>
+                                </children>
+                            </VBox>
+                        </content>
+                    </TitledPane>
+                </children>
+            </VBox>
+        </items>
+    </SplitPane>
+</center>
+<top>
+    <ToolBar prefHeight="40.0" prefWidth="200.0" BorderPane.alignment="CENTER">
+        <items>
+            <Button fx:id="playTransitionButton" mnemonicParsing="false" onAction="#actionPlayTransitionButton" text="Play Transition" />
+            <Pane HBox.hgrow="ALWAYS" />
+        </items>
+    </ToolBar>
+</top>
+</BorderPane>

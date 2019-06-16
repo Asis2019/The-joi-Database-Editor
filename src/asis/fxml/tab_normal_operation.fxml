@@ -1,0 +1,87 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.Cursor?>
+<?import javafx.scene.control.Button?>
+<?import javafx.scene.control.ColorPicker?>
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.control.SplitPane?>
+<?import javafx.scene.control.TextArea?>
+<?import javafx.scene.control.TitledPane?>
+<?import javafx.scene.control.ToolBar?>
+<?import javafx.scene.image.Image?>
+<?import javafx.scene.image.ImageView?>
+<?import javafx.scene.layout.AnchorPane?>
+<?import javafx.scene.layout.BorderPane?>
+<?import javafx.scene.layout.HBox?>
+<?import javafx.scene.layout.Pane?>
+<?import javafx.scene.layout.StackPane?>
+<?import javafx.scene.layout.VBox?>
+<?import javafx.scene.paint.Color?>
+
+<BorderPane prefWidth="1000.0" stylesheets="@../css/scene_details_stylesheet.css" xmlns="http://javafx.com/javafx/8.0.172-ea" xmlns:fx="http://javafx.com/fxml/1" fx:controller="asis.TabNormalOperationController">
+<center>
+    <SplitPane id="darkThemeBackground" dividerPositions="0.8553654743390358" styleClass="edge-to-edge">
+        <items>
+            <AnchorPane>
+                <children>
+                    <BorderPane prefHeight="500.0" prefWidth="780.0" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
+                        <center>
+                            <StackPane fx:id="stackPane" BorderPane.alignment="CENTER">
+                                <children>
+                                    <VBox id="iconControllerBox" fx:id="iconControllerBox" alignment="CENTER" fillWidth="false" maxHeight="-Infinity" maxWidth="-Infinity" onMouseClicked="#actionAddImage" prefHeight="150.0" prefWidth="150.0">
+                                        <children>
+                                            <ImageView id="iconImageView" fx:id="iconView" fitHeight="48.0" fitWidth="48.0" pickOnBounds="true" preserveRatio="true">
+                                                <image>
+                                                    <Image url="@../images/add_icon_ic.png" />
+                                                </image>
+                                            </ImageView>
+                                            <Label text="Add Scene Image" textFill="#bbbbbb" />
+                                        </children>
+                                        <cursor>
+                                            <Cursor fx:constant="HAND" />
+                                        </cursor>
+                                    </VBox>
+                                </children>
+                            </StackPane>
+                        </center>
+                    </BorderPane>
+                  <TextArea id="mainTextArea" fx:id="mainTextArea" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="150.0" prefWidth="500.0" stylesheets="@../css/text_area_sytlesheet.css" wrapText="true" AnchorPane.bottomAnchor="40.0" AnchorPane.leftAnchor="80.0" AnchorPane.rightAnchor="80.0" />
+                </children>
+            </AnchorPane>
+            <VBox minHeight="0.0" minWidth="0.0" stylesheets="@../css/titled_pane_stylesheet.css">
+                <children>
+                    <TitledPane animated="false" text="Current Line Properties" wrapText="true">
+                        <content>
+                            <VBox spacing="5.0">
+                                <children>
+                              <TextArea fx:id="textTextField" prefHeight="59.0" promptText="Text" wrapText="true" />
+                                    <Button mnemonicParsing="false" onAction="#actionAddLineImage" text="Line Image" />
+                                    <Label layoutX="20.0" layoutY="132.0" text="Text Color:" />
+                                    <ColorPicker fx:id="textColorPicker" promptText="Text Color" />
+                                    <Label text="Text Outline Color:" />
+                                    <ColorPicker fx:id="textOutlineColorPicker" promptText="Text Outline Color">
+                                        <value>
+                                            <Color />
+                                        </value>
+                                    </ColorPicker>
+                                </children>
+                            </VBox>
+                        </content>
+                    </TitledPane>
+                </children>
+            </VBox>
+        </items>
+    </SplitPane>
+</center>
+<top>
+    <ToolBar prefHeight="40.0" prefWidth="200.0" BorderPane.alignment="CENTER">
+        <items>
+            <Button focusTraversable="false" mnemonicParsing="false" onAction="#actionPreviousLine" text="Previous Line" />
+            <Button focusTraversable="false" mnemonicParsing="false" onAction="#actionNextLine" text="Next Line" />
+            <Pane HBox.hgrow="ALWAYS" />
+            <Label text="Line: " />
+            <Label fx:id="lineCounterLabel" text="1/1" />
+        </items>
+    </ToolBar>
+</top>
+</BorderPane>

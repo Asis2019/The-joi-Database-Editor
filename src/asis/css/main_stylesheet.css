@@ -1,0 +1,13 @@
+#anchorPane {
+    -fx-background-color: #393939,
+    linear-gradient(from 0.5px 0px to 10.5px 0px, repeat, #2f2f2f 5%, transparent 5%),
+    linear-gradient(from 0px 0.5px to 0px 10.5px, repeat, #2f2f2f 5%, transparent 5%);
+}
+
+.button {
+    -fx-background-radius: 5em;
+    -fx-min-width: 10px;
+    -fx-min-height: 10px;
+    -fx-max-width: 10px;
+    -fx-max-height: 10px;
+}

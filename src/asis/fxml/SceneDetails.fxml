@@ -1,0 +1,59 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.geometry.Insets?>
+<?import javafx.scene.control.Menu?>
+<?import javafx.scene.control.MenuBar?>
+<?import javafx.scene.control.MenuItem?>
+<?import javafx.scene.control.Tab?>
+<?import javafx.scene.control.TabPane?>
+<?import javafx.scene.layout.BorderPane?>
+<?import javafx.scene.layout.VBox?>
+
+<BorderPane id="darkThemeBackground" fx:id="sceneDetailBorderPane" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="720.0" prefWidth="800.0" stylesheets="@../css/scene_details_stylesheet.css" xmlns="http://javafx.com/javafx/8.0.172-ea" xmlns:fx="http://javafx.com/fxml/1" fx:controller="asis.SceneDetails">
+   <top>
+      <VBox BorderPane.alignment="CENTER">
+         <children>
+            <MenuBar stylesheets="@../css/menu_bar_stylesheet.css">
+              <menus>
+                <Menu mnemonicParsing="false" text="File">
+                  <items>
+                    <MenuItem mnemonicParsing="false" onAction="#actionClose" text="Close" />
+                  </items>
+                </Menu>
+                <Menu mnemonicParsing="false" text="Edit">
+                     <items>
+                        <MenuItem fx:id="menuItemAddTransition" disable="true" mnemonicParsing="false" onAction="#actionAddTransition" text="Add transition to scene" />
+                        <MenuItem fx:id="menuItemAddTimer" disable="true" mnemonicParsing="false" onAction="#actionAddTimer" text="Add timer to scene" />
+                        <MenuItem mnemonicParsing="false" onAction="#actionChangeSceneImage" text="Change Scene Image" />
+                     </items>
+                  </Menu>
+              </menus>
+            </MenuBar>
+         </children>
+      </VBox>
+   </top>
+   <center>
+      <TabPane fx:id="effectTabs" focusTraversable="false" stylesheets="@../css/tabed_pane_stylesheet.css" tabClosingPolicy="ALL_TABS" BorderPane.alignment="TOP_LEFT">
+         <tabs>
+            <Tab closable="false" text="Normal Operation">
+               <content>
+                  <fx:include fx:id="tabNormalOperation" source="tab_normal_operation.fxml" />
+               </content>
+            </Tab>
+            <Tab fx:id="timerTab" onClosed="#actionTimerClosed" text="Timer">
+               <content>
+                  <fx:include fx:id="tabTimer" source="tab_timer.fxml" />
+               </content>
+            </Tab>
+            <Tab fx:id="transitionTab" onClosed="#actionTransitionClosed" text="Transition">
+               <content>
+                  <fx:include fx:id="tabTransition" source="tab_transition.fxml" />
+               </content>
+            </Tab>
+         </tabs>
+         <BorderPane.margin>
+            <Insets />
+         </BorderPane.margin>
+      </TabPane>
+   </center>
+</BorderPane>

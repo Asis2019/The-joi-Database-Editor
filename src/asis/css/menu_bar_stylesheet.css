@@ -1,0 +1,24 @@
+/*Menu bar itself*/
+.menu-bar {
+    -fx-background-color: rgb(60, 63, 65);
+    -fx-padding: 0em 0em 0em 0em;
+    -fx-border-color: rgb(81, 81, 81);
+    -fx-border-width: 0 0 1 0;
+}
+
+.menu-bar:focused {
+    -fx-background-color: rgb(59, 124, 212);
+}
+
+.menu-bar .label {
+    -fx-text-fill: rgb(187, 187, 187);
+}
+
+.context-menu {
+    -fx-skin: "javafx.scene.control.skin.ContextMenuSkin";
+    -fx-background-color: rgb(60, 63, 65);
+    -fx-background-insets: 0, 1, 2;
+    -fx-padding: 0em 0em 0em 0em;
+    -fx-border-color: rgb(81, 81, 81);
+    -fx-border-width: 1;
+}
