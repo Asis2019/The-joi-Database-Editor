@@ -17,7 +17,7 @@ import static asis.custom_objects.ColorUtils.colorToHex;
 
 public class TabTransitionController {
     private Story story;
-    private String sceneId;
+    private int sceneId;
     private Timeline timeline = new Timeline();
 
     @FXML private TextField fadeSpeedField, waitTimeField, transitionTextField;
@@ -36,7 +36,7 @@ public class TabTransitionController {
         });
     }
 
-    void passData(Story story, String sceneId) {
+    void passData(Story story, int sceneId) {
         this.story = story;
         this.sceneId = sceneId;
 

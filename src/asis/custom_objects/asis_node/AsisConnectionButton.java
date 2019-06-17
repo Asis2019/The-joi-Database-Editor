@@ -7,14 +7,22 @@ import javafx.scene.Cursor;
 import javafx.scene.control.Button;
 import javafx.scene.layout.Pane;
 
-class AsisConnectionButton extends Button {
+public class AsisConnectionButton extends Button {
     private ReadOnlyDoubleWrapper centerX = new ReadOnlyDoubleWrapper();
     private ReadOnlyDoubleWrapper centerY = new ReadOnlyDoubleWrapper();
 
     private Pane parentPane;
+
+    //The connections id
     private String id = null;
-    private String parentSceneId;
+
+    //What scene there a part of
+    private int parentSceneId;
+
+    //The line object connected
     private BoundLine boundLine;
+
+    //The connection type
     private boolean connectionType; //false is output true is input
 
     private static final String outputConnectorStyle =
@@ -28,7 +36,7 @@ class AsisConnectionButton extends Button {
             "-fx-border-width: 1;" +
             "-fx-background-insets: 1;";
 
-    AsisConnectionButton(Pane parentPane, boolean connectionType, String parentSceneId) {
+    public AsisConnectionButton(Pane parentPane, boolean connectionType, int parentSceneId) {
         this.parentPane = parentPane;
         this.connectionType = connectionType;
         this.parentSceneId = parentSceneId;
@@ -63,11 +71,11 @@ class AsisConnectionButton extends Button {
         this.id = id;
     }
 
-    String getConnectionId() {
+    public String getConnectionId() {
         return this.id;
     }
 
-    String getParentSceneId() {
+    public int getParentSceneId() {
         return this.parentSceneId;
     }
 

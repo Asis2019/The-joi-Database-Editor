@@ -27,26 +27,27 @@ class Story {
         return workingDirectory;
     }
 
-    void addNewScene(String sceneId) {
+    void addNewScene(int sceneId) {
         JSONObject object = new JSONObject();
         object.put("sceneId", sceneId);
         sceneArray.put(object);
         storyDataJson.put("JOI", sceneArray);
     }
 
-    void removeScene(String sceneId) {
+    void removeScene(int sceneId) {
         int amountOfScenes = storyDataJson.getJSONArray("JOI").length();
         for(int i=0; i < amountOfScenes; i++) {
-            if(storyDataJson.getJSONArray("JOI").getJSONObject(i).getString("sceneId").equals(sceneId)) {
+            if(storyDataJson.getJSONArray("JOI").getJSONObject(i).getInt("sceneId") == sceneId) {
                 storyDataJson.getJSONArray("JOI").remove(i);
+                break;
             }
         }
     }
 
-    void removeTransition(String sceneId) {
+    void removeTransition(int sceneId) {
         int amountOfScenes = storyDataJson.getJSONArray("JOI").length();
         for(int i=0; i < amountOfScenes; i++) {
-            if(storyDataJson.getJSONArray("JOI").getJSONObject(i).getString("sceneId").equals(sceneId)) {
+            if(storyDataJson.getJSONArray("JOI").getJSONObject(i).getInt("sceneId") == sceneId) {
                 if(storyDataJson.getJSONArray("JOI").getJSONObject(i).has("transition")) {
                     storyDataJson.getJSONArray("JOI").getJSONObject(i).remove("transition");
                 }
@@ -54,21 +55,21 @@ class Story {
         }
     }
 
-    void removeNoFade(String sceneId) {
+    void removeDataFromScene(int sceneId, String key) {
         int amountOfScenes = storyDataJson.getJSONArray("JOI").length();
         for(int i=0; i < amountOfScenes; i++) {
-            if(storyDataJson.getJSONArray("JOI").getJSONObject(i).getString("sceneId").equals(sceneId)) {
-                if(storyDataJson.getJSONArray("JOI").getJSONObject(i).has("noFade")) {
-                    storyDataJson.getJSONArray("JOI").getJSONObject(i).remove("noFade");
+            if(storyDataJson.getJSONArray("JOI").getJSONObject(i).getInt("sceneId") == sceneId) {
+                if(storyDataJson.getJSONArray("JOI").getJSONObject(i).has(key)) {
+                    storyDataJson.getJSONArray("JOI").getJSONObject(i).remove(key);
                 }
             }
         }
     }
 
-    boolean hasNoFade(String sceneId) {
+    boolean hasNoFade(int sceneId) {
         int amountOfScenes = storyDataJson.getJSONArray("JOI").length();
         for(int i=0; i < amountOfScenes; i++) {
-            if(storyDataJson.getJSONArray("JOI").getJSONObject(i).getString("sceneId").equals(sceneId)) {
+            if(storyDataJson.getJSONArray("JOI").getJSONObject(i).getInt("sceneId") == sceneId) {
                 if (storyDataJson.getJSONArray("JOI").getJSONObject(i).has("noFade")) {
                     return storyDataJson.getJSONArray("JOI").getJSONObject(i).getBoolean("noFade");
                 }
@@ -78,19 +79,19 @@ class Story {
         return false;
     }
 
-    void addDataToScene(String sceneId, String key, Object value) {
+    void addDataToScene(int sceneId, String key, Object value) {
         int amountOfScenes = storyDataJson.getJSONArray("JOI").length();
         for(int i=0; i < amountOfScenes; i++) {
-            if(storyDataJson.getJSONArray("JOI").getJSONObject(i).getString("sceneId").equals(sceneId)) {
+            if(storyDataJson.getJSONArray("JOI").getJSONObject(i).getInt("sceneId") == sceneId) {
                 storyDataJson.getJSONArray("JOI").getJSONObject(i).put(key, value);
             }
         }
     }
 
-    String getSceneImage(String sceneId) {
+    String getSceneImage(int sceneId) {
         int amountOfScenes = storyDataJson.getJSONArray("JOI").length();
         for(int i=0; i < amountOfScenes; i++) {
-            if(storyDataJson.getJSONArray("JOI").getJSONObject(i).getString("sceneId").equals(sceneId)) {
+            if(storyDataJson.getJSONArray("JOI").getJSONObject(i).getInt("sceneId") == sceneId) {
                 if (storyDataJson.getJSONArray("JOI").getJSONObject(i).has("sceneImage")) {
                     return storyDataJson.getJSONArray("JOI").getJSONObject(i).getString("sceneImage");
                 }
@@ -100,10 +101,10 @@ class Story {
         return null;
     }
 
-    void addLine(String sceneId, int lineNumber, String text) {
+    void addLine(int sceneId, int lineNumber, String text) {
         int amountOfScenes = storyDataJson.getJSONArray("JOI").length();
         for(int i=0; i < amountOfScenes; i++) {
-            if(storyDataJson.getJSONArray("JOI").getJSONObject(i).getString("sceneId").equals(sceneId)) {
+            if(storyDataJson.getJSONArray("JOI").getJSONObject(i).getInt("sceneId") == sceneId) {
                 if(storyDataJson.getJSONArray("JOI").getJSONObject(i).has("line"+lineNumber)) {
                     storyDataJson.getJSONArray("JOI").getJSONObject(i).getJSONArray("line"+lineNumber).getJSONObject(0).put("text", text);
                 } else {
@@ -120,19 +121,19 @@ class Story {
         }
     }
 
-    void addDataToLineObject(String sceneId, int lineNumber, String key, String value) {
+    void addDataToLineObject(int sceneId, int lineNumber, String key, String value) {
         int amountOfScenes = storyDataJson.getJSONArray("JOI").length();
         for(int i=0; i < amountOfScenes; i++) {
-            if(storyDataJson.getJSONArray("JOI").getJSONObject(i).getString("sceneId").equals(sceneId)) {
+            if(storyDataJson.getJSONArray("JOI").getJSONObject(i).getInt("sceneId") == sceneId) {
                 storyDataJson.getJSONArray("JOI").getJSONObject(i).getJSONArray("line"+lineNumber).getJSONObject(0).put(key, value);
             }
         }
     }
 
-    void addDataToTransition(String sceneId, String key, Object value) {
+    void addDataToTransition(int sceneId, String key, Object value) {
         int amountOfScenes = storyDataJson.getJSONArray("JOI").length();
         for(int i=0; i < amountOfScenes; i++) {
-            if(storyDataJson.getJSONArray("JOI").getJSONObject(i).getString("sceneId").equals(sceneId)) {
+            if(storyDataJson.getJSONArray("JOI").getJSONObject(i).getInt("sceneId") == sceneId) {
                 if(storyDataJson.getJSONArray("JOI").getJSONObject(i).has("transition")) {
                     storyDataJson.getJSONArray("JOI").getJSONObject(i).getJSONArray("transition").getJSONObject(0).put(key, value);
                 } else {
@@ -149,10 +150,10 @@ class Story {
         }
     }
 
-    JSONObject getTransitionData(String sceneId) {
+    JSONObject getTransitionData(int sceneId) {
         int amountOfScenes = storyDataJson.getJSONArray("JOI").length();
         for(int i=0; i < amountOfScenes; i++) {
-            if(storyDataJson.getJSONArray("JOI").getJSONObject(i).getString("sceneId").equals(sceneId)) {
+            if(storyDataJson.getJSONArray("JOI").getJSONObject(i).getInt("sceneId") == sceneId) {
                 if(storyDataJson.getJSONArray("JOI").getJSONObject(i).has("transition")) {
                     return storyDataJson.getJSONArray("JOI").getJSONObject(i).getJSONArray("transition").getJSONObject(0);
                 }
@@ -162,10 +163,10 @@ class Story {
         return null;
     }
 
-    void addDataToTimerObject(String sceneId, Object value) {
+    void addDataToTimerObject(int sceneId, Object value) {
         int amountOfScenes = storyDataJson.getJSONArray("JOI").length();
         for(int i=0; i < amountOfScenes; i++) {
-            if(storyDataJson.getJSONArray("JOI").getJSONObject(i).getString("sceneId").equals(sceneId)) {
+            if(storyDataJson.getJSONArray("JOI").getJSONObject(i).getInt("sceneId") == sceneId) {
                 if(storyDataJson.getJSONArray("JOI").getJSONObject(i).has("timer")) {
                     storyDataJson.getJSONArray("JOI").getJSONObject(i).getJSONArray("timer").getJSONObject(0).put("totalTime", value);
                 } else {
@@ -182,10 +183,10 @@ class Story {
         }
     }
 
-    JSONObject getTimerData(String sceneId) {
+    JSONObject getTimerData(int sceneId) {
         int amountOfScenes = storyDataJson.getJSONArray("JOI").length();
         for(int i=0; i < amountOfScenes; i++) {
-            if(storyDataJson.getJSONArray("JOI").getJSONObject(i).getString("sceneId").equals(sceneId)) {
+            if(storyDataJson.getJSONArray("JOI").getJSONObject(i).getInt("sceneId") == sceneId) {
                 if(storyDataJson.getJSONArray("JOI").getJSONObject(i).has("timer")) {
                     return storyDataJson.getJSONArray("JOI").getJSONObject(i).getJSONArray("timer").getJSONObject(0);
                 }
@@ -195,10 +196,10 @@ class Story {
         return null;
     }
 
-    void addDataToTimerLineObject(String sceneId, String lineIndex, String key, Object value) {
+    void addDataToTimerLineObject(int sceneId, String lineIndex, String key, Object value) {
         int amountOfScenes = storyDataJson.getJSONArray("JOI").length();
         for(int i=0; i < amountOfScenes; i++) {
-            if(storyDataJson.getJSONArray("JOI").getJSONObject(i).getString("sceneId").equals(sceneId)) {
+            if(storyDataJson.getJSONArray("JOI").getJSONObject(i).getInt("sceneId") == sceneId) {
                 if(storyDataJson.getJSONArray("JOI").getJSONObject(i).has("timer")) {
                     if(storyDataJson.getJSONArray("JOI").getJSONObject(i).getJSONArray("timer").getJSONObject(0).has(lineIndex)) {
                         storyDataJson.getJSONArray("JOI").getJSONObject(i).getJSONArray("timer").getJSONObject(0).getJSONArray(lineIndex).getJSONObject(0).put(key, value);
@@ -225,10 +226,10 @@ class Story {
         }
     }
 
-    JSONObject getTimerLineData(String sceneId, String lineIndex) {
+    JSONObject getTimerLineData(int sceneId, String lineIndex) {
         int amountOfScenes = storyDataJson.getJSONArray("JOI").length();
         for(int i=0; i < amountOfScenes; i++) {
-            if(storyDataJson.getJSONArray("JOI").getJSONObject(i).getString("sceneId").equals(sceneId)) {
+            if(storyDataJson.getJSONArray("JOI").getJSONObject(i).getInt("sceneId") == sceneId) {
                 if(storyDataJson.getJSONArray("JOI").getJSONObject(i).has("timer")) {
                     if(storyDataJson.getJSONArray("JOI").getJSONObject(i).getJSONArray("timer").getJSONObject(0).has(lineIndex)) {
                         return storyDataJson.getJSONArray("JOI").getJSONObject(i).getJSONArray("timer").getJSONObject(0).getJSONArray(lineIndex).getJSONObject(0);
@@ -240,10 +241,10 @@ class Story {
         return null;
     }
 
-    void removeTimer(String sceneId) {
+    void removeTimer(int sceneId) {
         int amountOfScenes = storyDataJson.getJSONArray("JOI").length();
         for(int i=0; i < amountOfScenes; i++) {
-            if(storyDataJson.getJSONArray("JOI").getJSONObject(i).getString("sceneId").equals(sceneId)) {
+            if(storyDataJson.getJSONArray("JOI").getJSONObject(i).getInt("sceneId") == sceneId) {
                 if(storyDataJson.getJSONArray("JOI").getJSONObject(i).has("timer")) {
                     storyDataJson.getJSONArray("JOI").getJSONObject(i).remove("timer");
                 }
@@ -251,10 +252,10 @@ class Story {
         }
     }
 
-    JSONObject getLineData(String sceneId, int lineNumber) {
+    JSONObject getLineData(int sceneId, int lineNumber) {
         int amountOfScenes = storyDataJson.getJSONArray("JOI").length();
         for(int i=0; i < amountOfScenes; i++) {
-            if(storyDataJson.getJSONArray("JOI").getJSONObject(i).getString("sceneId").equals(sceneId)) {
+            if(storyDataJson.getJSONArray("JOI").getJSONObject(i).getInt("sceneId") == sceneId) {
                 if (storyDataJson.getJSONArray("JOI").getJSONObject(i).has("line"+lineNumber)) {
                     return storyDataJson.getJSONArray("JOI").getJSONObject(i).getJSONArray("line"+lineNumber).getJSONObject(0);
                 }
@@ -264,10 +265,10 @@ class Story {
         return null;
     }
 
-    int getTotalLinesInScene(String sceneId) {
+    int getTotalLinesInScene(int sceneId) {
         int amountOfScenes = storyDataJson.getJSONArray("JOI").length();
         for(int i=0; i < amountOfScenes; i++) {
-            if(storyDataJson.getJSONArray("JOI").getJSONObject(i).getString("sceneId").equals(sceneId)) {
+            if(storyDataJson.getJSONArray("JOI").getJSONObject(i).getInt("sceneId") == sceneId) {
                 int total = 0;
                 while (storyDataJson.getJSONArray("JOI").getJSONObject(i).has("line"+total)) {
                     total++;

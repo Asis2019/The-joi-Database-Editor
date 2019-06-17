@@ -19,11 +19,11 @@ public class SceneNode extends Region {
     private VBox outputContainer = new VBox();
     private VBox inputContainer = new VBox();
     private Label titleLabel = new Label("Title");
-    private String sceneId;
+    private int sceneId;
     private List<AsisConnectionButton> outputConnections = new ArrayList<>();
     private AsisConnectionButton inputConnection;
 
-    public SceneNode(int width, int height, String sceneId, SceneNodeMainController sceneNodeMainController) {
+    public SceneNode(int width, int height, int sceneId, SceneNodeMainController sceneNodeMainController) {
         this.sceneId = sceneId;
         this.sceneNodeMainController = sceneNodeMainController;
 
@@ -46,8 +46,8 @@ public class SceneNode extends Region {
 
         borderPane.setCenter(titleLabel);
 
-        if(!sceneId.equals("metaData")) {
-            if(!sceneId.equals("1")) {
+        if(sceneId != -1) {
+            if(sceneId != 0) {
                 createNewInputConnectionPoint();
             }
 
@@ -66,6 +66,14 @@ public class SceneNode extends Region {
 
         outputContainer.getChildren().add(connection);
 
+    }
+
+    List<AsisConnectionButton> getOutputButtons() {
+        return this.outputConnections;
+    }
+
+    AsisConnectionButton getInputConnection() {
+        return this.inputConnection;
     }
 
     private void createNewInputConnectionPoint() {
@@ -99,7 +107,7 @@ public class SceneNode extends Region {
 
     }
 
-    public String getSceneId() {
+    public int getSceneId() {
         return sceneId;
     }
 

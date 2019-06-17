@@ -1,5 +1,6 @@
 package asis.custom_objects.asis_node;
 
+import asis.Controller;
 import javafx.beans.binding.Bindings;
 import javafx.beans.property.DoubleProperty;
 import javafx.beans.property.SimpleDoubleProperty;
@@ -17,14 +18,15 @@ public class SceneNodeMainController {
     private List<AsisConnectionButton> inputConnections = new ArrayList<>();
 
     private AsisConnectionButton currentOutputConnection;
+    private Controller controller;
 
     private DoubleProperty mouseX = new SimpleDoubleProperty();
     private DoubleProperty mouseY = new SimpleDoubleProperty();
 
     private boolean dragActive = false;
 
-    public SceneNodeMainController() {
-
+    public SceneNodeMainController(Controller controller) {
+        this.controller = controller;
     }
 
     public void setPane(Pane pane) {
@@ -62,6 +64,7 @@ public class SceneNodeMainController {
 
         BoundLine boundLine = new BoundLine(currentOutputConnection.centerXProperty(), currentOutputConnection.centerYProperty());
         currentOutputConnection.setBoundLine(boundLine);
+        boundLine.setStartPointConnectionObject(currentOutputConnection);
 
         boundLine.controlX1Property().bind(Bindings.add(boundLine.startXProperty(), 100));
         boundLine.controlX2Property().bind(Bindings.add(boundLine.endXProperty(), -100));
@@ -82,6 +85,8 @@ public class SceneNodeMainController {
             boundLine.endYProperty().unbind();
             root.getChildren().remove(boundLine);
             inputConnection.setBoundLine(null);
+
+            controller.removeConnectionFromStory(inputConnection.getParentSceneId());
         }
 
         /*if(currentOutputConnection.getParentSceneId().equals(inputConnection.getParentSceneId())) {
@@ -96,11 +101,17 @@ public class SceneNodeMainController {
 
         if(currentOutputConnection != null) {
             if (currentOutputConnection.hasBoundLine()) {
+                //Connection established
                 BoundLine boundLine = currentOutputConnection.getBoundLine();
                 boundLine.endXProperty().unbind();
                 boundLine.endYProperty().unbind();
                 boundLine.endXProperty().bind(inputConnection.centerXProperty());
                 boundLine.endYProperty().bind(inputConnection.centerYProperty());
+                inputConnection.setBoundLine(boundLine);
+
+                boundLine.setEndPointConnectionObject(inputConnection);
+
+                controller.addConnectionToStory(currentOutputConnection, inputConnection);
             }
         }
 
@@ -124,6 +135,27 @@ public class SceneNodeMainController {
             stopDrag(asisConnectionButton.get());
         } else {
             stopDrag(currentOutputConnection);
+        }
+    }
+
+    public void notifySceneRemoved(SceneNode sceneNode) {
+        //Check if connection is present for outputs
+        for (AsisConnectionButton connection : sceneNode.getOutputButtons()) {
+            if(connection.hasBoundLine()) {
+                root.getChildren().remove(connection.getBoundLine());
+                connection.setBoundLine(null);
+
+                controller.removeConnectionFromStory(connection.getParentSceneId());
+            }
+        }
+
+        //Check if input has any connection
+        if(sceneNode.getInputConnection().hasBoundLine()) {
+            root.getChildren().remove(sceneNode.getInputConnection().getBoundLine());
+
+            controller.removeConnectionFromStory(sceneNode.getInputConnection().getBoundLine().getStartPointConnectionObject().getParentSceneId());
+
+            sceneNode.getInputConnection().setBoundLine(null);
         }
     }
 }

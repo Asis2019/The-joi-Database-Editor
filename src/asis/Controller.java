@@ -1,6 +1,7 @@
 package asis;
 
 import asis.custom_objects.Draggable;
+import asis.custom_objects.asis_node.AsisConnectionButton;
 import asis.custom_objects.asis_node.SceneNode;
 import asis.custom_objects.asis_node.SceneNodeMainController;
 import javafx.application.Platform;
@@ -38,7 +39,7 @@ public class Controller {
     }
 
     void inflater() {
-         sceneNodeMainController = new SceneNodeMainController();
+         sceneNodeMainController = new SceneNodeMainController(this);
          sceneNodeMainController.setPane(anchorPane);
 
         addScene();
@@ -47,7 +48,7 @@ public class Controller {
     }
 
     private void createMetadataNode() {
-        SceneNode metaDataNode = new SceneNode(300, 100, "metaData", sceneNodeMainController);
+        SceneNode metaDataNode = new SceneNode(300, 100, -1, sceneNodeMainController);
         new Draggable.Nature(metaDataNode.getPane());
         metaDataNode.getPane().setLayoutX(10);
         metaDataNode.getPane().setLayoutY(200);
@@ -97,7 +98,7 @@ public class Controller {
         });
     }
 
-    private void openNewWindow(String title, String sceneId) {
+    private void openNewWindow(String title, int sceneId) {
         try {
             FXMLLoader fxmlLoader = new FXMLLoader(getClass().getResource("fxml/SceneDetails.fxml"));
             Parent root = fxmlLoader.load();
@@ -123,9 +124,9 @@ public class Controller {
     public void addScene() {
         numberOfScenes++;
 
-        story.addNewScene(String.valueOf(numberOfScenes));
+        story.addNewScene(numberOfScenes-1);
 
-        SceneNode sceneNode = new SceneNode(300, 100, String.valueOf(numberOfScenes), sceneNodeMainController);
+        SceneNode sceneNode = new SceneNode(300, 100, numberOfScenes-1, sceneNodeMainController);
         new Draggable.Nature(sceneNode.getPane());
         sceneNode.setTitle("Scene "+numberOfScenes);
         sceneNode.getPane().setLayoutX(10);
@@ -138,7 +139,17 @@ public class Controller {
 
         story.removeScene(sceneNode.getSceneId());
 
+        sceneNodeMainController.notifySceneRemoved(sceneNode);
+
         anchorPane.getChildren().remove(sceneNode.getPane());
+    }
+
+    public void addConnectionToStory(AsisConnectionButton outputConnection, AsisConnectionButton inputConnection) {
+        story.addDataToScene(outputConnection.getParentSceneId(), "jumpTo", inputConnection.getParentSceneId());
+    }
+
+    public void removeConnectionFromStory(int sceneId) {
+        story.removeDataFromScene(sceneId, "jumpTo");
     }
 
     private void writeJsonToFile(JSONObject jsonObject, String fileName, File saveLocation) {

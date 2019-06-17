@@ -19,7 +19,7 @@ import static asis.custom_objects.ColorUtils.colorToHex;
 
 public class TabNormalOperationController {
     private Story story;
-    private String sceneId;
+    private int sceneId;
     private String outlineColor = "#000000";
     private String fillColor = "#ffffff";
     private int totalLines = 1;
@@ -56,7 +56,7 @@ public class TabNormalOperationController {
         textTextField.textProperty().bindBidirectional(mainTextArea.textProperty());
     }
 
-    void passData(Story story, String sceneId) {
+    void passData(Story story, int sceneId) {
         this.story = story;
         this.sceneId = sceneId;
 

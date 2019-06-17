@@ -14,7 +14,7 @@ import java.io.IOException;
 
 public class SceneDetails {
     private Story story;
-    private String sceneId;
+    private int sceneId;
 
     @FXML private TabTimerController tabTimerController;
     @FXML private TabNormalOperationController tabNormalOperationController;
@@ -41,7 +41,7 @@ public class SceneDetails {
         });
     }
 
-    void passData(Story story, String sceneId) {
+    void passData(Story story, int sceneId) {
         this.story = story;
         this.sceneId = sceneId;
 
@@ -112,7 +112,7 @@ public class SceneDetails {
 
             menuItemAddTransition.setDisable(true);
 
-            story.removeNoFade(sceneId);
+            story.removeDataFromScene(sceneId, "noFade");
         } catch (IOException e) {
             e.printStackTrace();
         }

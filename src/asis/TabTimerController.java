@@ -21,7 +21,7 @@ import static asis.custom_objects.ColorUtils.colorToHex;
 
 public class TabTimerController {
     private Story story;
-    private String sceneId;
+    private int sceneId;
     private String outlineColor = "#000000";
     private String fillColor = "#ffffff";
     private int totalSeconds = 0;
@@ -60,7 +60,7 @@ public class TabTimerController {
         container.getChildren().add(asisCenteredArc.getArcPane());
     }
 
-    void passData(Story story, String sceneId) {
+    void passData(Story story, int sceneId) {
         this.story = story;
         this.sceneId = sceneId;
 
