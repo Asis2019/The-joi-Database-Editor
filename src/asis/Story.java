@@ -319,6 +319,19 @@ class Story {
         }
     }
 
+    void removeDialogOption(int sceneId, int optionNumber) {
+        int amountOfScenes = storyDataJson.getJSONArray("JOI").length();
+        for(int i=0; i < amountOfScenes; i++) {
+            if(storyDataJson.getJSONArray("JOI").getJSONObject(i).getInt("sceneId") == sceneId) {
+                if(storyDataJson.getJSONArray("JOI").getJSONObject(i).has("dialogChoice")) {
+                    if(storyDataJson.getJSONArray("JOI").getJSONObject(i).getJSONArray("dialogChoice").getJSONObject(0).has("option"+optionNumber)) {
+                        storyDataJson.getJSONArray("JOI").getJSONObject(i).getJSONArray("dialogChoice").getJSONObject(0).remove("option"+optionNumber);
+                    }
+                }
+            }
+        }
+    }
+
     JSONObject getDialogData(int sceneId) {
         int amountOfScenes = storyDataJson.getJSONArray("JOI").length();
         for(int i=0; i < amountOfScenes; i++) {
@@ -357,6 +370,36 @@ class Story {
                     wrapper.put(object);
                     storyDataJson.getJSONArray("JOI").getJSONObject(i).put("dialogChoice", wrapper);
                     addDialogOptionText(sceneId, optionText, optionNumber);
+                }
+            }
+        }
+    }
+
+    void addDialogOptionGoTo(int sceneId, int optionNumber, int gotoScene) {
+        int amountOfScenes = storyDataJson.getJSONArray("JOI").length();
+        for(int i=0; i < amountOfScenes; i++) {
+            if(storyDataJson.getJSONArray("JOI").getJSONObject(i).getInt("sceneId") == sceneId) {
+                if(storyDataJson.getJSONArray("JOI").getJSONObject(i).has("dialogChoice")) {
+                    if(storyDataJson.getJSONArray("JOI").getJSONObject(i).getJSONArray("dialogChoice").getJSONObject(0).has("option"+optionNumber)) {
+                        storyDataJson.getJSONArray("JOI").getJSONObject(i).getJSONArray("dialogChoice")
+                                .getJSONObject(0)
+                                .getJSONArray("option"+optionNumber)
+                                .getJSONObject(0).put("gotoScene", gotoScene);
+                    } else {
+                        //create dialog and rerun method
+                        JSONObject object = new JSONObject();
+                        JSONArray wrapper = new JSONArray();
+                        wrapper.put(object);
+                        storyDataJson.getJSONArray("JOI").getJSONObject(i).getJSONArray("dialogChoice").getJSONObject(0).put("option"+optionNumber, wrapper);
+                        addDialogOptionGoTo(sceneId, optionNumber, gotoScene);
+                    }
+                } else {
+                    //create dialog and rerun method
+                    JSONObject object = new JSONObject();
+                    JSONArray wrapper = new JSONArray();
+                    wrapper.put(object);
+                    storyDataJson.getJSONArray("JOI").getJSONObject(i).put("dialogChoice", wrapper);
+                    addDialogOptionGoTo(sceneId, optionNumber, gotoScene);
                 }
             }
         }

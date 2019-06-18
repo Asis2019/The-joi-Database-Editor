@@ -93,7 +93,7 @@ public class Controller {
             //User double clicked
             if(mouseEvent.getButton().equals(MouseButton.PRIMARY)) {
                 if(mouseEvent.getClickCount() == 2){
-                    openNewWindow(sceneNode.getTitle(), sceneNode.getSceneId());
+                    openNewWindow(sceneNode.getTitle(), sceneNode);
                 }
             }
 
@@ -105,13 +105,13 @@ public class Controller {
         });
     }
 
-    private void openNewWindow(String title, int sceneId) {
+    private void openNewWindow(String title, SceneNode sceneNode) {
         try {
             FXMLLoader fxmlLoader = new FXMLLoader(getClass().getResource("fxml/SceneDetails.fxml"));
             Parent root = fxmlLoader.load();
 
             SceneDetails sceneDetails = fxmlLoader.getController();
-            sceneDetails.passData(story, sceneId);
+            sceneDetails.passData(story, sceneNode);
 
             Stage stage = new Stage();
             stage.getIcons().add(new Image(Controller.class.getResourceAsStream("images/icon.png")));
@@ -152,7 +152,13 @@ public class Controller {
     }
 
     public void addConnectionToStory(AsisConnectionButton outputConnection, AsisConnectionButton inputConnection) {
-        story.addDataToScene(outputConnection.getParentSceneId(), "jumpTo", inputConnection.getParentSceneId());
+        //Process where to add the jump to
+        if(outputConnection.getConnectionId().contains("dialog_option")) {
+            System.out.println(outputConnection.getOptionNumber());
+            story.addDialogOptionGoTo(outputConnection.getParentSceneId(), outputConnection.getOptionNumber(), inputConnection.getParentSceneId());
+        } else {
+            story.addDataToScene(outputConnection.getParentSceneId(), "jumpTo", inputConnection.getParentSceneId());
+        }
     }
 
     public void removeConnectionFromStory(int sceneId) {

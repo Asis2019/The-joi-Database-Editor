@@ -1,5 +1,6 @@
 package asis;
 
+import asis.custom_objects.asis_node.SceneNode;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
@@ -15,6 +16,7 @@ import java.io.IOException;
 
 public class SceneDetails {
     private Story story;
+    private SceneNode sceneNode;
     private int sceneId;
 
     @FXML private TabTimerController tabTimerController;
@@ -43,9 +45,10 @@ public class SceneDetails {
         });
     }
 
-    void passData(Story story, int sceneId) {
+    void passData(Story story, SceneNode sceneNode) {
         this.story = story;
-        this.sceneId = sceneId;
+        this.sceneNode = sceneNode;
+        this.sceneId = sceneNode.getSceneId();
 
         if(tabNormalOperationController != null) {
             tabNormalOperationController.passData(story, sceneId);
@@ -147,7 +150,7 @@ public class SceneDetails {
             Parent root = fxmlLoader.load();
 
             tabDialogController = fxmlLoader.getController();
-            tabDialogController.passData(story, sceneId);
+            tabDialogController.passData(story, sceneNode);
 
             dialogOptionsTab.setContent(root);
             dialogOptionsTab.setOnClosed(event -> actionDialogClosed());

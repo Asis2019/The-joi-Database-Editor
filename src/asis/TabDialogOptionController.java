@@ -1,5 +1,7 @@
 package asis;
 
+import asis.custom_objects.asis_node.AsisConnectionButton;
+import asis.custom_objects.asis_node.SceneNode;
 import javafx.fxml.FXML;
 import javafx.geometry.Pos;
 import javafx.scene.control.TextField;
@@ -12,6 +14,7 @@ import org.json.JSONObject;
 public class TabDialogOptionController {
 
     private Story story;
+    private SceneNode sceneNode;
     private int sceneId;
     private int totalOptions = 0;
 
@@ -20,9 +23,10 @@ public class TabDialogOptionController {
     public void initialize() {
     }
 
-    void passData(Story story, int sceneId) {
+    void passData(Story story, SceneNode sceneNode) {
         this.story = story;
-        this.sceneId = sceneId;
+        this.sceneNode = sceneNode;
+        this.sceneId = sceneNode.getSceneId();
 
         if(story != null) {
             initializeData();
@@ -85,13 +89,22 @@ public class TabDialogOptionController {
             stackPane.getChildren().addAll(imageView, textField);
             buttonContainer.getChildren().add(stackPane);
 
+            //Init values to prevent bugs
+            story.addDialogOptionText(sceneId, "", totalOptions);
+
             totalOptions++;
+
+            //Add new connection point to scene
+            AsisConnectionButton asisConnectionButton = sceneNode.createNewOutputConnectionPoint("Option "+totalOptions, "dialog_option_"+totalOptions);
+            asisConnectionButton.setOptionNumber(totalOptions-1);
         }
     }
 
     public void actionRemoveOption() {
         if(totalOptions > 0) {
             buttonContainer.getChildren().remove(totalOptions-1);
+            sceneNode.removeOutputConnection();
+            story.removeDialogOption(sceneId, totalOptions-1);
             totalOptions--;
         }
     }

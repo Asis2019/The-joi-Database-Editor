@@ -25,6 +25,9 @@ public class AsisConnectionButton extends Button {
     //The connection type
     private boolean connectionType; //false is output true is input
 
+    //Option number
+    private int optionNumber;
+
     private static final String outputConnectorStyle =
             "-fx-background-color: rgba(99, 199, 99, 1), transparent, transparent;" +
             "-fx-border-radius: 5em;" +
@@ -89,5 +92,13 @@ public class AsisConnectionButton extends Button {
 
     ReadOnlyDoubleProperty centerYProperty() {
         return this.centerY.getReadOnlyProperty();
+    }
+
+    public int getOptionNumber() {
+        return optionNumber;
+    }
+
+    public void setOptionNumber(int optionNumber) {
+        this.optionNumber = optionNumber;
     }
 }

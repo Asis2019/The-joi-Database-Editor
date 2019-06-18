@@ -3,10 +3,8 @@ package asis.custom_objects.asis_node;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
 import javafx.scene.control.Label;
-import javafx.scene.layout.BorderPane;
-import javafx.scene.layout.Pane;
-import javafx.scene.layout.Region;
-import javafx.scene.layout.VBox;
+import javafx.scene.layout.*;
+import javafx.scene.paint.Color;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -51,21 +49,8 @@ public class SceneNode extends Region {
                 createNewInputConnectionPoint();
             }
 
-            createNewOutputConnectionPoint();
+            createNewOutputConnectionPoint("Default", "normal_output");
         }
-    }
-
-    private void createNewOutputConnectionPoint() {
-        AsisConnectionButton connection = new AsisConnectionButton(sceneNodeMainController.getPane(), false, sceneId);
-        attachHandlers(connection);
-
-        //Add button to list
-        outputConnections.add(connection);
-
-        connection.setConnectionId(sceneId+"_"+outputConnections.size());
-
-        outputContainer.getChildren().add(connection);
-
     }
 
     List<AsisConnectionButton> getOutputButtons() {
@@ -84,6 +69,32 @@ public class SceneNode extends Region {
 
 
         inputContainer.getChildren().add(inputConnection);
+    }
+
+    public AsisConnectionButton createNewOutputConnectionPoint(String labelText, String connectionId) {
+        AsisConnectionButton connection = new AsisConnectionButton(sceneNodeMainController.getPane(), false, sceneId);
+        attachHandlers(connection);
+
+        Label connectionLabel = new Label(labelText);
+        connectionLabel.setTextFill(Color.WHITE);
+        HBox hBox = new HBox();
+        hBox.setAlignment(Pos.CENTER_RIGHT);
+        hBox.setSpacing(5);
+        hBox.getChildren().addAll(connectionLabel, connection);
+
+        //Add button to list
+        outputConnections.add(connection);
+
+        connection.setConnectionId(connectionId);
+
+        outputContainer.getChildren().add(hBox);
+
+        return connection;
+    }
+
+    public void removeOutputConnection() {
+        outputContainer.getChildren().remove(outputConnections.size()-1);
+        outputConnections.remove(outputConnections.size()-1);
     }
 
     private void attachHandlers(AsisConnectionButton connection) {
