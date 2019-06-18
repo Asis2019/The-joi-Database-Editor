@@ -5,7 +5,6 @@ import asis.custom_objects.asis_node.AsisConnectionButton;
 import asis.custom_objects.asis_node.SceneNode;
 import asis.custom_objects.asis_node.SceneNodeMainController;
 import javafx.application.Platform;
-import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
@@ -16,7 +15,6 @@ import javafx.scene.control.MenuBar;
 import javafx.scene.control.MenuItem;
 import javafx.scene.control.ScrollPane;
 import javafx.scene.image.Image;
-import javafx.scene.input.ContextMenuEvent;
 import javafx.scene.input.MouseButton;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.AnchorPane;
@@ -37,7 +35,7 @@ public class Controller {
     private int numberOfScenes = 0;
     private double menuEventX;
     private double menuEventY;
-    private Boolean addSceneContextMeanu = false;
+    private Boolean addSceneContextMenu = false;
 
     private SceneNodeMainController sceneNodeMainController;
 
@@ -66,23 +64,17 @@ public class Controller {
         ContextMenu contextMenu =  new ContextMenu();
         MenuItem menuItem1 = new MenuItem("New Scene");
 
-        menuItem1.setOnAction(new EventHandler<ActionEvent>() {
-            @Override
-            public void handle(ActionEvent event) {
-                addSceneContextMeanu = true;
-                addScene();
-            }
+        menuItem1.setOnAction(event -> {
+            addSceneContextMenu = true;
+            addScene();
         });
 
         contextMenu.getItems().add(menuItem1);
 
-        scrollPane.setOnContextMenuRequested(new EventHandler<ContextMenuEvent>() {
-            @Override
-            public void handle(ContextMenuEvent contextMenuEvent) {
-                menuEventX = contextMenuEvent.getX();
-                menuEventY = contextMenuEvent.getY();
-                contextMenu.show(scrollPane, contextMenuEvent.getScreenX(), contextMenuEvent.getScreenY());
-            }
+        scrollPane.setOnContextMenuRequested(contextMenuEvent -> {
+            menuEventX = contextMenuEvent.getX();
+            menuEventY = contextMenuEvent.getY();
+            contextMenu.show(scrollPane, contextMenuEvent.getScreenX(), contextMenuEvent.getScreenY());
         });
     }
 
@@ -169,12 +161,12 @@ public class Controller {
         new Draggable.Nature(sceneNode.getPane());
         sceneNode.setTitle("Scene "+numberOfScenes);
 
-        if (!addSceneContextMeanu) {
+        if (!addSceneContextMenu) {
             sceneNode.getPane().setLayoutX(10);
         } else {
             sceneNode.getPane().setLayoutX(menuEventX);
             sceneNode.getPane().setLayoutY(menuEventY);
-            addSceneContextMeanu = false;
+            addSceneContextMenu = false;
         }
 
 
