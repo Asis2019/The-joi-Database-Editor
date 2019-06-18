@@ -6,12 +6,29 @@
     -fx-border-width: 0 0 1 0;
 }
 
-.menu-bar:focused {
+/*.menu-bar:focused {
     -fx-background-color: rgb(59, 124, 212);
-}
+}*/
 
 .menu-bar .label {
     -fx-text-fill: rgb(187, 187, 187);
+}
+
+.menu-bar .container .menu-button {
+    -fx-background-color: rgb(60, 63, 65);
+}
+
+.menu-bar .container .menu-button:hover {
+    -fx-background-color: rgb(59, 124, 212);
+}
+
+.menu-item {
+    -fx-background-color: rgb(60, 63, 65);
+    -fx-padding: 4 20 4 20;
+}
+
+.menu-item:hover {
+    -fx-background-color: rgb(59, 124, 212);
 }
 
 .context-menu {

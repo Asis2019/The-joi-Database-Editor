@@ -3,7 +3,6 @@ package asis;
 import javafx.animation.KeyFrame;
 import javafx.animation.KeyValue;
 import javafx.animation.Timeline;
-import javafx.beans.property.ObjectProperty;
 import javafx.fxml.FXML;
 import javafx.scene.control.ColorPicker;
 import javafx.scene.control.Label;
@@ -13,11 +12,15 @@ import javafx.scene.paint.Color;
 import javafx.util.Duration;
 import org.json.JSONObject;
 
+import java.util.Optional;
+
 import static asis.custom_objects.ColorUtils.colorToHex;
 
 public class TabTransitionController {
     private Story story;
     private int sceneId;
+    private String textOutlineColor = "#000000";
+    private String textFillColor = "#ffffff";
     private Timeline timeline = new Timeline();
 
     @FXML private TextField fadeSpeedField, waitTimeField, transitionTextField;
@@ -27,13 +30,26 @@ public class TabTransitionController {
 
     public void initialize() {
         transitionTextLabel.textProperty().bindBidirectional(transitionTextField.textProperty());
-        transitionTextLabel.setStyle("outline-color: #000000ff;");
+        transitionTextLabel.setStyle("outline-color: "+textOutlineColor+"; fill-color: "+textFillColor+";");
 
-        ObjectProperty<Color> paint = transitionTextOutlineColor.valueProperty();
-        paint.addListener((observableValue, color, t1) -> {
-                transitionTextLabel.setStyle("outline-color: #"+colorToHex(t1)+";");
-                story.addDataToTransition(sceneId, "transitionTextOutlineColor", "#"+colorToHex(t1));
+        transitionTextOutlineColor.valueProperty().addListener((observableValue, color, t1) -> {
+                textOutlineColor = removeLastTwoLetters("#"+colorToHex(t1));
+                transitionTextLabel.setStyle("fill-color: "+textFillColor+"; outline-color: "+textOutlineColor+";");
+                story.addDataToTransition(sceneId, "transitionTextOutlineColor", removeLastTwoLetters("#"+colorToHex(t1)));
         });
+
+        transitionTextColor.valueProperty().addListener((observableValue, color, t1) -> {
+            textFillColor = removeLastTwoLetters("#"+colorToHex(t1));
+            transitionTextLabel.setStyle("fill-color: "+textFillColor+"; outline-color: "+textOutlineColor+";");
+            story.addDataToTransition(sceneId, "transitionTextColor", removeLastTwoLetters("#"+colorToHex(t1)));
+        });
+    }
+
+    private String removeLastTwoLetters(String s) {
+        return Optional.ofNullable(s)
+                .filter(str -> str.length() != 0)
+                .map(str -> str.substring(0, str.length() - 2))
+                .orElse(s);
     }
 
     void passData(Story story, int sceneId) {
@@ -94,6 +110,7 @@ public class TabTransitionController {
 
     public void actionTransitionFadeSpeed() {
         //Add transition fade speed to transition object
+        //TODO this number is given in seconds but the game doesn't use seconds
         story.addDataToTransition(sceneId, "fadeSpeed", Double.valueOf(fadeSpeedField.getText().trim()));
     }
 
@@ -103,13 +120,6 @@ public class TabTransitionController {
 
         String color = "#"+colorToHex(transitionFadeColor.getValue());
         story.addDataToTransition(sceneId, "fadeColor", color);
-    }
-
-    public void actionTransitionTextColor() {
-        String color = "#"+ colorToHex(transitionTextColor.getValue());
-        story.addDataToTransition(sceneId, "transitionTextColor", color);
-
-        transitionTextLabel.setTextFill(Color.web(color));
     }
 
     public void actionPlayTransitionButton() {

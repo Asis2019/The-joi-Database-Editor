@@ -14,6 +14,7 @@ import javafx.stage.FileChooser;
 import org.json.JSONObject;
 
 import java.io.File;
+import java.util.Optional;
 
 import static asis.custom_objects.ColorUtils.colorToHex;
 
@@ -42,18 +43,26 @@ public class TabNormalOperationController {
         });
 
         textOutlineColorPicker.valueProperty().addListener((observableValue, color, t1) -> {
-            outlineColor = "#"+colorToHex(t1);
+            outlineColor = removeLastTwoLetters("#"+colorToHex(t1));
+            System.out.println(outlineColor);
             mainTextArea.setStyle("fill-color: "+fillColor+"; outline-color: "+outlineColor+";");
             story.addDataToLineObject(sceneId, onLine-1, "outlineColor", outlineColor);
         });
 
         textColorPicker.valueProperty().addListener((observableValue, color, t1) -> {
-            fillColor = "#"+colorToHex(t1);
+            fillColor = removeLastTwoLetters("#"+colorToHex(t1));
             mainTextArea.setStyle("fill-color: "+fillColor+"; outline-color: "+outlineColor+";");
             story.addDataToLineObject(sceneId, onLine-1, "fillColor", fillColor);
         });
 
         textTextField.textProperty().bindBidirectional(mainTextArea.textProperty());
+    }
+
+    private String removeLastTwoLetters(String s) {
+        return Optional.ofNullable(s)
+                .filter(str -> str.length() != 0)
+                .map(str -> str.substring(0, str.length() - 2))
+                .orElse(s);
     }
 
     void passData(Story story, int sceneId) {

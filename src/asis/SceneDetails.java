@@ -2,6 +2,7 @@ package asis;
 
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
+import javafx.scene.Parent;
 import javafx.scene.control.MenuItem;
 import javafx.scene.control.Tab;
 import javafx.scene.control.TabPane;
@@ -19,9 +20,10 @@ public class SceneDetails {
     @FXML private TabTimerController tabTimerController;
     @FXML private TabNormalOperationController tabNormalOperationController;
     @FXML private TabTransitionController tabTransitionController;
+    @FXML private TabDialogOptionController tabDialogController;
     @FXML private TabPane effectTabs;
-    @FXML private Tab timerTab, transitionTab;
-    @FXML private MenuItem menuItemAddTimer, menuItemAddTransition;
+    @FXML private Tab timerTab, transitionTab, dialogOptionsTab;
+    @FXML private MenuItem menuItemAddTimer, menuItemAddTransition, menuItemAddDialog;
     @FXML private BorderPane sceneDetailBorderPane;
 
     public void initialize() {
@@ -45,10 +47,6 @@ public class SceneDetails {
         this.story = story;
         this.sceneId = sceneId;
 
-        if(tabTimerController != null) {
-            tabTimerController.passData(story, sceneId);
-        }
-
         if(tabNormalOperationController != null) {
             tabNormalOperationController.passData(story, sceneId);
         }
@@ -58,8 +56,16 @@ public class SceneDetails {
         }
 
         if(story.hasNoFade(sceneId)) {
-            effectTabs.getTabs().remove(2);
+            effectTabs.getTabs().remove(transitionTab);
             menuItemAddTransition.setDisable(false);
+        }
+
+        if(story.getDialogData(sceneId) != null) {
+            actionAddDialog();
+        }
+
+        if(story.getTimerData(sceneId) != null) {
+            actionAddTimer();
         }
     }
 
@@ -91,10 +97,20 @@ public class SceneDetails {
     public void actionAddTimer() {
         try {
             timerTab = new Tab("Timer");
-            timerTab.setContent(FXMLLoader.load(this.getClass().getResource("fxml/tab_timer.fxml")));
+            FXMLLoader fxmlLoader = new FXMLLoader(getClass().getResource("fxml/tab_timer.fxml"));
+            Parent root = fxmlLoader.load();
+
+            tabTimerController = fxmlLoader.getController();
+            tabTimerController.passData(story, sceneId);
+
+            timerTab.setContent(root);
             timerTab.setOnClosed(event -> actionTimerClosed());
 
             effectTabs.getTabs().add(1, timerTab);
+
+            if(tabTimerController != null) {
+                tabTimerController.passData(story, sceneId);
+            }
 
             menuItemAddTimer.setDisable(true);
         } catch (IOException e) {
@@ -105,7 +121,13 @@ public class SceneDetails {
     public void actionAddTransition() {
         try {
             transitionTab = new Tab("Transition");
-            transitionTab.setContent(FXMLLoader.load(this.getClass().getResource("fxml/tab_transition.fxml")));
+            FXMLLoader fxmlLoader = new FXMLLoader(getClass().getResource("fxml/tab_transition.fxml"));
+            Parent root = fxmlLoader.load();
+
+            tabTransitionController = fxmlLoader.getController();
+            tabTransitionController.passData(story, sceneId);
+
+            transitionTab.setContent(root);
             transitionTab.setOnClosed(event -> actionTransitionClosed());
 
             effectTabs.getTabs().add(transitionTab);
@@ -113,6 +135,26 @@ public class SceneDetails {
             menuItemAddTransition.setDisable(true);
 
             story.removeDataFromScene(sceneId, "noFade");
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
+
+    public void actionAddDialog() {
+        try {
+            dialogOptionsTab = new Tab("Dialog Options");
+            FXMLLoader fxmlLoader = new FXMLLoader(getClass().getResource("fxml/tab_dialog_option.fxml"));
+            Parent root = fxmlLoader.load();
+
+            tabDialogController = fxmlLoader.getController();
+            tabDialogController.passData(story, sceneId);
+
+            dialogOptionsTab.setContent(root);
+            dialogOptionsTab.setOnClosed(event -> actionDialogClosed());
+
+            effectTabs.getTabs().add(1, dialogOptionsTab);
+
+            menuItemAddDialog.setDisable(true);
         } catch (IOException e) {
             e.printStackTrace();
         }
@@ -129,5 +171,11 @@ public class SceneDetails {
         menuItemAddTimer.setDisable(false);
 
         story.removeTimer(sceneId);
+    }
+
+    public void actionDialogClosed() {
+        menuItemAddDialog.setDisable(false);
+
+        story.removeDialog(sceneId);
     }
 }

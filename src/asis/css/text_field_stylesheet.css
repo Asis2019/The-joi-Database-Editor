@@ -1,0 +1,17 @@
+#optionTextField {
+    -fx-background-color: transparent;
+
+    -fx-font-family: "Segoe UI", Helvetica, Arial, sans-serif;
+    -fx-font-size: 30px;
+    -fx-text-fill: white;
+}
+
+#optionTextField .text {
+    -fx-stroke: black;
+    -fx-stroke-width: 1;
+}
+
+#optionTextField:empty .text {
+    -fx-skin: "javafx.scene.control.skin.ContextMenuSkin";
+    -fx-font-size: 12px;
+}

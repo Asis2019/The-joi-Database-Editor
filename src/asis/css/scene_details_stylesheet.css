@@ -17,6 +17,7 @@
 }
 
 #transitionTextLabel {
+    -fx-text-fill: fill-color;
     -fx-font-family: "Segoe UI", Helvetica, Arial, sans-serif;
     -fx-font-size: 130px;
 }

@@ -16,6 +16,7 @@ import javafx.stage.FileChooser;
 import org.json.JSONObject;
 
 import java.io.File;
+import java.util.Optional;
 
 import static asis.custom_objects.ColorUtils.colorToHex;
 
@@ -41,13 +42,13 @@ public class TabTimerController {
         timerTextArea.setStyle("outline-color: "+outlineColor+"; fill-color: "+fillColor+";");
 
         textOutlineColorPicker.valueProperty().addListener((observableValue, color, t1) -> {
-            outlineColor = "#"+colorToHex(t1);
+            outlineColor = removeLastTwoLetters("#"+colorToHex(t1));
             timerTextArea.setStyle("fill-color: "+fillColor+"; outline-color: "+outlineColor+";");
             story.addDataToTimerLineObject(sceneId, "line"+onSecond, "outlineColor", outlineColor);
         });
 
         textColorPicker.valueProperty().addListener((observableValue, color, t1) -> {
-            fillColor = "#"+colorToHex(t1);
+            fillColor = removeLastTwoLetters("#"+colorToHex(t1));
             timerTextArea.setStyle("fill-color: "+fillColor+"; outline-color: "+outlineColor+";");
             story.addDataToTimerLineObject(sceneId, "line"+onSecond, "fillColor", fillColor);
         });
@@ -58,6 +59,13 @@ public class TabTimerController {
         asisCenteredArc.setMaxLength(0);
         asisCenteredArc.setArcProgress(0);
         container.getChildren().add(asisCenteredArc.getArcPane());
+    }
+
+    private String removeLastTwoLetters(String s) {
+        return Optional.ofNullable(s)
+                .filter(str -> str.length() != 0)
+                .map(str -> str.substring(0, str.length() - 2))
+                .orElse(s);
     }
 
     void passData(Story story, int sceneId) {
