@@ -26,12 +26,11 @@ import org.controlsfx.dialog.ExceptionDialog;
 import org.json.JSONException;
 import org.json.JSONObject;
 
-import javax.crypto.Cipher;
-import java.io.File;
-import java.io.FileWriter;
-import java.io.IOException;
+import java.io.*;
 import java.nio.file.Files;
 import java.nio.file.StandardCopyOption;
+import java.util.zip.ZipEntry;
+import java.util.zip.ZipOutputStream;
 
 public class Controller {
     private Story story = new Story();
@@ -177,6 +176,8 @@ public class Controller {
             sceneNode.getPane().setLayoutY(menuEventY);
             addSceneContextMeanu = false;
         }
+
+
         setClickActionForNode(sceneNode);
         anchorPane.getChildren().add(sceneNode.getPane());
     }
@@ -210,6 +211,7 @@ public class Controller {
             FileWriter fileWriter = new FileWriter(saveLocation.toPath() + File.separator + fileName);
             fileWriter.write(jsonObject.toString());
             fileWriter.flush();
+            fileWriter.close();
         } catch (IOException e) {
             errorDialogWindow(e);
         }
@@ -247,24 +249,127 @@ public class Controller {
     }
 
     public void actionSaveProject() {
-        writeJsonToFile(story.getMetadataObject(), "info_en.json", story.getProjectDirectory());
-        writeJsonToFile(story.getStoryDataJson(), "joi_text_en.json", story.getProjectDirectory());
+        DirectoryChooser directoryChooser = new DirectoryChooser();
+        directoryChooser.setInitialDirectory(story.getProjectDirectory());
+        directoryChooser.setTitle("Save Location");
+        File file = directoryChooser.showDialog(null);
 
-        //Copy image to project directory
-        for (File file : story.getImagesArray()) {
+        if(file != null) {
+            writeJsonToFile(story.getMetadataObject(), "info_en.json", file);
+            writeJsonToFile(story.getStoryDataJson(), "joi_text_en.json", file);
+
+            //Copy image to project directory
+            for (File file1 : story.getImagesArray()) {
+                try {
+                    Files.copy(file1.toPath(), file.toPath().resolve(file1.getName()), StandardCopyOption.REPLACE_EXISTING);
+                } catch (IOException e) {
+                    errorDialogWindow(e);
+                }
+            }
+
+            //Copy icon to project directory
             try {
-                Files.copy(file.toPath(), story.getProjectDirectory().toPath().resolve(file.getName()), StandardCopyOption.REPLACE_EXISTING);
+                if(story.getMetadataIcon() != null) {
+                    File file1 = story.getMetadataIcon();
+                    Files.copy(file1.toPath(), file.toPath().resolve(file1.getName()), StandardCopyOption.REPLACE_EXISTING);
+                }
             } catch (IOException e) {
-                e.printStackTrace();
+                errorDialogWindow(e);
+            }
+        }
+    }
+
+    public void actionExportToZip() {
+        //Export everything to temp folder inside selected directory
+        //Compress this folder
+        //Delete temp folder
+        DirectoryChooser directoryChooser = new DirectoryChooser();
+        directoryChooser.setInitialDirectory(story.getProjectDirectory());
+        directoryChooser.setTitle("Export Location");
+        File file = directoryChooser.showDialog(null);
+
+        if(file != null) {
+            File tempFile = new File(file.toPath() + "\\tmp");
+            boolean result = tempFile.mkdir();
+
+            if(result) {
+                writeJsonToFile(story.getMetadataObject(), "info_en.json", tempFile);
+                writeJsonToFile(story.getStoryDataJson(), "joi_text_en.json", tempFile);
+
+                //Copy image to project directory
+                for (File file1 : story.getImagesArray()) {
+                    try {
+                        Files.copy(file1.toPath(), tempFile.toPath().resolve(file1.getName()), StandardCopyOption.REPLACE_EXISTING);
+                    } catch (IOException e) {
+                        errorDialogWindow(e);
+                    }
+                }
+
+                //Copy icon to project directory
+                try {
+                    if(story.getMetadataIcon() != null) {
+                        File file1 = story.getMetadataIcon();
+                        Files.copy(file1.toPath(), tempFile.toPath().resolve(file1.getName()), StandardCopyOption.REPLACE_EXISTING);
+                    }
+                } catch (IOException e) {
+                    errorDialogWindow(e);
+                }
+
+                //Compress temp folder
+                String zipFile = file.getPath()+"\\joi.zip";
+                String srcDir = tempFile.getPath();
+
+                try {
+                    // create byte buffer
+                    byte[] buffer = new byte[1024];
+                    FileOutputStream fos = new FileOutputStream(zipFile);
+                    ZipOutputStream zos = new ZipOutputStream(fos);
+                    File dir = new File(srcDir);
+                    File[] files = dir.listFiles();
+
+                    if (files != null) {
+                        for (File value : files) {
+                            FileInputStream fis = new FileInputStream(value);
+                            zos.putNextEntry(new ZipEntry(value.getName()));
+                            int length;
+                            while ((length = fis.read(buffer)) > 0) {
+                                zos.write(buffer, 0, length);
+                            }
+                            zos.closeEntry();
+
+                            // close the InputStream
+                            fis.close();
+                        }
+                    }
+
+                    // close the ZipOutputStream
+                    zos.close();
+                } catch (IOException e) {
+                    errorDialogWindow(e);
+                }
+
+                //Delete temp folder
+                deleteFolder(tempFile);
+            }
+        }
+    }
+
+    private void deleteFolder(File folder) {
+        File[] files = folder.listFiles();
+        if(files != null) {
+            for(File f: files) {
+                if(f.isDirectory()) {
+                    deleteFolder(f);
+                } else {
+                    if(!f.delete()) {
+                        System.out.println("Failed to delete file: "+f.getPath());
+                    }
+                }
             }
         }
 
-        //Copy icon to project directory
         try {
-            if(story.getMetadataIcon() != null) {
-                File file = story.getMetadataIcon();
-                Files.copy(file.toPath(), story.getProjectDirectory().toPath().resolve(file.getName()), StandardCopyOption.REPLACE_EXISTING);
-            }
+            Files.delete(folder.toPath());
         } catch (IOException e) {
             e.printStackTrace();
         }
