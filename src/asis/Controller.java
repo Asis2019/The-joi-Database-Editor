@@ -193,7 +193,7 @@ public class Controller {
     }
 
     public void actionNewProject() {
-        //TODO Will init some things within the story object
+        //TODO Will init some things within the story object and create nodes
     }
 
     public void actionLoadProject() {
