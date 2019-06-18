@@ -8,6 +8,7 @@ import javafx.application.Platform;
 import javafx.event.EventHandler;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
+import javafx.geometry.Bounds;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.scene.control.ContextMenu;
@@ -75,6 +76,13 @@ public class Controller {
             menuEventX = contextMenuEvent.getX();
             menuEventY = contextMenuEvent.getY();
             contextMenu.show(scrollPane, contextMenuEvent.getScreenX(), contextMenuEvent.getScreenY());
+        });
+
+        //This will close the menu when something is pressed
+        scrollPane.setOnMouseClicked(mouseEvent -> {
+            if(contextMenu.isShowing()) {
+                contextMenu.hide();
+            }
         });
     }
 
@@ -164,8 +172,12 @@ public class Controller {
         if (!addSceneContextMenu) {
             sceneNode.getPane().setLayoutX(10);
         } else {
-            sceneNode.getPane().setLayoutX(menuEventX);
-            sceneNode.getPane().setLayoutY(menuEventY);
+            Bounds bounds = scrollPane.getViewportBounds();
+            double lowestXPixelShown = -1 * bounds.getMinX();
+            double lowestYPixelShown = -1 * bounds.getMinY();
+
+            sceneNode.getPane().setLayoutX(lowestXPixelShown + menuEventX);
+            sceneNode.getPane().setLayoutY(lowestYPixelShown + menuEventY);
             addSceneContextMenu = false;
         }
 
