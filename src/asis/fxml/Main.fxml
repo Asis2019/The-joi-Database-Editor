@@ -1,27 +1,30 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
 <?import javafx.scene.control.*?>
-<?import javafx.scene.layout.AnchorPane?>
-<?import javafx.scene.layout.BorderPane?>
+<?import javafx.scene.layout.*?>
 <BorderPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="400.0" prefWidth="600.0" stylesheets="@../css/main_stylesheet.css" xmlns="http://javafx.com/javafx/8.0.172-ea" xmlns:fx="http://javafx.com/fxml/1" fx:controller="asis.Controller">
    <top>
-       <MenuBar fx:id="mainMenuBar" stylesheets="@../css/menu_bar_stylesheet.css" BorderPane.alignment="CENTER">
-           <Menu mnemonicParsing="false" text="File">
-               <MenuItem mnemonicParsing="false" onAction="#actionSaveProject" text="Save Project"/>
-               <MenuItem mnemonicParsing="false" onAction="#actionNewProject" text="New Project"/>
-               <MenuItem mnemonicParsing="false" onAction="#actionLoadProject" text="Load Project"/>
-               <MenuItem mnemonicParsing="false" onAction="#actionExit" text="Exit"/>
-           </Menu>
-           <Menu mnemonicParsing="false" text="Edit">
-               <MenuItem mnemonicParsing="false" onAction="#addScene" text="New Scene"/>
-           </Menu>
-       </MenuBar>
+      <VBox BorderPane.alignment="CENTER">
+         <children>
+             <MenuBar fx:id="mainMenuBar" stylesheets="@../css/menu_bar_stylesheet.css">
+                 <Menu mnemonicParsing="false" text="File">
+                     <MenuItem mnemonicParsing="false" onAction="#actionSaveProject" text="Save Project" />
+                     <MenuItem mnemonicParsing="false" onAction="#actionNewProject" text="New Project" />
+                     <MenuItem mnemonicParsing="false" onAction="#actionLoadProject" text="Load Project" />
+                     <MenuItem mnemonicParsing="false" onAction="#actionExit" text="Exit" />
+                 </Menu>
+             </MenuBar>
+            <ToolBar prefHeight="40.0" prefWidth="200.0">
+              <items>
+                <Button mnemonicParsing="false" onAction="#addScene" text="Add new scene" />
+              </items>
+            </ToolBar>
+         </children>
+      </VBox>
    </top>
    <center>
-       <ScrollPane fx:id="scrollPane" hbarPolicy="NEVER" pannable="true" styleClass="edge-to-edge" vbarPolicy="NEVER"
-                   BorderPane.alignment="CENTER">
-           <AnchorPane id="anchorPane" fx:id="anchorPane" maxHeight="-Infinity" maxWidth="-Infinity"
-                       minHeight="-Infinity" minWidth="-Infinity" prefHeight="8000.0" prefWidth="8000.0"/>
+       <ScrollPane fx:id="scrollPane" hbarPolicy="NEVER" pannable="true" styleClass="edge-to-edge" vbarPolicy="NEVER" BorderPane.alignment="CENTER">
+           <AnchorPane id="anchorPane" fx:id="anchorPane" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="8000.0" prefWidth="8000.0" />
        </ScrollPane>
    </center>
 </BorderPane>

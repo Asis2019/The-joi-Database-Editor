@@ -30,6 +30,7 @@ public class AsisConnectionButton extends Button {
 
     private static final String outputConnectorStyle =
             "-fx-background-color: rgba(99, 199, 99, 1), transparent, transparent;" +
+            "-fx-background-radius: 5em;" +
             "-fx-border-radius: 5em;" +
             "-fx-min-width: 15px; " +
             "-fx-min-height: 15px; " +
@@ -39,7 +40,7 @@ public class AsisConnectionButton extends Button {
             "-fx-border-width: 1;" +
             "-fx-background-insets: 1;";
 
-    public AsisConnectionButton(Pane parentPane, boolean connectionType, int parentSceneId) {
+    AsisConnectionButton(Pane parentPane, boolean connectionType, int parentSceneId) {
         this.parentPane = parentPane;
         this.connectionType = connectionType;
         this.parentSceneId = parentSceneId;

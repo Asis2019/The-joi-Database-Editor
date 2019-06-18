@@ -46,8 +46,8 @@ public class Controller {
          sceneNodeMainController = new SceneNodeMainController(this);
          sceneNodeMainController.setPane(anchorPane);
          sceneNodeMainController.setScrollPane(scrollPane);
-         //TODO replace fixed number with one from mainMenuBar
-         sceneNodeMainController.setMenuBarOffset(25);
+         //TODO replace fixed number with one from mainMenuBar + height of toolbar
+         sceneNodeMainController.setMenuBarOffset(70);
 
         addScene();
 
