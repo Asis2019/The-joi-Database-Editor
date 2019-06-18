@@ -5,6 +5,7 @@ import javafx.beans.binding.Bindings;
 import javafx.beans.property.DoubleProperty;
 import javafx.beans.property.SimpleDoubleProperty;
 import javafx.geometry.Bounds;
+import javafx.scene.control.ScrollPane;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.Pane;
 
@@ -14,6 +15,9 @@ import java.util.Optional;
 
 public class SceneNodeMainController {
     private Pane root = new Pane();
+    private ScrollPane scrollPane;
+
+    private double menuBarOffset;
 
     private List<AsisConnectionButton> inputConnections = new ArrayList<>();
 
@@ -27,6 +31,14 @@ public class SceneNodeMainController {
 
     public SceneNodeMainController(Controller controller) {
         this.controller = controller;
+    }
+
+    public void setScrollPane(ScrollPane scrollPane) {
+        this.scrollPane = scrollPane;
+    }
+
+    public void setMenuBarOffset(double height) {
+        this.menuBarOffset = height;
     }
 
     public void setPane(Pane pane) {
@@ -120,8 +132,12 @@ public class SceneNodeMainController {
     }
 
     void mouseMoved(MouseEvent mouseEvent) {
-        mouseX.set(mouseEvent.getSceneX());
-        mouseY.set(mouseEvent.getSceneY());
+        Bounds bounds = scrollPane.getViewportBounds();
+        double lowestXPixelShown = -1 * bounds.getMinX();
+        double lowestYPixelShown = -1 * bounds.getMinY() - menuBarOffset;
+
+        mouseX.set(lowestXPixelShown + mouseEvent.getSceneX());
+        mouseY.set(lowestYPixelShown + mouseEvent.getSceneY());
     }
 
     void mousePressed(AsisConnectionButton asisConnectionButton) {

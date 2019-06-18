@@ -10,6 +10,8 @@ import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
+import javafx.scene.control.MenuBar;
+import javafx.scene.control.ScrollPane;
 import javafx.scene.image.Image;
 import javafx.scene.input.MouseButton;
 import javafx.scene.input.MouseEvent;
@@ -33,6 +35,8 @@ public class Controller {
     private SceneNodeMainController sceneNodeMainController;
 
     @FXML private AnchorPane anchorPane;
+    @FXML private ScrollPane scrollPane;
+    @FXML private MenuBar mainMenuBar;
 
     public void initialize() {
 
@@ -41,6 +45,9 @@ public class Controller {
     void inflater() {
          sceneNodeMainController = new SceneNodeMainController(this);
          sceneNodeMainController.setPane(anchorPane);
+         sceneNodeMainController.setScrollPane(scrollPane);
+         //TODO replace fixed number with one from mainMenuBar
+         sceneNodeMainController.setMenuBarOffset(25);
 
         addScene();
 
