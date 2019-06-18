@@ -5,14 +5,18 @@ import asis.custom_objects.asis_node.AsisConnectionButton;
 import asis.custom_objects.asis_node.SceneNode;
 import asis.custom_objects.asis_node.SceneNodeMainController;
 import javafx.application.Platform;
+import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
+import javafx.scene.control.ContextMenu;
 import javafx.scene.control.MenuBar;
+import javafx.scene.control.MenuItem;
 import javafx.scene.control.ScrollPane;
 import javafx.scene.image.Image;
+import javafx.scene.input.ContextMenuEvent;
 import javafx.scene.input.MouseButton;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.AnchorPane;
@@ -22,6 +26,7 @@ import org.controlsfx.dialog.ExceptionDialog;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import javax.crypto.Cipher;
 import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
@@ -31,6 +36,9 @@ import java.nio.file.StandardCopyOption;
 public class Controller {
     private Story story = new Story();
     private int numberOfScenes = 0;
+    private double menuEventX;
+    private double menuEventY;
+    private Boolean addSceneContextMeanu = false;
 
     private SceneNodeMainController sceneNodeMainController;
 
@@ -50,8 +58,33 @@ public class Controller {
          sceneNodeMainController.setMenuBarOffset(70);
 
         addScene();
+        contextMenu();
 
         createMetadataNode();
+    }
+
+    private void contextMenu() {
+        ContextMenu contextMenu =  new ContextMenu();
+        MenuItem menuItem1 = new MenuItem("New Scene");
+
+        menuItem1.setOnAction(new EventHandler<ActionEvent>() {
+            @Override
+            public void handle(ActionEvent event) {
+                addSceneContextMeanu = true;
+                addScene();
+            }
+        });
+
+        contextMenu.getItems().add(menuItem1);
+
+        scrollPane.setOnContextMenuRequested(new EventHandler<ContextMenuEvent>() {
+            @Override
+            public void handle(ContextMenuEvent contextMenuEvent) {
+                menuEventX = contextMenuEvent.getSceneX();
+                menuEventY = contextMenuEvent.getSceneY();
+                contextMenu.show(scrollPane, contextMenuEvent.getScreenX(), contextMenuEvent.getScreenY());
+            }
+        });
     }
 
     private void createMetadataNode() {
@@ -136,7 +169,14 @@ public class Controller {
         SceneNode sceneNode = new SceneNode(300, 100, numberOfScenes-1, sceneNodeMainController);
         new Draggable.Nature(sceneNode.getPane());
         sceneNode.setTitle("Scene "+numberOfScenes);
-        sceneNode.getPane().setLayoutX(10);
+
+        if (!addSceneContextMeanu) {
+            sceneNode.getPane().setLayoutX(10);
+        } else {
+            sceneNode.getPane().setLayoutX(menuEventX);
+            sceneNode.getPane().setLayoutY(menuEventY);
+            addSceneContextMeanu = false;
+        }
         setClickActionForNode(sceneNode);
         anchorPane.getChildren().add(sceneNode.getPane());
     }
