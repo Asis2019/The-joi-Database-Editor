@@ -80,8 +80,8 @@ public class Controller {
         scrollPane.setOnContextMenuRequested(new EventHandler<ContextMenuEvent>() {
             @Override
             public void handle(ContextMenuEvent contextMenuEvent) {
-                menuEventX = contextMenuEvent.getSceneX();
-                menuEventY = contextMenuEvent.getSceneY();
+                menuEventX = contextMenuEvent.getX();
+                menuEventY = contextMenuEvent.getY();
                 contextMenu.show(scrollPane, contextMenuEvent.getScreenX(), contextMenuEvent.getScreenY());
             }
         });
