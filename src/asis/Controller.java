@@ -20,8 +20,8 @@ import javafx.scene.input.MouseButton;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.AnchorPane;
 import javafx.stage.DirectoryChooser;
+import javafx.stage.FileChooser;
 import javafx.stage.Stage;
-import org.controlsfx.dialog.ExceptionDialog;
 import org.json.JSONException;
 import org.json.JSONObject;
 
@@ -30,6 +30,8 @@ import java.nio.file.Files;
 import java.nio.file.StandardCopyOption;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipOutputStream;
+
+import static asis.custom_objects.AsisUtils.errorDialogWindow;
 
 public class Controller {
     private Story story = new Story();
@@ -231,13 +233,6 @@ public class Controller {
         return null;
     }
 
-    private void errorDialogWindow(Exception e) {
-        ExceptionDialog exceptionDialog = new ExceptionDialog(e);
-        exceptionDialog.setTitle("Error");
-        exceptionDialog.setHeaderText("Oh no an error! Send it to Asis so he can feel bad.\n"+e.getMessage());
-        exceptionDialog.show();
-    }
-
     public void actionNewProject() {
         //TODO Will init some things within the story object and create nodes
     }
@@ -287,13 +282,18 @@ public class Controller {
         //Export everything to temp folder inside selected directory
         //Compress this folder
         //Delete temp folder
-        DirectoryChooser directoryChooser = new DirectoryChooser();
-        directoryChooser.setInitialDirectory(story.getProjectDirectory());
-        directoryChooser.setTitle("Export Location");
-        File file = directoryChooser.showDialog(null);
+        FileChooser fileChooser = new FileChooser();
+        fileChooser.setTitle("Save Zip");
+        fileChooser.setInitialDirectory(story.getProjectDirectory());
+        fileChooser.getExtensionFilters().addAll(new FileChooser.ExtensionFilter("zip", "*.zip"));
+        File dest = fileChooser.showSaveDialog(null);
 
-        if(file != null) {
-            File tempFile = new File(file.toPath() + "\\tmp");
+        if(dest != null) {
+            File tempFile = new File(dest.getParent() + "\\tmp");
+            if(tempFile.isDirectory()) {
+                deleteFolder(tempFile);
+            }
+
             boolean result = tempFile.mkdir();
 
             if(result) {
@@ -320,7 +320,7 @@ public class Controller {
                 }
 
                 //Compress temp folder
-                String zipFile = file.getPath()+"\\joi.zip";
+                String zipFile = dest.getPath();
                 String srcDir = tempFile.getPath();
 
                 try {
@@ -340,13 +340,9 @@ public class Controller {
                                 zos.write(buffer, 0, length);
                             }
                             zos.closeEntry();
-
-                            // close the InputStream
                             fis.close();
                         }
                     }
-
-                    // close the ZipOutputStream
                     zos.close();
                 } catch (IOException e) {
                     errorDialogWindow(e);

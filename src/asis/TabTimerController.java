@@ -18,7 +18,7 @@ import org.json.JSONObject;
 import java.io.File;
 import java.util.Optional;
 
-import static asis.custom_objects.ColorUtils.colorToHex;
+import static asis.custom_objects.AsisUtils.colorToHex;
 
 public class TabTimerController {
     private Story story;

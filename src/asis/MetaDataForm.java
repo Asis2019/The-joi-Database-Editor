@@ -9,12 +9,13 @@ import javafx.scene.image.ImageView;
 import javafx.scene.layout.VBox;
 import javafx.stage.FileChooser;
 import javafx.stage.Stage;
-import org.controlsfx.dialog.ExceptionDialog;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.io.File;
+
+import static asis.custom_objects.AsisUtils.errorDialogWindow;
 
 public class MetaDataForm {
 
@@ -191,12 +192,4 @@ public class MetaDataForm {
             errorDialogWindow(e);
         }
     }
-
-    private void errorDialogWindow(Exception e) {
-        ExceptionDialog exceptionDialog = new ExceptionDialog(e);
-        exceptionDialog.setTitle("Error");
-        exceptionDialog.setHeaderText("Oh no an error! Send it to Asis so he can feel bad.\n"+e.getMessage());
-        exceptionDialog.show();
-    }
-
 }
