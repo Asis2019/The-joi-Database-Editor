@@ -39,6 +39,7 @@ public class Controller {
     private double menuEventX;
     private double menuEventY;
     private Boolean addSceneContextMenu = false;
+    private static Controller instance = null;
 
     private SceneNodeMainController sceneNodeMainController;
 
@@ -51,6 +52,7 @@ public class Controller {
     }
 
     void inflater() {
+         instance = this;
          sceneNodeMainController = new SceneNodeMainController(this);
          sceneNodeMainController.setPane(anchorPane);
          sceneNodeMainController.setScrollPane(scrollPane);
@@ -63,7 +65,12 @@ public class Controller {
         createMetadataNode();
     }
 
+    public static Controller getInstance() {
+        return instance;
+    }
+
     private void contextMenu() {
+        //TODO make contextMenu() able to be called from anywhere with the right parameters to reduce duplication
         ContextMenu contextMenu =  new ContextMenu();
         MenuItem menuItem1 = new MenuItem("New Scene");
 
@@ -236,6 +243,7 @@ public class Controller {
 
     public void actionNewProject() {
         //TODO Will init some things within the story object and create nodes
+        Alerts.confirmationDialog("Confirmation", "Do you want to save changes?", "");
     }
 
     public void actionLoadProject() {
