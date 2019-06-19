@@ -2,6 +2,10 @@
     -fx-background-color: rgb(43, 43, 43);
 }
 
+#darkThemeBackgroundLighter {
+    -fx-background-color: rgb(60, 63, 65);
+}
+
 #anchorPane {
     -fx-background-color: #393939,
     linear-gradient(from 0.5px 0px to 10.5px 0px, repeat, #2f2f2f 5%, transparent 5%),

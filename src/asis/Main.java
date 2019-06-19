@@ -6,7 +6,6 @@ import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.scene.image.Image;
 import javafx.stage.Stage;
-import javafx.stage.WindowEvent;
 
 public class Main extends Application {
 
@@ -26,8 +25,23 @@ public class Main extends Application {
         primaryStage.setMaximized(true);
 
         primaryStage.setOnCloseRequest(event -> {
-            primaryStage.getScene().getWindow().addEventFilter(WindowEvent.WINDOW_CLOSE_REQUEST, windowEvent -> event.getEventType() );
-            Alerts.warningDialog("Close Application", "Do you want to save your project first?", "", primaryStage, event);
+            int choice = new Alerts().unsavedChangesDialog(this.getClass(), "Warning", "You have unsaved work, are you sure you want to quit?");
+            switch (choice) {
+                case 0:
+                    event.consume();
+                    break;
+
+                case 1:
+                    controller.actionExit();
+                    break;
+
+                case 2:
+                    controller.actionSaveProject();
+                    controller.actionExit();
+                    break;
+            }
+            /*primaryStage.getScene().getWindow().addEventFilter(WindowEvent.WINDOW_CLOSE_REQUEST, windowEvent -> event.getEventType() );
+            Alerts.warningDialog("Close Application", "Do you want to save your project first?", "", primaryStage, event);*/
         });
     }
 

@@ -107,7 +107,7 @@ public class SceneDetails {
             tabTimerController.passData(story, sceneId);
 
             timerTab.setContent(root);
-            timerTab.setOnClosed(event -> actionTimerClosed());
+            timerTab.setOnCloseRequest(event -> actionTimerCloseRequested());
 
             effectTabs.getTabs().add(1, timerTab);
 
@@ -131,7 +131,7 @@ public class SceneDetails {
             tabTransitionController.passData(story, sceneId);
 
             transitionTab.setContent(root);
-            transitionTab.setOnClosed(event -> actionTransitionClosed());
+            transitionTab.setOnCloseRequest(event -> actionTransitionCloseRequested());
 
             effectTabs.getTabs().add(transitionTab);
 
@@ -153,7 +153,7 @@ public class SceneDetails {
             tabDialogController.passData(story, sceneNode);
 
             dialogOptionsTab.setContent(root);
-            dialogOptionsTab.setOnClosed(event -> actionDialogClosed());
+            dialogOptionsTab.setOnCloseRequest(event -> actionDialogCloseRequested());
 
             effectTabs.getTabs().add(1, dialogOptionsTab);
 
@@ -163,22 +163,49 @@ public class SceneDetails {
         }
     }
 
-    public void actionTransitionClosed() {
+    private void actionTransitionClosed() {
         menuItemAddTransition.setDisable(false);
 
         story.removeTransition(sceneId);
         story.addDataToScene(sceneId, "noFade", true);
     }
 
-    public void actionTimerClosed() {
+    private void actionTimerClosed() {
         menuItemAddTimer.setDisable(false);
 
         story.removeTimer(sceneId);
     }
 
-    public void actionDialogClosed() {
+    private void actionDialogClosed() {
         menuItemAddDialog.setDisable(false);
 
         story.removeDialog(sceneId);
+    }
+
+    private void actionDialogCloseRequested() {
+        if(new Alerts().confirmationDialog(this.getClass(), "Delete Dialogs", "Are you sure you want to remove dialogs?")) {
+            actionDialogClosed();
+        } else {
+            //Tab still closes for some reason so this reopens it
+            actionAddDialog();
+        }
+    }
+
+    public void actionTransitionCloseRequested() {
+        if(new Alerts().confirmationDialog(this.getClass(), "Delete Transition", "Are you sure you want to remove the transition?")) {
+            actionTransitionClosed();
+        } else {
+            //Tab still closes for some reason so this reopens it
+            actionAddTransition();
+        }
+    }
+
+    private void actionTimerCloseRequested() {
+        if(new Alerts().confirmationDialog(this.getClass(), "Delete Timer", "Are you sure you want to remove the timer?")) {
+            actionTimerClosed();
+        } else {
+            //Tab still closes for some reason so this reopens it
+            actionAddTimer();
+        }
     }
 }

@@ -39,18 +39,7 @@
                   <fx:include fx:id="tabNormalOperation" source="tab_normal_operation.fxml" />
                </content>
             </Tab>
-             <!--
-            <Tab fx:id="timerTab" onClosed="#actionTimerClosed" text="Timer">
-               <content>
-                  <fx:include fx:id="tabTimer" source="tab_timer.fxml" />
-               </content>
-            </Tab>
-             <Tab fx:id="dialogOptionsTab" onClosed="#actionDialogClosed" text="Dialog Options">
-                 <content>
-                     <fx:include fx:id="tabDialog" source="tab_dialog_option.fxml" />
-                 </content>
-             </Tab>-->
-            <Tab fx:id="transitionTab" onClosed="#actionTransitionClosed" text="Transition">
+            <Tab fx:id="transitionTab" onCloseRequest="#actionTransitionCloseRequested" text="Transition">
                <content>
                   <fx:include fx:id="tabTransition" source="tab_transition.fxml" />
                </content>

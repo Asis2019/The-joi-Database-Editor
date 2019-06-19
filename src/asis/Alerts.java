@@ -3,15 +3,11 @@ package asis;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
-import javafx.scene.control.Alert;
-import javafx.scene.control.ButtonBar;
-import javafx.scene.control.ButtonType;
 import javafx.scene.image.Image;
-import javafx.stage.Stage;
-import javafx.stage.WindowEvent;
 import javafx.stage.Modality;
+import javafx.stage.Stage;
+
 import java.io.IOException;
-import java.util.Optional;
 
 import static asis.custom_objects.AsisUtils.errorDialogWindow;
 
@@ -20,47 +16,72 @@ public class Alerts {
 
     private Alerts instance;
     private String sceneTitle;
+    private int unsavedChangesDialogButtonChoice;
+    private boolean yesNoConfirmationChoice;
 
     public Alerts() {
         instance = this;
     }
 
-    public static void warningDialog(String title, String header, String content, Stage primaryStage, WindowEvent... event) {
-        Alert alert = new Alert(Alert.AlertType.WARNING);
-        alert.setTitle(title);
-        alert.setHeaderText(header);
-        alert.setContentText(content);
-        alert.initOwner(primaryStage);
+    boolean confirmationDialog(Class calledFrom, String title, String message) {
+        try {
+            Stage stage = new Stage();
 
-        ButtonType btnType1 = new ButtonType("Save Project");
-        ButtonType btnType2 = new ButtonType("Continue Without Saving");
-        ButtonType btnCancel= new ButtonType("Cancel", ButtonBar.ButtonData.CANCEL_CLOSE);
+            FXMLLoader fxmlLoader = new FXMLLoader(calledFrom.getResource("fxml/dialog_confirmation_dialog.fxml"));
+            Parent root = fxmlLoader.load();
 
-        alert.getButtonTypes().setAll(btnType1, btnType2, btnCancel);
+            DialogConfirmation controller = fxmlLoader.getController();
+            controller.inflate(this, message);
+            Scene main_scene = new Scene(root);
 
-        Alerts alerts = new Alerts();
+            stage.setOnCloseRequest(windowEvent -> yesNoConfirmationChoice = false);
 
-        alerts.setIcon(alert);
-
-
-        Optional<ButtonType> result = alert.showAndWait();
-        if (result.get() == btnType1){
-            Controller.getInstance().actionSaveProject();
-        } else if (result.get() == btnType2){
-            alert.close();
-        } else {
-            if (event != null) {
-                event[0].consume();
-            }
+            stage.initModality(Modality.APPLICATION_MODAL);
+            stage.getIcons().add(new Image(Main.class.getResourceAsStream("images/icon.png")));
+            stage.setScene(main_scene);
+            stage.setTitle(title);
+            stage.showAndWait();
+        } catch (IOException e) {
+            errorDialogWindow(e);
         }
+
+        return yesNoConfirmationChoice;
     }
 
-    public void setIcon(Alert alert){
-        Stage stage = (Stage) alert.getDialogPane().getScene().getWindow();
-        stage.getIcons().add(new Image(this.getClass().getResource("images/icon.png").toString()));
+    void setYesNoConfirmationChoice(boolean result) {
+        this.yesNoConfirmationChoice = result;
     }
 
-    public String addNewSceneDialog(Class calledFrom, String defaultTitle) {
+    int unsavedChangesDialog(Class calledFrom, String title, String message) {
+        try {
+            Stage stage = new Stage();
+
+            FXMLLoader fxmlLoader = new FXMLLoader(calledFrom.getResource("fxml/dialog_unsaved_changes_dialog.fxml"));
+            Parent root = fxmlLoader.load();
+
+            DialogUnsavedChangesDialog controller = fxmlLoader.getController();
+            controller.inflate(this, message);
+            Scene main_scene = new Scene(root);
+
+            stage.setOnCloseRequest(windowEvent -> unsavedChangesDialogButtonChoice = 0);
+
+            stage.initModality(Modality.APPLICATION_MODAL);
+            stage.getIcons().add(new Image(Main.class.getResourceAsStream("images/icon.png")));
+            stage.setScene(main_scene);
+            stage.setTitle(title);
+            stage.showAndWait();
+        } catch (IOException e) {
+            errorDialogWindow(e);
+        }
+
+        return unsavedChangesDialogButtonChoice;
+    }
+
+    void setUnsavedChangesResult(int result) {
+        this.unsavedChangesDialogButtonChoice = result;
+    }
+
+    String addNewSceneDialog(Class calledFrom, String defaultTitle) {
         sceneTitle = defaultTitle;
 
         try {

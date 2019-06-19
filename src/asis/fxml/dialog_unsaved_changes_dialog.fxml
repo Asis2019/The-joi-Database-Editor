@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.geometry.Insets?>
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+<?import javafx.scene.text.Font?>
+<BorderPane id="darkThemeBackgroundLighter" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="150.0" prefWidth="400.0" stylesheets="@../css/main_stylesheet.css" xmlns="http://javafx.com/javafx/8.0.172-ea" xmlns:fx="http://javafx.com/fxml/1" fx:controller="asis.DialogUnsavedChangesDialog">
+   <bottom>
+      <ToolBar prefHeight="40.0" prefWidth="200.0" BorderPane.alignment="CENTER">
+        <items>
+            <Pane HBox.hgrow="ALWAYS" />
+          <Button mnemonicParsing="false" onAction="#actionSave" text="Save" />
+            <Button layoutX="544.0" layoutY="11.0" mnemonicParsing="false" onAction="#actionDoNotSave" text="Don't Save" />
+            <Button layoutX="486.0" layoutY="11.0" mnemonicParsing="false" onAction="#actionCancel" text="Cancel" />
+        </items>
+      </ToolBar>
+   </bottom>
+   <center>
+      <VBox prefHeight="200.0" prefWidth="100.0" spacing="16.0" BorderPane.alignment="CENTER">
+         <children>
+            <Label fx:id="messageLabel" text="Message String" textFill="WHITE" wrapText="true">
+               <font>
+                  <Font size="20.0" />
+               </font></Label>
+         </children>
+         <padding>
+            <Insets bottom="16.0" left="16.0" right="16.0" top="16.0" />
+         </padding></VBox>
+   </center>
+</BorderPane>
