@@ -202,12 +202,12 @@ public class Controller {
             System.out.println(outputConnection.getOptionNumber());
             story.addDialogOptionGoTo(outputConnection.getParentSceneId(), outputConnection.getOptionNumber(), inputConnection.getParentSceneId());
         } else {
-            story.addDataToScene(outputConnection.getParentSceneId(), "jumpTo", inputConnection.getParentSceneId());
+            story.addDataToScene(outputConnection.getParentSceneId(), "gotoScene", inputConnection.getParentSceneId());
         }
     }
 
     public void removeConnectionFromStory(int sceneId) {
-        story.removeDataFromScene(sceneId, "jumpTo");
+        story.removeDataFromScene(sceneId, "gotoScene");
     }
 
     private void writeJsonToFile(JSONObject jsonObject, String fileName, File saveLocation) {
