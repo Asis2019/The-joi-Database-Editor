@@ -6,6 +6,7 @@ import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.scene.image.Image;
 import javafx.stage.Stage;
+import org.json.JSONObject;
 
 public class Main extends Application {
 
@@ -16,7 +17,6 @@ public class Main extends Application {
 
         Controller controller = fxmlLoader.getController();
         Scene main_scene = new Scene(root, 1280, 720);
-        controller.inflater(primaryStage);
 
         primaryStage.getIcons().add(new Image(Main.class.getResourceAsStream("images/icon.png")));
         primaryStage.setScene(main_scene);
@@ -25,6 +25,15 @@ public class Main extends Application {
         primaryStage.setMaximized(true);
 
         primaryStage.setOnCloseRequest(event -> {
+            //Check if dialog is needed
+            JSONObject storyData = Story.getInstance().getStoryDataJson();
+            JSONObject metadataObject = Story.getInstance().getMetadataObject();
+
+            if(storyData == null && metadataObject == null) {
+                controller.quiteProgram();
+                return;
+            }
+
             int choice = new Alerts().unsavedChangesDialog(this.getClass(), "Warning", "You have unsaved work, are you sure you want to quit?");
             switch (choice) {
                 case 0:
@@ -32,16 +41,14 @@ public class Main extends Application {
                     break;
 
                 case 1:
-                    controller.actionExit();
+                    controller.quiteProgram();
                     break;
 
                 case 2:
                     controller.actionSaveProject();
-                    controller.actionExit();
+                    controller.quiteProgram();
                     break;
             }
-            /*primaryStage.getScene().getWindow().addEventFilter(WindowEvent.WINDOW_CLOSE_REQUEST, windowEvent -> event.getEventType() );
-            Alerts.warningDialog("Close Application", "Do you want to save your project first?", "", primaryStage, event);*/
         });
     }
 

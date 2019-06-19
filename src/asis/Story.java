@@ -7,6 +7,8 @@ import java.io.File;
 import java.util.ArrayList;
 
 class Story {
+    private static Story instance = null;
+
     private File workingDirectory = new File(System.getProperty("user.dir"));
     private File projectIcon;
     private ArrayList<File> imagesArray = new ArrayList<>();
@@ -17,6 +19,11 @@ class Story {
 
     Story() {
         //Default constructor
+        instance = this;
+    }
+
+    public static Story getInstance() {
+        return instance;
     }
 
     void setProjectDirectory(File workingDirectory) {

@@ -43,7 +43,6 @@ public class Controller {
     private double menuEventY;
     private Boolean addSceneContextMenu = false;
     private static Controller instance = null;
-    private Stage primaryStage;
 
     private SceneNodeMainController sceneNodeMainController;
 
@@ -55,11 +54,6 @@ public class Controller {
     @FXML private MenuBar mainMenuBar;
 
     public void initialize() {
-
-    }
-
-    void inflater(Stage primaryStage) {
-        this.primaryStage = primaryStage;
         instance = this;
         sceneNodeMainController = new SceneNodeMainController(this);
         sceneNodeMainController.setPane(anchorPane);
@@ -223,6 +217,33 @@ public class Controller {
     }
 
     public void actionExit() {
+        //Check if dialog is needed
+        JSONObject storyData = Story.getInstance().getStoryDataJson();
+        JSONObject metadataObject = Story.getInstance().getMetadataObject();
+
+        if(storyData == null && metadataObject == null) {
+            quiteProgram();
+            return;
+        }
+
+        int choice = new Alerts().unsavedChangesDialog(this.getClass(), "Warning", "You have unsaved work, are you sure you want to quit?");
+        switch (choice) {
+            case 0:
+                return;
+
+            case 1:
+                quiteProgram();
+                break;
+
+            case 2:
+                actionSaveProject();
+                quiteProgram();
+                break;
+        }
+
+    }
+
+    public void quiteProgram() {
         Platform.exit();
         System.exit(0);
     }

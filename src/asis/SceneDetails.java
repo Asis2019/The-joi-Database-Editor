@@ -1,6 +1,7 @@
 package asis;
 
 import asis.custom_objects.asis_node.SceneNode;
+import javafx.event.Event;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
@@ -107,7 +108,7 @@ public class SceneDetails {
             tabTimerController.passData(story, sceneId);
 
             timerTab.setContent(root);
-            timerTab.setOnCloseRequest(event -> actionTimerCloseRequested());
+            timerTab.setOnCloseRequest(this::actionTimerCloseRequested);
 
             effectTabs.getTabs().add(1, timerTab);
 
@@ -131,7 +132,7 @@ public class SceneDetails {
             tabTransitionController.passData(story, sceneId);
 
             transitionTab.setContent(root);
-            transitionTab.setOnCloseRequest(event -> actionTransitionCloseRequested());
+            transitionTab.setOnCloseRequest(this::actionTransitionCloseRequested);
 
             effectTabs.getTabs().add(transitionTab);
 
@@ -153,7 +154,7 @@ public class SceneDetails {
             tabDialogController.passData(story, sceneNode);
 
             dialogOptionsTab.setContent(root);
-            dialogOptionsTab.setOnCloseRequest(event -> actionDialogCloseRequested());
+            dialogOptionsTab.setOnCloseRequest(this::actionDialogCloseRequested);
 
             effectTabs.getTabs().add(1, dialogOptionsTab);
 
@@ -182,30 +183,40 @@ public class SceneDetails {
         story.removeDialog(sceneId);
     }
 
-    private void actionDialogCloseRequested() {
-        if(new Alerts().confirmationDialog(this.getClass(), "Delete Dialogs", "Are you sure you want to remove dialogs?")) {
-            actionDialogClosed();
-        } else {
-            //Tab still closes for some reason so this reopens it
-            actionAddDialog();
+    private void actionDialogCloseRequested(Event event) {
+        //Check if dialog is needed
+        if(story.getDialogData(sceneId) != null && !story.getDialogData(sceneId).isEmpty()) {
+            if (!new Alerts().confirmationDialog(this.getClass(), "Delete Dialogs", "Are you sure you want to remove dialogs?")) {
+                event.consume();
+                return;
+            }
         }
+
+        //Close tab properly
+        actionDialogClosed();
     }
 
-    public void actionTransitionCloseRequested() {
-        if(new Alerts().confirmationDialog(this.getClass(), "Delete Transition", "Are you sure you want to remove the transition?")) {
-            actionTransitionClosed();
-        } else {
-            //Tab still closes for some reason so this reopens it
-            actionAddTransition();
+    public void actionTransitionCloseRequested(Event event) {
+        if(story.getTransitionData(sceneId) != null && !story.getTransitionData(sceneId).isEmpty()) {
+            if (!new Alerts().confirmationDialog(this.getClass(), "Delete Transition", "Are you sure you want to remove the transition?")) {
+                event.consume();
+                return;
+            }
         }
+
+        //Close tab properly
+        actionTransitionClosed();
     }
 
-    private void actionTimerCloseRequested() {
-        if(new Alerts().confirmationDialog(this.getClass(), "Delete Timer", "Are you sure you want to remove the timer?")) {
-            actionTimerClosed();
-        } else {
-            //Tab still closes for some reason so this reopens it
-            actionAddTimer();
+    private void actionTimerCloseRequested(Event event) {
+        if(story.getTimerData(sceneId) != null && !story.getTimerData(sceneId).isEmpty()) {
+            if (!new Alerts().confirmationDialog(this.getClass(), "Delete Timer", "Are you sure you want to remove the timer?")) {
+                event.consume();
+                return;
+            }
         }
+
+        //Close tab properly
+        actionTimerClosed();
     }
 }
