@@ -27,9 +27,10 @@ class Story {
         return workingDirectory;
     }
 
-    void addNewScene(int sceneId) {
+    void addNewScene(int sceneId, String sceneTitle) {
         JSONObject object = new JSONObject();
         object.put("sceneId", sceneId);
+        object.put("sceneTitle", sceneTitle);
         sceneArray.put(object);
         storyDataJson.put("JOI", sceneArray);
     }
