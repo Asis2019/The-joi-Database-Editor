@@ -1,13 +1,10 @@
 package asis.custom_objects.asis_node;
 
-import javafx.event.ActionEvent;
-import javafx.event.EventHandler;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
 import javafx.scene.control.ContextMenu;
 import javafx.scene.control.Label;
 import javafx.scene.control.MenuItem;
-import javafx.scene.input.ContextMenuEvent;
 import javafx.scene.layout.*;
 import javafx.scene.paint.Color;
 
@@ -51,13 +48,11 @@ public class SceneNode extends Region {
 
         contextMenu();
 
-        if(sceneId != -1) {
-            if(sceneId != 0) {
-                createNewInputConnectionPoint();
-            }
-
-            createNewOutputConnectionPoint("Default", "normal_output");
+        if(sceneId != 0) {
+            createNewInputConnectionPoint();
         }
+
+        createNewOutputConnectionPoint("Default", "normal_output");
     }
 
     List<AsisConnectionButton> getOutputButtons() {

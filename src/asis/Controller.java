@@ -5,7 +5,6 @@ import asis.custom_objects.asis_node.AsisConnectionButton;
 import asis.custom_objects.asis_node.SceneNode;
 import asis.custom_objects.asis_node.SceneNodeMainController;
 import javafx.application.Platform;
-import javafx.event.EventHandler;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.geometry.Bounds;
@@ -17,7 +16,6 @@ import javafx.scene.control.MenuItem;
 import javafx.scene.control.ScrollPane;
 import javafx.scene.image.Image;
 import javafx.scene.input.MouseButton;
-import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.AnchorPane;
 import javafx.stage.DirectoryChooser;
 import javafx.stage.FileChooser;
@@ -61,8 +59,6 @@ public class Controller {
 
         addScene();
         contextMenu();
-
-        createMetadataNode();
     }
 
     public static Controller getInstance() {
@@ -96,38 +92,22 @@ public class Controller {
         });
     }
 
-    private void createMetadataNode() {
-        SceneNode metaDataNode = new SceneNode(300, 100, -1, sceneNodeMainController);
-        new Draggable.Nature(metaDataNode.getPane());
-        metaDataNode.getPane().setLayoutX(10);
-        metaDataNode.getPane().setLayoutY(200);
-        metaDataNode.setTitle("Metadata");
-        metaDataNode.getPane().setOnMouseClicked(new EventHandler<>() {
-            @Override
-            public void handle(MouseEvent mouseEvent) {
-                //User double clicked
-                if(mouseEvent.getButton().equals(MouseButton.PRIMARY)) {
-                    if(mouseEvent.getClickCount() == 2){
-                        try {
-                            FXMLLoader fxmlLoader = new FXMLLoader(getClass().getResource("fxml/meta_data_form.fxml"));
-                            Parent root = fxmlLoader.load();
+    public void actionOpenMetadata() {
+        try {
+            FXMLLoader fxmlLoader = new FXMLLoader(getClass().getResource("fxml/meta_data_form.fxml"));
+            Parent root = fxmlLoader.load();
 
-                            MetaDataForm metaDataForm = fxmlLoader.getController();
-                            metaDataForm.inflateStoryObject(story);
+            MetaDataForm metaDataForm = fxmlLoader.getController();
+            metaDataForm.inflateStoryObject(story);
 
-                            Stage stage = new Stage();
-                            stage.getIcons().add(new Image(Controller.class.getResourceAsStream("images/icon.png")));
-                            stage.setTitle("Project Details");
-                            stage.setScene(new Scene(root, 400, 720));
-                            stage.show();
-                        } catch (IOException e) {
-                            errorDialogWindow(e);
-                        }
-                    }
-                }
-            }
-        });
-        anchorPane.getChildren().add(metaDataNode.getPane());
+            Stage stage = new Stage();
+            stage.getIcons().add(new Image(Controller.class.getResourceAsStream("images/icon.png")));
+            stage.setTitle("Project Details");
+            stage.setScene(new Scene(root, 400, 720));
+            stage.show();
+        } catch (IOException e) {
+            errorDialogWindow(e);
+        }
     }
 
     private void setClickActionForNode(SceneNode sceneNode) {
