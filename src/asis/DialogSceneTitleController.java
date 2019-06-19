@@ -11,13 +11,10 @@ public class DialogSceneTitleController {
 
     @FXML private TextField sceneTitleTextField;
 
-    void inflate(Alerts alerts) {
+    void inflate(Alerts alerts, String defaultTitle) {
         this.alerts = alerts;
-    }
 
-    public void actionUseDefault() {
-        Stage stage = (Stage) sceneTitleTextField.getScene().getWindow();
-        stage.close();
+        sceneTitleTextField.setText(defaultTitle);
     }
 
     public void actionSave() {

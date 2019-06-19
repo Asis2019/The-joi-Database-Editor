@@ -39,7 +39,8 @@ public class Alerts {
         }
     }
 
-    public String addNewSceneDialog(Class calledFrom) {
+    public String addNewSceneDialog(Class calledFrom, String defaultTitle) {
+        sceneTitle = defaultTitle;
         try {
             Stage stage = new Stage();
 
@@ -47,8 +48,10 @@ public class Alerts {
             Parent root = fxmlLoader.load();
 
             DialogSceneTitleController controller = fxmlLoader.getController();
-            controller.inflate(this);
+            controller.inflate(this, sceneTitle);
             Scene main_scene = new Scene(root);
+
+            stage.setOnCloseRequest(windowEvent -> sceneTitle = null);
 
             stage.initModality(Modality.APPLICATION_MODAL);
             stage.getIcons().add(new Image(Main.class.getResourceAsStream("images/icon.png")));

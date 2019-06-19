@@ -91,8 +91,13 @@ public class Controller {
 
         editNameItem.setOnAction(actionEvent -> {
             if(selectedScene != null) {
-                //TODO add user defined names to scenes
-                System.out.println("Name Change");
+                String title = new Alerts().addNewSceneDialog(this.getClass(), selectedScene.getTitle());
+                if(title == null) {
+                    return;
+                }
+
+                story.addDataToScene(selectedScene.getSceneId(), "sceneTitle", title);
+                selectedScene.setTitle(title);
             }
         });
 
@@ -221,24 +226,24 @@ public class Controller {
     }
 
     public void addScene() {
-        //TODO open a popup that asks for a title and set that as the scene title
-        String title = null;
+        String title;
         if(numberOfScenes != 0) {
-            title = new Alerts().addNewSceneDialog(this.getClass());
+            title = new Alerts().addNewSceneDialog(this.getClass(), "Scene " + (numberOfScenes+1));
+            if(title == null) {
+                return;
+            }
+        } else {
+            title = "Scene " + (numberOfScenes+1);
         }
 
         numberOfScenes++;
 
-        story.addNewScene(numberOfScenes-1);
+        story.addNewScene(numberOfScenes-1, title);
 
         SceneNode sceneNode = new SceneNode(300, 100, numberOfScenes-1, sceneNodeMainController);
         new Draggable.Nature(sceneNode.getPane());
 
-        if(title == null) {
-            sceneNode.setTitle("Scene "+numberOfScenes);
-        } else {
-            sceneNode.setTitle(title);
-        }
+        sceneNode.setTitle(title);
 
         if (!addSceneContextMenu) {
             sceneNode.getPane().setLayoutX(10);
@@ -258,8 +263,6 @@ public class Controller {
     }
 
     private void removeScene(SceneNode sceneNode) {
-        numberOfScenes--;
-
         story.removeScene(sceneNode.getSceneId());
 
         sceneNodeMainController.notifySceneRemoved(sceneNode);
