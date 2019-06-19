@@ -2,11 +2,12 @@
 
 <?import javafx.scene.control.*?>
 <?import javafx.scene.layout.*?>
-<BorderPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="400.0" prefWidth="600.0" stylesheets="@../css/main_stylesheet.css" xmlns="http://javafx.com/javafx/8.0.172-ea" xmlns:fx="http://javafx.com/fxml/1" fx:controller="asis.Controller">
+<?import java.net.URL?>
+<BorderPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="400.0" prefWidth="600.0" xmlns="http://javafx.com/javafx/8.0.172-ea" xmlns:fx="http://javafx.com/fxml/1" fx:controller="asis.Controller">
    <top>
       <VBox BorderPane.alignment="CENTER">
          <children>
-             <MenuBar fx:id="mainMenuBar" stylesheets="@../css/menu_bar_stylesheet.css">
+             <MenuBar fx:id="mainMenuBar">
                  <Menu mnemonicParsing="false" text="File">
                      <MenuItem mnemonicParsing="false" onAction="#actionSaveProject" text="Save Project" />
                   <MenuItem mnemonicParsing="false" onAction="#actionExportToZip" text="Export to Zip" />
@@ -29,4 +30,8 @@
            <AnchorPane id="anchorPane" fx:id="anchorPane" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="8000.0" prefWidth="8000.0" />
        </ScrollPane>
    </center>
+   <stylesheets>
+      <URL value="@../css/main_stylesheet.css" />
+      <URL value="@../css/menu_bar_stylesheet.css" />
+   </stylesheets>
 </BorderPane>

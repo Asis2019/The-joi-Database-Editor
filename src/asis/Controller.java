@@ -8,10 +8,10 @@ import javafx.application.Platform;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.geometry.Bounds;
+import javafx.scene.Node;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.scene.control.ContextMenu;
-import javafx.scene.control.MenuBar;
 import javafx.scene.control.MenuItem;
 import javafx.scene.control.ScrollPane;
 import javafx.scene.image.Image;
@@ -26,13 +26,17 @@ import org.json.JSONObject;
 import java.io.*;
 import java.nio.file.Files;
 import java.nio.file.StandardCopyOption;
+import java.util.ArrayList;
+import java.util.Optional;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipOutputStream;
 
 import static asis.custom_objects.AsisUtils.errorDialogWindow;
+import static asis.custom_objects.AsisUtils.getAllNodes;
 
 public class Controller {
     private Story story = new Story();
+    private SceneNode selectedScene;
     private int numberOfScenes = 0;
     private double menuEventX;
     private double menuEventY;
@@ -41,9 +45,12 @@ public class Controller {
 
     private SceneNodeMainController sceneNodeMainController;
 
+    private ContextMenu mainContextMenu =  new ContextMenu();
+    private ContextMenu sceneNodeContextMenu =  new ContextMenu();
+
     @FXML private AnchorPane anchorPane;
     @FXML private ScrollPane scrollPane;
-    @FXML private MenuBar mainMenuBar;
+    //@FXML private MenuBar mainMenuBar;
 
     public void initialize() {
 
@@ -57,39 +64,89 @@ public class Controller {
          //TODO replace fixed number with one from mainMenuBar + height of toolbar
          sceneNodeMainController.setMenuBarOffset(70);
 
+        setupMainContextMenu();
+        setupSceneNodeContextMenu();
+
         addScene();
-        contextMenu();
     }
 
-    public static Controller getInstance() {
+    static Controller getInstance() {
         return instance;
     }
 
-    private void contextMenu() {
-        //TODO make contextMenu() able to be called from anywhere with the right parameters to reduce duplication
-        ContextMenu contextMenu =  new ContextMenu();
-        MenuItem menuItem1 = new MenuItem("New Scene");
+    private void setupSceneNodeContextMenu() {
+        //Create items and add them to there menu
+        MenuItem editSceneItem = new MenuItem("Edit Scene");
+        MenuItem editNameItem = new MenuItem("Change Name");
+        MenuItem deleteNodeItem = new MenuItem("Delete");
+        sceneNodeContextMenu.getItems().addAll(editSceneItem, editNameItem, deleteNodeItem);
 
-        menuItem1.setOnAction(event -> {
+        //Handle menu actions
+        editSceneItem.setOnAction(actionEvent -> {
+            if(selectedScene != null) {
+                openNewWindow(selectedScene.getTitle(), selectedScene);
+            }
+        });
+
+        editNameItem.setOnAction(actionEvent -> {
+            if(selectedScene != null) {
+                //TODO add user defined names to scenes
+                System.out.println("Name Change");
+            }
+        });
+
+        deleteNodeItem.setOnAction(actionEvent -> {
+            if(selectedScene != null) {
+                removeScene(selectedScene);
+            }
+        });
+    }
+
+    private void setupMainContextMenu() {
+        //Create items and add them to there menu
+        MenuItem newSceneItem = new MenuItem("New Scene");
+        mainContextMenu.getItems().add(newSceneItem);
+
+
+        //Handle menu actions
+        newSceneItem.setOnAction(event -> {
             addSceneContextMenu = true;
             addScene();
         });
 
-        contextMenu.getItems().add(menuItem1);
+        scrollPane.setContextMenu(mainContextMenu);
 
+        //Used to get the coordinates for spawning the scene node and for hiding/showing the proper menu
         scrollPane.setOnContextMenuRequested(contextMenuEvent -> {
+            ArrayList<Node> tmp = getAllNodes(anchorPane);
+            for (Node n: tmp) {
+                Bounds boundsInScene = n.localToScene(n.getBoundsInLocal());
+
+                Optional<Node> node = findNode(tmp, contextMenuEvent.getSceneX(), contextMenuEvent.getSceneY());
+                if(node.isPresent()) {
+                    if (contextMenuEvent.getSceneX() >= boundsInScene.getMinX() && contextMenuEvent.getSceneX() <= boundsInScene.getMaxX() && contextMenuEvent.getSceneY() >= boundsInScene.getMinY() && contextMenuEvent.getSceneY() <= boundsInScene.getMaxY()) {
+                        mainContextMenu.hide();
+                        sceneNodeContextMenu.show(anchorPane, contextMenuEvent.getScreenX(), contextMenuEvent.getScreenY());
+                    }
+                }
+            }
+
             menuEventX = contextMenuEvent.getX();
             menuEventY = contextMenuEvent.getY();
-//            if (anchorPane.getChildren() )
-            contextMenu.show(scrollPane, contextMenuEvent.getScreenX(), contextMenuEvent.getScreenY());
         });
 
-        //This will close the menu when something is pressed
-        scrollPane.setOnMouseClicked(mouseEvent -> {
-            if(contextMenu.isShowing()) {
-                contextMenu.hide();
+        scrollPane.setOnMouseClicked(mouseEvent -> sceneNodeContextMenu.hide() );
+    }
+
+    private Optional<Node> findNode(ArrayList<Node> list, double x, double y) {
+        for (Node n : list) {
+            Bounds boundsInScene = n.localToScene(n.getBoundsInLocal());
+
+            if(x >= boundsInScene.getMinX() && x <= boundsInScene.getMaxX() && y >= boundsInScene.getMinY() && y <= boundsInScene.getMaxY()) {
+                return Optional.of(n);
             }
-        });
+        }
+        return Optional.empty();
     }
 
     public void actionOpenMetadata() {
@@ -111,7 +168,19 @@ public class Controller {
     }
 
     private void setClickActionForNode(SceneNode sceneNode) {
+        sceneNode.getPane().setOnContextMenuRequested(contextMenuEvent -> {
+            selectedScene = sceneNode;
+            if(sceneNode.getSceneId() == 0) {
+                //Is the first scene
+                sceneNodeContextMenu.getItems().get(2).setDisable(true);
+            } else {
+                sceneNodeContextMenu.getItems().get(2).setDisable(false);
+            }
+        });
+
         sceneNode.getPane().setOnMouseClicked(mouseEvent -> {
+            sceneNodeContextMenu.hide();
+
             //User double clicked
             if(mouseEvent.getButton().equals(MouseButton.PRIMARY)) {
                 if(mouseEvent.getClickCount() == 2){
@@ -119,11 +188,11 @@ public class Controller {
                 }
             }
 
-            if(mouseEvent.getButton().equals(MouseButton.SECONDARY)) {
+            /*if(mouseEvent.getButton().equals(MouseButton.SECONDARY)) {
                 if(mouseEvent.getClickCount() == 2) {
                     removeScene(sceneNode);
                 }
-            }
+            }*/
         });
     }
 

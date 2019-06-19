@@ -1,7 +1,11 @@
 package asis.custom_objects;
 
+import javafx.scene.Node;
+import javafx.scene.Parent;
 import javafx.scene.paint.Color;
 import org.controlsfx.dialog.ExceptionDialog;
+
+import java.util.ArrayList;
 
 public class AsisUtils {
 
@@ -26,5 +30,20 @@ public class AsisUtils {
         exceptionDialog.setHeaderText("Oh no an error! Send it to Asis so he can feel bad.\n"+e.getMessage());
         exceptionDialog.show();
     }
+
+    public static ArrayList<Node> getAllNodes(Parent root) {
+        ArrayList<Node> nodes = new ArrayList<Node>();
+        addAllDescendents(root, nodes);
+        return nodes;
+    }
+
+    private static void addAllDescendents(Parent parent, ArrayList<Node> nodes) {
+        for (Node node : parent.getChildrenUnmodifiable()) {
+            nodes.add(node);
+            if (node instanceof Parent)
+                addAllDescendents((Parent)node, nodes);
+        }
+    }
+
 
 }
