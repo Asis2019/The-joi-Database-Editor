@@ -1,13 +1,8 @@
 package asis.custom_objects.asis_node;
 
-import javafx.event.ActionEvent;
-import javafx.event.EventHandler;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
-import javafx.scene.control.ContextMenu;
 import javafx.scene.control.Label;
-import javafx.scene.control.MenuItem;
-import javafx.scene.input.ContextMenuEvent;
 import javafx.scene.layout.*;
 import javafx.scene.paint.Color;
 
@@ -49,15 +44,11 @@ public class SceneNode extends Region {
 
         borderPane.setCenter(titleLabel);
 
-        contextMenu();
-
-        if(sceneId != -1) {
-            if(sceneId != 0) {
-                createNewInputConnectionPoint();
-            }
-
-            createNewOutputConnectionPoint("Default", "normal_output");
+        if(sceneId != 0) {
+            createNewInputConnectionPoint();
         }
+
+        createNewOutputConnectionPoint("Default", "normal_output");
     }
 
     List<AsisConnectionButton> getOutputButtons() {
@@ -66,18 +57,6 @@ public class SceneNode extends Region {
 
     AsisConnectionButton getInputConnection() {
         return this.inputConnection;
-    }
-
-    private void contextMenu() {
-        ContextMenu contextMenu = new ContextMenu();
-        MenuItem menuItem1 = new MenuItem("Edit");
-        menuItem1.setOnAction(event -> {
-            //do stuff
-        });
-        contextMenu.getItems().add(menuItem1);
-        borderPane.setOnContextMenuRequested(contextMenuEvent ->  {
-            contextMenu.show(borderPane, contextMenuEvent.getScreenX(), contextMenuEvent.getScreenY());
-        });
     }
 
     private void createNewInputConnectionPoint() {

@@ -27,6 +27,10 @@
     -fx-padding: 4 20 4 20;
 }
 
+.menu-item .label {
+    -fx-text-fill: rgb(187, 187, 187);
+}
+
 .menu-item:hover {
     -fx-background-color: rgb(59, 124, 212);
 }

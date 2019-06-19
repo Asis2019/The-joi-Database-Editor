@@ -5,10 +5,10 @@ import asis.custom_objects.asis_node.AsisConnectionButton;
 import asis.custom_objects.asis_node.SceneNode;
 import asis.custom_objects.asis_node.SceneNodeMainController;
 import javafx.application.Platform;
-import javafx.event.EventHandler;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.geometry.Bounds;
+import javafx.scene.Node;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.scene.control.ContextMenu;
@@ -17,7 +17,6 @@ import javafx.scene.control.MenuItem;
 import javafx.scene.control.ScrollPane;
 import javafx.scene.image.Image;
 import javafx.scene.input.MouseButton;
-import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.AnchorPane;
 import javafx.stage.DirectoryChooser;
 import javafx.stage.FileChooser;
@@ -28,13 +27,17 @@ import org.json.JSONObject;
 import java.io.*;
 import java.nio.file.Files;
 import java.nio.file.StandardCopyOption;
+import java.util.ArrayList;
+import java.util.Optional;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipOutputStream;
 
 import static asis.custom_objects.AsisUtils.errorDialogWindow;
+import static asis.custom_objects.AsisUtils.getAllNodes;
 
 public class Controller {
     private Story story = new Story();
+    private SceneNode selectedScene;
     private int numberOfScenes = 0;
     private double menuEventX;
     private double menuEventY;
@@ -43,6 +46,9 @@ public class Controller {
     private Stage primaryStage;
 
     private SceneNodeMainController sceneNodeMainController;
+
+    private ContextMenu mainContextMenu =  new ContextMenu();
+    private ContextMenu sceneNodeContextMenu =  new ContextMenu();
 
     @FXML private AnchorPane anchorPane;
     @FXML private ScrollPane scrollPane;
@@ -53,88 +59,131 @@ public class Controller {
     }
 
     void inflater(Stage primaryStage) {
-
         this.primaryStage = primaryStage;
-         instance = this;
-         sceneNodeMainController = new SceneNodeMainController(this);
-         sceneNodeMainController.setPane(anchorPane);
-         sceneNodeMainController.setScrollPane(scrollPane);
-         //TODO replace fixed number with one from mainMenuBar + height of toolbar
-         sceneNodeMainController.setMenuBarOffset(70);
+        instance = this;
+        sceneNodeMainController = new SceneNodeMainController(this);
+        sceneNodeMainController.setPane(anchorPane);
+        sceneNodeMainController.setScrollPane(scrollPane);
+        //TODO replace fixed number with one from mainMenuBar + height of toolbar
+        sceneNodeMainController.setMenuBarOffset(70);
+
+        setupMainContextMenu();
+        setupSceneNodeContextMenu();
 
         addScene();
-        contextMenu();
-
-        createMetadataNode();
     }
 
-    public static Controller getInstance() {
+    static Controller getInstance() {
         return instance;
     }
 
-    private void contextMenu() {
-        //TODO make contextMenu() able to be called from anywhere with the right parameters to reduce duplication
-        ContextMenu contextMenu =  new ContextMenu();
-        MenuItem menuItem1 = new MenuItem("New Scene");
+    private void setupSceneNodeContextMenu() {
+        //Create items and add them to there menu
+        MenuItem editSceneItem = new MenuItem("Edit Scene");
+        MenuItem editNameItem = new MenuItem("Change Name");
+        MenuItem deleteNodeItem = new MenuItem("Delete");
+        sceneNodeContextMenu.getItems().addAll(editSceneItem, editNameItem, deleteNodeItem);
 
-        menuItem1.setOnAction(event -> {
+        //Handle menu actions
+        editSceneItem.setOnAction(actionEvent -> {
+            if(selectedScene != null) {
+                openNewWindow(selectedScene.getTitle(), selectedScene);
+            }
+        });
+
+        editNameItem.setOnAction(actionEvent -> {
+            if(selectedScene != null) {
+                //TODO add user defined names to scenes
+                System.out.println("Name Change");
+            }
+        });
+
+        deleteNodeItem.setOnAction(actionEvent -> {
+            if(selectedScene != null) {
+                removeScene(selectedScene);
+            }
+        });
+    }
+
+    private void setupMainContextMenu() {
+        //Create items and add them to there menu
+        MenuItem newSceneItem = new MenuItem("New Scene");
+        mainContextMenu.getItems().add(newSceneItem);
+
+
+        //Handle menu actions
+        newSceneItem.setOnAction(event -> {
             addSceneContextMenu = true;
             addScene();
         });
 
-        contextMenu.getItems().add(menuItem1);
+        scrollPane.setContextMenu(mainContextMenu);
 
+        //Used to get the coordinates for spawning the scene node and for hiding/showing the proper menu
         scrollPane.setOnContextMenuRequested(contextMenuEvent -> {
-            menuEventX = contextMenuEvent.getX();
-            menuEventY = contextMenuEvent.getY();
-//            if (anchorPane.getChildren() )
-            contextMenu.show(scrollPane, contextMenuEvent.getScreenX(), contextMenuEvent.getScreenY());
-        });
+            ArrayList<Node> tmp = getAllNodes(anchorPane);
+            for (Node n: tmp) {
+                Bounds boundsInScene = n.localToScene(n.getBoundsInLocal());
 
-        //This will close the menu when something is pressed
-        scrollPane.setOnMouseClicked(mouseEvent -> {
-            if(contextMenu.isShowing()) {
-                contextMenu.hide();
-            }
-        });
-    }
-
-    private void createMetadataNode() {
-        SceneNode metaDataNode = new SceneNode(300, 100, -1, sceneNodeMainController);
-        new Draggable.Nature(metaDataNode.getPane());
-        metaDataNode.getPane().setLayoutX(10);
-        metaDataNode.getPane().setLayoutY(200);
-        metaDataNode.setTitle("Metadata");
-        metaDataNode.getPane().setOnMouseClicked(new EventHandler<>() {
-            @Override
-            public void handle(MouseEvent mouseEvent) {
-                //User double clicked
-                if(mouseEvent.getButton().equals(MouseButton.PRIMARY)) {
-                    if(mouseEvent.getClickCount() == 2){
-                        try {
-                            FXMLLoader fxmlLoader = new FXMLLoader(getClass().getResource("fxml/meta_data_form.fxml"));
-                            Parent root = fxmlLoader.load();
-
-                            MetaDataForm metaDataForm = fxmlLoader.getController();
-                            metaDataForm.inflateStoryObject(story);
-
-                            Stage stage = new Stage();
-                            stage.getIcons().add(new Image(Controller.class.getResourceAsStream("images/icon.png")));
-                            stage.setTitle("Project Details");
-                            stage.setScene(new Scene(root, 400, 720));
-                            stage.show();
-                        } catch (IOException e) {
-                            errorDialogWindow(e);
-                        }
+                Optional<Node> node = findNode(tmp, contextMenuEvent.getSceneX(), contextMenuEvent.getSceneY());
+                if(node.isPresent()) {
+                    if (contextMenuEvent.getSceneX() >= boundsInScene.getMinX() && contextMenuEvent.getSceneX() <= boundsInScene.getMaxX() && contextMenuEvent.getSceneY() >= boundsInScene.getMinY() && contextMenuEvent.getSceneY() <= boundsInScene.getMaxY()) {
+                        mainContextMenu.hide();
+                        sceneNodeContextMenu.show(anchorPane, contextMenuEvent.getScreenX(), contextMenuEvent.getScreenY());
                     }
                 }
             }
+
+            menuEventX = contextMenuEvent.getX();
+            menuEventY = contextMenuEvent.getY();
         });
-        anchorPane.getChildren().add(metaDataNode.getPane());
+
+        scrollPane.setOnMouseClicked(mouseEvent -> sceneNodeContextMenu.hide() );
+    }
+
+    private Optional<Node> findNode(ArrayList<Node> list, double x, double y) {
+        for (Node n : list) {
+            Bounds boundsInScene = n.localToScene(n.getBoundsInLocal());
+
+            if(x >= boundsInScene.getMinX() && x <= boundsInScene.getMaxX() && y >= boundsInScene.getMinY() && y <= boundsInScene.getMaxY()) {
+                return Optional.of(n);
+            }
+        }
+        return Optional.empty();
+    }
+
+    public void actionOpenMetadata() {
+        try {
+            FXMLLoader fxmlLoader = new FXMLLoader(getClass().getResource("fxml/meta_data_form.fxml"));
+            Parent root = fxmlLoader.load();
+
+            MetaDataForm metaDataForm = fxmlLoader.getController();
+            metaDataForm.inflateStoryObject(story);
+
+            Stage stage = new Stage();
+            stage.getIcons().add(new Image(Controller.class.getResourceAsStream("images/icon.png")));
+            stage.setTitle("Project Details");
+            stage.setScene(new Scene(root, 400, 720));
+            stage.show();
+        } catch (IOException e) {
+            errorDialogWindow(e);
+        }
     }
 
     private void setClickActionForNode(SceneNode sceneNode) {
+        sceneNode.getPane().setOnContextMenuRequested(contextMenuEvent -> {
+            selectedScene = sceneNode;
+            if(sceneNode.getSceneId() == 0) {
+                //Is the first scene
+                sceneNodeContextMenu.getItems().get(2).setDisable(true);
+            } else {
+                sceneNodeContextMenu.getItems().get(2).setDisable(false);
+            }
+        });
+
         sceneNode.getPane().setOnMouseClicked(mouseEvent -> {
+            sceneNodeContextMenu.hide();
+
             //User double clicked
             if(mouseEvent.getButton().equals(MouseButton.PRIMARY)) {
                 if(mouseEvent.getClickCount() == 2){
@@ -142,11 +191,11 @@ public class Controller {
                 }
             }
 
-            if(mouseEvent.getButton().equals(MouseButton.SECONDARY)) {
+            /*if(mouseEvent.getButton().equals(MouseButton.SECONDARY)) {
                 if(mouseEvent.getClickCount() == 2) {
                     removeScene(sceneNode);
                 }
-            }
+            }*/
         });
     }
 
@@ -174,13 +223,24 @@ public class Controller {
     }
 
     public void addScene() {
+        //TODO open a popup that asks for a title and set that as the scene title
+        String title = null;
+        if(numberOfScenes != 0) {
+            title = new Alerts().addNewSceneDialog(this.getClass());
+        }
+
         numberOfScenes++;
 
         story.addNewScene(numberOfScenes-1);
 
         SceneNode sceneNode = new SceneNode(300, 100, numberOfScenes-1, sceneNodeMainController);
         new Draggable.Nature(sceneNode.getPane());
-        sceneNode.setTitle("Scene "+numberOfScenes);
+
+        if(title == null) {
+            sceneNode.setTitle("Scene "+numberOfScenes);
+        } else {
+            sceneNode.setTitle(title);
+        }
 
         if (!addSceneContextMenu) {
             sceneNode.getPane().setLayoutX(10);
