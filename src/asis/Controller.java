@@ -75,6 +75,7 @@ public class Controller {
         scrollPane.setOnContextMenuRequested(contextMenuEvent -> {
             menuEventX = contextMenuEvent.getX();
             menuEventY = contextMenuEvent.getY();
+//            if (anchorPane.getChildren() )
             contextMenu.show(scrollPane, contextMenuEvent.getScreenX(), contextMenuEvent.getScreenY());
         });
 
@@ -234,7 +235,7 @@ public class Controller {
     private void errorDialogWindow(Exception e) {
         ExceptionDialog exceptionDialog = new ExceptionDialog(e);
         exceptionDialog.setTitle("Error");
-        exceptionDialog.setHeaderText("Oh no an error! Send it to Asis so he can feel bad.\n"+e.getMessage());
+        exceptionDialog.setHeaderText("Oh no, an error! Send it to Asis so he can feel bad.\n"+e.getMessage());
         exceptionDialog.show();
     }
 
