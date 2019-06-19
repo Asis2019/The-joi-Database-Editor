@@ -38,8 +38,8 @@ public class TabNormalOperationController {
         mainTextArea.setStyle("outline-color: "+outlineColor+"; fill-color: "+fillColor+";");
 
         mainTextArea.textProperty().addListener((observable, oldValue, newValue) -> {
-            story.addLine(sceneId, onLine-1, newValue);
-            //System.out.println("Text: " + newValue);
+            String text = newValue.trim().replaceAll("\\n", "#");
+            story.addLine(sceneId, onLine-1, text);
         });
 
         textOutlineColorPicker.valueProperty().addListener((observableValue, color, t1) -> {
@@ -163,7 +163,8 @@ public class TabNormalOperationController {
             }
 
             if(textObject.has("text")) {
-                mainTextArea.setText(textObject.getString("text"));
+                String text = textObject.getString("text").replaceAll("#", "\n");
+                mainTextArea.setText(text);
             }
         }
     }

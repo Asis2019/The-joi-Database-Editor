@@ -21,6 +21,7 @@ import javafx.scene.layout.AnchorPane;
 import javafx.stage.DirectoryChooser;
 import javafx.stage.FileChooser;
 import javafx.stage.Stage;
+import javafx.stage.WindowEvent;
 import org.json.JSONException;
 import org.json.JSONObject;
 
@@ -309,7 +310,7 @@ public class Controller {
 
     public void actionNewProject() {
         //TODO Make confirmation dialog actually useful
-        Alerts.warningDialog("Load Project", "Do you want to save changes first?", "", primaryStage, null);
+        Alerts.warningDialog("Load Project", "Do you want to save changes first?", "", primaryStage, (WindowEvent) null);
 
         numberOfScenes = 0;
         anchorPane.getChildren().clear();

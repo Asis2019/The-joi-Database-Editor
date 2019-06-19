@@ -92,7 +92,8 @@ public class TabTimerController {
     }
 
     public void actionTextTyped() {
-        story.addDataToTimerLineObject(sceneId, "line"+onSecond, "text", textTextArea.getText().trim());
+        String text = textTextArea.getText().trim().replaceAll("\\n", "#");
+        story.addDataToTimerLineObject(sceneId, "line"+onSecond, "text", text);
     }
 
     public void actionAddImage() {
@@ -203,7 +204,8 @@ public class TabTimerController {
             }
 
             if(textObject.has("text")) {
-                timerTextArea.setText(textObject.getString("text"));
+                String text = textObject.getString("text").replaceAll("#", "\n");
+                timerTextArea.setText(text);
             }
         }
     }

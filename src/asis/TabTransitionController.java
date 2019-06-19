@@ -100,7 +100,8 @@ public class TabTransitionController {
 
     public void actionTransitionText() {
         //Add transition text to transition object
-        story.addDataToTransition(sceneId, "transitionText", transitionTextField.getText().trim());
+        String text = transitionTextField.getText().trim();
+        story.addDataToTransition(sceneId, "transitionText", text);
     }
 
     public void actionTransitionWaitTime() {
