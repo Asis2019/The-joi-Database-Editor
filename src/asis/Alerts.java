@@ -49,7 +49,9 @@ public class Alerts {
         } else if (result.get() == btnType2){
             alert.close();
         } else {
-            event[0].consume();
+            if (event != null) {
+                event[0].consume();
+            }
         }
     }
 

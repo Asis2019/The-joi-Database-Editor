@@ -309,7 +309,7 @@ public class Controller {
 
     public void actionNewProject() {
         //TODO Will init some things within the story object and create nodes
-        Alerts.warningDialog("Load Project", "Do you want to save changes first?", "", primaryStage);
+        Alerts.warningDialog("Load Project", "Do you want to save changes first?", "", primaryStage, null);
     }
 
     public void actionLoadProject() {
