@@ -22,7 +22,6 @@ import javafx.scene.layout.AnchorPane;
 import javafx.stage.DirectoryChooser;
 import javafx.stage.FileChooser;
 import javafx.stage.Stage;
-import org.controlsfx.dialog.ExceptionDialog;
 import org.json.JSONException;
 import org.json.JSONObject;
 
@@ -233,13 +232,6 @@ public class Controller {
             errorDialogWindow(e);
         }
         return null;
-    }
-
-    private void errorDialogWindow(Exception e) {
-        ExceptionDialog exceptionDialog = new ExceptionDialog(e);
-        exceptionDialog.setTitle("Error");
-        exceptionDialog.setHeaderText("Oh no, an error! Send it to Asis so he can feel bad.\n"+e.getMessage());
-        exceptionDialog.show();
     }
 
     public void actionNewProject() {
