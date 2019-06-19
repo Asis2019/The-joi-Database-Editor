@@ -14,7 +14,7 @@ import org.json.JSONObject;
 
 import java.util.Optional;
 
-import static asis.custom_objects.ColorUtils.colorToHex;
+import static asis.custom_objects.AsisUtils.colorToHex;
 
 public class TabTransitionController {
     private Story story;
