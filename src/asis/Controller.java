@@ -40,6 +40,7 @@ public class Controller {
     private double menuEventY;
     private Boolean addSceneContextMenu = false;
     private static Controller instance = null;
+    private Stage primaryStage;
 
     private SceneNodeMainController sceneNodeMainController;
 
@@ -51,7 +52,9 @@ public class Controller {
 
     }
 
-    void inflater() {
+    void inflater(Stage primaryStage) {
+
+        this.primaryStage = primaryStage;
          instance = this;
          sceneNodeMainController = new SceneNodeMainController(this);
          sceneNodeMainController.setPane(anchorPane);
@@ -243,7 +246,7 @@ public class Controller {
 
     public void actionNewProject() {
         //TODO Will init some things within the story object and create nodes
-        Alerts.confirmationDialog("Confirmation", "Do you want to save changes?", "");
+        Alerts.warningDialog("Load Project", "Do you want to save changes first?", "", primaryStage);
     }
 
     public void actionLoadProject() {
