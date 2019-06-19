@@ -12,6 +12,7 @@ import javafx.scene.Node;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.scene.control.ContextMenu;
+import javafx.scene.control.MenuBar;
 import javafx.scene.control.MenuItem;
 import javafx.scene.control.ScrollPane;
 import javafx.scene.image.Image;
@@ -50,19 +51,19 @@ public class Controller {
 
     @FXML private AnchorPane anchorPane;
     @FXML private ScrollPane scrollPane;
-    //@FXML private MenuBar mainMenuBar;
+    @FXML private MenuBar mainMenuBar;
 
     public void initialize() {
 
     }
 
     void inflater() {
-         instance = this;
-         sceneNodeMainController = new SceneNodeMainController(this);
-         sceneNodeMainController.setPane(anchorPane);
-         sceneNodeMainController.setScrollPane(scrollPane);
-         //TODO replace fixed number with one from mainMenuBar + height of toolbar
-         sceneNodeMainController.setMenuBarOffset(70);
+        instance = this;
+        sceneNodeMainController = new SceneNodeMainController(this);
+        sceneNodeMainController.setPane(anchorPane);
+        sceneNodeMainController.setScrollPane(scrollPane);
+        //TODO replace fixed number with one from mainMenuBar + height of toolbar
+        sceneNodeMainController.setMenuBarOffset(70);
 
         setupMainContextMenu();
         setupSceneNodeContextMenu();
@@ -220,13 +221,24 @@ public class Controller {
     }
 
     public void addScene() {
+        //TODO open a popup that asks for a title and set that as the scene title
+        String title = null;
+        if(numberOfScenes != 0) {
+            title = new Alerts().addNewSceneDialog(this.getClass());
+        }
+
         numberOfScenes++;
 
         story.addNewScene(numberOfScenes-1);
 
         SceneNode sceneNode = new SceneNode(300, 100, numberOfScenes-1, sceneNodeMainController);
         new Draggable.Nature(sceneNode.getPane());
-        sceneNode.setTitle("Scene "+numberOfScenes);
+
+        if(title == null) {
+            sceneNode.setTitle("Scene "+numberOfScenes);
+        } else {
+            sceneNode.setTitle(title);
+        }
 
         if (!addSceneContextMenu) {
             sceneNode.getPane().setLayoutX(10);

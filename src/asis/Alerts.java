@@ -1,11 +1,23 @@
 package asis;
 
+import javafx.fxml.FXMLLoader;
+import javafx.scene.Parent;
+import javafx.scene.Scene;
 import javafx.scene.control.Alert;
 import javafx.scene.control.ButtonBar;
 import javafx.scene.control.ButtonType;
+import javafx.scene.image.Image;
+import javafx.stage.Modality;
+import javafx.stage.Stage;
+
+import java.io.IOException;
 import java.util.Optional;
 
+import static asis.custom_objects.AsisUtils.errorDialogWindow;
+
 public class Alerts {
+
+    private String sceneTitle;
 
     public static void confirmationDialog(String title, String header, String content) {
         Alert alert = new Alert(Alert.AlertType.CONFIRMATION);
@@ -25,5 +37,32 @@ public class Alerts {
         } else {
             alert.close();
         }
+    }
+
+    public String addNewSceneDialog(Class calledFrom) {
+        try {
+            Stage stage = new Stage();
+
+            FXMLLoader fxmlLoader = new FXMLLoader(calledFrom.getResource("fxml/dialog_set_scene_title.fxml"));
+            Parent root = fxmlLoader.load();
+
+            DialogSceneTitleController controller = fxmlLoader.getController();
+            controller.inflate(this);
+            Scene main_scene = new Scene(root);
+
+            stage.initModality(Modality.APPLICATION_MODAL);
+            stage.getIcons().add(new Image(Main.class.getResourceAsStream("images/icon.png")));
+            stage.setScene(main_scene);
+            stage.setTitle("Scene Title");
+            stage.showAndWait();
+        } catch (IOException e) {
+            errorDialogWindow(e);
+        }
+
+        return sceneTitle;
+    }
+
+    void setTitle(String title) {
+        this.sceneTitle = title;
     }
 }
