@@ -308,7 +308,7 @@ public class Controller {
     }
 
     public void actionNewProject() {
-        //TODO Will init some things within the story object and create nodes
+        //TODO Make confirmation dialog actually useful
         Alerts.warningDialog("Load Project", "Do you want to save changes first?", "", primaryStage, null);
 
         numberOfScenes = 0;
