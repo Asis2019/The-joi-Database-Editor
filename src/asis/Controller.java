@@ -43,6 +43,8 @@ public class Controller {
     private double menuEventY;
     private Boolean addSceneContextMenu = false;
     private static Controller instance = null;
+    private Boolean newChanges = false;
+    private Boolean firstScene = false;
 
     private SceneNodeMainController sceneNodeMainController;
 
@@ -64,11 +66,20 @@ public class Controller {
         setupMainContextMenu();
         setupSceneNodeContextMenu();
 
+        firstScene = true;
         addScene();
     }
 
     static Controller getInstance() {
         return instance;
+    }
+
+    void setNewChanges() {
+        this.newChanges = true;
+    }
+
+    public Boolean getNewChanges() {
+        return newChanges;
     }
 
     private void setupSceneNodeContextMenu() {
@@ -283,6 +294,12 @@ public class Controller {
 
         setClickActionForNode(sceneNode);
         anchorPane.getChildren().add(sceneNode.getPane());
+
+        if (!firstScene) {
+            setNewChanges();
+        } else {
+            firstScene = false;
+        }
     }
 
     private void removeScene(SceneNode sceneNode) {
@@ -291,6 +308,7 @@ public class Controller {
         sceneNodeMainController.notifySceneRemoved(sceneNode);
 
         anchorPane.getChildren().remove(sceneNode.getPane());
+        setNewChanges();
     }
 
     public void addConnectionToStory(AsisConnectionButton outputConnection, AsisConnectionButton inputConnection) {
@@ -301,10 +319,12 @@ public class Controller {
         } else {
             story.addDataToScene(outputConnection.getParentSceneId(), "gotoScene", inputConnection.getParentSceneId());
         }
+        setNewChanges();
     }
 
     public void removeConnectionFromStory(int sceneId) {
         story.removeDataFromScene(sceneId, "gotoScene");
+        setNewChanges();
     }
 
     private void writeJsonToFile(JSONObject jsonObject, String fileName, File saveLocation) {

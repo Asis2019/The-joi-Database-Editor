@@ -185,6 +185,11 @@ public class MetaDataForm {
             story.setMetadataObject(metadataObject);
             story.addMetadataIcon(iconFile);
 
+            if (!titleTextField.getText().equals("") || !preparationsTextField.getText().equals("")|| !displayedFetishesTextField.getText().equals("") || iconFile != null
+                    || !joiIdTextField.getText().equals("") || !fetishesArray[0].equals("") || !equipmentArray[0].equals("") || !charactersArray[0].equals("")) {
+                Controller.getInstance().setNewChanges();
+            }
+
             //Close window
             Stage stage = (Stage) mainVBox.getScene().getWindow();
             stage.close();

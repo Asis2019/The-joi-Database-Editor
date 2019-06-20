@@ -13,15 +13,9 @@ import static asis.custom_objects.AsisUtils.errorDialogWindow;
 
 public class Alerts {
 
-
-    private Alerts instance;
     private String sceneTitle;
     private int unsavedChangesDialogButtonChoice;
     private boolean yesNoConfirmationChoice;
-
-    public Alerts() {
-        instance = this;
-    }
 
     boolean confirmationDialog(Class calledFrom, String title, String message) {
         try {

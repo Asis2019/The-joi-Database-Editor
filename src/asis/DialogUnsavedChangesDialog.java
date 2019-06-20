@@ -31,6 +31,7 @@ public class DialogUnsavedChangesDialog {
         alerts.setUnsavedChangesResult(2);
         Stage stage = (Stage) messageLabel.getScene().getWindow();
         stage.close();
+
     }
 
 }

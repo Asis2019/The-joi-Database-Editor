@@ -95,6 +95,7 @@ public class SceneDetails {
             //setVisibleImage();
             tabTimerController.setVisibleImage();
             tabNormalOperationController.setVisibleImage();
+            Controller.getInstance().setNewChanges();
         }
     }
 
@@ -117,6 +118,7 @@ public class SceneDetails {
             }
 
             menuItemAddTimer.setDisable(true);
+            Controller.getInstance().setNewChanges();
         } catch (IOException e) {
             e.printStackTrace();
         }
@@ -139,6 +141,7 @@ public class SceneDetails {
             menuItemAddTransition.setDisable(true);
 
             story.removeDataFromScene(sceneId, "noFade");
+            Controller.getInstance().setNewChanges();
         } catch (IOException e) {
             e.printStackTrace();
         }
@@ -159,6 +162,7 @@ public class SceneDetails {
             effectTabs.getTabs().add(1, dialogOptionsTab);
 
             menuItemAddDialog.setDisable(true);
+            Controller.getInstance().setNewChanges();
         } catch (IOException e) {
             e.printStackTrace();
         }
@@ -169,18 +173,19 @@ public class SceneDetails {
 
         story.removeTransition(sceneId);
         story.addDataToScene(sceneId, "noFade", true);
+        Controller.getInstance().setNewChanges();
     }
 
     private void actionTimerClosed() {
         menuItemAddTimer.setDisable(false);
-
         story.removeTimer(sceneId);
+        Controller.getInstance().setNewChanges();
     }
 
     private void actionDialogClosed() {
         menuItemAddDialog.setDisable(false);
-
         story.removeDialog(sceneId);
+        Controller.getInstance().setNewChanges();
     }
 
     private void actionDialogCloseRequested(Event event) {

@@ -34,20 +34,22 @@ public class Main extends Application {
                 return;
             }
 
-            int choice = new Alerts().unsavedChangesDialog(this.getClass(), "Warning", "You have unsaved work, are you sure you want to quit?");
-            switch (choice) {
-                case 0:
-                    event.consume();
-                    break;
+            if (Controller.getInstance().getNewChanges()) {
+                int choice = new Alerts().unsavedChangesDialog(this.getClass(), "Warning", "You have unsaved work, are you sure you want to quit?");
+                switch (choice) {
+                    case 0:
+                        event.consume();
+                        break;
 
-                case 1:
-                    controller.quiteProgram();
-                    break;
+                    case 1:
+                        controller.quiteProgram();
+                        break;
 
-                case 2:
-                    controller.actionSaveProject();
-                    controller.quiteProgram();
-                    break;
+                    case 2:
+                        controller.actionSaveProject();
+                        controller.quiteProgram();
+                        break;
+                }
             }
         });
     }
