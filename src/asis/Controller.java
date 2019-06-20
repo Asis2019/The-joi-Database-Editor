@@ -389,6 +389,7 @@ public class Controller {
             for (File file1 : story.getImagesArray()) {
                 try {
                     Files.copy(file1.toPath(), file.toPath().resolve(file1.getName()), StandardCopyOption.REPLACE_EXISTING);
+                    newChanges = false;
                 } catch (IOException e) {
                     errorDialogWindow(e);
                 }
@@ -399,6 +400,7 @@ public class Controller {
                 if(story.getMetadataIcon() != null) {
                     File file1 = story.getMetadataIcon();
                     Files.copy(file1.toPath(), file.toPath().resolve(file1.getName()), StandardCopyOption.REPLACE_EXISTING);
+                    newChanges = false;
                 }
             } catch (IOException e) {
                 errorDialogWindow(e);
