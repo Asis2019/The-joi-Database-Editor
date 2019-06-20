@@ -26,6 +26,7 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.io.*;
+import java.net.URL;
 import java.nio.file.Files;
 import java.nio.file.StandardCopyOption;
 import java.util.ArrayList;
@@ -567,6 +568,30 @@ public class Controller {
         File file = directoryChooser.showDialog(null);
 
         if(file != null) {
+            if(story.getMetadataObject() == null || story.getMetadataObject().isEmpty()) {
+                //Init metadata
+                JSONObject innerMetadataObject = new JSONObject();
+                //Single lined info
+                innerMetadataObject.put("name", "");
+                innerMetadataObject.put("preparations", "");
+                innerMetadataObject.put("displayedFetishes", "");
+                innerMetadataObject.put("joiId", "");
+
+                innerMetadataObject.put("fetish0", "");
+                innerMetadataObject.put("toy0", "");
+                innerMetadataObject.put("character0", "");
+
+                JSONArray jsonArray = new JSONArray();
+                jsonArray.put(innerMetadataObject);
+
+                JSONObject metadataObject = new JSONObject();
+                metadataObject.put("JOI METADATA", jsonArray);
+
+                story.setMetadataObject(metadataObject);
+                URL url = this.getClass().getResource("images/icon_dev.png");
+                story.addMetadataIcon(new File(Objects.requireNonNull(url).getPath()));
+            }
+
             writeJsonToFile(story.getMetadataObject(), "info_en.json", file);
             writeJsonToFile(story.getStoryDataJson(), "joi_text_en.json", file);
 
