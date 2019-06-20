@@ -176,6 +176,14 @@ public class Controller {
             stage.setTitle("Project Details");
             stage.setScene(new Scene(root, 400, 720));
             stage.show();
+
+            stage.setOnCloseRequest(event -> {
+                if (metaDataForm.hasChanged()) {
+                    if (!new Alerts().confirmationDialog(this.getClass(), "Warning", "Are you sure you don't want to save?")) {
+                        event.consume();
+                    }
+                }
+            });
         } catch (IOException e) {
             errorDialogWindow(e);
         }
@@ -399,7 +407,7 @@ public class Controller {
 
     public void actionLoadProject() {
         if (getNewChanges()) {
-            int choice = new Alerts().unsavedChangesDialog(this.getClass(), "New Project", "You have unsaved work, are you sure you want to continue?");
+            int choice = new Alerts().unsavedChangesDialog(this.getClass(), "Load Project", "You have unsaved work, are you sure you want to continue?");
             switch (choice) {
                 case 0:
                     return;

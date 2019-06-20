@@ -22,6 +22,7 @@ public class MetaDataForm {
     private File iconFile = null;
     private Story story;
     private ImageView imageView = new ImageView();
+    private boolean hasChanged = false;
 
     @FXML private VBox mainVBox, iconControllerBox;
     @FXML private TextField titleTextField, preparationsTextField, displayedFetishesTextField, joiIdTextField;
@@ -120,6 +121,22 @@ public class MetaDataForm {
         imageView.setFitWidth(300);
         imageView.setCursor(Cursor.HAND);
         imageView.setOnMouseClicked(mouseEvent -> addIcon());
+
+        setListeners();
+    }
+
+    private void setListeners() {
+        titleTextField.setOnKeyTyped(keyEvent -> hasChanged = true);
+        preparationsTextField.setOnKeyTyped(keyEvent -> hasChanged = true);
+        displayedFetishesTextField.setOnKeyTyped(keyEvent -> hasChanged = true);
+        joiIdTextField.setOnKeyTyped(keyEvent -> hasChanged = true);
+        fetishesTextArea.setOnKeyTyped(keyEvent -> hasChanged = true);
+        equipmentTextArea.setOnKeyTyped(keyEvent -> hasChanged = true);
+        charactersTextArea.setOnKeyTyped(keyEvent -> hasChanged = true);
+    }
+
+    Boolean hasChanged() {
+        return this.hasChanged;
     }
 
     public void addIcon() {
