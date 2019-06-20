@@ -38,6 +38,10 @@ public class DialogNewProjectController {
         }
     }
 
+    public void onActionLoadProject() {
+        Controller.getInstance().actionLoadProject();
+    }
+
     public void actionButtonFinish() {
         if (Controller.getInstance().getNewChanges()) {
             int choice = new Alerts().unsavedChangesDialog(this.getClass(), "New Project", "You have unsaved work, are you sure you want to continue?");

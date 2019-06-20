@@ -24,6 +24,8 @@ public class Main extends Application {
         primaryStage.show();
         primaryStage.setMaximized(true);
 
+        Controller.getInstance().actionNewProject();
+
         primaryStage.setOnCloseRequest(event -> {
             //Check if dialog is needed
             JSONObject storyData = Story.getInstance().getStoryDataJson();
