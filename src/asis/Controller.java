@@ -78,7 +78,7 @@ public class Controller {
         this.newChanges = true;
     }
 
-    public Boolean getNewChanges() {
+    Boolean getNewChanges() {
         return newChanges;
     }
 
@@ -254,7 +254,7 @@ public class Controller {
 
     }
 
-    public void quiteProgram() {
+    void quiteProgram() {
         Platform.exit();
         System.exit(0);
     }

@@ -22,7 +22,7 @@ class Story {
         instance = this;
     }
 
-    public static Story getInstance() {
+    static Story getInstance() {
         return instance;
     }
 
