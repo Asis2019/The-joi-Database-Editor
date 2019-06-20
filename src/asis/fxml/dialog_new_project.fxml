@@ -1,0 +1,41 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.geometry.Insets?>
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+<?import java.net.URL?>
+<BorderPane id="darkThemeBackground" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="400.0" prefWidth="600.0" xmlns="http://javafx.com/javafx/8.0.172-ea" xmlns:fx="http://javafx.com/fxml/1" fx:controller="asis.DialogNewProjectController">
+   <bottom>
+      <ToolBar prefHeight="40.0" prefWidth="200.0" BorderPane.alignment="CENTER">
+        <items>
+            <Pane HBox.hgrow="ALWAYS" />
+          <Button minWidth="-Infinity" mnemonicParsing="false" onAction="#actionButtonFinish" prefWidth="100.0" text="Finish" />
+        </items>
+      </ToolBar>
+   </bottom>
+   <center>
+      <VBox prefHeight="200.0" prefWidth="100.0" spacing="8.0" BorderPane.alignment="CENTER">
+         <children>
+            <HBox alignment="CENTER_LEFT" spacing="10.0">
+               <children>
+                  <Label text="Project Name:" textFill="WHITE" />
+                  <TextField fx:id="projectNameTextField" HBox.hgrow="ALWAYS" />
+               </children>
+            </HBox>
+            <HBox layoutX="10.0" layoutY="10.0" spacing="10.0">
+               <children>
+                  <Label text="Project Location:" textFill="WHITE" />
+                  <TextField fx:id="projectDirectoryTextField" HBox.hgrow="ALWAYS" />
+                  <Button id="browsFoldersButton" mnemonicParsing="false" onAction="#actionBrowsFolder" text="..." />
+               </children>
+            </HBox>
+         </children>
+         <padding>
+            <Insets bottom="16.0" left="16.0" right="16.0" top="16.0" />
+         </padding></VBox>
+   </center>
+   <stylesheets>
+      <URL value="@../css/main_stylesheet.css" />
+      <URL value="@../css/text_field_stylesheet.css" />
+   </stylesheets>
+</BorderPane>

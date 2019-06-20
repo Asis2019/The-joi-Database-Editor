@@ -20,6 +20,7 @@ import javafx.scene.input.MouseButton;
 import javafx.scene.layout.AnchorPane;
 import javafx.stage.DirectoryChooser;
 import javafx.stage.FileChooser;
+import javafx.stage.Modality;
 import javafx.stage.Stage;
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -45,8 +46,13 @@ public class Controller {
     private double menuEventY;
     private Boolean addSceneContextMenu = false;
     private static Controller instance = null;
-    private Boolean newChanges = false;
-    private Boolean firstScene = false;
+    private boolean newChanges = false;
+    private boolean firstScene = false;
+    static boolean createNewProject = false;
+
+    //These should not be used in any code but the newProject method
+    static File newProjectFile;
+    static String newProjectName;
 
     private SceneNodeMainController sceneNodeMainController;
 
@@ -80,7 +86,7 @@ public class Controller {
         this.newChanges = true;
     }
 
-    Boolean getNewChanges() {
+    boolean getNewChanges() {
         return newChanges;
     }
 
@@ -387,23 +393,51 @@ public class Controller {
     }
 
     public void actionNewProject() {
-        if (getNewChanges()) {
-            int choice = new Alerts().unsavedChangesDialog(this.getClass(), "New Project", "You have unsaved work, are you sure you want to continue?");
-            switch (choice) {
-                case 0:
-                    return;
+        try {
+            FXMLLoader fxmlLoader = new FXMLLoader(getClass().getResource("fxml/dialog_new_project.fxml"));
+            Parent root = fxmlLoader.load();
 
-                case 2:
-                    actionSaveProject();
-                    break;
-            }
+            //DialogNewProjectController controller = fxmlLoader.getController();
+            //sceneDetails.passData(story, sceneNode);
+
+            Stage stage = new Stage();
+            stage.initModality(Modality.APPLICATION_MODAL);
+            stage.getIcons().add(new Image(Controller.class.getResourceAsStream("images/icon.png")));
+            stage.setTitle("New Project");
+            stage.setScene(new Scene(root, 600, 400));
+            stage.showAndWait();
+        } catch (IOException e) {
+            errorDialogWindow(e);
         }
 
-        numberOfScenes = 0;
-        anchorPane.getChildren().clear();
-        story = new Story();
-        addScene();
-        newChanges = false;
+        if(createNewProject) {
+            numberOfScenes = 0;
+            anchorPane.getChildren().clear();
+            story = new Story();
+            addScene();
+            newChanges = false;
+            createNewProject = false;
+
+            String folderPath = newProjectFile.getPath()+"\\"+newProjectName;
+            File projectDirectory = new File(folderPath);
+            boolean result = projectDirectory.mkdir();
+
+            if(result) {
+                System.out.println("Created folder");
+            } else {
+                System.out.println("Folder already exists");
+            }
+
+            //Set project directory
+            story.setProjectDirectory(projectDirectory);
+
+            //Add project name as the Title in metadata
+            story.addTitleToMetadataObject(newProjectName);
+
+            //Reset newProject variables
+            newProjectName = null;
+            newProjectFile = null;
+        }
     }
 
     public void actionLoadProject() {
@@ -562,6 +596,60 @@ public class Controller {
     }
 
     public void actionSaveProject() {
+        File file = story.getProjectDirectory();
+
+        if(file != null) {
+            if(story.getMetadataObject() == null || story.getMetadataObject().isEmpty()) {
+                //Init metadata
+                JSONObject innerMetadataObject = new JSONObject();
+                //Single lined info
+                innerMetadataObject.put("name", "");
+                innerMetadataObject.put("preparations", "");
+                innerMetadataObject.put("displayedFetishes", "");
+                innerMetadataObject.put("joiId", "");
+
+                innerMetadataObject.put("fetish0", "");
+                innerMetadataObject.put("toy0", "");
+                innerMetadataObject.put("character0", "");
+
+                JSONArray jsonArray = new JSONArray();
+                jsonArray.put(innerMetadataObject);
+
+                JSONObject metadataObject = new JSONObject();
+                metadataObject.put("JOI METADATA", jsonArray);
+
+                story.setMetadataObject(metadataObject);
+                URL url = this.getClass().getResource("images/icon_dev.png");
+                story.addMetadataIcon(new File(Objects.requireNonNull(url).getPath()));
+            }
+
+            writeJsonToFile(story.getMetadataObject(), "info_en.json", file);
+            writeJsonToFile(story.getStoryDataJson(), "joi_text_en.json", file);
+
+            //Copy image to project directory
+            for (File file1 : story.getImagesArray()) {
+                try {
+                    Files.copy(file1.toPath(), file.toPath().resolve(file1.getName()), StandardCopyOption.REPLACE_EXISTING);
+                    newChanges = false;
+                } catch (IOException e) {
+                    errorDialogWindow(e);
+                }
+            }
+
+            //Copy icon to project directory
+            try {
+                if(story.getMetadataIcon() != null) {
+                    File file1 = story.getMetadataIcon();
+                    Files.copy(file1.toPath(), file.toPath().resolve(file1.getName()), StandardCopyOption.REPLACE_EXISTING);
+                    newChanges = false;
+                }
+            } catch (IOException e) {
+                errorDialogWindow(e);
+            }
+        }
+    }
+
+    public void actionSaveProjectAs() {
         DirectoryChooser directoryChooser = new DirectoryChooser();
         directoryChooser.setInitialDirectory(story.getProjectDirectory());
         directoryChooser.setTitle("Save Location");

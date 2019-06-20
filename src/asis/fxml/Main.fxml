@@ -10,6 +10,7 @@
              <MenuBar fx:id="mainMenuBar">
                  <Menu mnemonicParsing="false" text="File">
                      <MenuItem mnemonicParsing="false" onAction="#actionSaveProject" text="Save Project" />
+                  <MenuItem mnemonicParsing="false" onAction="#actionSaveProjectAs" text="Save Project As..." />
                   <MenuItem mnemonicParsing="false" onAction="#actionExportToZip" text="Export to Zip" />
                      <MenuItem mnemonicParsing="false" onAction="#actionNewProject" text="New Project" />
                      <MenuItem mnemonicParsing="false" onAction="#actionLoadProject" text="Load Project" />

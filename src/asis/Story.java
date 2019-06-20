@@ -297,6 +297,18 @@ public class Story {
         return 1;
     }
 
+    void addTitleToMetadataObject(String title) {
+        if(metaDataJson.has("JOI METADATA")) {
+            metaDataJson.getJSONArray("JOI METADATA").getJSONObject(0).put("name", title);
+        } else {
+            JSONObject object = new JSONObject();
+            JSONArray array = new JSONArray();
+            array.put(object);
+            metaDataJson.put("JOI METADATA", array);
+            addTitleToMetadataObject(title);
+        }
+    }
+
     void setMetadataObject(JSONObject object) {
         this.metaDataJson = object;
     }
