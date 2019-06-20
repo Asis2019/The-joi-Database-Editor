@@ -6,7 +6,7 @@ import org.json.JSONObject;
 import java.io.File;
 import java.util.ArrayList;
 
-class Story {
+public class Story {
     private static Story instance = null;
 
     private File workingDirectory = new File(System.getProperty("user.dir"));
@@ -15,14 +15,13 @@ class Story {
 
     private JSONObject metaDataJson = new JSONObject();
     private JSONObject storyDataJson = new JSONObject();
-    private JSONArray sceneArray = new JSONArray();
 
-    Story() {
+    public Story() {
         //Default constructor
         instance = this;
     }
 
-    static Story getInstance() {
+    public static Story getInstance() {
         return instance;
     }
 
@@ -35,11 +34,16 @@ class Story {
     }
 
     void addNewScene(int sceneId, String sceneTitle) {
-        JSONObject object = new JSONObject();
-        object.put("sceneId", sceneId);
-        object.put("sceneTitle", sceneTitle);
-        sceneArray.put(object);
-        storyDataJson.put("JOI", sceneArray);
+        if(storyDataJson.has("JOI")) {
+            JSONObject object = new JSONObject();
+            object.put("sceneId", sceneId);
+            object.put("sceneTitle", sceneTitle);
+            storyDataJson.getJSONArray("JOI").put(object);
+        } else {
+            JSONArray jsonArray = new JSONArray();
+            storyDataJson.put("JOI", jsonArray);
+            addNewScene(sceneId, sceneTitle);
+        }
     }
 
     void removeScene(int sceneId) {
@@ -87,11 +91,16 @@ class Story {
         return false;
     }
 
-    void addDataToScene(int sceneId, String key, Object value) {
+    public void addDataToScene(int sceneId, String key, Object value) {
         int amountOfScenes = storyDataJson.getJSONArray("JOI").length();
         for(int i=0; i < amountOfScenes; i++) {
-            if(storyDataJson.getJSONArray("JOI").getJSONObject(i).getInt("sceneId") == sceneId) {
-                storyDataJson.getJSONArray("JOI").getJSONObject(i).put(key, value);
+            if(storyDataJson.getJSONArray("JOI").getJSONObject(i).has("sceneId")) {
+                if (storyDataJson.getJSONArray("JOI").getJSONObject(i).getInt("sceneId") == sceneId) {
+                    storyDataJson.getJSONArray("JOI").getJSONObject(i).put(key, value);
+                }
+            } else {
+                storyDataJson.getJSONArray("JOI").getJSONObject(i).put("sceneId", sceneId);
+                addDataToScene(sceneId, key, value);
             }
         }
     }
@@ -411,5 +420,9 @@ class Story {
                 }
             }
         }
+    }
+
+    void setStoryDataJson(JSONObject object) {
+        this.storyDataJson = object;
     }
 }

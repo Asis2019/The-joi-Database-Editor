@@ -1,5 +1,9 @@
 package asis.custom_objects.asis_node;
 
+import asis.Story;
+import javafx.beans.property.ReadOnlyDoubleProperty;
+import javafx.beans.property.ReadOnlyDoubleWrapper;
+import javafx.geometry.Bounds;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
 import javafx.scene.control.Label;
@@ -20,6 +24,9 @@ public class SceneNode extends Region {
     private int sceneId;
     private List<AsisConnectionButton> outputConnections = new ArrayList<>();
     private AsisConnectionButton inputConnection;
+
+    private ReadOnlyDoubleWrapper xPosition = new ReadOnlyDoubleWrapper();
+    private ReadOnlyDoubleWrapper yPosition = new ReadOnlyDoubleWrapper();
 
     public SceneNode(int width, int height, int sceneId, SceneNodeMainController sceneNodeMainController) {
         this.sceneId = sceneId;
@@ -49,13 +56,25 @@ public class SceneNode extends Region {
         }
 
         createNewOutputConnectionPoint("Default", "normal_output");
+
+        borderPane.translateXProperty().addListener((observableValue, number, t1) -> {
+            Bounds bounds = borderPane.localToScene(borderPane.getLayoutBounds());
+            xPosition.set(bounds.getMinX());
+        });
+        borderPane.translateYProperty().addListener((observableValue, number, t1) -> {
+            Bounds bounds = borderPane.localToScene(borderPane.getLayoutBounds());
+            yPosition.set(bounds.getMinY());
+        });
+
+        xPositionProperty().addListener((observableValue, number, t1) -> Story.getInstance().addDataToScene(sceneId, "layoutXPosition", t1.doubleValue()));
+        yPositionProperty().addListener((observableValue, number, t1) -> Story.getInstance().addDataToScene(sceneId, "layoutYPosition", t1.doubleValue()));
     }
 
-    List<AsisConnectionButton> getOutputButtons() {
+    public List<AsisConnectionButton> getOutputButtons() {
         return this.outputConnections;
     }
 
-    AsisConnectionButton getInputConnection() {
+    public AsisConnectionButton getInputConnection() {
         return this.inputConnection;
     }
 
@@ -130,5 +149,13 @@ public class SceneNode extends Region {
 
     public void setTitle(String title) {
         titleLabel.setText(title);
+    }
+
+    private ReadOnlyDoubleProperty xPositionProperty() {
+        return this.xPosition.getReadOnlyProperty();
+    }
+
+    private ReadOnlyDoubleProperty yPositionProperty() {
+        return this.yPosition.getReadOnlyProperty();
     }
 }

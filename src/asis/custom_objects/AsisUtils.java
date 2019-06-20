@@ -5,6 +5,7 @@ import javafx.scene.Parent;
 import javafx.scene.paint.Color;
 import org.controlsfx.dialog.ExceptionDialog;
 
+import java.io.File;
 import java.util.ArrayList;
 
 public class AsisUtils {
@@ -43,6 +44,11 @@ public class AsisUtils {
             if (node instanceof Parent)
                 addAllDescendants((Parent)node, nodes);
         }
+    }
+
+    public static String getFileExtension(File file) {
+        String fileName = file.getName();
+        return fileName.substring(fileName.lastIndexOf(".") + 1, file.getName().length());
     }
 
 

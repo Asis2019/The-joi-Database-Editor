@@ -64,6 +64,24 @@ public class SceneNodeMainController {
         inputConnections.add(asisConnectionButton);
     }
 
+    public void createConnection(AsisConnectionButton from, AsisConnectionButton to) {
+        BoundLine boundLine = new BoundLine(from.centerXProperty(), from.centerYProperty());
+        from.setBoundLine(boundLine);
+        boundLine.setStartPointConnectionObject(from);
+
+        boundLine.controlX1Property().bind(Bindings.add(boundLine.startXProperty(), 100));
+        boundLine.controlX2Property().bind(Bindings.add(boundLine.endXProperty(), -100));
+        boundLine.controlY1Property().bind(Bindings.add(boundLine.startYProperty(), 0));
+        boundLine.controlY2Property().bind(Bindings.add(boundLine.endYProperty(), 0));
+
+        boundLine.setUserData(from);
+        boundLine.endXProperty().bind(to.centerXProperty());
+        boundLine.endYProperty().bind(to.centerYProperty());
+        boundLine.setEndPointConnectionObject(to);
+
+        root.getChildren().add(0, boundLine);
+    }
+
     private void startDrag() {
         if (dragActive)
             return;
