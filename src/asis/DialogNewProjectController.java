@@ -18,13 +18,7 @@ public class DialogNewProjectController {
         projectNameTextField.setText("Untitled");
         projectDirectoryTextField.setText(projectPath.getPath()+"\\Untitled");
 
-        projectNameTextField.setOnKeyTyped(keyEvent -> {
-            projectDirectoryTextField.setText(projectPath.getPath()+"\\"+projectNameTextField.getText().trim());
-        });
-
-        /*projectDirectoryTextField.setOnKeyTyped(keyEvent -> {
-            projectDirectoryTextField.setText(projectPath.getPath()+"\\"+projectNameTextField.getText().trim());
-        });*/
+        projectNameTextField.setOnKeyTyped(keyEvent -> projectDirectoryTextField.setText(projectPath.getPath()+"\\"+projectNameTextField.getText().trim()));
     }
 
     public void actionBrowsFolder() {
@@ -39,7 +33,11 @@ public class DialogNewProjectController {
     }
 
     public void onActionLoadProject() {
-        Controller.getInstance().actionLoadProject();
+        boolean result = Controller.getInstance().actionLoadProject();
+        if(result) {
+            Stage stage = (Stage) projectNameTextField.getScene().getWindow();
+            stage.close();
+        }
     }
 
     public void actionButtonFinish() {
