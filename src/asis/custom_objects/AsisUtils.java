@@ -51,5 +51,8 @@ public class AsisUtils {
         return fileName.substring(fileName.lastIndexOf(".") + 1, file.getName().length());
     }
 
+    public static double clamp(double val, double min, double max) {
+        return Math.max(min, Math.min(max, val));
+    }
 
 }

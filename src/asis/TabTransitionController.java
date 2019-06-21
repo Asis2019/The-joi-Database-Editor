@@ -14,6 +14,7 @@ import org.json.JSONObject;
 
 import java.util.Optional;
 
+import static asis.custom_objects.AsisUtils.clamp;
 import static asis.custom_objects.AsisUtils.colorToHex;
 
 public class TabTransitionController {
@@ -116,7 +117,7 @@ public class TabTransitionController {
         try {
             double fadeSpeedSeconds = Double.parseDouble(fadeSpeedField.getText().trim());
             double fadeSpeed = 1 / (fadeSpeedSeconds * 60);
-            story.addDataToTransition(sceneId, "fadeSpeed", fadeSpeed);
+            story.addDataToTransition(sceneId, "fadeSpeed", clamp(fadeSpeed, 0.0000000001, 5));
         } catch (NumberFormatException e) {
             System.out.println("Incorrect value entered");
         }
