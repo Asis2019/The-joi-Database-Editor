@@ -44,6 +44,7 @@ public class Story {
             storyDataJson.put("JOI", jsonArray);
             addNewScene(sceneId, sceneTitle);
         }
+        Controller.getInstance().setNewChanges();
     }
 
     void removeScene(int sceneId) {
@@ -54,6 +55,7 @@ public class Story {
                 break;
             }
         }
+        Controller.getInstance().setNewChanges();
     }
 
     void removeTransition(int sceneId) {
@@ -65,6 +67,7 @@ public class Story {
                 }
             }
         }
+        Controller.getInstance().setNewChanges();
     }
 
     void removeDataFromScene(int sceneId, String key) {
@@ -76,6 +79,7 @@ public class Story {
                 }
             }
         }
+        Controller.getInstance().setNewChanges();
     }
 
     boolean hasNoFade(int sceneId) {
@@ -103,6 +107,7 @@ public class Story {
                 addDataToScene(sceneId, key, value);
             }
         }
+        Controller.getInstance().setNewChanges();
     }
 
     String getSceneImage(int sceneId) {
@@ -136,6 +141,7 @@ public class Story {
                 }
             }
         }
+        Controller.getInstance().setNewChanges();
     }
 
     void addDataToLineObject(int sceneId, int lineNumber, String key, String value) {
@@ -145,6 +151,7 @@ public class Story {
                 storyDataJson.getJSONArray("JOI").getJSONObject(i).getJSONArray("line"+lineNumber).getJSONObject(0).put(key, value);
             }
         }
+        Controller.getInstance().setNewChanges();
     }
 
     void addDataToTransition(int sceneId, String key, Object value) {
@@ -165,6 +172,7 @@ public class Story {
                 }
             }
         }
+        Controller.getInstance().setNewChanges();
     }
 
     JSONObject getTransitionData(int sceneId) {
@@ -241,6 +249,7 @@ public class Story {
                 }
             }
         }
+        Controller.getInstance().setNewChanges();
     }
 
     JSONObject getTimerLineData(int sceneId, String lineIndex) {
@@ -267,6 +276,7 @@ public class Story {
                 }
             }
         }
+        Controller.getInstance().setNewChanges();
     }
 
     JSONObject getLineData(int sceneId, int lineNumber) {
@@ -346,6 +356,7 @@ public class Story {
                 }
             }
         }
+        Controller.getInstance().setNewChanges();
     }
 
     void removeDialogOption(int sceneId, int optionNumber) {
@@ -359,6 +370,7 @@ public class Story {
                 }
             }
         }
+        Controller.getInstance().setNewChanges();
     }
 
     JSONObject getDialogData(int sceneId) {
@@ -402,6 +414,7 @@ public class Story {
                 }
             }
         }
+        Controller.getInstance().setNewChanges();
     }
 
     void addDialogOptionGoTo(int sceneId, int optionNumber, int gotoScene) {
@@ -432,6 +445,7 @@ public class Story {
                 }
             }
         }
+        Controller.getInstance().setNewChanges();
     }
 
     void setStoryDataJson(JSONObject object) {
