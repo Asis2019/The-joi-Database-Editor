@@ -87,7 +87,9 @@ public class TabTransitionController {
 
             //set fade speed
             if (transitionObject.has("fadeSpeed")) {
-                fadeSpeedField.setText(String.valueOf(transitionObject.getDouble("fadeSpeed")));
+                double fadeSpeed = transitionObject.getDouble("fadeSpeed");
+                double fadeSpeedSeconds = 1 / (fadeSpeed * 60);
+                fadeSpeedField.setText(String.valueOf(fadeSpeedSeconds));
             }
 
             //set fade color
@@ -111,8 +113,13 @@ public class TabTransitionController {
 
     public void actionTransitionFadeSpeed() {
         //Add transition fade speed to transition object
-        //TODO this number is given in seconds but the game doesn't use seconds
-        story.addDataToTransition(sceneId, "fadeSpeed", Double.valueOf(fadeSpeedField.getText().trim()));
+        try {
+            double fadeSpeedSeconds = Double.parseDouble(fadeSpeedField.getText().trim());
+            double fadeSpeed = 1 / (fadeSpeedSeconds * 60);
+            story.addDataToTransition(sceneId, "fadeSpeed", fadeSpeed);
+        } catch (NumberFormatException e) {
+            System.out.println("Incorrect value entered");
+        }
     }
 
     public void actionFadeColor() {

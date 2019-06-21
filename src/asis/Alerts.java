@@ -17,11 +17,32 @@ public class Alerts {
     private int unsavedChangesDialogButtonChoice;
     private boolean yesNoConfirmationChoice;
 
+    void messageDialog(Class calledFrom, String title, String message) {
+        try {
+            Stage stage = new Stage();
+
+            FXMLLoader fxmlLoader = new FXMLLoader(calledFrom.getResource("fxml/dialog_message.fxml"));
+            Parent root = fxmlLoader.load();
+
+            DialogMessageController controller = fxmlLoader.getController();
+            controller.inflate(message);
+            Scene main_scene = new Scene(root);
+
+            stage.initModality(Modality.APPLICATION_MODAL);
+            stage.getIcons().add(new Image(Main.class.getResourceAsStream("images/icon.png")));
+            stage.setScene(main_scene);
+            stage.setTitle(title);
+            stage.showAndWait();
+        } catch (IOException e) {
+            errorDialogWindow(e);
+        }
+    }
+
     boolean confirmationDialog(Class calledFrom, String title, String message) {
         try {
             Stage stage = new Stage();
 
-            FXMLLoader fxmlLoader = new FXMLLoader(calledFrom.getResource("fxml/dialog_confirmation_dialog.fxml"));
+            FXMLLoader fxmlLoader = new FXMLLoader(calledFrom.getResource("fxml/dialog_confirmation.fxml"));
             Parent root = fxmlLoader.load();
 
             DialogConfirmation controller = fxmlLoader.getController();
