@@ -323,6 +323,8 @@ public class Controller {
             setNewChanges();
         } else {
             firstScene = false;
+            //Override any changes caused by story object
+            newChanges = false;
         }
     }
 
@@ -399,9 +401,6 @@ public class Controller {
         try {
             FXMLLoader fxmlLoader = new FXMLLoader(getClass().getResource("fxml/dialog_new_project.fxml"));
             Parent root = fxmlLoader.load();
-
-            //DialogNewProjectController controller = fxmlLoader.getController();
-            //sceneDetails.passData(story, sceneNode);
 
             Stage stage = new Stage();
             stage.initModality(Modality.APPLICATION_MODAL);
@@ -589,7 +588,11 @@ public class Controller {
                 }
             } else {
                 new Alerts().messageDialog(this.getClass(), "Warning", "This is not a project folder");
+                return false;
             }
+        } else {
+            //File returned null
+            return false;
         }
 
         //Loading completed successfully

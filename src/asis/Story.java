@@ -39,12 +39,12 @@ public class Story {
             object.put("sceneId", sceneId);
             object.put("sceneTitle", sceneTitle);
             storyDataJson.getJSONArray("JOI").put(object);
+            Controller.getInstance().setNewChanges();
         } else {
             JSONArray jsonArray = new JSONArray();
             storyDataJson.put("JOI", jsonArray);
             addNewScene(sceneId, sceneTitle);
         }
-        Controller.getInstance().setNewChanges();
     }
 
     void removeScene(int sceneId) {
@@ -52,10 +52,10 @@ public class Story {
         for(int i=0; i < amountOfScenes; i++) {
             if(storyDataJson.getJSONArray("JOI").getJSONObject(i).getInt("sceneId") == sceneId) {
                 storyDataJson.getJSONArray("JOI").remove(i);
+                Controller.getInstance().setNewChanges();
                 break;
             }
         }
-        Controller.getInstance().setNewChanges();
     }
 
     void removeTransition(int sceneId) {
@@ -64,10 +64,10 @@ public class Story {
             if(storyDataJson.getJSONArray("JOI").getJSONObject(i).getInt("sceneId") == sceneId) {
                 if(storyDataJson.getJSONArray("JOI").getJSONObject(i).has("transition")) {
                     storyDataJson.getJSONArray("JOI").getJSONObject(i).remove("transition");
+                    Controller.getInstance().setNewChanges();
                 }
             }
         }
-        Controller.getInstance().setNewChanges();
     }
 
     void removeDataFromScene(int sceneId, String key) {
@@ -76,10 +76,10 @@ public class Story {
             if(storyDataJson.getJSONArray("JOI").getJSONObject(i).getInt("sceneId") == sceneId) {
                 if(storyDataJson.getJSONArray("JOI").getJSONObject(i).has(key)) {
                     storyDataJson.getJSONArray("JOI").getJSONObject(i).remove(key);
+                    Controller.getInstance().setNewChanges();
                 }
             }
         }
-        Controller.getInstance().setNewChanges();
     }
 
     boolean hasNoFade(int sceneId) {
@@ -101,13 +101,13 @@ public class Story {
             if(storyDataJson.getJSONArray("JOI").getJSONObject(i).has("sceneId")) {
                 if (storyDataJson.getJSONArray("JOI").getJSONObject(i).getInt("sceneId") == sceneId) {
                     storyDataJson.getJSONArray("JOI").getJSONObject(i).put(key, value);
+                    Controller.getInstance().setNewChanges();
                 }
             } else {
                 storyDataJson.getJSONArray("JOI").getJSONObject(i).put("sceneId", sceneId);
                 addDataToScene(sceneId, key, value);
             }
         }
-        Controller.getInstance().setNewChanges();
     }
 
     String getSceneImage(int sceneId) {
@@ -273,10 +273,10 @@ public class Story {
             if(storyDataJson.getJSONArray("JOI").getJSONObject(i).getInt("sceneId") == sceneId) {
                 if(storyDataJson.getJSONArray("JOI").getJSONObject(i).has("timer")) {
                     storyDataJson.getJSONArray("JOI").getJSONObject(i).remove("timer");
+                    Controller.getInstance().setNewChanges();
                 }
             }
         }
-        Controller.getInstance().setNewChanges();
     }
 
     JSONObject getLineData(int sceneId, int lineNumber) {
@@ -353,10 +353,10 @@ public class Story {
             if(storyDataJson.getJSONArray("JOI").getJSONObject(i).getInt("sceneId") == sceneId) {
                 if(storyDataJson.getJSONArray("JOI").getJSONObject(i).has("dialogChoice")) {
                     storyDataJson.getJSONArray("JOI").getJSONObject(i).remove("dialogChoice");
+                    Controller.getInstance().setNewChanges();
                 }
             }
         }
-        Controller.getInstance().setNewChanges();
     }
 
     void removeDialogOption(int sceneId, int optionNumber) {
@@ -366,11 +366,11 @@ public class Story {
                 if(storyDataJson.getJSONArray("JOI").getJSONObject(i).has("dialogChoice")) {
                     if(storyDataJson.getJSONArray("JOI").getJSONObject(i).getJSONArray("dialogChoice").getJSONObject(0).has("option"+optionNumber)) {
                         storyDataJson.getJSONArray("JOI").getJSONObject(i).getJSONArray("dialogChoice").getJSONObject(0).remove("option"+optionNumber);
+                        Controller.getInstance().setNewChanges();
                     }
                 }
             }
         }
-        Controller.getInstance().setNewChanges();
     }
 
     JSONObject getDialogData(int sceneId) {
