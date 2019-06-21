@@ -9,7 +9,7 @@ import java.util.ArrayList;
 public class Story {
     private static Story instance = null;
 
-    private File workingDirectory = new File(System.getProperty("user.dir"));
+    private File workingDirectory;
     private File projectIcon;
     private ArrayList<File> imagesArray = new ArrayList<>();
 
@@ -19,6 +19,9 @@ public class Story {
     public Story() {
         //Default constructor
         instance = this;
+
+        workingDirectory = new File(System.getProperty("user.dir")+"\\defaultWorkspace");
+        boolean result = workingDirectory.mkdir();
     }
 
     public static Story getInstance() {
