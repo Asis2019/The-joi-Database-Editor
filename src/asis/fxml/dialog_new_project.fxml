@@ -1,26 +1,16 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
-<?import java.net.URL?>
 <?import javafx.geometry.Insets?>
-<?import javafx.scene.control.Button?>
-<?import javafx.scene.control.Label?>
-<?import javafx.scene.control.TextField?>
-<?import javafx.scene.control.ToolBar?>
-<?import javafx.scene.layout.BorderPane?>
-<?import javafx.scene.layout.HBox?>
-<?import javafx.scene.layout.Pane?>
-<?import javafx.scene.layout.VBox?>
-
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+<?import java.net.URL?>
 <BorderPane id="darkThemeBackground" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="400.0" prefWidth="600.0" xmlns="http://javafx.com/javafx/8.0.172-ea" xmlns:fx="http://javafx.com/fxml/1" fx:controller="asis.DialogNewProjectController">
    <bottom>
       <ToolBar prefHeight="40.0" prefWidth="200.0" BorderPane.alignment="CENTER">
         <items>
-            <Pane HBox.hgrow="ALWAYS">
-               <children>
-                <Button layoutX="366.0" layoutY="1.0" minWidth="-Infinity" mnemonicParsing="false" onAction="#actionButtonFinish" prefWidth="100.0" text="New Project" />
-                <Button id="btnLoadProject" layoutX="479.0" layoutY="1.0" mnemonicParsing="false" onAction="#onActionLoadProject" prefHeight="27.0" prefWidth="95.0" text="Load Project" />
-               </children>
-            </Pane>
+          <Button id="btnLoadProject" mnemonicParsing="false" onAction="#onActionLoadProject" text="Load Project" />
+            <Pane HBox.hgrow="ALWAYS" />
+          <Button mnemonicParsing="false" onAction="#actionButtonFinish" text="Create New Project" />
         </items>
       </ToolBar>
    </bottom>
