@@ -1,7 +1,7 @@
 package asis;
 
-import org.json.JSONArray;
-import org.json.JSONObject;
+import asis.json.JSONArray;
+import asis.json.JSONObject;
 
 import java.io.File;
 import java.util.ArrayList;

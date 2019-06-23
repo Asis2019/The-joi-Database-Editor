@@ -2,6 +2,7 @@ package asis;
 
 import asis.custom_objects.asis_node.AsisConnectionButton;
 import asis.custom_objects.asis_node.SceneNode;
+import asis.json.JSONObject;
 import javafx.fxml.FXML;
 import javafx.geometry.Pos;
 import javafx.scene.control.TextField;
@@ -9,7 +10,6 @@ import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.scene.layout.StackPane;
 import javafx.scene.layout.VBox;
-import org.json.JSONObject;
 
 public class TabDialogOptionController {
 

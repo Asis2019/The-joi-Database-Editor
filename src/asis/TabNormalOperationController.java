@@ -1,6 +1,7 @@
 package asis;
 
 import asis.custom_objects.ImageViewPane;
+import asis.json.JSONObject;
 import javafx.fxml.FXML;
 import javafx.scene.control.ColorPicker;
 import javafx.scene.control.Label;
@@ -11,7 +12,6 @@ import javafx.scene.layout.StackPane;
 import javafx.scene.layout.VBox;
 import javafx.scene.paint.Color;
 import javafx.stage.FileChooser;
-import org.json.JSONObject;
 
 import java.io.File;
 import java.util.Optional;
