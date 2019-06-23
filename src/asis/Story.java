@@ -303,7 +303,7 @@ public class Story {
                 while (storyDataJson.getJSONArray("JOI").getJSONObject(i).has("line"+total)) {
                     total++;
                 }
-                return total+1;
+                return total;
             }
         }
 

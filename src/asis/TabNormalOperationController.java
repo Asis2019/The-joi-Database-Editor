@@ -74,6 +74,11 @@ public class TabNormalOperationController {
             //Set total lines
             totalLines = story.getTotalLinesInScene(sceneId);
 
+            //Fix extra line bug
+            if(totalLines <= 0) {
+                totalLines = 1;
+            }
+
             //Set first line text
             setTextAreaVariables();
 
