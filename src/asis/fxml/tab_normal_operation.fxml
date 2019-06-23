@@ -63,13 +63,12 @@
 </center>
 <top>
     <ToolBar prefHeight="40.0" prefWidth="200.0" BorderPane.alignment="CENTER">
-        <items>
-            <Button focusTraversable="false" mnemonicParsing="false" onAction="#actionPreviousLine" text="Previous Line" />
-            <Button focusTraversable="false" mnemonicParsing="false" onAction="#actionNextLine" text="Next Line" />
-            <Pane HBox.hgrow="ALWAYS" />
-            <Label text="Line: " />
-            <Label fx:id="lineCounterLabel" text="1/1" />
-        </items>
+        <Button focusTraversable="false" mnemonicParsing="false" onAction="#actionPreviousLine" text="Previous Line" />
+        <Button focusTraversable="false" mnemonicParsing="false" onAction="#actionNextLine" text="Next Line" />
+        <Pane HBox.hgrow="ALWAYS" />
+        <Label text="Line: " />
+        <Label fx:id="lineCounterLabel" text="1/1" />
+         <Button fx:id="deleteLineButton" disable="true" focusTraversable="false" layoutX="102.0" layoutY="11.0" mnemonicParsing="false" onAction="#actionDeleteLine" text="Delete Line" />
     </ToolBar>
 </top>
 </BorderPane>

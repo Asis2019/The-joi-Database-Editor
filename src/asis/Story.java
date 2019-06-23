@@ -126,6 +126,17 @@ public class Story {
         return null;
     }
 
+    JSONObject getSceneObject(int sceneId) {
+        int amountOfScenes = storyDataJson.getJSONArray("JOI").length();
+        for(int i=0; i < amountOfScenes; i++) {
+            if(storyDataJson.getJSONArray("JOI").getJSONObject(i).getInt("sceneId") == sceneId) {
+                return storyDataJson.getJSONArray("JOI").getJSONObject(i);
+            }
+        }
+
+        return null;
+    }
+
     void addLine(int sceneId, int lineNumber, String text) {
         int amountOfScenes = storyDataJson.getJSONArray("JOI").length();
         for(int i=0; i < amountOfScenes; i++) {

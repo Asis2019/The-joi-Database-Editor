@@ -1,8 +1,10 @@
 package asis;
 
 import asis.custom_objects.ImageViewPane;
+import asis.json.JSONArray;
 import asis.json.JSONObject;
 import javafx.fxml.FXML;
+import javafx.scene.control.Button;
 import javafx.scene.control.ColorPicker;
 import javafx.scene.control.Label;
 import javafx.scene.control.TextArea;
@@ -33,6 +35,7 @@ public class TabNormalOperationController {
     @FXML private VBox iconControllerBox;
     @FXML private StackPane stackPane;
     @FXML private Label lineCounterLabel;
+    @FXML private Button deleteLineButton;
 
     public void initialize() {
         mainTextArea.setStyle("outline-color: "+outlineColor+"; fill-color: "+fillColor+";");
@@ -133,6 +136,10 @@ public class TabNormalOperationController {
             onLine--;
         }
 
+        if(onLine <= 1) {
+            deleteLineButton.setDisable(true);
+        }
+
         setTextAreaVariables();
         setVisibleImage();
 
@@ -151,6 +158,39 @@ public class TabNormalOperationController {
         setVisibleImage();
 
         lineCounterLabel.setText(onLine+"/"+totalLines);
+
+        deleteLineButton.setDisable(false);
+    }
+
+    public void actionDeleteLine() {
+        //See what line we are currently at
+        //Button should be disabled if its the first line
+        //Remove this line
+        //Loop through all lines after this one and reduce there numbers by 1
+        //onLine will never be less than 2 since 1 is the lowest and the button is disabled at 1
+
+
+        story.removeDataFromScene(sceneId, "line"+(onLine-1));
+
+        int startingLine = onLine;
+        JSONObject tempStory = story.getSceneObject(sceneId);
+
+        if(tempStory != null) {
+            //Move all lines down 1
+            while (tempStory.has("line" + startingLine)) {
+
+                JSONArray lineObject = tempStory.getJSONArray("line" + startingLine);
+                story.addDataToScene(sceneId, "line" + (startingLine-1), lineObject);
+
+                startingLine++;
+            }
+
+            //Remove last line
+            story.removeDataFromScene(sceneId, "line"+(totalLines-1));
+        }
+
+        totalLines--;
+        actionPreviousLine();
     }
 
     private void setTextAreaVariables() {
