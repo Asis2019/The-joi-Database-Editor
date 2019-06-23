@@ -60,12 +60,16 @@ public class SceneNode extends Region {
         createNewOutputConnectionPoint("Default", "normal_output");
 
         borderPane.translateXProperty().addListener((observableValue, number, t1) -> {
-            Bounds bounds = borderPane.localToScene(borderPane.getLayoutBounds());
-            xPosition.set(bounds.getMinX());
+            Bounds bounds = sceneNodeMainController.getScrollPane().getViewportBounds();
+            double lowestXPixelShown = -1 * bounds.getMinX();
+            Bounds borderBounds = borderPane.localToScene(borderPane.getLayoutBounds());
+            xPosition.set(lowestXPixelShown + borderBounds.getMinX());
         });
         borderPane.translateYProperty().addListener((observableValue, number, t1) -> {
-            Bounds bounds = borderPane.localToScene(borderPane.getLayoutBounds());
-            yPosition.set(bounds.getMinY());
+            Bounds bounds = sceneNodeMainController.getScrollPane().getViewportBounds();
+            double lowestYPixelShown = -1 * bounds.getMinY() - 70; //Like the other fixed value this should be replaced with a dynamic value
+            Bounds borderBounds = borderPane.localToScene(borderPane.getLayoutBounds());
+            yPosition.set(lowestYPixelShown + borderBounds.getMinY());
         });
 
         xPositionProperty().addListener((observableValue, number, t1) -> Story.getInstance().addDataToScene(sceneId, "layoutXPosition", t1.doubleValue()));

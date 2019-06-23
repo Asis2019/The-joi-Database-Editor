@@ -524,7 +524,6 @@ public class Controller {
                             //Check for scene normal connections
                             if (storyData.getJSONObject(i).has("gotoScene")) {
                                 if (checkStoryForSceneId(storyData.getJSONObject(i).getInt("gotoScene"))) {
-                                    System.out.println(sceneNode.getTitle());
                                     fromConnections.add(sceneNode.getOutputButtons().get(0));
                                     sceneIdTo.add(storyData.getJSONObject(i).getInt("gotoScene"));
                                 }

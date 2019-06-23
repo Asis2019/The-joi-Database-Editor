@@ -1479,9 +1479,7 @@ public class JSONObject {
                                 }
                             }
                         }
-                    } catch (IllegalAccessException ignore) {
-                    } catch (IllegalArgumentException ignore) {
-                    } catch (InvocationTargetException ignore) {
+                    } catch (IllegalAccessException | IllegalArgumentException | InvocationTargetException ignore) {
                     }
                 }
             }
@@ -1503,8 +1501,11 @@ public class JSONObject {
             }
         }
         JSONPropertyName annotation = getAnnotation(method, JSONPropertyName.class);
-        if (annotation != null && annotation.value() != null && !annotation.value().isEmpty()) {
-            return annotation.value();
+        if (annotation != null) {
+            annotation.value();
+            if (!annotation.value().isEmpty()) {
+                return annotation.value();
+            }
         }
         String key;
         final String name = method.getName();
@@ -1615,10 +1616,7 @@ public class JSONObject {
                     // since the annotation was on the interface, add 1
                     return d + 1;
                 }
-            } catch (final SecurityException ex) {
-                continue;
-            } catch (final NoSuchMethodException ex) {
-                continue;
+            } catch (final SecurityException | NoSuchMethodException ignored) {
             }
         }
 
@@ -1631,9 +1629,7 @@ public class JSONObject {
                 return d + 1;
             }
             return -1;
-        } catch (final SecurityException ex) {
-            return -1;
-        } catch (final NoSuchMethodException ex) {
+        } catch (final SecurityException | NoSuchMethodException ex) {
             return -1;
         }
     }

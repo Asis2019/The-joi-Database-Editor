@@ -37,6 +37,10 @@ public class SceneNodeMainController {
         this.scrollPane = scrollPane;
     }
 
+    ScrollPane getScrollPane() {
+        return this.scrollPane;
+    }
+
     public void setMenuBarOffset(double height) {
         this.menuBarOffset = height;
     }

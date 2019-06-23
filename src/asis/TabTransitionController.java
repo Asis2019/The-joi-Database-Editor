@@ -72,13 +72,11 @@ public class TabTransitionController {
             //set fill color
             if (transitionObject.has("transitionTextColor")) {
                 transitionTextColor.setValue(Color.web(transitionObject.getString("transitionTextColor")));
-                transitionTextLabel.setTextFill(Color.web(transitionObject.getString("transitionTextColor")));
             }
 
             //set outline color
             if (transitionObject.has("transitionTextOutlineColor")) {
                 transitionTextOutlineColor.setValue(Color.web(transitionObject.getString("transitionTextOutlineColor")));
-                transitionTextLabel.setStyle("outline-color: "+transitionObject.getString("transitionTextOutlineColor")+";");
             }
 
             //set wait time
