@@ -51,13 +51,6 @@ public class SceneNode extends Region {
                 "-fx-opacity: 1;"
         );
 
-        outputContainer.setStyle("" +
-                "-fx-background-color: red;" +
-                "");
-
-        inputContainer.setStyle("" +
-                "-fx-background-color: blue;");
-
         borderPane.setCenter(titleLabel);
 
         if(sceneId != 0) {
