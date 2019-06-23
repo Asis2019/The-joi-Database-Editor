@@ -1,70 +1,58 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
 <?import javafx.geometry.Insets?>
+<?import javafx.scene.control.*?>
 <?import javafx.scene.Cursor?>
-<?import javafx.scene.control.Button?>
-<?import javafx.scene.control.Label?>
-<?import javafx.scene.control.ScrollPane?>
-<?import javafx.scene.control.TextArea?>
-<?import javafx.scene.control.TextField?>
 <?import javafx.scene.image.Image?>
 <?import javafx.scene.image.ImageView?>
-<?import javafx.scene.layout.HBox?>
-<?import javafx.scene.layout.VBox?>
-
-<ScrollPane id="root_container" fitToWidth="true" hbarPolicy="NEVER" pannable="true" stylesheets="@../css/meta_data_form.css" xmlns="http://javafx.com/javafx/8.0.172-ea" xmlns:fx="http://javafx.com/fxml/1" fx:controller="asis.MetaDataForm">
-   <content>
-      <VBox fx:id="mainVBox" alignment="TOP_CENTER" spacing="8.0">
-         <children>
-            <VBox id="iconControllerBox" fx:id="iconControllerBox" alignment="CENTER" fillWidth="false" maxHeight="300.0" maxWidth="300.0" minHeight="50.0" minWidth="50.0" onMouseClicked="#addIcon" prefHeight="150.0" prefWidth="150.0" VBox.vgrow="NEVER">
-               <children>
-                  <ImageView id="iconImageView" fx:id="iconView" fitHeight="48.0" fitWidth="48.0" pickOnBounds="true" preserveRatio="true">
-                     <image>
-                        <Image url="@../images/add_icon_ic.png" />
-                     </image>
-                  </ImageView>
-                  <Label text="Add Icon" textFill="#bbbbbb" />
-                  <Label layoutX="86.0" layoutY="101.0" text="(300 x 300)" textFill="#bbbbbb" />
-               </children>
-               <cursor>
-                  <Cursor fx:constant="HAND" />
-               </cursor>
-            </VBox>
-            <TextField fx:id="titleTextField" promptText="Title" />
-            <TextField fx:id="preparationsTextField" layoutX="10.0" layoutY="137.0" promptText="Preparations" />
-            <TextField fx:id="displayedFetishesTextField" layoutX="10.0" layoutY="137.0" promptText="Displayed Fetishes" />
-            <HBox>
-               <children>
-                  <Label text="Joi Id" textFill="#bbbbbb" />
-               </children>
-            </HBox>
-            <TextField fx:id="joiIdTextField" promptText="(creator_title)" />
-            <HBox>
-               <children>
-                  <Label text="Fetish Tags" textFill="#bbbbbb" />
-               </children>
-            </HBox>
-            <TextArea fx:id="fetishesTextArea" prefHeight="65.0" prefWidth="200.0" promptText="Seperate tags with a comma ( , )" wrapText="true" />
-            <HBox>
-               <children>
-                  <Label text="Required Equipment" textFill="#bbbbbb" />
-               </children>
-            </HBox>
-            <TextArea fx:id="equipmentTextArea" prefHeight="65.0" prefWidth="200.0" promptText="Seperate items with a comma ( , )" wrapText="true" />
-            <HBox>
-               <children>
-                  <Label text="Characters" textFill="#bbbbbb" />
-               </children>
-            </HBox>
-            <TextArea fx:id="charactersTextArea" prefHeight="65.0" prefWidth="200.0" promptText="Seperate characters with a comma ( , )" wrapText="true" />
-            <Button id="saveButton" focusTraversable="false" mnemonicParsing="false" onAction="#actionSaveButton" prefHeight="25.0" prefWidth="90.0" text="Save" textFill="WHITE" />
-         </children>
-         <opaqueInsets>
-            <Insets />
-         </opaqueInsets>
-         <padding>
-            <Insets bottom="8.0" left="8.0" right="8.0" top="8.0" />
-         </padding>
-      </VBox>
-   </content>
+<?import javafx.scene.layout.*?>
+<ScrollPane id="root_container" fitToWidth="true" hbarPolicy="NEVER" pannable="true"
+            stylesheets="@../css/meta_data_form.css" xmlns="http://javafx.com/javafx/8.0.172-ea"
+            xmlns:fx="http://javafx.com/fxml/1" fx:controller="asis.MetaDataForm">
+    <VBox fx:id="mainVBox" alignment="TOP_CENTER" spacing="8.0">
+        <opaqueInsets>
+            <Insets/>
+        </opaqueInsets>
+        <padding>
+            <Insets bottom="8.0" left="8.0" right="8.0" top="8.0"/>
+        </padding>
+        <VBox id="iconControllerBox" fx:id="iconControllerBox" alignment="CENTER" fillWidth="false"
+              maxHeight="300.0" maxWidth="300.0" minHeight="50.0" minWidth="50.0" onMouseClicked="#addIcon"
+              prefHeight="150.0" prefWidth="150.0" VBox.vgrow="NEVER">
+            <cursor>
+                <Cursor fx:constant="HAND"/>
+            </cursor>
+            <ImageView id="iconImageView" fx:id="iconView" fitHeight="48.0" fitWidth="48.0" pickOnBounds="true"
+                       preserveRatio="true">
+                <Image url="@../images/add_icon_ic.png"/>
+            </ImageView>
+            <Label text="Add Icon" textFill="#bbbbbb"/>
+            <Label layoutX="86.0" layoutY="101.0" text="(300 x 300)" textFill="#bbbbbb"/>
+        </VBox>
+        <TextField fx:id="titleTextField" promptText="Title"/>
+        <TextField fx:id="preparationsTextField" layoutX="10.0" layoutY="137.0" promptText="Preparations"/>
+        <TextField fx:id="displayedFetishesTextField" layoutX="10.0" layoutY="137.0"
+                   promptText="Displayed Fetishes"/>
+        <HBox>
+            <Label text="Joi Id" textFill="#bbbbbb"/>
+        </HBox>
+        <TextField fx:id="joiIdTextField" promptText="(creator_title)"/>
+        <HBox>
+            <Label text="Fetish Tags" textFill="#bbbbbb"/>
+        </HBox>
+        <TextArea fx:id="fetishesTextArea" prefHeight="65.0" prefWidth="200.0"
+                  promptText="Seperate tags with a comma ( , )" wrapText="true"/>
+        <HBox>
+            <Label text="Required Equipment" textFill="#bbbbbb"/>
+        </HBox>
+        <TextArea fx:id="equipmentTextArea" prefHeight="65.0" prefWidth="200.0"
+                  promptText="Seperate items with a comma ( , )" wrapText="true"/>
+        <HBox>
+            <Label text="Characters" textFill="#bbbbbb"/>
+        </HBox>
+        <TextArea fx:id="charactersTextArea" prefHeight="65.0" prefWidth="200.0"
+                  promptText="Seperate characters with a comma ( , )" wrapText="true"/>
+        <Button id="saveButton" focusTraversable="false" mnemonicParsing="false" onAction="#actionSaveButton"
+                prefHeight="25.0" prefWidth="90.0" text="Save" textFill="WHITE"/>
+    </VBox>
 </ScrollPane>

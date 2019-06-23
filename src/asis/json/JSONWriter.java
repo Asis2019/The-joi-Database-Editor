@@ -79,7 +79,7 @@ public class JSONWriter {
     /**
      * The object/array stack.
      */
-    private final asis.json.JSONObject stack[];
+    private final asis.json.JSONObject[] stack;
 
     /**
      * The stack top index. A value of 0 indicates that the stack is empty.

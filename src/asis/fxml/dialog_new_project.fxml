@@ -7,11 +7,9 @@
 <BorderPane id="darkThemeBackground" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="400.0" prefWidth="600.0" xmlns="http://javafx.com/javafx/8.0.172-ea" xmlns:fx="http://javafx.com/fxml/1" fx:controller="asis.DialogNewProjectController">
    <bottom>
       <ToolBar prefHeight="40.0" prefWidth="200.0" BorderPane.alignment="CENTER">
-        <items>
-          <Button id="btnLoadProject" mnemonicParsing="false" onAction="#onActionLoadProject" text="Load Project" />
-            <Pane HBox.hgrow="ALWAYS" />
-          <Button mnemonicParsing="false" onAction="#actionButtonFinish" text="Create New Project" />
-        </items>
+         <Button id="btnLoadProject" mnemonicParsing="false" onAction="#onActionLoadProject" text="Load Project"/>
+         <Pane HBox.hgrow="ALWAYS"/>
+         <Button mnemonicParsing="false" onAction="#actionButtonFinish" text="Create New Project"/>
       </ToolBar>
    </bottom>
    <stylesheets>
@@ -20,29 +18,27 @@
    </stylesheets>
    <top>
       <VBox prefHeight="200.0" prefWidth="100.0" spacing="8.0" BorderPane.alignment="CENTER">
-         <children>
-            <HBox alignment="CENTER_LEFT" spacing="10.0">
-               <children>
-                  <Label text="Project Name:" textFill="WHITE">
-                     <padding>
-                        <Insets right="13.0" top="3.0" />
-                     </padding></Label>
-                  <TextField fx:id="projectNameTextField" maxWidth="-Infinity" minWidth="-Infinity" prefHeight="27.0" prefWidth="434.0" HBox.hgrow="ALWAYS" />
-               </children>
-            </HBox>
-            <HBox layoutX="10.0" layoutY="10.0" spacing="10.0">
-               <children>
-                  <Label text="Project Location:" textFill="WHITE">
-                     <padding>
-                        <Insets top="4.0" />
-                     </padding></Label>
-                  <TextField fx:id="projectDirectoryTextField" HBox.hgrow="ALWAYS" />
-                  <Button id="browsFoldersButton" mnemonicParsing="false" onAction="#actionBrowsFolder" text="..." />
-               </children>
-            </HBox>
-         </children>
          <padding>
-            <Insets bottom="16.0" left="16.0" right="16.0" top="16.0" />
-         </padding></VBox>
+            <Insets bottom="16.0" left="16.0" right="16.0" top="16.0"/>
+         </padding>
+         <HBox alignment="CENTER_LEFT" spacing="10.0">
+            <Label text="Project Name:" textFill="WHITE">
+               <padding>
+                  <Insets right="13.0" top="3.0"/>
+               </padding>
+            </Label>
+            <TextField fx:id="projectNameTextField" maxWidth="-Infinity" minWidth="-Infinity" prefHeight="27.0"
+                       prefWidth="434.0" HBox.hgrow="ALWAYS"/>
+         </HBox>
+         <HBox layoutX="10.0" layoutY="10.0" spacing="10.0">
+            <Label text="Project Location:" textFill="WHITE">
+               <padding>
+                  <Insets top="4.0"/>
+               </padding>
+            </Label>
+            <TextField fx:id="projectDirectoryTextField" HBox.hgrow="ALWAYS"/>
+            <Button id="browsFoldersButton" mnemonicParsing="false" onAction="#actionBrowsFolder" text="..."/>
+         </HBox>
+      </VBox>
    </top>
 </BorderPane>

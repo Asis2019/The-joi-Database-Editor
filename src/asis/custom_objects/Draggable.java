@@ -24,11 +24,11 @@ public class Draggable {
      * @author phill
      */
     public interface Interface {
-        public abstract Draggable.Nature getDraggableNature();
+        Draggable.Nature getDraggableNature();
     }
 
     public interface Listener {
-        public void accept(Nature draggableNature, Event dragEvent);
+        void accept(Nature draggableNature, Event dragEvent);
     }
 
     /**

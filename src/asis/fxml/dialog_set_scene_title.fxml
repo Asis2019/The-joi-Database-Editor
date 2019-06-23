@@ -8,22 +8,19 @@
 <?import javafx.scene.layout.*?>
 <BorderPane id="darkThemeBackground" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="150.0" prefWidth="400.0" stylesheets="@../css/main_stylesheet.css" xmlns="http://javafx.com/javafx/8.0.172-ea" xmlns:fx="http://javafx.com/fxml/1" fx:controller="asis.DialogSceneTitleController">
    <bottom>
-      <ToolBar prefHeight="40.0" prefWidth="200.0" BorderPane.alignment="CENTER">
-        <items>
-            <Pane HBox.hgrow="ALWAYS" />
-            <Button layoutX="10.0" layoutY="11.0" mnemonicParsing="false" onAction="#actionSave" prefWidth="100.0" text="Save" />
-        </items>
-      </ToolBar>
+       <ToolBar prefHeight="40.0" prefWidth="200.0" BorderPane.alignment="CENTER">
+           <Pane HBox.hgrow="ALWAYS"/>
+           <Button layoutX="10.0" layoutY="11.0" mnemonicParsing="false" onAction="#actionSave" prefWidth="100.0"
+                   text="Save"/>
+       </ToolBar>
    </bottom>
    <center>
-      <VBox BorderPane.alignment="CENTER">
-         <children>
-            <Label text="Scene Title:" textFill="WHITE" />
-            <TextField fx:id="sceneTitleTextField" promptText="Title" stylesheets="@../css/text_field_stylesheet.css" />
-         </children>
-         <padding>
-            <Insets bottom="16.0" left="16.0" right="16.0" top="16.0" />
-         </padding>
-      </VBox>
+       <VBox BorderPane.alignment="CENTER">
+           <padding>
+               <Insets bottom="16.0" left="16.0" right="16.0" top="16.0"/>
+           </padding>
+           <Label text="Scene Title:" textFill="WHITE"/>
+           <TextField fx:id="sceneTitleTextField" promptText="Title" stylesheets="@../css/text_field_stylesheet.css"/>
+       </VBox>
    </center>
 </BorderPane>

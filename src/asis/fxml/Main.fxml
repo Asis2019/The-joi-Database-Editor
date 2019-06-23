@@ -5,27 +5,24 @@
 <?import java.net.URL?>
 <BorderPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="400.0" prefWidth="600.0" xmlns="http://javafx.com/javafx/8.0.172-ea" xmlns:fx="http://javafx.com/fxml/1" fx:controller="asis.Controller">
    <top>
-      <VBox BorderPane.alignment="CENTER">
-         <children>
-             <MenuBar fx:id="mainMenuBar">
-                 <Menu mnemonicParsing="false" text="File">
-                     <MenuItem mnemonicParsing="false" onAction="#actionNewProject" text="New Project" />
-                     <MenuItem mnemonicParsing="false" onAction="#actionLoadProject" text="Load Project" />
-                  <MenuItem mnemonicParsing="false" onAction="#actionExportToZip" text="Export to Zip" />
-                     <MenuItem mnemonicParsing="false" onAction="#actionSaveProject" text="Save" />
-                  <MenuItem mnemonicParsing="false" onAction="#actionSaveProjectAs" text="Save As..." />
-                  <SeparatorMenuItem mnemonicParsing="false" />
-                     <MenuItem mnemonicParsing="false" onAction="#actionExit" text="Exit" />
-                 </Menu>
-             </MenuBar>
-            <ToolBar prefHeight="40.0" prefWidth="200.0">
-              <items>
-                <Button mnemonicParsing="false" onAction="#addScene" text="Add new scene" />
-                  <Button layoutX="10.0" layoutY="11.0" mnemonicParsing="false" onAction="#actionOpenMetadata" text="Project Details" />
-              </items>
-            </ToolBar>
-         </children>
-      </VBox>
+       <VBox BorderPane.alignment="CENTER">
+           <MenuBar fx:id="mainMenuBar">
+               <Menu mnemonicParsing="false" text="File">
+                   <MenuItem mnemonicParsing="false" onAction="#actionNewProject" text="New Project"/>
+                   <MenuItem mnemonicParsing="false" onAction="#actionLoadProject" text="Load Project"/>
+                   <MenuItem mnemonicParsing="false" onAction="#actionExportToZip" text="Export to Zip"/>
+                   <MenuItem mnemonicParsing="false" onAction="#actionSaveProject" text="Save"/>
+                   <MenuItem mnemonicParsing="false" onAction="#actionSaveProjectAs" text="Save As..."/>
+                   <SeparatorMenuItem mnemonicParsing="false"/>
+                   <MenuItem mnemonicParsing="false" onAction="#actionExit" text="Exit"/>
+               </Menu>
+           </MenuBar>
+           <ToolBar prefHeight="40.0" prefWidth="200.0">
+               <Button mnemonicParsing="false" onAction="#addScene" text="Add new scene"/>
+               <Button layoutX="10.0" layoutY="11.0" mnemonicParsing="false" onAction="#actionOpenMetadata"
+                       text="Project Details"/>
+           </ToolBar>
+       </VBox>
    </top>
    <center>
        <ScrollPane fx:id="scrollPane" hbarPolicy="NEVER" pannable="true" styleClass="edge-to-edge" vbarPolicy="NEVER" BorderPane.alignment="CENTER">

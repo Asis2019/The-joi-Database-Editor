@@ -7,18 +7,15 @@
 <?import javafx.scene.layout.VBox?>
 <BorderPane prefHeight="400.0" prefWidth="800.0" stylesheets="@../css/scene_details_stylesheet.css" xmlns="http://javafx.com/javafx/8.0.172-ea" xmlns:fx="http://javafx.com/fxml/1" fx:controller="asis.TabDialogOptionController">
    <center>
-      <StackPane id="darkThemeBackground">
-         <children>
-            <VBox fx:id="buttonContainer" alignment="CENTER" prefHeight="200.0" prefWidth="100.0" spacing="8.0" />
-         </children>
-      </StackPane>
+       <StackPane id="darkThemeBackground">
+           <VBox fx:id="buttonContainer" alignment="CENTER" prefHeight="200.0" prefWidth="100.0" spacing="8.0"/>
+       </StackPane>
    </center>
    <top>
-      <ToolBar prefHeight="40.0" prefWidth="200.0" BorderPane.alignment="CENTER">
-        <items>
-          <Button mnemonicParsing="false" onAction="#actionAddOption" text="Add Option" />
-            <Button layoutX="10.0" layoutY="11.0" mnemonicParsing="false" onAction="#actionRemoveOption" text="Remove Option" />
-        </items>
-      </ToolBar>
+       <ToolBar prefHeight="40.0" prefWidth="200.0" BorderPane.alignment="CENTER">
+           <Button mnemonicParsing="false" onAction="#actionAddOption" text="Add Option"/>
+           <Button layoutX="10.0" layoutY="11.0" mnemonicParsing="false" onAction="#actionRemoveOption"
+                   text="Remove Option"/>
+       </ToolBar>
    </top>
 </BorderPane>
