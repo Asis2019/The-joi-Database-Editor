@@ -32,6 +32,8 @@ public class SceneNode extends Region {
         this.sceneId = sceneId;
         this.sceneNodeMainController = sceneNodeMainController;
 
+        borderPane.setUserData("sceneNode");
+
         initializeVBoxes();
 
         borderPane.setMinSize(width, height);
@@ -48,6 +50,13 @@ public class SceneNode extends Region {
                 "-fx-effect: dropshadow(three-pass-box, black, 10, 0, 0, 1);" +
                 "-fx-opacity: 1;"
         );
+
+        outputContainer.setStyle("" +
+                "-fx-background-color: red;" +
+                "");
+
+        inputContainer.setStyle("" +
+                "-fx-background-color: blue;");
 
         borderPane.setCenter(titleLabel);
 

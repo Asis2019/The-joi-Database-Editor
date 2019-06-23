@@ -32,11 +32,11 @@ import java.nio.file.Files;
 import java.nio.file.StandardCopyOption;
 import java.util.ArrayList;
 import java.util.Objects;
-import java.util.Optional;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipOutputStream;
 
-import static asis.custom_objects.AsisUtils.*;
+import static asis.custom_objects.AsisUtils.errorDialogWindow;
+import static asis.custom_objects.AsisUtils.getFileExtension;
 
 public class Controller {
     private Story story = new Story();
@@ -139,12 +139,11 @@ public class Controller {
 
         //Used to get the coordinates for spawning the scene node and for hiding/showing the proper menu
         scrollPane.setOnContextMenuRequested(contextMenuEvent -> {
-            ArrayList<Node> tmp = getAllNodes(anchorPane);
-            for (Node n: tmp) {
-                Bounds boundsInScene = n.localToScene(n.getBoundsInLocal());
+            for (Node n: anchorPane.getChildren()) {
 
-                Optional<Node> node = findNode(tmp, contextMenuEvent.getSceneX(), contextMenuEvent.getSceneY());
-                if(node.isPresent()) {
+                if(n.getUserData().equals("sceneNode")) {
+                    Bounds boundsInScene = n.localToScene(n.getBoundsInLocal());
+
                     if (contextMenuEvent.getSceneX() >= boundsInScene.getMinX() && contextMenuEvent.getSceneX() <= boundsInScene.getMaxX() && contextMenuEvent.getSceneY() >= boundsInScene.getMinY() && contextMenuEvent.getSceneY() <= boundsInScene.getMaxY()) {
                         mainContextMenu.hide();
                         sceneNodeContextMenu.show(anchorPane, contextMenuEvent.getScreenX(), contextMenuEvent.getScreenY());
@@ -157,17 +156,6 @@ public class Controller {
         });
 
         scrollPane.setOnMouseClicked(mouseEvent -> sceneNodeContextMenu.hide() );
-    }
-
-    private Optional<Node> findNode(ArrayList<Node> list, double x, double y) {
-        for (Node n : list) {
-            Bounds boundsInScene = n.localToScene(n.getBoundsInLocal());
-
-            if(x >= boundsInScene.getMinX() && x <= boundsInScene.getMaxX() && y >= boundsInScene.getMinY() && y <= boundsInScene.getMaxY()) {
-                return Optional.of(n);
-            }
-        }
-        return Optional.empty();
     }
 
     public void actionOpenMetadata() {
@@ -207,21 +195,15 @@ public class Controller {
             }
         });
 
-        sceneNode.getPane().setOnMouseClicked(mouseEvent -> {
-            sceneNodeContextMenu.hide();
+        sceneNode.setOnMousePressed(mouseEvent -> sceneNodeContextMenu.hide());
 
+        sceneNode.getPane().setOnMouseClicked(mouseEvent -> {
             //User double clicked
             if(mouseEvent.getButton().equals(MouseButton.PRIMARY)) {
                 if(mouseEvent.getClickCount() == 2){
                     openNewWindow(sceneNode.getTitle(), sceneNode);
                 }
             }
-
-            /*if(mouseEvent.getButton().equals(MouseButton.SECONDARY)) {
-                if(mouseEvent.getClickCount() == 2) {
-                    removeScene(sceneNode);
-                }
-            }*/
         });
     }
 
