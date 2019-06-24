@@ -207,9 +207,9 @@ public class Controller {
             selectedScene = sceneNode;
             if(sceneNode.getSceneId() == 0) {
                 //Is the first scene
-                sceneNodeContextMenu.getItems().get(2).setDisable(true);
+                sceneNodeContextMenu.getItems().get(sceneNodeContextMenu.getItems().size()-1).setDisable(true);
             } else {
-                sceneNodeContextMenu.getItems().get(2).setDisable(false);
+                sceneNodeContextMenu.getItems().get(sceneNodeContextMenu.getItems().size()-1).setDisable(false);
             }
         });
 
@@ -363,7 +363,6 @@ public class Controller {
     public void addConnectionToStory(AsisConnectionButton outputConnection, AsisConnectionButton inputConnection) {
         //Process where to add the jump to
         if(outputConnection.getConnectionId().contains("dialog_option")) {
-            System.out.println(outputConnection.getOptionNumber());
             story.addDialogOptionGoTo(outputConnection.getParentSceneId(), outputConnection.getOptionNumber(), inputConnection.getParentSceneId());
         } else {
             story.addDataToScene(outputConnection.getParentSceneId(), "gotoScene", inputConnection.getParentSceneId());
