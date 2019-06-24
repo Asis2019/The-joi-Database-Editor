@@ -12,6 +12,9 @@ public class Story {
     private File workingDirectory;
     private File projectIcon;
     private ArrayList<File> imagesArray = new ArrayList<>();
+    private int badEndingScene;
+    private int goodEndingScene;
+
 
     private JSONObject metaDataJson = new JSONObject();
     private JSONObject storyDataJson = new JSONObject();
@@ -34,6 +37,18 @@ public class Story {
 
     File getProjectDirectory() {
         return workingDirectory;
+    }
+
+    void makeSceneGoodEnd(int sceneId) {
+        removeDataFromScene(goodEndingScene, "joiEnd");
+        addDataToScene(sceneId, "joiEnd", true);
+        goodEndingScene = sceneId;
+    }
+
+    void makeSceneBadEnd(int sceneId) {
+        removeDataFromScene(badEndingScene, "badJoiEnd");
+        addDataToScene(sceneId, "badJoiEnd", true);
+        badEndingScene = sceneId;
     }
 
     void addNewScene(int sceneId, String sceneTitle) {

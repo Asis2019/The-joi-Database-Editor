@@ -14,10 +14,7 @@ import javafx.geometry.Bounds;
 import javafx.scene.Node;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
-import javafx.scene.control.ContextMenu;
-import javafx.scene.control.MenuBar;
-import javafx.scene.control.MenuItem;
-import javafx.scene.control.ScrollPane;
+import javafx.scene.control.*;
 import javafx.scene.image.Image;
 import javafx.scene.input.MouseButton;
 import javafx.scene.layout.AnchorPane;
@@ -94,8 +91,12 @@ public class Controller {
         //Create items and add them to there menu
         MenuItem editSceneItem = new MenuItem("Edit Scene");
         MenuItem editNameItem = new MenuItem("Change Name");
+        MenuItem goodEndItem = new MenuItem("Set as Good End");
+        MenuItem badEndItem = new MenuItem("Set as Bad End");
+        MenuItem notEndItem = new MenuItem("Remove ending Tag");
+        SeparatorMenuItem separatorMenuItem = new SeparatorMenuItem();
         MenuItem deleteNodeItem = new MenuItem("Delete");
-        sceneNodeContextMenu.getItems().addAll(editSceneItem, editNameItem, deleteNodeItem);
+        sceneNodeContextMenu.getItems().addAll(editSceneItem, editNameItem, goodEndItem, badEndItem, notEndItem, separatorMenuItem, deleteNodeItem);
 
         //Handle menu actions
         editSceneItem.setOnAction(actionEvent -> {
@@ -120,6 +121,23 @@ public class Controller {
             if(selectedScene != null) {
                 removeScene(selectedScene);
             }
+        });
+
+        goodEndItem.setOnAction(actionEvent -> {
+            if(selectedScene != null) {
+                story.makeSceneGoodEnd(selectedScene.getSceneId());
+            }
+        });
+
+        badEndItem.setOnAction(actionEvent -> {
+            if(selectedScene != null) {
+                story.makeSceneBadEnd(selectedScene.getSceneId());
+            }
+        });
+
+        notEndItem.setOnAction(actionEvent -> {
+            story.removeDataFromScene(selectedScene.getSceneId(), "joiEnd");
+            story.removeDataFromScene(selectedScene.getSceneId(), "badJoiEnd");
         });
     }
 
