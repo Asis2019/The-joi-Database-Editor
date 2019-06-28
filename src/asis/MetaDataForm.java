@@ -25,7 +25,7 @@ public class MetaDataForm {
     private boolean hasChanged = false;
 
     @FXML private VBox mainVBox, iconControllerBox;
-    @FXML private TextField titleTextField, preparationsTextField, displayedFetishesTextField, joiIdTextField;
+    @FXML private TextField titleTextField, preparationsTextField, displayedFetishesTextField, joiIdTextField, gameVersionTextField;
     @FXML private TextArea fetishesTextArea, equipmentTextArea, charactersTextArea;
 
     void inflateStoryObject(Story story) {
@@ -61,6 +61,10 @@ public class MetaDataForm {
 
             if(metadataObject.has("joiId")) {
                 joiIdTextField.setText(metadataObject.getString("joiId"));
+            }
+
+            if(metadataObject.has("versionAdded")) {
+                gameVersionTextField.setText(metadataObject.getString("versionAdded"));
             }
 
             if(metadataObject.has("fetish0")) {
@@ -176,6 +180,7 @@ public class MetaDataForm {
             innerMetadataObject.put("preparations", preparationsTextField.getText().trim());
             innerMetadataObject.put("displayedFetishes", displayedFetishesTextField.getText().trim());
             innerMetadataObject.put("joiId", joiIdTextField.getText().trim());
+            innerMetadataObject.put("versionAdded", gameVersionTextField.getText().trim());
 
             //Split by comma data
             String[] fetishesArray = fetishesTextArea.getText().trim().split("\\s*,\\s*");
