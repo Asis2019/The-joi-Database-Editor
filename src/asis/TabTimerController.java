@@ -86,6 +86,8 @@ public class TabTimerController {
             if(timerObject != null) {
                 if(timerObject.has("totalTime")) {
                     totalTimerField.setText(String.valueOf(timerObject.getInt("totalTime")));
+                    totalSeconds = Integer.valueOf(totalTimerField.getText().trim());
+                    asisCenteredArc.setMaxLength(totalSeconds);
                 }
             }
         }

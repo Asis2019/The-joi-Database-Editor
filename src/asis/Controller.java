@@ -570,17 +570,15 @@ public class Controller {
                             i++;
                         }
                     } catch (JSONException e) {
-                        System.out.println("Caught exception");
+                        System.out.println(e.getMessage());
                     }
 
                     //Start linking
                     for (int ii = 0; ii < fromConnections.size(); ii++) {
                         try {
-                            int sceneIdConnectionDestination = sceneIdTo.get(ii);
-
-                            sceneNodeMainController.createConnection(fromConnections.get(ii), sceneNodes.get(sceneIdConnectionDestination).getInputConnection());
-                        } catch (IndexOutOfBoundsException e) {
-                            System.out.println("No connection for that node");
+                            sceneNodeMainController.createConnection(fromConnections.get(ii), getSceneNodeWithId(sceneNodes, sceneIdTo.get(ii)).getInputConnection());
+                        } catch (NullPointerException e) {
+                            System.out.println("getSceneNodeWithId(sceneNodes, sceneIdTo.get(ii)) Returned NULL");
                         }
                     }
                 }
@@ -596,6 +594,16 @@ public class Controller {
         //Loading completed successfully
         newChanges = false;
         return true;
+    }
+
+    private SceneNode getSceneNodeWithId(ArrayList<SceneNode> sceneList, int sceneId) {
+        for (SceneNode scene : sceneList) {
+            if(scene.getSceneId() == sceneId) {
+                return scene;
+            }
+        }
+
+        return null;
     }
 
     private boolean checkStoryForSceneId(int sceneId) {
