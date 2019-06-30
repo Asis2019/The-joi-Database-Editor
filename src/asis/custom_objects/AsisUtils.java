@@ -55,4 +55,12 @@ public class AsisUtils {
         return Math.max(min, Math.min(max, val));
     }
 
+    public static boolean renameFile(File fileToRename, String newName) {
+        // This method will rename a File that is passed in
+        String oldFileName = fileToRename.getName();
+        String oldFilePath = fileToRename.getPath();
+        String newPath = oldFilePath.replace(oldFileName, newName);
+        return fileToRename.renameTo(new File(newPath));
+    }
+
 }

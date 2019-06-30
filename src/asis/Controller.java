@@ -32,8 +32,7 @@ import java.util.Objects;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipOutputStream;
 
-import static asis.custom_objects.AsisUtils.errorDialogWindow;
-import static asis.custom_objects.AsisUtils.getFileExtension;
+import static asis.custom_objects.AsisUtils.*;
 
 public class Controller {
     private Story story = new Story();
@@ -668,6 +667,7 @@ public class Controller {
                 if(story.getMetadataIcon() != null) {
                     File file1 = story.getMetadataIcon();
                     Files.copy(file1.toPath(), file.toPath().resolve(file1.getName()), StandardCopyOption.REPLACE_EXISTING);
+                    renameFile(new File(file.toPath()+"\\"+file1.getName()), "joi_icon.png");
                     newChanges = false;
                 }
             } catch (IOException e) {
@@ -725,6 +725,7 @@ public class Controller {
                 if(story.getMetadataIcon() != null) {
                     File file1 = story.getMetadataIcon();
                     Files.copy(file1.toPath(), file.toPath().resolve(file1.getName()), StandardCopyOption.REPLACE_EXISTING);
+                    renameFile(new File(file.toPath()+"\\"+file1.getName()), "joi_icon.png");
                     newChanges = false;
                 }
             } catch (IOException e) {
@@ -769,6 +770,7 @@ public class Controller {
                     if(story.getMetadataIcon() != null) {
                         File file1 = story.getMetadataIcon();
                         Files.copy(file1.toPath(), tempFile.toPath().resolve(file1.getName()), StandardCopyOption.REPLACE_EXISTING);
+                        renameFile(new File(tempFile.toPath()+"\\"+file1.getName()), "joi_icon.png");
                     }
                 } catch (IOException e) {
                     errorDialogWindow(e);
