@@ -12,9 +12,6 @@ public class Story {
     private File workingDirectory;
     private File projectIcon;
     private ArrayList<File> imagesArray = new ArrayList<>();
-    private int badEndingScene;
-    private int goodEndingScene;
-
 
     private JSONObject metaDataJson = new JSONObject();
     private JSONObject storyDataJson = new JSONObject();
@@ -39,16 +36,12 @@ public class Story {
         return workingDirectory;
     }
 
-    void makeSceneGoodEnd(int sceneId) {
-        removeDataFromScene(goodEndingScene, "joiEnd");
+    public void makeSceneGoodEnd(int sceneId) {
         addDataToScene(sceneId, "joiEnd", true);
-        goodEndingScene = sceneId;
     }
 
-    void makeSceneBadEnd(int sceneId) {
-        removeDataFromScene(badEndingScene, "badJoiEnd");
+    public void makeSceneBadEnd(int sceneId) {
         addDataToScene(sceneId, "badJoiEnd", true);
-        badEndingScene = sceneId;
     }
 
     void addNewScene(int sceneId, String sceneTitle) {
@@ -88,7 +81,7 @@ public class Story {
         }
     }
 
-    void removeDataFromScene(int sceneId, String key) {
+    public void removeDataFromScene(int sceneId, String key) {
         int amountOfScenes = storyDataJson.getJSONArray("JOI").length();
         for(int i=0; i < amountOfScenes; i++) {
             if(storyDataJson.getJSONArray("JOI").getJSONObject(i).getInt("sceneId") == sceneId) {

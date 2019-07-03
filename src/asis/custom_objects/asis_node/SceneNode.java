@@ -1,6 +1,9 @@
 package asis.custom_objects.asis_node;
 
+import asis.Controller;
 import asis.Story;
+import javafx.beans.property.ReadOnlyBooleanProperty;
+import javafx.beans.property.ReadOnlyBooleanWrapper;
 import javafx.beans.property.ReadOnlyDoubleProperty;
 import javafx.beans.property.ReadOnlyDoubleWrapper;
 import javafx.geometry.Bounds;
@@ -27,6 +30,9 @@ public class SceneNode extends Region {
 
     private ReadOnlyDoubleWrapper xPosition = new ReadOnlyDoubleWrapper();
     private ReadOnlyDoubleWrapper yPosition = new ReadOnlyDoubleWrapper();
+
+    private ReadOnlyBooleanWrapper isBadEnd = new ReadOnlyBooleanWrapper();
+    private ReadOnlyBooleanWrapper isGoodEnd = new ReadOnlyBooleanWrapper();
 
     public SceneNode(int width, int height, int sceneId, SceneNodeMainController sceneNodeMainController) {
         this.sceneId = sceneId;
@@ -74,6 +80,8 @@ public class SceneNode extends Region {
 
         xPositionProperty().addListener((observableValue, number, t1) -> Story.getInstance().addDataToScene(sceneId, "layoutXPosition", t1.doubleValue()));
         yPositionProperty().addListener((observableValue, number, t1) -> Story.getInstance().addDataToScene(sceneId, "layoutYPosition", t1.doubleValue()));
+
+        initializeEndVariables();
     }
 
     public List<AsisConnectionButton> getOutputButtons() {
@@ -163,5 +171,77 @@ public class SceneNode extends Region {
 
     private ReadOnlyDoubleProperty yPositionProperty() {
         return this.yPosition.getReadOnlyProperty();
+    }
+
+    private void initializeEndVariables() {
+        setBadEnd(false);
+        setGoodEnd(false);
+        goodEndProperty().addListener((observableValue, aBoolean, t1) -> {
+            if(goodEndProperty().getValue()) {
+                Story.getInstance().makeSceneGoodEnd(sceneId);
+
+                // Make children hidden
+                for(int i =0; i < outputContainer.getChildren().size(); i++) {
+                    outputContainer.getChildren().get(i).setDisable(true);
+                    outputContainer.getChildren().get(i).setVisible(false);
+                }
+
+                inputConnection.setButtonColor("#6392c7ff");
+            } else {
+                Story.getInstance().removeDataFromScene(sceneId, "joiEnd");
+
+                // Make children visible
+                for(int i =0; i < outputContainer.getChildren().size(); i++) {
+                    outputContainer.getChildren().get(i).setDisable(false);
+                    outputContainer.getChildren().get(i).setVisible(true);
+                }
+
+                inputConnection.setButtonColor("#63c763ff");
+            }
+
+            Controller.getInstance().setNewChanges();
+        });
+
+        badEndProperty().addListener((observableValue, aBoolean, t1) -> {
+            if(badEndProperty().getValue()) {
+                Story.getInstance().makeSceneBadEnd(sceneId);
+
+                // Make children hidden
+                for(int i =0; i < outputContainer.getChildren().size(); i++) {
+                    outputContainer.getChildren().get(i).setDisable(true);
+                    outputContainer.getChildren().get(i).setVisible(false);
+                }
+
+                inputConnection.setButtonColor("#c76363ff");
+            } else {
+                Story.getInstance().removeDataFromScene(sceneId, "badJoiEnd");
+
+                // Make children visible
+                for(int i =0; i < outputContainer.getChildren().size(); i++) {
+                    outputContainer.getChildren().get(i).setDisable(false);
+                    outputContainer.getChildren().get(i).setVisible(true);
+                }
+
+                inputConnection.setButtonColor("#63c763ff");
+            }
+
+            Controller.getInstance().setNewChanges();
+        });
+    }
+
+    public ReadOnlyBooleanProperty goodEndProperty() {
+        return isGoodEnd.getReadOnlyProperty();
+    }
+
+    public ReadOnlyBooleanProperty badEndProperty() {
+        return isBadEnd.getReadOnlyProperty();
+    }
+
+    public void setGoodEnd(boolean isGoodEnd) {
+        this.isGoodEnd.set(isGoodEnd);
+    }
+
+    public void setBadEnd(boolean isBadEnd) {
+        this.isBadEnd.set(isBadEnd);
     }
 }

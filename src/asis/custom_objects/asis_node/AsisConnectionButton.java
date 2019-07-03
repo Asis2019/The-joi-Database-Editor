@@ -29,7 +29,7 @@ public class AsisConnectionButton extends Button {
     private int optionNumber;
 
     private static final String outputConnectorStyle =
-            "-fx-background-color: rgba(99, 199, 99, 1), transparent, transparent;" +
+            "-fx-background-color: #63c763ff, transparent, transparent;" +
             "-fx-background-radius: 5em;" +
             "-fx-border-radius: 5em;" +
             "-fx-min-width: 15px; " +
@@ -55,6 +55,19 @@ public class AsisConnectionButton extends Button {
 
     void setBoundLine(BoundLine boundLine) {
         this.boundLine = boundLine;
+    }
+
+    void setButtonColor(String hexColor) {
+        setStyle("-fx-background-color: "+hexColor+", transparent, transparent;" +
+                "-fx-background-radius: 5em;" +
+                "-fx-border-radius: 5em;" +
+                "-fx-min-width: 15px; " +
+                "-fx-min-height: 15px; " +
+                "-fx-max-width: 15px; " +
+                "-fx-max-height: 15px;" +
+                "-fx-border-color: black;" +
+                "-fx-border-width: 1;" +
+                "-fx-background-insets: 1;");
     }
 
     BoundLine getBoundLine() {

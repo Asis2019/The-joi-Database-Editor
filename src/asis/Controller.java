@@ -53,7 +53,7 @@ public class Controller {
     private SceneNodeMainController sceneNodeMainController;
 
     private ContextMenu mainContextMenu =  new ContextMenu();
-    private ContextMenu sceneNodeContextMenu =  new ContextMenu();
+    public ContextMenu sceneNodeContextMenu =  new ContextMenu();
 
     @FXML private AnchorPane anchorPane;
     @FXML private ScrollPane scrollPane;
@@ -74,11 +74,11 @@ public class Controller {
         addScene();
     }
 
-    static Controller getInstance() {
+    public static Controller getInstance() {
         return instance;
     }
 
-    void setNewChanges() {
+    public void setNewChanges() {
         this.newChanges = true;
     }
 
@@ -92,10 +92,9 @@ public class Controller {
         MenuItem editNameItem = new MenuItem("Change Name");
         MenuItem goodEndItem = new MenuItem("Set as Good End");
         MenuItem badEndItem = new MenuItem("Set as Bad End");
-        MenuItem notEndItem = new MenuItem("Remove ending Tag");
         SeparatorMenuItem separatorMenuItem = new SeparatorMenuItem();
         MenuItem deleteNodeItem = new MenuItem("Delete");
-        sceneNodeContextMenu.getItems().addAll(editSceneItem, editNameItem, goodEndItem, badEndItem, notEndItem, separatorMenuItem, deleteNodeItem);
+        sceneNodeContextMenu.getItems().addAll(editSceneItem, editNameItem, goodEndItem, badEndItem, separatorMenuItem, deleteNodeItem);
 
         //Handle menu actions
         editSceneItem.setOnAction(actionEvent -> {
@@ -124,19 +123,22 @@ public class Controller {
 
         goodEndItem.setOnAction(actionEvent -> {
             if(selectedScene != null) {
-                story.makeSceneGoodEnd(selectedScene.getSceneId());
+                if(selectedScene.goodEndProperty().getValue()) {
+                    selectedScene.setGoodEnd(false);
+                } else {
+                    selectedScene.setGoodEnd(true);
+                }
             }
         });
 
         badEndItem.setOnAction(actionEvent -> {
             if(selectedScene != null) {
-                story.makeSceneBadEnd(selectedScene.getSceneId());
+                if(selectedScene.badEndProperty().getValue()) {
+                    selectedScene.setBadEnd(false);
+                } else {
+                    selectedScene.setBadEnd(true);
+                }
             }
-        });
-
-        notEndItem.setOnAction(actionEvent -> {
-            story.removeDataFromScene(selectedScene.getSceneId(), "joiEnd");
-            story.removeDataFromScene(selectedScene.getSceneId(), "badJoiEnd");
         });
     }
 
@@ -204,11 +206,32 @@ public class Controller {
     private void setClickActionForNode(SceneNode sceneNode) {
         sceneNode.getPane().setOnContextMenuRequested(contextMenuEvent -> {
             selectedScene = sceneNode;
+
+            //Change behaviour for first scene
             if(sceneNode.getSceneId() == 0) {
                 //Is the first scene
                 sceneNodeContextMenu.getItems().get(sceneNodeContextMenu.getItems().size()-1).setDisable(true);
+                sceneNodeContextMenu.getItems().get(2).setDisable(true);
+                sceneNodeContextMenu.getItems().get(3).setDisable(true);
             } else {
                 sceneNodeContextMenu.getItems().get(sceneNodeContextMenu.getItems().size()-1).setDisable(false);
+
+                //Change name of ending buttons
+                if(sceneNode.badEndProperty().getValue()) {
+                    sceneNodeContextMenu.getItems().get(3).setText("Remove Ending Tag");
+                    sceneNodeContextMenu.getItems().get(2).setDisable(true);
+                } else {
+                    sceneNodeContextMenu.getItems().get(3).setText("Set as Bad End");
+                    sceneNodeContextMenu.getItems().get(2).setDisable(false);
+                }
+
+                if(sceneNode.goodEndProperty().getValue()) {
+                    sceneNodeContextMenu.getItems().get(2).setText("Remove Ending Tag");
+                    sceneNodeContextMenu.getItems().get(3).setDisable(true);
+                } else {
+                    sceneNodeContextMenu.getItems().get(2).setText("Set as Good End");
+                    sceneNodeContextMenu.getItems().get(3).setDisable(false);
+                }
             }
         });
 
@@ -536,6 +559,16 @@ public class Controller {
 
                             //Create scene
                             SceneNode sceneNode = addScene(xPosition, yPosition, title, sceneId);
+
+                            //Set good ending for scene
+                            if (storyData.getJSONObject(i).has("joiEnd")) {
+                                sceneNode.setGoodEnd(true);
+                            }
+
+                            //Set bad ending for scene
+                            if (storyData.getJSONObject(i).has("badJoiEnd")) {
+                                sceneNode.setBadEnd(true);
+                            }
 
                             //Check for scene normal connections
                             if (storyData.getJSONObject(i).has("gotoScene")) {
