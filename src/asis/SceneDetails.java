@@ -93,7 +93,10 @@ public class SceneDetails {
             story.addImage(file);
 
             //setVisibleImage();
-            tabTimerController.setVisibleImage();
+            if(tabTimerController != null) {
+                tabTimerController.setVisibleImage();
+            }
+
             tabNormalOperationController.setVisibleImage();
             Controller.getInstance().setNewChanges();
         }
