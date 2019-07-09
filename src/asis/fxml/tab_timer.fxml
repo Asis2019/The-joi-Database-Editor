@@ -10,49 +10,39 @@
 <center>
     <SplitPane id="darkThemeBackground" dividerPositions="0.835" styleClass="edge-to-edge">
         <AnchorPane>
-            <BorderPane fx:id="mainContentPane" prefHeight="500.0" prefWidth="780.0" AnchorPane.bottomAnchor="0.0"
-                        AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
+            <BorderPane fx:id="mainContentPane" prefHeight="500.0" prefWidth="780.0" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
                 <center>
                     <StackPane fx:id="timerStackPane" BorderPane.alignment="CENTER">
-                        <VBox id="iconControllerBox" fx:id="timerIconControllerBox" alignment="CENTER"
-                              fillWidth="false" maxHeight="-Infinity" maxWidth="-Infinity"
-                              onMouseClicked="#actionAddImage" prefHeight="150.0" prefWidth="150.0">
+                        <VBox id="iconControllerBox" fx:id="timerIconControllerBox" alignment="CENTER" fillWidth="false" maxHeight="-Infinity" maxWidth="-Infinity" onMouseClicked="#actionAddImage" prefHeight="150.0" prefWidth="150.0">
                             <cursor>
-                                <Cursor fx:constant="HAND"/>
+                                <Cursor fx:constant="HAND" />
                             </cursor>
-                            <ImageView id="iconImageView" fx:id="iconView" fitHeight="48.0"
-                                       fitWidth="48.0" pickOnBounds="true" preserveRatio="true">
-                                <Image url="@../images/add_icon_ic.png"/>
+                            <ImageView id="iconImageView" fx:id="iconView" fitHeight="48.0" fitWidth="48.0" pickOnBounds="true" preserveRatio="true">
+                                <Image url="@../images/add_icon_ic.png" />
                             </ImageView>
-                            <Label text="Add Scene Image" textFill="#bbbbbb"/>
+                            <Label text="Add Scene Image" textFill="#bbbbbb" />
                         </VBox>
                     </StackPane>
                 </center>
                 <top>
                 </top>
             </BorderPane>
-            <TextArea id="mainTextArea" fx:id="timerTextArea" layoutX="50.0" layoutY="275.0" maxHeight="-Infinity"
-                      maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" onKeyTyped="#actionTextTyped"
-                      prefHeight="150.0" prefWidth="500.0" stylesheets="@../css/text_area_sytlesheet.css"
-                      wrapText="true" AnchorPane.bottomAnchor="40.0" AnchorPane.leftAnchor="80.0"
-                      AnchorPane.rightAnchor="80.0"/>
-            <HBox fx:id="container" AnchorPane.leftAnchor="0.0" AnchorPane.topAnchor="0.0"/>
+            <TextArea id="mainTextArea" fx:id="timerTextArea" layoutX="50.0" layoutY="275.0" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" onKeyTyped="#actionTextTyped" prefHeight="150.0" prefWidth="500.0" stylesheets="@../css/text_area_sytlesheet.css" wrapText="true" AnchorPane.bottomAnchor="40.0" AnchorPane.leftAnchor="80.0" AnchorPane.rightAnchor="80.0" />
+            <HBox fx:id="container" AnchorPane.leftAnchor="0.0" AnchorPane.topAnchor="0.0" />
         </AnchorPane>
         <VBox minHeight="0.0" minWidth="0.0" stylesheets="@../css/titled_pane_stylesheet.css">
             <TitledPane animated="false" layoutX="10.0" layoutY="218.0" text="Timer Properties" wrapText="true">
                 <VBox spacing="5.0">
-                    <TextField fx:id="totalTimerField" onKeyTyped="#actionTotalTimerField"
-                               promptText="Total Time"/>
-                    <Separator prefWidth="200.0"/>
-                    <TextArea fx:id="textTextArea" onKeyTyped="#actionTextTyped" prefHeight="59.0"
-                              promptText="Text for current second"/>
-                    <Button mnemonicParsing="false" onAction="#actionAddLineImage" text="Line Image"/>
-                    <Label text="Text Color:"/>
-                    <ColorPicker fx:id="textColorPicker" promptText="Text Color"/>
-                    <Label text="Text Outline Color:"/>
+                    <TextField fx:id="totalTimerField" onKeyTyped="#actionTotalTimerField" promptText="Total Time" />
+                    <Separator prefWidth="200.0" />
+                    <TextArea fx:id="textTextArea" onKeyTyped="#actionTextTyped" prefHeight="59.0" promptText="Text for current second" wrapText="true" />
+                    <Button mnemonicParsing="false" onAction="#actionAddLineImage" text="Line Image" />
+                    <Label text="Text Color:" />
+                    <ColorPicker fx:id="textColorPicker" promptText="Text Color" />
+                    <Label text="Text Outline Color:" />
                     <ColorPicker fx:id="textOutlineColorPicker" promptText="Text Outline Color">
                         <value>
-                            <Color/>
+                            <Color />
                         </value>
                     </ColorPicker>
                 </VBox>
@@ -62,7 +52,7 @@
 </center>
    <top>
        <ToolBar prefHeight="40.0" prefWidth="200.0" BorderPane.alignment="CENTER">
-           <TextField fx:id="goToSecondsTextField" onKeyTyped="#actionGoToSecondsField" promptText="Go to second"/>
+           <TextField fx:id="goToSecondsTextField" onKeyTyped="#actionGoToSecondsField" promptText="Go to second" />
        </ToolBar>
    </top>
 </BorderPane>
