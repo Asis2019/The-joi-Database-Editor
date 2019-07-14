@@ -33,7 +33,8 @@ public class MetaDataForm {
 
         //Image
         if(story.getMetadataIcon() != null) {
-            Image image = new Image(story.getMetadataIcon().toURI().toString());
+            iconFile = story.getMetadataIcon();
+            Image image = new Image(iconFile.toURI().toString());
             imageView.setImage(image);
             if (iconControllerBox != null) {
                 mainVBox.getChildren().remove(iconControllerBox);
