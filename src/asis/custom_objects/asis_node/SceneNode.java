@@ -128,6 +128,16 @@ public class SceneNode extends Region {
         outputConnections.remove(outputConnections.size()-1);
     }
 
+    public void removeAllOutputConnection() {
+        for(int i=outputContainer.getChildren().size(); i>1; i--) {
+            outputContainer.getChildren().remove(i-1);
+        }
+
+        for(int i=outputConnections.size(); i>1; i--) {
+            outputConnections.remove(i-1);
+        }
+    }
+
     private void attachHandlers(AsisConnectionButton connection) {
         connection.setOnMouseMoved(e -> sceneNodeMainController.mouseMoved(e));
 

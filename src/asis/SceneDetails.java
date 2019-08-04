@@ -187,6 +187,7 @@ public class SceneDetails {
 
     private void actionDialogClosed() {
         menuItemAddDialog.setDisable(false);
+        sceneNode.removeAllOutputConnection();
         story.removeDialog(sceneId);
         Controller.getInstance().setNewChanges();
     }
