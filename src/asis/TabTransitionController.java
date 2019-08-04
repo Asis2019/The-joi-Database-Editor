@@ -122,10 +122,10 @@ public class TabTransitionController {
     }
 
     public void actionFadeColor() {
-        transitionPaneMask.setStyle("-fx-background-color: #"+ colorToHex(transitionFadeColor.getValue())+";");
+        String color = removeLastTwoLetters(colorToHex(transitionFadeColor.getValue()));
+        transitionPaneMask.setStyle("-fx-background-color: #"+color+";");
 
-
-        String color = "#"+colorToHex(transitionFadeColor.getValue());
+        color = "#"+color;
         story.addDataToTransition(sceneId, "fadeColor", color);
     }
 
