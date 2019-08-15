@@ -9,3 +9,9 @@ The scene editor is where you will spend most of your time, it is where you add 
 
 Project Details:
 Pressing this button will open up a window allowing you to edit your joi's information. This window is very important and you should make sure to fill out as much as you can.
+
+
+Images:
+When adding images try to make sure they are at least 900 pixels and no more than 1080 pixels in height.
+Since the game runs at 1920 by 1080 pixels, having images that match that resolution will give you the best experience.
+Keep in mind that the way something looks in the editor is not necessarily how it will look in the game.
