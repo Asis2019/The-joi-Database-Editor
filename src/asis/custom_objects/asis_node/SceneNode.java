@@ -59,9 +59,7 @@ public class SceneNode extends Region {
 
         borderPane.setCenter(titleLabel);
 
-        if(sceneId != 0) {
-            createNewInputConnectionPoint();
-        }
+        createNewInputConnectionPoint();
 
         createNewOutputConnectionPoint("Default", "normal_output");
 
@@ -97,7 +95,6 @@ public class SceneNode extends Region {
 
         //Add button to lookup list
         sceneNodeMainController.addInputConnection(inputConnection);
-
 
         inputContainer.getChildren().add(inputConnection);
     }
@@ -140,11 +137,8 @@ public class SceneNode extends Region {
 
     private void attachHandlers(AsisConnectionButton connection) {
         connection.setOnMouseMoved(e -> sceneNodeMainController.mouseMoved(e));
-
         connection.setOnMouseDragged(e -> sceneNodeMainController.mouseMoved(e));
-
         connection.setOnMousePressed(e -> sceneNodeMainController.mousePressed(connection));
-
         connection.setOnMouseReleased(e -> sceneNodeMainController.mouseReleased(e));
     }
 

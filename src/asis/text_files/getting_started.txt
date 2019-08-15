@@ -1,0 +1,11 @@
+Creating your own joi is easy once you understand how the editor works. This will be a simple guid on the concepts of scenes and some good practices.
+
+Scenes:
+Scenes are the containers that hold everything in your joi. They can be connected to each other in different ways to get different effects.
+Right clicking on a scene node will give you some options as too what you can do with them, double clicking them will open the scene editor.
+
+Scene Editor:
+The scene editor is where you will spend most of your time, it is where you add lines of text, style the text, add timers, dialog branches, etc.
+
+Project Details:
+Pressing this button will open up a window allowing you to edit your joi's information. This window is very important and you should make sure to fill out as much as you can.

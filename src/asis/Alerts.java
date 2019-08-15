@@ -11,7 +11,7 @@ import java.io.IOException;
 
 import static asis.custom_objects.AsisUtils.errorDialogWindow;
 
-public class Alerts {
+class Alerts {
 
     private String sceneTitle;
     private int unsavedChangesDialogButtonChoice;
@@ -27,6 +27,27 @@ public class Alerts {
             DialogMessageController controller = fxmlLoader.getController();
             controller.inflate(message);
             Scene main_scene = new Scene(root);
+
+            stage.initModality(Modality.APPLICATION_MODAL);
+            stage.getIcons().add(new Image(Main.class.getResourceAsStream("images/icon.png")));
+            stage.setScene(main_scene);
+            stage.setTitle(title);
+            stage.showAndWait();
+        } catch (IOException e) {
+            errorDialogWindow(e);
+        }
+    }
+
+    void messageDialog(Class calledFrom, String title, String message, int width, int height) {
+        try {
+            Stage stage = new Stage();
+
+            FXMLLoader fxmlLoader = new FXMLLoader(calledFrom.getResource("fxml/dialog_message.fxml"));
+            Parent root = fxmlLoader.load();
+
+            DialogMessageController controller = fxmlLoader.getController();
+            controller.inflate(message);
+            Scene main_scene = new Scene(root, width, height);
 
             stage.initModality(Modality.APPLICATION_MODAL);
             stage.getIcons().add(new Image(Main.class.getResourceAsStream("images/icon.png")));

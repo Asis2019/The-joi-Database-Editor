@@ -24,8 +24,11 @@ import javafx.stage.Modality;
 import javafx.stage.Stage;
 
 import java.io.*;
+import java.net.URISyntaxException;
 import java.net.URL;
+import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
+import java.nio.file.Path;
 import java.nio.file.StandardCopyOption;
 import java.util.ArrayList;
 import java.util.Objects;
@@ -53,7 +56,7 @@ public class Controller {
     private SceneNodeMainController sceneNodeMainController;
 
     private ContextMenu mainContextMenu =  new ContextMenu();
-    public ContextMenu sceneNodeContextMenu =  new ContextMenu();
+    private ContextMenu sceneNodeContextMenu =  new ContextMenu();
 
     @FXML private AnchorPane anchorPane;
     @FXML private ScrollPane scrollPane;
@@ -841,6 +844,26 @@ public class Controller {
                 //Delete temp folder
                 deleteFolder(tempFile);
             }
+        }
+    }
+
+    public void actionGettingStarted() {
+        try {
+            Path path = Path.of(this.getClass().getResource("text_files/getting_started.txt").toURI());
+            String message = Files.readString(path, StandardCharsets.UTF_8);
+            new Alerts().messageDialog(this.getClass(), "Getting Started", message, 720, 720);
+        } catch (IOException | URISyntaxException e) {
+            e.printStackTrace();
+        }
+    }
+
+    public void actionProjectDetailsHelp() {
+        try {
+            Path path = Path.of(this.getClass().getResource("text_files/project_details.txt").toURI());
+            String message = Files.readString(path, StandardCharsets.UTF_8);
+            new Alerts().messageDialog(this.getClass(), "Getting Started", message, 720, 720);
+        } catch (IOException | URISyntaxException e) {
+            e.printStackTrace();
         }
     }
 

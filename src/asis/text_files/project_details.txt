@@ -1,0 +1,34 @@
+What is it?
+This window shows you all the data in your joi's metadata file. It is responsible for telling the editor how to handle your joi.
+
+Icon:
+The icon should be an image 300 by 300 pixels in size, this will make it fit nicely when in the game.
+If you experience issues with the icon, make sure its a png and the image is named "joi_icon".
+
+Title:
+The title of your joi, this should be as short as possible.
+
+Preparations:
+Here you should describe what is required for your joi such as, Starting fully clothed or 3 clothes pins.
+Try to keep this brief, but informative.
+
+Displayed Fetishes:
+This section should include the fetishes you want to show the user, it does not have to include everything, just the most important ones such as CEI or Anal.
+
+Joi Id:
+This is a unique identifier for your joi, a good way to make sure this is unique is by using your name followed by an underscore then your joi's title (e.g. asis2013_d_va).
+
+Game Version:
+The current version of the game. This lets the game know what version the joi was made for.
+
+Fetish Tags:
+Unlike the "Displayed Fetishes" section, this one is not shown to the user. Here you add all the tags that are applicable to your joi.
+This includes aliases, for example: cei, cum eating instructions. You should try to add as much as you can, so that people will be able to more easily find your joi.
+
+Required Equipment:
+This section is very similar to the "Fetish Tags". Like the aforementioned section, this one is not shown to the user, but rather used by the game when filtering.
+Here you add equipment tags for the items your joi needs, example: clothes pines, dildo. This must include all items used by your joi.
+If nothing is required you can use "none" as your tag.
+
+Characters:
+This section is pretty strait forward. The full names of all characters in your joi should be added here. If your joi uses random characters you can add "Multiple" as your character tag.
