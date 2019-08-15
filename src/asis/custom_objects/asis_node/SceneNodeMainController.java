@@ -92,9 +92,9 @@ public class SceneNodeMainController {
 
         dragActive = true;
 
-        /*if(currentOutputConnection.hasBoundLine()) {
+        if(currentOutputConnection.hasBoundLine()) {
             root.getChildren().remove(currentOutputConnection.getBoundLine());
-        }*/
+        }
 
         BoundLine boundLine = new BoundLine(currentOutputConnection.centerXProperty(), currentOutputConnection.centerYProperty());
         currentOutputConnection.setBoundLine(boundLine);
