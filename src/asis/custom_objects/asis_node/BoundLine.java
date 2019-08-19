@@ -4,7 +4,7 @@ import javafx.beans.property.ReadOnlyDoubleProperty;
 import javafx.scene.shape.CubicCurve;
 import javafx.scene.shape.StrokeLineCap;
 
-class BoundLine extends CubicCurve {
+public class BoundLine extends CubicCurve {
 
     private AsisConnectionButton startPointConnectionObject, endPointConnectionObject;
 

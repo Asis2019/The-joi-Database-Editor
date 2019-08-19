@@ -1,6 +1,9 @@
 package asis.custom_objects.asis_node;
 
 import asis.Controller;
+import asis.Story;
+import asis.json.JSONArray;
+import asis.json.JSONObject;
 import javafx.beans.binding.Bindings;
 import javafx.beans.property.DoubleProperty;
 import javafx.beans.property.SimpleDoubleProperty;
@@ -20,6 +23,7 @@ public class SceneNodeMainController {
     private double menuBarOffset;
 
     private List<AsisConnectionButton> inputConnections = new ArrayList<>();
+    private List<BoundLine> lineList = new ArrayList<>();
 
     private AsisConnectionButton currentOutputConnection;
     private Controller controller;
@@ -86,15 +90,21 @@ public class SceneNodeMainController {
         root.getChildren().add(0, boundLine);
     }
 
+    private int getTotalLinesConnectedToOutput(AsisConnectionButton asisConnectionButton) {
+        int lineConnectionsToOutput = 0;
+        for (BoundLine line : lineList) {
+            if(line.getStartPointConnectionObject() == asisConnectionButton) {
+                lineConnectionsToOutput++;
+            }
+        }
+        return lineConnectionsToOutput;
+    }
+
     private void startDrag() {
         if (dragActive)
             return;
 
         dragActive = true;
-
-        if(currentOutputConnection.hasBoundLine()) {
-            root.getChildren().remove(currentOutputConnection.getBoundLine());
-        }
 
         BoundLine boundLine = new BoundLine(currentOutputConnection.centerXProperty(), currentOutputConnection.centerYProperty());
         currentOutputConnection.setBoundLine(boundLine);
@@ -109,48 +119,150 @@ public class SceneNodeMainController {
         boundLine.endXProperty().bind(mouseX);
         boundLine.endYProperty().bind(mouseY);
 
+        lineList.add(boundLine);
+
         root.getChildren().add(0, boundLine);
     }
 
     private void stopDrag(AsisConnectionButton inputConnection) {
-        if(!inputConnection.getConnectionType()) {
-            BoundLine boundLine = inputConnection.getBoundLine();
-            boundLine.endXProperty().unbind();
-            boundLine.endYProperty().unbind();
-            root.getChildren().remove(boundLine);
-            inputConnection.setBoundLine(null);
-
-            controller.removeConnectionFromStory(inputConnection.getParentSceneId());
-        }
-
-        /*if(currentOutputConnection.getParentSceneId().equals(inputConnection.getParentSceneId())) {
-            System.out.println("Found same scene");
-            BoundLine boundLine = currentOutputConnection.getBoundLine();
-            boundLine.endXProperty().unbind();
-            boundLine.endYProperty().unbind();
-            root.getChildren().remove(boundLine);
-            currentOutputConnection.setBoundLine(null);
-            currentOutputConnection = null;
-        }*/
-
-        if(currentOutputConnection != null) {
-            if (currentOutputConnection.hasBoundLine()) {
-                //Connection established
-                BoundLine boundLine = currentOutputConnection.getBoundLine();
+        if(inputConnection != null) {
+            //Destroy line if input connection is somehow an output type
+            if (!inputConnection.getConnectionType()) {
+                BoundLine boundLine = inputConnection.getBoundLine();
                 boundLine.endXProperty().unbind();
                 boundLine.endYProperty().unbind();
-                boundLine.endXProperty().bind(inputConnection.centerXProperty());
-                boundLine.endYProperty().bind(inputConnection.centerYProperty());
-                inputConnection.setBoundLine(boundLine);
+                root.getChildren().remove(boundLine);
+                lineList.remove(boundLine);
+                inputConnection.setBoundLine(null);
+            }
 
-                boundLine.setEndPointConnectionObject(inputConnection);
+            if (currentOutputConnection != null) {
+                if (currentOutputConnection.hasBoundLine()) {
+                    //Check if any lines have the same output and input already
+                    for (BoundLine line : lineList) {
+                        if (line.getStartPointConnectionObject() == currentOutputConnection && line.getEndPointConnectionObject() == inputConnection) {
+                            System.out.println("Duplicate line found");
+                            currentOutputConnection.getBoundLine().endXProperty().unbind();
+                            currentOutputConnection.getBoundLine().endYProperty().unbind();
+                            root.getChildren().remove(currentOutputConnection.getBoundLine());
+                            lineList.remove(line);
+                            currentOutputConnection.setBoundLine(null);
+                            dragActive = false;
+                            currentOutputConnection = null;
+                            return;
+                        }
+                    }
 
-                controller.addConnectionToStory(currentOutputConnection, inputConnection);
+                    //Connection properly established
+                    BoundLine boundLine = currentOutputConnection.getBoundLine();
+                    boundLine.endXProperty().unbind();
+                    boundLine.endYProperty().unbind();
+                    boundLine.endXProperty().bind(inputConnection.centerXProperty());
+                    boundLine.endYProperty().bind(inputConnection.centerYProperty());
+                    inputConnection.setBoundLine(boundLine);
+                    boundLine.setEndPointConnectionObject(inputConnection);
+
+                    addConnectionToStory(currentOutputConnection, inputConnection);
+                }
+            }
+
+            dragActive = false;
+            currentOutputConnection = null;
+        }
+    }
+
+    private void removeConnectionFromStory(AsisConnectionButton outputConnection, AsisConnectionButton inputConnection) {
+        if(outputConnection.getConnectionId().contains("dialog_option")) {
+            System.out.println("Removing dialog value");
+            //Remove from inner dialog location
+            if (getTotalLinesConnectedToOutput(outputConnection) > 1) {
+                Story.getInstance().removeValueFromDialogOptionGotoRange(outputConnection.getParentSceneId(), outputConnection.getOptionNumber(), inputConnection.getParentSceneId());
+                lineList.remove(outputConnection.getBoundLine());
+                outputConnection.setBoundLine(null);
+
+                //Check if after removing there are still multiple lines
+                if (getTotalLinesConnectedToOutput(outputConnection) > 1) {
+                    Controller.getInstance().setNewChanges();
+                    return;
+                }
+
+                //Convert to old method
+                System.out.println("Running conversion");
+                Story.getInstance().convertValueFromDialogOptionGotoRangeToSingle(outputConnection.getParentSceneId(), outputConnection.getOptionNumber());
+            } else {
+                Story.getInstance().removeDialogOptionData(outputConnection.getParentSceneId(), outputConnection.getOptionNumber(), "gotoScene");
+                lineList.remove(outputConnection.getBoundLine());
+                outputConnection.setBoundLine(null);
+            }
+        } else {
+            //Remove from upper scene location
+            if (getTotalLinesConnectedToOutput(outputConnection) > 1) {
+                Story.getInstance().removeValueFromSceneGotoRange(outputConnection.getParentSceneId(), inputConnection.getParentSceneId());
+                lineList.remove(outputConnection.getBoundLine());
+                outputConnection.setBoundLine(null);
+
+                //Check if after removing there are still multiple lines
+                if (getTotalLinesConnectedToOutput(outputConnection) > 1) {
+                    Controller.getInstance().setNewChanges();
+                    return;
+                }
+
+                //Convert to old method
+                JSONArray storyData = Story.getInstance().getStoryDataJson().getJSONArray("JOI");
+                int amountOfScenes = Story.getInstance().getStoryDataJson().getJSONArray("JOI").length();
+                for (int i = 0; i < amountOfScenes; i++) {
+                    if (storyData.getJSONObject(i).has("gotoSceneInRange")) {
+                        int gotoValue = storyData.getJSONObject(i).getJSONArray("gotoSceneInRange").getInt(0);
+                        Story.getInstance().addDataToScene(outputConnection.getParentSceneId(), "gotoScene", gotoValue);
+                        Story.getInstance().removeDataFromScene(outputConnection.getParentSceneId(), "gotoSceneInRange");
+                        break;
+                    }
+                }
+            } else {
+                lineList.remove(outputConnection.getBoundLine());
+                outputConnection.setBoundLine(null);
+                Story.getInstance().removeDataFromScene(outputConnection.getParentSceneId(), "gotoScene");
             }
         }
+        Controller.getInstance().setNewChanges();
+    }
 
-        dragActive = false;
-        currentOutputConnection = null;
+    private void addConnectionToStory(AsisConnectionButton outputConnection, AsisConnectionButton inputConnection) {
+        //Process where to add the jump to
+        if(outputConnection.getConnectionId().contains("dialog_option")) {
+            if(getTotalLinesConnectedToOutput(outputConnection) > 1) {
+                Story.getInstance().addValueToDialogOptionGotoRange(outputConnection.getParentSceneId(), outputConnection.getOptionNumber(), inputConnection.getParentSceneId());
+
+                //Add old value if present
+                JSONObject dialogData = Story.getInstance().getDialogData(outputConnection.getParentSceneId()).getJSONArray("option"+outputConnection.getOptionNumber()).getJSONObject(0);
+                if(dialogData.has("gotoScene")) {
+                    int gotoValue = dialogData.getInt("gotoScene");
+                    Story.getInstance().addValueToDialogOptionGotoRange(outputConnection.getParentSceneId(), outputConnection.getOptionNumber(), gotoValue);
+                    Story.getInstance().removeDialogOptionData(outputConnection.getParentSceneId(), outputConnection.getOptionNumber(), "gotoScene");
+                }
+            } else {
+                Story.getInstance().addDialogOptionData(outputConnection.getParentSceneId(), outputConnection.getOptionNumber(), "gotoScene", inputConnection.getParentSceneId());
+            }
+        } else {
+            if(getTotalLinesConnectedToOutput(outputConnection) > 1) {
+                Story.getInstance().addValueToSceneGotoRange(outputConnection.getParentSceneId(), inputConnection.getParentSceneId());
+
+                //Add old value if present
+                JSONArray storyData = Story.getInstance().getStoryDataJson().getJSONArray("JOI");
+                int amountOfScenes = Story.getInstance().getStoryDataJson().getJSONArray("JOI").length();
+                for(int i=0; i < amountOfScenes; i++) {
+                    if (storyData.getJSONObject(i).has("gotoScene")) {
+                        int gotoValue = storyData.getJSONObject(i).getInt("gotoScene");
+                        Story.getInstance().addValueToSceneGotoRange(outputConnection.getParentSceneId(), gotoValue);
+                        Story.getInstance().removeDataFromScene(outputConnection.getParentSceneId(), "gotoScene");
+                        break;
+                    }
+                }
+            } else {
+                Story.getInstance().addDataToScene(outputConnection.getParentSceneId(), "gotoScene", inputConnection.getParentSceneId());
+            }
+        }
+        Controller.getInstance().setNewChanges();
     }
 
     void mouseMoved(MouseEvent mouseEvent) {
@@ -163,11 +275,26 @@ public class SceneNodeMainController {
     }
 
     void mousePressed(AsisConnectionButton asisConnectionButton) {
-        currentOutputConnection = asisConnectionButton;
-        startDrag();
+        if(!asisConnectionButton.getConnectionType()) {
+            //Connection is an output type
+            currentOutputConnection = asisConnectionButton;
+            startDrag();
+        } else {
+            //Connection is an input type
+            for (BoundLine line : lineList) {
+                if (line.getEndPointConnectionObject() == asisConnectionButton) {
+                    currentOutputConnection = line.getStartPointConnectionObject();
+                    root.getChildren().remove(line);
+                    removeConnectionFromStory(currentOutputConnection, asisConnectionButton);
+                    startDrag();
+                    break;
+                }
+            }
+        }
     }
 
     void mouseReleased(MouseEvent mouseEvent) {
+        //Check if an input node is present under mouse when released
         Optional<AsisConnectionButton> asisConnectionButton = findNode(mouseEvent.getSceneX(), mouseEvent.getSceneY());
         if (asisConnectionButton.isPresent()) {
             stopDrag(asisConnectionButton.get());
@@ -179,21 +306,23 @@ public class SceneNodeMainController {
     public void notifySceneRemoved(SceneNode sceneNode) {
         //Check if connection is present for outputs
         for (AsisConnectionButton connection : sceneNode.getOutputButtons()) {
-            if(connection.hasBoundLine()) {
-                root.getChildren().remove(connection.getBoundLine());
-                connection.setBoundLine(null);
-
-                controller.removeConnectionFromStory(connection.getParentSceneId());
+            for (BoundLine line : lineList) {
+                if(connection == line.getStartPointConnectionObject()) {
+                    removeConnectionFromStory(connection, line.getEndPointConnectionObject());
+                    root.getChildren().remove(line);
+                    connection.setBoundLine(null);
+                }
             }
         }
 
         //Check if input has any connection
-        if(sceneNode.getInputConnection().hasBoundLine()) {
-            root.getChildren().remove(sceneNode.getInputConnection().getBoundLine());
-
-            controller.removeConnectionFromStory(sceneNode.getInputConnection().getBoundLine().getStartPointConnectionObject().getParentSceneId());
-
-            sceneNode.getInputConnection().setBoundLine(null);
+        for (BoundLine line : lineList) {
+            if(sceneNode.getInputConnection() == line.getEndPointConnectionObject()) {
+                removeConnectionFromStory(line.getStartPointConnectionObject(), line.getEndPointConnectionObject());
+                root.getChildren().remove(line);
+                sceneNode.getInputConnection().setBoundLine(null);
+            }
         }
+
     }
 }

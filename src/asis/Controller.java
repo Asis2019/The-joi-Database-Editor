@@ -385,21 +385,6 @@ public class Controller {
         setNewChanges();
     }
 
-    public void addConnectionToStory(AsisConnectionButton outputConnection, AsisConnectionButton inputConnection) {
-        //Process where to add the jump to
-        if(outputConnection.getConnectionId().contains("dialog_option")) {
-            story.addDialogOptionGoTo(outputConnection.getParentSceneId(), outputConnection.getOptionNumber(), inputConnection.getParentSceneId());
-        } else {
-            story.addDataToScene(outputConnection.getParentSceneId(), "gotoScene", inputConnection.getParentSceneId());
-        }
-        setNewChanges();
-    }
-
-    public void removeConnectionFromStory(int sceneId) {
-        story.removeDataFromScene(sceneId, "gotoScene");
-        setNewChanges();
-    }
-
     private void writeJsonToFile(JSONObject jsonObject, String fileName, File saveLocation) {
         try {
             FileWriter fileWriter = new FileWriter(saveLocation.toPath() + File.separator + fileName);
@@ -525,95 +510,109 @@ public class Controller {
                 //Check story for scenes and add the nodes into proper location
                 if (story.getStoryDataJson().has("JOI")) {
                     ArrayList<SceneNode> sceneNodes = new ArrayList<>();
-                    ArrayList<Integer> sceneIdTo = new ArrayList<>();
-                    ArrayList<AsisConnectionButton> fromConnections = new ArrayList<>();
 
-                    try {
-                        int i = 0;
-                        JSONArray storyData = story.getStoryDataJson().getJSONArray("JOI");
-                        while (!storyData.getJSONObject(i).isEmpty()) {
-                            int sceneId;
-                            String title = "Scene " + (numberOfScenes + 1);
-                            double xPosition = 10;
-                            double yPosition = 10;
+                    JSONArray storyData = story.getStoryDataJson().getJSONArray("JOI");
+                    for(int i=0; i<storyData.length(); i++) {
+                        int sceneId;
+                        String title = "Scene " + (numberOfScenes + 1);
+                        double xPosition = 10;
+                        double yPosition = 10;
 
-                            //Get scene id
-                            if (storyData.getJSONObject(i).has("sceneId")) {
-                                sceneId = storyData.getJSONObject(i).getInt("sceneId");
-                            } else {
-                                new Alerts().messageDialog(this.getClass(), "Warning", "The project is not compatible with the editor");
-                                return false;
-                            }
-
-                            //Get scene title
-                            if (storyData.getJSONObject(i).has("sceneTitle")) {
-                                title = storyData.getJSONObject(i).getString("sceneTitle");
-                            }
-
-                            //Get scene x position
-                            if (storyData.getJSONObject(i).has("layoutXPosition")) {
-                                xPosition = storyData.getJSONObject(i).getDouble("layoutXPosition");
-                            }
-
-                            //Get scene y position
-                            if (storyData.getJSONObject(i).has("layoutYPosition")) {
-                                yPosition = storyData.getJSONObject(i).getDouble("layoutYPosition");
-                            }
-
-                            //Create scene
-                            SceneNode sceneNode = addScene(xPosition, yPosition, title, sceneId);
-
-                            //Set good ending for scene
-                            if (storyData.getJSONObject(i).has("joiEnd")) {
-                                sceneNode.setGoodEnd(true);
-                            }
-
-                            //Set bad ending for scene
-                            if (storyData.getJSONObject(i).has("badJoiEnd")) {
-                                sceneNode.setBadEnd(true);
-                            }
-
-                            //Check for scene normal connections
-                            if (storyData.getJSONObject(i).has("gotoScene")) {
-                                if (checkStoryForSceneId(storyData.getJSONObject(i).getInt("gotoScene"))) {
-                                    fromConnections.add(sceneNode.getOutputButtons().get(0));
-                                    sceneIdTo.add(storyData.getJSONObject(i).getInt("gotoScene"));
-                                }
-                            }
-
-                            //Check for scene dialog connections
-                            if (storyData.getJSONObject(i).has("dialogChoice")) {
-                                int j = 0;
-                                while (storyData.getJSONObject(i).getJSONArray("dialogChoice").getJSONObject(0).has("option" + j)) {
-                                    AsisConnectionButton asisConnectionButton = sceneNode.createNewOutputConnectionPoint("Option " + (j + 1), "dialog_option_" + (j + 1));
-                                    asisConnectionButton.setOptionNumber(j);
-
-                                    if (storyData.getJSONObject(i).getJSONArray("dialogChoice").getJSONObject(0).getJSONArray("option" + j).getJSONObject(0).has("gotoScene")) {
-                                        int gotoScene = storyData.getJSONObject(i).getJSONArray("dialogChoice").getJSONObject(0).getJSONArray("option" + j).getJSONObject(0).getInt("gotoScene");
-                                        if (checkStoryForSceneId(gotoScene)) {
-                                            fromConnections.add(asisConnectionButton);
-                                            sceneIdTo.add(gotoScene);
-                                        }
-                                    }
-
-                                    j++;
-                                }
-                            }
-
-                            sceneNodes.add(sceneNode);
-
-                            i++;
+                        //Get scene id
+                        if (storyData.getJSONObject(i).has("sceneId")) {
+                            sceneId = storyData.getJSONObject(i).getInt("sceneId");
+                        } else {
+                            new Alerts().messageDialog(this.getClass(), "Warning", "The project is not compatible with the editor");
+                            return false;
                         }
-                    } catch (JSONException e) {
-                        System.out.println(e.getMessage());
+
+                        //Get scene title
+                        if (storyData.getJSONObject(i).has("sceneTitle")) {
+                            title = storyData.getJSONObject(i).getString("sceneTitle");
+                        }
+
+                        //Get scene x position
+                        if (storyData.getJSONObject(i).has("layoutXPosition")) {
+                            xPosition = storyData.getJSONObject(i).getDouble("layoutXPosition");
+                        }
+
+                        //Get scene y position
+                        if (storyData.getJSONObject(i).has("layoutYPosition")) {
+                            yPosition = storyData.getJSONObject(i).getDouble("layoutYPosition");
+                        }
+
+                        //Create scene
+                        SceneNode sceneNode = addScene(xPosition, yPosition, title, sceneId);
+
+                        //Set good ending for scene
+                        if (storyData.getJSONObject(i).has("joiEnd")) {
+                            sceneNode.setGoodEnd(true);
+                        }
+
+                        //Set bad ending for scene
+                        if (storyData.getJSONObject(i).has("badJoiEnd")) {
+                            sceneNode.setBadEnd(true);
+                        }
+
+                        sceneNodes.add(sceneNode);
                     }
 
                     //Start linking
-                    for (int ii = 0; ii < fromConnections.size(); ii++) {
-                        try {
-                            sceneNodeMainController.createConnection(fromConnections.get(ii), getSceneNodeWithId(sceneNodes, sceneIdTo.get(ii)).getInputConnection());
-                        } catch (NullPointerException e) {
-                            System.out.println("getSceneNodeWithId(sceneNodes, sceneIdTo.get(ii)) Returned NULL");
+                    for(int i=0; i<storyData.length(); i++) {
+                        //Check for scene normal connections
+                        if (storyData.getJSONObject(i).has("gotoScene")) {
+                            try {
+                                AsisConnectionButton output = sceneNodes.get(i).getOutputButtons().get(0);
+                                AsisConnectionButton input = getSceneNodeWithId(sceneNodes, storyData.getJSONObject(i).getInt("gotoScene")).getInputConnection();
+                                sceneNodeMainController.createConnection(output, input);
+                            } catch (NullPointerException e) {
+                                System.out.println("getSceneNodeWithId(sceneNodes, sceneIdTo.get(ii)) Returned NULL");
+                            }
+                        }
+
+                        //Check for scene range connections
+                        if (storyData.getJSONObject(i).has("gotoSceneInRange")) {
+                            AsisConnectionButton output = sceneNodes.get(i).getOutputButtons().get(0);
+
+                            for(int j=0; j<storyData.getJSONObject(i).getJSONArray("gotoSceneInRange").length(); j++) {
+                                try {
+                                    AsisConnectionButton input = getSceneNodeWithId(sceneNodes, storyData.getJSONObject(i).getJSONArray("gotoSceneInRange").getInt(j)).getInputConnection();
+                                    sceneNodeMainController.createConnection(output, input);
+                                } catch (NullPointerException e) {
+                                    System.out.println("getSceneNodeWithId(sceneNodes, sceneIdTo.get(ii)) Returned NULL");
+                                }
+                            }
+                        }
+
+                        //Check for scene dialog connections
+                        if (storyData.getJSONObject(i).has("dialogChoice")) {
+                            int j = 0;
+                            while (storyData.getJSONObject(i).getJSONArray("dialogChoice").getJSONObject(0).has("option" + j)) {
+                                AsisConnectionButton asisConnectionButton = sceneNodes.get(i).createNewOutputConnectionPoint("Option " + (j + 1), "dialog_option_" + (j + 1));
+                                asisConnectionButton.setOptionNumber(j);
+
+                                if (storyData.getJSONObject(i).getJSONArray("dialogChoice").getJSONObject(0).getJSONArray("option" + j).getJSONObject(0).has("gotoScene")) {
+                                    try {
+                                        int gotoScene = storyData.getJSONObject(i).getJSONArray("dialogChoice").getJSONObject(0).getJSONArray("option" + j).getJSONObject(0).getInt("gotoScene");
+                                        AsisConnectionButton input = getSceneNodeWithId(sceneNodes, gotoScene).getInputConnection();
+                                        sceneNodeMainController.createConnection(asisConnectionButton, input);
+                                    } catch (NullPointerException e) {
+                                        System.out.println("getSceneNodeWithId(sceneNodes, sceneIdTo.get(ii)) Returned NULL");
+                                    }
+                                } else if (storyData.getJSONObject(i).getJSONArray("dialogChoice").getJSONObject(0).getJSONArray("option" + j).getJSONObject(0).has("gotoSceneInRange")){
+                                    for(int jj=0; jj<storyData.getJSONObject(i).getJSONArray("dialogChoice").getJSONObject(0).getJSONArray("option" + j).getJSONObject(0).getJSONArray("gotoSceneInRange").length(); jj++) {
+                                        try {
+                                            int gotoScene = storyData.getJSONObject(i).getJSONArray("dialogChoice").getJSONObject(0).getJSONArray("option" + j).getJSONObject(0).getJSONArray("gotoSceneInRange").getInt(jj);
+                                            AsisConnectionButton input = getSceneNodeWithId(sceneNodes, gotoScene).getInputConnection();
+                                            sceneNodeMainController.createConnection(asisConnectionButton, input);
+                                        } catch (NullPointerException e) {
+                                            System.out.println("getSceneNodeWithId(sceneNodes, sceneIdTo.get(ii)) Returned NULL");
+                                        }
+                                    }
+                                }
+
+                                j++;
+                            }
                         }
                     }
                 }
@@ -639,22 +638,6 @@ public class Controller {
         }
 
         return null;
-    }
-
-    private boolean checkStoryForSceneId(int sceneId) {
-        JSONArray storyDataArray = story.getStoryDataJson().getJSONArray("JOI");
-
-        int i = 0;
-        while(!storyDataArray.getJSONObject(i).isEmpty()) {
-            if (storyDataArray.getJSONObject(i).has("sceneId")) {
-                if(storyDataArray.getJSONObject(i).getInt("sceneId") == sceneId) {
-                    return true;
-                }
-            }
-            i++;
-        }
-
-        return false;
     }
 
     public void actionSaveProject() {

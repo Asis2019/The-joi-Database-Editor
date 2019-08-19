@@ -92,6 +92,7 @@ public class SceneNode extends Region {
 
     private void createNewInputConnectionPoint() {
         inputConnection = new AsisConnectionButton(sceneNodeMainController.getPane(), true, sceneId);
+        attachHandlers(inputConnection);
 
         //Add button to lookup list
         sceneNodeMainController.addInputConnection(inputConnection);
