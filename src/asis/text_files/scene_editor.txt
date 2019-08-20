@@ -1,0 +1,23 @@
+The scene editor is where you'll add text, images and other effects.
+
+Scene Image:
+By clicking the center of the screen or selecting the Edit > Change Scene Image menu button, you can add an image to
+your scene. This image will be the default image for the scene.
+
+Normal Operation:
+This tab is always present and cannot be closed. This tab allows you to add text as well as stylize it.
+You can also add another image that will only display during the current line.
+
+Timer:
+Timers can be added to any scene, the tab allows you to edit the total length of the time and also allows
+you to add text at specific times. Like Normal Operation, you can also add images that will only display during
+a single second.
+
+Dialog Options:
+This tab is very simple and only allows you to create and title basic branching buttons that add new connection points for use
+in the main window to connect scenes.
+
+Transition:
+This tab is present by default with the default transition settings. Closing this tab will remove any transition from
+the scene. This can be used for creating seamless transitions between scenes.
+Transitions can also contain a small amount of text that are also styleable.

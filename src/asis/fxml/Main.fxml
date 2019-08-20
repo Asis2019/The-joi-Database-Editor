@@ -24,6 +24,9 @@
                     <items>
                       <MenuItem mnemonicParsing="false" onAction="#actionGettingStarted" text="Getting Started" />
                         <MenuItem mnemonicParsing="false" onAction="#actionProjectDetailsHelp" text="Project Details" />
+                        <MenuItem mnemonicParsing="false" onAction="#actionSceneEditor" text="Scene Editor" />
+                        <SeparatorMenuItem mnemonicParsing="false" />
+                        <MenuItem mnemonicParsing="false" onAction="#actionAbout" text="About" />
                     </items>
                   </Menu>
                  </menus>

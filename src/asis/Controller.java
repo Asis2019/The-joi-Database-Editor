@@ -850,6 +850,26 @@ public class Controller {
         }
     }
 
+    public void actionAbout() {
+        try {
+            Path path = Path.of(this.getClass().getResource("text_files/about.txt").toURI());
+            String message = Files.readString(path, StandardCharsets.UTF_8);
+            new Alerts().messageDialog(this.getClass(), "About", message, 500, 250);
+        } catch (IOException | URISyntaxException e) {
+            e.printStackTrace();
+        }
+    }
+
+    public void actionSceneEditor() {
+        try {
+            Path path = Path.of(this.getClass().getResource("text_files/scene_editor.txt").toURI());
+            String message = Files.readString(path, StandardCharsets.UTF_8);
+            new Alerts().messageDialog(this.getClass(), "Scene Editor", message, 720, 720);
+        } catch (IOException | URISyntaxException e) {
+            e.printStackTrace();
+        }
+    }
+
     private void deleteFolder(File folder) {
         File[] files = folder.listFiles();
         if(files != null) {
