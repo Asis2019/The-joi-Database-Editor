@@ -561,9 +561,7 @@ public class Story {
         JSONObject dialogData = getDialogData(sceneId);
         if(dialogData.has("option"+optionNumber)) {
             if(dialogData.getJSONArray("option"+optionNumber).getJSONObject(0).has("gotoSceneInRange")) {
-                System.out.println("Converting...");
                 int gotoValue = dialogData.getJSONArray("option"+optionNumber).getJSONObject(0).getJSONArray("gotoSceneInRange").getInt(0);
-                System.out.println("Value adding "+gotoValue);
                 addDialogOptionData(sceneId, optionNumber,"gotoScene", gotoValue);
                 removeDialogOptionData(sceneId, optionNumber, "gotoSceneInRange");
             } else {

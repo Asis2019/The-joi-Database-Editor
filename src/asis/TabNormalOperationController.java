@@ -35,7 +35,7 @@ public class TabNormalOperationController {
     @FXML private VBox iconControllerBox;
     @FXML private StackPane stackPane;
     @FXML private Label lineCounterLabel;
-    @FXML private Button deleteLineButton;
+    @FXML private Button deleteLineButton, previousLineButton;
 
     public void initialize() {
         mainTextArea.setStyle("outline-color: "+outlineColor+"; fill-color: "+fillColor+";");
@@ -137,6 +137,7 @@ public class TabNormalOperationController {
         }
 
         if(onLine <= 1) {
+            previousLineButton.setDisable(true);
             deleteLineButton.setDisable(true);
         }
 
@@ -160,6 +161,7 @@ public class TabNormalOperationController {
         lineCounterLabel.setText(onLine+"/"+totalLines);
 
         deleteLineButton.setDisable(false);
+        previousLineButton.setDisable(false);
     }
 
     public void actionDeleteLine() {
