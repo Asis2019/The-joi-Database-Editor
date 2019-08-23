@@ -56,6 +56,18 @@
                          </VBox>
                      </content>
                   </TitledPane>
+                  <TitledPane animated="false" expanded="false" text="Current Line Beats" wrapText="true">
+                     <content>
+                        <VBox spacing="5.0">
+                           <children>
+                              <CheckBox fx:id="checkBoxStartBeat" mnemonicParsing="false" onAction="#actionStartBeat" text="Start Beats" />
+                              <CheckBox fx:id="checkBoxStopBeat" layoutX="20.0" layoutY="42.0" mnemonicParsing="false" onAction="#actionStopBeat" text="Stop Beats" />
+                              <TextField fx:id="textFieldBeatSpeed" promptText="Beat Speed" />
+                              <TextField fx:id="textFieldBeatPitch" layoutX="20.0" layoutY="42.0" promptText="Beat Pitch" />
+                           </children>
+                        </VBox>
+                     </content>
+                  </TitledPane>
               </children>
            </VBox>
        </items>

@@ -205,11 +205,21 @@ public class Story {
         Controller.getInstance().setNewChanges();
     }
 
-    void addDataToLineObject(int sceneId, int lineNumber, String key, String value) {
+    void addDataToLineObject(int sceneId, int lineNumber, String key, Object value) {
         int amountOfScenes = storyDataJson.getJSONArray("JOI").length();
         for(int i=0; i < amountOfScenes; i++) {
             if(storyDataJson.getJSONArray("JOI").getJSONObject(i).getInt("sceneId") == sceneId) {
                 storyDataJson.getJSONArray("JOI").getJSONObject(i).getJSONArray("line"+lineNumber).getJSONObject(0).put(key, value);
+            }
+        }
+        Controller.getInstance().setNewChanges();
+    }
+
+    void removeDataFromLineObject(int sceneId, int lineNumber, String key) {
+        int amountOfScenes = storyDataJson.getJSONArray("JOI").length();
+        for(int i=0; i < amountOfScenes; i++) {
+            if(storyDataJson.getJSONArray("JOI").getJSONObject(i).getInt("sceneId") == sceneId) {
+                storyDataJson.getJSONArray("JOI").getJSONObject(i).getJSONArray("line"+lineNumber).getJSONObject(0).remove(key);
             }
         }
         Controller.getInstance().setNewChanges();
@@ -307,6 +317,20 @@ public class Story {
                     storyDataJson.getJSONArray("JOI").getJSONObject(i).put("timer", wrapper);
 
                     addDataToTimerLineObject(sceneId, lineIndex, key, value);
+                }
+            }
+        }
+        Controller.getInstance().setNewChanges();
+    }
+
+    void removeDataFromTimerLineObject(int sceneId, String lineIndex, String key) {
+        int amountOfScenes = storyDataJson.getJSONArray("JOI").length();
+        for(int i=0; i < amountOfScenes; i++) {
+            if(storyDataJson.getJSONArray("JOI").getJSONObject(i).getInt("sceneId") == sceneId) {
+                if(storyDataJson.getJSONArray("JOI").getJSONObject(i).has("timer")) {
+                    if(storyDataJson.getJSONArray("JOI").getJSONObject(i).getJSONArray("timer").getJSONObject(0).has(lineIndex)) {
+                        storyDataJson.getJSONArray("JOI").getJSONObject(i).getJSONArray("timer").getJSONObject(0).getJSONArray(lineIndex).getJSONObject(0).remove(key);
+                    }
                 }
             }
         }

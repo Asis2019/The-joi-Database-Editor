@@ -4,6 +4,7 @@ import asis.custom_objects.AsisCenteredArc;
 import asis.custom_objects.ImageViewPane;
 import asis.json.JSONObject;
 import javafx.fxml.FXML;
+import javafx.scene.control.CheckBox;
 import javafx.scene.control.ColorPicker;
 import javafx.scene.control.TextArea;
 import javafx.scene.control.TextField;
@@ -31,12 +32,13 @@ public class TabTimerController {
     private ImageViewPane viewPane = new ImageViewPane();
     private AsisCenteredArc asisCenteredArc = new AsisCenteredArc();
 
-    @FXML private TextField goToSecondsTextField, totalTimerField;
+    @FXML private TextField goToSecondsTextField, totalTimerField, textFieldBeatPitch, textFieldBeatSpeed;
     @FXML private ColorPicker textColorPicker, textOutlineColorPicker;
     @FXML private VBox timerIconControllerBox;
     @FXML private StackPane timerStackPane;
     @FXML private TextArea timerTextArea, textTextArea;
     @FXML private HBox container;
+    @FXML private CheckBox checkBoxStopBeat, checkBoxStartBeat;
 
     public void initialize() {
         timerTextArea.setStyle("outline-color: "+outlineColor+"; fill-color: "+fillColor+";");
@@ -54,6 +56,42 @@ public class TabTimerController {
         });
 
         textTextArea.textProperty().bindBidirectional(timerTextArea.textProperty());
+
+        //Setup beat fields
+        textFieldBeatPitch.textProperty().addListener((observableValue, s, t1) -> {
+            //Process beat pitch
+            try {
+                double pitch = Double.parseDouble(t1);
+                story.addDataToTimerLineObject(sceneId, "line"+onSecond, "changeBeatPitch", pitch);
+            } catch (NumberFormatException e) {
+                System.out.println("User put bad value into beat pitch");
+                if(t1.isEmpty()) {
+                    story.removeDataFromTimerLineObject(sceneId, "line"+onSecond, "changeBeatPitch");
+                    textFieldBeatPitch.clear();
+                    return;
+                }
+                t1 = t1.substring(0, t1.length()-1);
+                textFieldBeatPitch.setText(t1);
+            }
+        });
+
+        //Setup beat fields
+        textFieldBeatSpeed.textProperty().addListener((observableValue, s, t1) -> {
+            //Process beat speed
+            try {
+                int speed = Integer.parseInt(t1);
+                story.addDataToTimerLineObject(sceneId, "line"+onSecond, "changeBeatSpeed", speed);
+            } catch (NumberFormatException e) {
+                System.out.println("User put bad value into beat speed");
+                if(t1.isEmpty()) {
+                    story.removeDataFromTimerLineObject(sceneId, "line"+onSecond, "changeBeatSpeed");
+                    textFieldBeatSpeed.clear();
+                    return;
+                }
+                t1 = t1.substring(0, t1.length()-1);
+                textFieldBeatSpeed.setText(t1);
+            }
+        });
 
         //timer
         asisCenteredArc.setMaxLength(0);
@@ -86,7 +124,7 @@ public class TabTimerController {
             if(timerObject != null) {
                 if(timerObject.has("totalTime")) {
                     totalTimerField.setText(String.valueOf(timerObject.getInt("totalTime")));
-                    totalSeconds = Integer.valueOf(totalTimerField.getText().trim());
+                    totalSeconds = Integer.parseInt(totalTimerField.getText().trim());
                     asisCenteredArc.setMaxLength(totalSeconds);
                 }
             }
@@ -182,10 +220,18 @@ public class TabTimerController {
 
     public void actionGoToSecondsField() {
         try {
-            onSecond = Integer.valueOf(goToSecondsTextField.getText().trim());
+            onSecond = Integer.parseInt(goToSecondsTextField.getText().trim());
             asisCenteredArc.setArcProgress(onSecond);
         } catch (NumberFormatException e) {
-            System.out.println("Error: "+e.getMessage());
+            System.out.println("User inputted bad character into goto second field");
+            String t1 = goToSecondsTextField.getText();
+            if(!t1.isEmpty()) {
+                t1 = t1.substring(0, t1.length() - 1);
+                goToSecondsTextField.setText(t1);
+            } else {
+                onSecond = 0;
+                asisCenteredArc.setArcProgress(onSecond);
+            }
         }
 
         setTextAreaVariables();
@@ -209,17 +255,64 @@ public class TabTimerController {
                 String text = textObject.getString("text").replaceAll("#", "\n");
                 timerTextArea.setText(text);
             }
+
+            if(textObject.has("startBeat")) {
+                checkBoxStartBeat.setSelected(true);
+            } else {
+                checkBoxStartBeat.setSelected(false);
+            }
+
+            if(textObject.has("stopBeat")) {
+                checkBoxStopBeat.setSelected(true);
+            } else {
+                checkBoxStopBeat.setSelected(false);
+            }
+
+            if(textObject.has("changeBeatSpeed")) {
+                int speed = textObject.getInt("changeBeatSpeed");
+                textFieldBeatSpeed.setText(String.valueOf(speed));
+            } else {
+                textFieldBeatSpeed.clear();
+            }
+
+            if(textObject.has("changeBeatPitch")) {
+                double speed = textObject.getDouble("changeBeatPitch");
+                textFieldBeatPitch.setText(String.valueOf(speed));
+            } else {
+                textFieldBeatPitch.clear();
+            }
         }
     }
 
     public void actionTotalTimerField() {
         try {
-            totalSeconds = Integer.valueOf(totalTimerField.getText().trim());
+            totalSeconds = Integer.parseInt(totalTimerField.getText().trim());
             asisCenteredArc.setMaxLength(totalSeconds);
         } catch (NumberFormatException e) {
-            System.out.println("Error: "+e.getMessage());
+            System.out.println("User inputted bad character into total time field");
+            String t1 = totalTimerField.getText();
+            t1 = t1.substring(0, t1.length()-1);
+            totalTimerField.setText(t1);
         }
 
         story.addDataToTimerObject(sceneId, totalSeconds);
+    }
+
+    public void actionStartBeat() {
+        //Add startBeat to story
+        if(checkBoxStartBeat.isSelected()) {
+            story.addDataToTimerLineObject(sceneId, "line"+onSecond, "startBeat", true);
+        } else {
+            story.removeDataFromTimerLineObject(sceneId, "line"+onSecond, "startBeat");
+        }
+    }
+
+    public void actionStopBeat() {
+        //Add stopBeat to story
+        if(checkBoxStopBeat.isSelected()) {
+            story.addDataToTimerLineObject(sceneId, "line"+onSecond, "stopBeat", true);
+        } else {
+            story.removeDataFromTimerLineObject(sceneId, "line"+onSecond, "stopBeat");
+        }
     }
 }

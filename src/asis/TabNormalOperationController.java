@@ -4,10 +4,7 @@ import asis.custom_objects.ImageViewPane;
 import asis.json.JSONArray;
 import asis.json.JSONObject;
 import javafx.fxml.FXML;
-import javafx.scene.control.Button;
-import javafx.scene.control.ColorPicker;
-import javafx.scene.control.Label;
-import javafx.scene.control.TextArea;
+import javafx.scene.control.*;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.scene.layout.StackPane;
@@ -31,11 +28,13 @@ public class TabNormalOperationController {
     private ImageViewPane viewPane = new ImageViewPane();
 
     @FXML private TextArea textTextField, mainTextArea;
+    @FXML private TextField textFieldBeatPitch, textFieldBeatSpeed;
     @FXML private ColorPicker textColorPicker, textOutlineColorPicker;
     @FXML private VBox iconControllerBox;
     @FXML private StackPane stackPane;
     @FXML private Label lineCounterLabel;
     @FXML private Button deleteLineButton, previousLineButton;
+    @FXML private CheckBox checkBoxStopBeat, checkBoxStartBeat;
 
     public void initialize() {
         mainTextArea.setStyle("outline-color: "+outlineColor+"; fill-color: "+fillColor+";");
@@ -59,6 +58,42 @@ public class TabNormalOperationController {
         });
 
         textTextField.textProperty().bindBidirectional(mainTextArea.textProperty());
+
+        //Setup beat fields
+        textFieldBeatPitch.textProperty().addListener((observableValue, s, t1) -> {
+            //Process beat pitch
+            try {
+                double pitch = Double.parseDouble(t1);
+                story.addDataToLineObject(sceneId, onLine-1, "changeBeatPitch", pitch);
+            } catch (NumberFormatException e) {
+                System.out.println("User put bad value into beat pitch");
+                if(t1.isEmpty()) {
+                    story.removeDataFromLineObject(sceneId, onLine-1, "changeBeatPitch");
+                    textFieldBeatPitch.clear();
+                    return;
+                }
+                t1 = t1.substring(0, t1.length()-1);
+                textFieldBeatPitch.setText(t1);
+            }
+        });
+
+        //Setup beat fields
+        textFieldBeatSpeed.textProperty().addListener((observableValue, s, t1) -> {
+            //Process beat speed
+            try {
+                int speed = Integer.parseInt(t1);
+                story.addDataToLineObject(sceneId, onLine - 1, "changeBeatSpeed", speed);
+            } catch (NumberFormatException e) {
+                System.out.println("User put bad value into beat speed");
+                if(t1.isEmpty()) {
+                    story.removeDataFromLineObject(sceneId, onLine-1, "changeBeatSpeed");
+                    textFieldBeatSpeed.clear();
+                    return;
+                }
+                t1 = t1.substring(0, t1.length()-1);
+                textFieldBeatSpeed.setText(t1);
+            }
+        });
     }
 
     private String removeLastTwoLetters(String s) {
@@ -83,7 +118,7 @@ public class TabNormalOperationController {
             }
 
             //Set first line text
-            setTextAreaVariables();
+            setLineVariables();
 
             //Set the visible image
             setVisibleImage();
@@ -141,7 +176,7 @@ public class TabNormalOperationController {
             deleteLineButton.setDisable(true);
         }
 
-        setTextAreaVariables();
+        setLineVariables();
         setVisibleImage();
 
 
@@ -155,7 +190,7 @@ public class TabNormalOperationController {
 
         onLine++;
 
-        setTextAreaVariables();
+        setLineVariables();
         setVisibleImage();
 
         lineCounterLabel.setText(onLine+"/"+totalLines);
@@ -195,7 +230,25 @@ public class TabNormalOperationController {
         actionPreviousLine();
     }
 
-    private void setTextAreaVariables() {
+    public void actionStartBeat() {
+        //Add startBeat to story
+        if(checkBoxStartBeat.isSelected()) {
+            story.addDataToLineObject(sceneId, onLine-1, "startBeat", true);
+        } else {
+            story.removeDataFromLineObject(sceneId, onLine-1, "startBeat");
+        }
+    }
+
+    public void actionStopBeat() {
+        //Add stopBeat to story
+        if(checkBoxStopBeat.isSelected()) {
+            story.addDataToLineObject(sceneId, onLine-1, "stopBeat", true);
+        } else {
+            story.removeDataFromLineObject(sceneId, onLine-1, "stopBeat");
+        }
+    }
+
+    private void setLineVariables() {
         initializeText();
 
         JSONObject textObject = story.getLineData(sceneId, onLine-1);
@@ -212,6 +265,32 @@ public class TabNormalOperationController {
             if(textObject.has("text")) {
                 String text = textObject.getString("text").replaceAll("#", "\n");
                 mainTextArea.setText(text);
+            }
+
+            if(textObject.has("startBeat")) {
+                checkBoxStartBeat.setSelected(true);
+            } else {
+                checkBoxStartBeat.setSelected(false);
+            }
+
+            if(textObject.has("stopBeat")) {
+                checkBoxStopBeat.setSelected(true);
+            } else {
+                checkBoxStopBeat.setSelected(false);
+            }
+
+            if(textObject.has("changeBeatSpeed")) {
+                int speed = textObject.getInt("changeBeatSpeed");
+                textFieldBeatSpeed.setText(String.valueOf(speed));
+            } else {
+                textFieldBeatSpeed.clear();
+            }
+
+            if(textObject.has("changeBeatPitch")) {
+                double speed = textObject.getDouble("changeBeatPitch");
+                textFieldBeatPitch.setText(String.valueOf(speed));
+            } else {
+                textFieldBeatPitch.clear();
             }
         }
     }
