@@ -24,11 +24,8 @@ import javafx.stage.Modality;
 import javafx.stage.Stage;
 
 import java.io.*;
-import java.net.URISyntaxException;
 import java.net.URL;
-import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
-import java.nio.file.Path;
 import java.nio.file.StandardCopyOption;
 import java.util.ArrayList;
 import java.util.Objects;
@@ -303,7 +300,7 @@ public class Controller {
         System.exit(0);
     }
 
-    void addScene() {
+    private void addScene() {
         String title;
         if(numberOfScenes != 0) {
             title = new Alerts().addNewSceneDialog(this.getClass(), "Scene " + (numberOfScenes+1));
@@ -831,42 +828,38 @@ public class Controller {
     }
 
     public void actionGettingStarted() {
-        try {
-            Path path = Path.of(this.getClass().getResource("text_files/getting_started.txt").toURI());
-            String message = Files.readString(path, StandardCharsets.UTF_8);
-            new Alerts().messageDialog(this.getClass(), "Getting Started", message, 720, 720);
-        } catch (IOException | URISyntaxException e) {
-            e.printStackTrace();
-        }
+        String message = getStringFromFile("text_files/getting_started.txt");
+        new Alerts().messageDialog(this.getClass(), "Getting Started", message, 720, 720);
     }
 
     public void actionProjectDetailsHelp() {
-        try {
-            Path path = Path.of(this.getClass().getResource("text_files/project_details.txt").toURI());
-            String message = Files.readString(path, StandardCharsets.UTF_8);
-            new Alerts().messageDialog(this.getClass(), "Getting Started", message, 720, 720);
-        } catch (IOException | URISyntaxException e) {
-            e.printStackTrace();
-        }
+        String message = getStringFromFile("text_files/project_details.txt");
+        new Alerts().messageDialog(this.getClass(), "Getting Started", message, 720, 720);
     }
 
     public void actionAbout() {
-        try {
-            Path path = Path.of(this.getClass().getResource("text_files/about.txt").toURI());
-            String message = Files.readString(path, StandardCharsets.UTF_8);
-            new Alerts().messageDialog(this.getClass(), "About", message, 500, 250);
-        } catch (IOException | URISyntaxException e) {
-            e.printStackTrace();
-        }
+        String message = getStringFromFile("text_files/about.txt");
+        new Alerts().messageDialog(this.getClass(), "About", message, 500, 250);
     }
 
     public void actionSceneEditor() {
+        String message = getStringFromFile("text_files/scene_editor.txt");
+        new Alerts().messageDialog(this.getClass(), "Scene Editor", message, 720, 720);
+    }
+
+    private String getStringFromFile(String fileLocation) {
         try {
-            Path path = Path.of(this.getClass().getResource("text_files/scene_editor.txt").toURI());
-            String message = Files.readString(path, StandardCharsets.UTF_8);
-            new Alerts().messageDialog(this.getClass(), "Scene Editor", message, 720, 720);
-        } catch (IOException | URISyntaxException e) {
-            e.printStackTrace();
+            String message;
+            StringBuilder stringBuilder = new StringBuilder();
+            InputStream inputStream = this.getClass().getResourceAsStream(fileLocation);
+
+            BufferedReader reader = new BufferedReader(new InputStreamReader(inputStream));
+            while ((message = reader.readLine()) != null) {
+                stringBuilder.append(message).append("\n");
+            }
+            return stringBuilder.toString();
+        } catch (IOException e) {
+            return "An error occured while getting text file \n"+e.getMessage();
         }
     }
 
