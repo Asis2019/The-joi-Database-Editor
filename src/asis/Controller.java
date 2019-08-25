@@ -303,7 +303,7 @@ public class Controller {
         System.exit(0);
     }
 
-    public void addScene() {
+    void addScene() {
         String title;
         if(numberOfScenes != 0) {
             title = new Alerts().addNewSceneDialog(this.getClass(), "Scene " + (numberOfScenes+1));
@@ -868,6 +868,18 @@ public class Controller {
         } catch (IOException | URISyntaxException e) {
             e.printStackTrace();
         }
+    }
+
+    public void actionAddSceneButton() {
+        //TODO issue 5 make new scenes via button adjacent
+        /*ArrayList<Node> nodes = getAllNodes(anchorPane);
+        for (Node node : anchorPane.getChildrenUnmodifiable()) {
+            nodes.add(node);
+            if (node instanceof SceneNode) {
+                System.out.println("found scene node "+((SceneNode) node).getSceneId());
+            }
+        }*/
+        addScene();
     }
 
     private void deleteFolder(File folder) {
