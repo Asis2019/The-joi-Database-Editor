@@ -351,7 +351,12 @@ public class Controller {
     }
 
     private SceneNode addScene(double xPosition, double yPosition, String title, int sceneId) {
-        numberOfScenes++;
+        //Set numberOfScenes to the highest id
+        if(numberOfScenes <= sceneId) {
+            System.out.println("Number of Scenes was set to: "+sceneId);
+            numberOfScenes = sceneId;
+            numberOfScenes++;
+        }
 
         SceneNode sceneNode = new SceneNode(300, 100, sceneId, sceneNodeMainController);
         new Draggable.Nature(sceneNode.getPane());

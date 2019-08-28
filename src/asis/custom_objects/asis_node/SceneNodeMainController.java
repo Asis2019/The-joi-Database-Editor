@@ -313,11 +313,11 @@ public class SceneNodeMainController {
     }
 
     public void notifySceneRemoved(SceneNode sceneNode) {
-        //TODO fix thread exception issue
         //Check if connection is present for outputs
+        ArrayList<BoundLine> consistentDataList = new ArrayList<>(lineList);
         for (AsisConnectionButton connection : sceneNode.getOutputButtons()) {
-            for (BoundLine line : lineList) {
-                if(connection == line.getStartPointConnectionObject()) {
+            for (BoundLine line : consistentDataList) {
+                if (connection == line.getStartPointConnectionObject()) {
                     removeConnectionFromStory(connection, line.getEndPointConnectionObject(), line);
                     root.getChildren().remove(line);
                 }
@@ -325,12 +325,11 @@ public class SceneNodeMainController {
         }
 
         //Check if input has any connection
-        for (BoundLine line : lineList) {
+        for (BoundLine line : consistentDataList) {
             if(sceneNode.getInputConnection() == line.getEndPointConnectionObject()) {
-                removeConnectionFromStory(line.getStartPointConnectionObject(), line.getEndPointConnectionObject(), line);
+                removeConnectionFromStory(line.getStartPointConnectionObject(), sceneNode.getInputConnection(), line);
                 root.getChildren().remove(line);
             }
         }
-
     }
 }
