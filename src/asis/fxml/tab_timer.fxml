@@ -89,6 +89,7 @@
        <ToolBar prefHeight="40.0" prefWidth="200.0" BorderPane.alignment="CENTER">
           <items>
               <TextField fx:id="goToSecondsTextField" onKeyTyped="#actionGoToSecondsField" promptText="Go to second" />
+            <Label id="warning-label" fx:id="warningLabel" text="WARNING! Selected second is greater than the total lines." visible="false" />
           </items>
        </ToolBar>
    </top>

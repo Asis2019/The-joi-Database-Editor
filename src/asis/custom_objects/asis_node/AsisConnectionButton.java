@@ -48,8 +48,6 @@ public class AsisConnectionButton extends Button {
         setStyle(outputConnectorStyle);
         setCursor(Cursor.HAND);
 
-        calcCenter();
-
         this.localToSceneTransformProperty().addListener((observableValue, transform, t1) -> calcCenter());
     }
 

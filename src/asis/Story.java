@@ -6,7 +6,7 @@ import asis.json.JSONObject;
 import java.io.File;
 import java.util.ArrayList;
 
-public class Story {
+public final class Story {
     private static Story instance = null;
 
     private File workingDirectory;
@@ -20,8 +20,9 @@ public class Story {
         //Default constructor
         instance = this;
 
-        workingDirectory = new File(System.getProperty("user.dir")+"\\defaultWorkspace");
-        boolean result = workingDirectory.mkdir();
+        //Create project directory if needed
+        setProjectDirectory(new File(System.getProperty("user.dir")+"\\defaultWorkspace"));
+        boolean result = getProjectDirectory().mkdir();
     }
 
     public static Story getInstance() {
@@ -45,15 +46,15 @@ public class Story {
     }
 
     void addNewScene(int sceneId, String sceneTitle) {
-        if(storyDataJson.has("JOI")) {
+        if(getStoryDataJson().has("JOI")) {
             JSONObject object = new JSONObject();
             object.put("sceneId", sceneId);
             object.put("sceneTitle", sceneTitle);
-            storyDataJson.getJSONArray("JOI").put(object);
+            getStoryDataJson().getJSONArray("JOI").put(object);
             Controller.getInstance().setNewChanges();
         } else {
             JSONArray jsonArray = new JSONArray();
-            storyDataJson.put("JOI", jsonArray);
+            getStoryDataJson().put("JOI", jsonArray);
             addNewScene(sceneId, sceneTitle);
         }
     }
@@ -337,6 +338,24 @@ public class Story {
         Controller.getInstance().setNewChanges();
     }
 
+    void removeDataFromTimer(int sceneId, String lineIndex) {
+        JSONObject timerObject = getTimerData(sceneId);
+        if(timerObject != null && timerObject.has(lineIndex)) {
+            timerObject.remove(lineIndex);
+        }
+
+        /*for(int i=0; i < getSceneAmount(); i++) {
+            if(storyDataJson.getJSONArray("JOI").getJSONObject(i).getInt("sceneId") == sceneId) {
+                if(storyDataJson.getJSONArray("JOI").getJSONObject(i).has("timer")) {
+                    if(storyDataJson.getJSONArray("JOI").getJSONObject(i).getJSONArray("timer").getJSONObject(0).has(lineIndex)) {
+                        storyDataJson.getJSONArray("JOI").getJSONObject(i).getJSONArray("timer").getJSONObject(0).remove(lineIndex);
+                    }
+                }
+            }
+        }*/
+        Controller.getInstance().setNewChanges();
+    }
+
     JSONObject getTimerLineData(int sceneId, String lineIndex) {
         int amountOfScenes = storyDataJson.getJSONArray("JOI").length();
         for(int i=0; i < amountOfScenes; i++) {
@@ -408,7 +427,7 @@ public class Story {
         this.metaDataJson = object;
     }
 
-    JSONObject getMetadataObject() {
+    public JSONObject getMetadataObject() {
         return metaDataJson;
     }
 
@@ -596,5 +615,9 @@ public class Story {
 
     void setStoryDataJson(JSONObject object) {
         this.storyDataJson = object;
+    }
+
+    public int getSceneAmount() {
+        return getStoryDataJson().getJSONArray("JOI").length();
     }
 }

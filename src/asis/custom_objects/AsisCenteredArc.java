@@ -87,9 +87,9 @@ public class AsisCenteredArc {
 
     public void setArcProgress(double progress) {
         currentProgress = progress;
-        progressLabel.setText(String.valueOf((int) currentProgress));
-        double multiplicationKey = 360/maxLength;
-        this.arc.setLength(multiplicationKey*progress);
+        progressLabel.setText(String.valueOf((int) getArcProgress()));
+        double multiplicationKey = 360/getMaxLength();
+        getArc().setLength(multiplicationKey*progress);
     }
 
     public Arc getArc() {

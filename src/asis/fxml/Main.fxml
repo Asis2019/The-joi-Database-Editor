@@ -1,7 +1,9 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
 <?import javafx.scene.control.*?>
-<?import javafx.scene.layout.*?>
+<?import javafx.scene.layout.AnchorPane?>
+<?import javafx.scene.layout.BorderPane?>
+<?import javafx.scene.layout.VBox?>
 <?import java.net.URL?>
 <BorderPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="400.0" prefWidth="600.0" xmlns="http://javafx.com/javafx/8" xmlns:fx="http://javafx.com/fxml/1" fx:controller="asis.Controller">
     <top>
@@ -41,7 +43,7 @@
         </VBox>
     </top>
     <center>
-        <ScrollPane fx:id="scrollPane" hbarPolicy="NEVER" pannable="true" styleClass="edge-to-edge" vbarPolicy="NEVER" BorderPane.alignment="CENTER">
+        <ScrollPane fx:id="scrollPane" hbarPolicy="NEVER" pannable="true" styleClass="edge-to-edge" vbarPolicy="NEVER">
             <content>
                 <AnchorPane id="anchorPane" fx:id="anchorPane" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="8000.0" prefWidth="8000.0" />
             </content>

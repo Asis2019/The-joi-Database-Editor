@@ -4,10 +4,7 @@ import asis.custom_objects.AsisCenteredArc;
 import asis.custom_objects.ImageViewPane;
 import asis.json.JSONObject;
 import javafx.fxml.FXML;
-import javafx.scene.control.CheckBox;
-import javafx.scene.control.ColorPicker;
-import javafx.scene.control.TextArea;
-import javafx.scene.control.TextField;
+import javafx.scene.control.*;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.scene.layout.HBox;
@@ -22,7 +19,6 @@ import java.util.Optional;
 import static asis.custom_objects.AsisUtils.colorToHex;
 
 public class TabTimerController {
-    private Story story;
     private int sceneId;
     private String outlineColor = "#000000";
     private String fillColor = "#ffffff";
@@ -39,6 +35,7 @@ public class TabTimerController {
     @FXML private TextArea timerTextArea, textTextArea;
     @FXML private HBox container;
     @FXML private CheckBox checkBoxStopBeat, checkBoxStartBeat;
+    @FXML private Label warningLabel;
 
     public void initialize() {
         timerTextArea.setStyle("outline-color: "+outlineColor+"; fill-color: "+fillColor+";");
@@ -46,13 +43,13 @@ public class TabTimerController {
         textOutlineColorPicker.valueProperty().addListener((observableValue, color, t1) -> {
             outlineColor = removeLastTwoLetters("#"+colorToHex(t1));
             timerTextArea.setStyle("fill-color: "+fillColor+"; outline-color: "+outlineColor+";");
-            story.addDataToTimerLineObject(sceneId, "line"+onSecond, "outlineColor", outlineColor);
+            story().addDataToTimerLineObject(sceneId, "line"+onSecond, "outlineColor", outlineColor);
         });
 
         textColorPicker.valueProperty().addListener((observableValue, color, t1) -> {
             fillColor = removeLastTwoLetters("#"+colorToHex(t1));
             timerTextArea.setStyle("fill-color: "+fillColor+"; outline-color: "+outlineColor+";");
-            story.addDataToTimerLineObject(sceneId, "line"+onSecond, "fillColor", fillColor);
+            story().addDataToTimerLineObject(sceneId, "line"+onSecond, "fillColor", fillColor);
         });
 
         textTextArea.textProperty().bindBidirectional(timerTextArea.textProperty());
@@ -62,11 +59,11 @@ public class TabTimerController {
             //Process beat pitch
             try {
                 double pitch = Double.parseDouble(t1);
-                story.addDataToTimerLineObject(sceneId, "line"+onSecond, "changeBeatPitch", pitch);
+                story().addDataToTimerLineObject(sceneId, "line"+onSecond, "changeBeatPitch", pitch);
             } catch (NumberFormatException e) {
                 System.out.println("User put bad value into beat pitch");
                 if(t1.isEmpty()) {
-                    story.removeDataFromTimerLineObject(sceneId, "line"+onSecond, "changeBeatPitch");
+                    story().removeDataFromTimerLineObject(sceneId, "line"+onSecond, "changeBeatPitch");
                     textFieldBeatPitch.clear();
                     return;
                 }
@@ -80,11 +77,11 @@ public class TabTimerController {
             //Process beat speed
             try {
                 int speed = Integer.parseInt(t1);
-                story.addDataToTimerLineObject(sceneId, "line"+onSecond, "changeBeatSpeed", speed);
+                story().addDataToTimerLineObject(sceneId, "line"+onSecond, "changeBeatSpeed", speed);
             } catch (NumberFormatException e) {
                 System.out.println("User put bad value into beat speed");
                 if(t1.isEmpty()) {
-                    story.removeDataFromTimerLineObject(sceneId, "line"+onSecond, "changeBeatSpeed");
+                    story().removeDataFromTimerLineObject(sceneId, "line"+onSecond, "changeBeatSpeed");
                     textFieldBeatSpeed.clear();
                     return;
                 }
@@ -106,12 +103,11 @@ public class TabTimerController {
                 .orElse(s);
     }
 
-    void passData(Story story, int sceneId) {
-        this.story = story;
+    void passData(int sceneId) {
         this.sceneId = sceneId;
 
         //Set image if already set in scene
-        if(story != null) {
+        if(story() != null) {
             //Set text area
             setTextAreaVariables();
 
@@ -119,7 +115,7 @@ public class TabTimerController {
             setVisibleImage();
 
             //total timer
-            JSONObject timerObject = story.getTimerData(sceneId);
+            JSONObject timerObject = story().getTimerData(sceneId);
 
             if(timerObject != null) {
                 if(timerObject.has("totalTime")) {
@@ -133,12 +129,19 @@ public class TabTimerController {
 
     public void actionTextTyped() {
         String text = textTextArea.getText().trim().replaceAll("\\n", "#");
-        story.addDataToTimerLineObject(sceneId, "line"+onSecond, "text", text);
+
+        if(!text.isEmpty()) {
+            story().addDataToTimerLineObject(sceneId, "line" + onSecond, "text", text);
+            story().addDataToTimerLineObject(sceneId, "line" + onSecond, "fillColor", fillColor);
+            story().addDataToTimerLineObject(sceneId, "line" + onSecond, "outlineColor", outlineColor);
+        } else {
+            story().removeDataFromTimer(sceneId, "line" + onSecond);
+        }
     }
 
     public void actionAddImage() {
         FileChooser fileChooser = new FileChooser();
-        fileChooser.setInitialDirectory(story.getProjectDirectory());
+        fileChooser.setInitialDirectory(story().getProjectDirectory());
         fileChooser.getExtensionFilters().addAll(new FileChooser.ExtensionFilter("png", "*.png"));
         fileChooser.getExtensionFilters().addAll(new FileChooser.ExtensionFilter("jpg", "*.jpg"));
         fileChooser.getExtensionFilters().addAll(new FileChooser.ExtensionFilter("jpeg", "*.jpeg"));
@@ -147,8 +150,8 @@ public class TabTimerController {
 
         if(file != null) {
             //Add image to json object
-            story.addDataToScene(sceneId, "sceneImage", file.getName());
-            story.addImage(file);
+            story().addDataToScene(sceneId, "sceneImage", file.getName());
+            story().addImage(file);
 
             setVisibleImage();
         }
@@ -156,7 +159,7 @@ public class TabTimerController {
 
     public void actionAddLineImage() {
         FileChooser fileChooser = new FileChooser();
-        fileChooser.setInitialDirectory(story.getProjectDirectory());
+        fileChooser.setInitialDirectory(story().getProjectDirectory());
         fileChooser.getExtensionFilters().addAll(new FileChooser.ExtensionFilter("png", "*.png"));
         fileChooser.getExtensionFilters().addAll(new FileChooser.ExtensionFilter("jpg", "*.jpg"));
         fileChooser.getExtensionFilters().addAll(new FileChooser.ExtensionFilter("jpeg", "*.jpeg"));
@@ -165,8 +168,8 @@ public class TabTimerController {
 
         if(file != null) {
             //Add image to json object
-            story.addDataToTimerLineObject(sceneId, "line"+onSecond, "lineImage", file.getName());
-            story.addImage(file);
+            story().addDataToTimerLineObject(sceneId, "line"+onSecond, "lineImage", file.getName());
+            story().addImage(file);
 
             setVisibleImage();
         }
@@ -182,9 +185,9 @@ public class TabTimerController {
         File workingFile = new File("");
 
         //Scene image code
-        String sceneImage = story.getSceneImage(sceneId);
+        String sceneImage = story().getSceneImage(sceneId);
         if (sceneImage != null) {
-            for (File imageFiles : story.getImagesArray()) {
+            for (File imageFiles : story().getImagesArray()) {
                 if(imageFiles.getName().equals(sceneImage)) {
                     workingFile = imageFiles;
 
@@ -195,12 +198,12 @@ public class TabTimerController {
         }
 
         //Line image code
-        JSONObject textObject = story.getTimerLineData(sceneId, "line"+onSecond);
+        JSONObject textObject = story().getTimerLineData(sceneId, "line"+onSecond);
         if (textObject != null) {
             if (textObject.has("lineImage")) {
                 String lineImage = textObject.getString("lineImage");
                 if (lineImage != null) {
-                    for (File imageFiles : story.getImagesArray()) {
+                    for (File imageFiles : story().getImagesArray()) {
                         if(imageFiles.getName().equals(lineImage)) {
                             workingFile = imageFiles;
                         }
@@ -222,6 +225,14 @@ public class TabTimerController {
         try {
             onSecond = Integer.parseInt(goToSecondsTextField.getText().trim());
             asisCenteredArc.setArcProgress(onSecond);
+
+            if(onSecond > totalSeconds) {
+                warningLabel.setVisible(true);
+                asisCenteredArc.setArcStrokeColor(Color.RED);
+            } else {
+                warningLabel.setVisible(false);
+                asisCenteredArc.setArcStrokeColor(Color.GREEN);
+            }
         } catch (NumberFormatException e) {
             System.out.println("User inputted bad character into goto second field");
             String t1 = goToSecondsTextField.getText();
@@ -240,7 +251,7 @@ public class TabTimerController {
     private void setTextAreaVariables() {
         timerTextArea.setText("");
 
-        JSONObject textObject = story.getTimerLineData(sceneId, "line"+onSecond);
+        JSONObject textObject = story().getTimerLineData(sceneId, "line"+onSecond);
 
         if(textObject != null) {
             if(textObject.has("fillColor")) {
@@ -295,24 +306,28 @@ public class TabTimerController {
             totalTimerField.setText(t1);
         }
 
-        story.addDataToTimerObject(sceneId, totalSeconds);
+        story().addDataToTimerObject(sceneId, totalSeconds);
     }
 
     public void actionStartBeat() {
-        //Add startBeat to story
+        //Add startBeat to story()
         if(checkBoxStartBeat.isSelected()) {
-            story.addDataToTimerLineObject(sceneId, "line"+onSecond, "startBeat", true);
+            story().addDataToTimerLineObject(sceneId, "line"+onSecond, "startBeat", true);
         } else {
-            story.removeDataFromTimerLineObject(sceneId, "line"+onSecond, "startBeat");
+            story().removeDataFromTimerLineObject(sceneId, "line"+onSecond, "startBeat");
         }
     }
 
     public void actionStopBeat() {
-        //Add stopBeat to story
+        //Add stopBeat to story()
         if(checkBoxStopBeat.isSelected()) {
-            story.addDataToTimerLineObject(sceneId, "line"+onSecond, "stopBeat", true);
+            story().addDataToTimerLineObject(sceneId, "line"+onSecond, "stopBeat", true);
         } else {
-            story.removeDataFromTimerLineObject(sceneId, "line"+onSecond, "stopBeat");
+            story().removeDataFromTimerLineObject(sceneId, "line"+onSecond, "stopBeat");
         }
+    }
+    
+    private Story story() {
+        return Story.getInstance();
     }
 }

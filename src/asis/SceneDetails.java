@@ -109,7 +109,7 @@ public class SceneDetails {
             Parent root = fxmlLoader.load();
 
             tabTimerController = fxmlLoader.getController();
-            tabTimerController.passData(story, sceneId);
+            tabTimerController.passData(sceneId);
 
             timerTab.setContent(root);
             timerTab.setOnCloseRequest(this::actionTimerCloseRequested);
@@ -117,7 +117,7 @@ public class SceneDetails {
             effectTabs.getTabs().add(1, timerTab);
 
             if(tabTimerController != null) {
-                tabTimerController.passData(story, sceneId);
+                tabTimerController.passData(sceneId);
             }
 
             menuItemAddTimer.setDisable(true);

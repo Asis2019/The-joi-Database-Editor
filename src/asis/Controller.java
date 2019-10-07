@@ -353,7 +353,6 @@ public class Controller {
     private SceneNode addScene(double xPosition, double yPosition, String title, int sceneId) {
         //Set numberOfScenes to the highest id
         if(numberOfScenes <= sceneId) {
-            System.out.println("Number of Scenes was set to: "+sceneId);
             numberOfScenes = sceneId;
             numberOfScenes++;
         }
@@ -643,58 +642,7 @@ public class Controller {
     }
 
     public void actionSaveProject() {
-        File file = story.getProjectDirectory();
-
-        if(file != null) {
-            if(story.getMetadataObject() == null || story.getMetadataObject().isEmpty()) {
-                //Init metadata
-                JSONObject innerMetadataObject = new JSONObject();
-                //Single lined info
-                innerMetadataObject.put("name", "");
-                innerMetadataObject.put("preparations", "");
-                innerMetadataObject.put("displayedFetishes", "");
-                innerMetadataObject.put("joiId", "");
-
-                innerMetadataObject.put("fetish0", "");
-                innerMetadataObject.put("toy0", "");
-                innerMetadataObject.put("character0", "");
-
-                JSONArray jsonArray = new JSONArray();
-                jsonArray.put(innerMetadataObject);
-
-                JSONObject metadataObject = new JSONObject();
-                metadataObject.put("JOI METADATA", jsonArray);
-
-                story.setMetadataObject(metadataObject);
-                URL url = this.getClass().getResource("images/icon_dev.png");
-                story.addMetadataIcon(new File(Objects.requireNonNull(url).getPath()));
-            }
-
-            writeJsonToFile(story.getMetadataObject(), "info_en.json", file);
-            writeJsonToFile(story.getStoryDataJson(), "joi_text_en.json", file);
-
-            //Copy image to project directory
-            for (File file1 : story.getImagesArray()) {
-                try {
-                    Files.copy(file1.toPath(), file.toPath().resolve(file1.getName()), StandardCopyOption.REPLACE_EXISTING);
-                    newChanges = false;
-                } catch (IOException e) {
-                    errorDialogWindow(e);
-                }
-            }
-
-            //Copy icon to project directory
-            try {
-                if(story.getMetadataIcon() != null) {
-                    File file1 = story.getMetadataIcon();
-                    Files.copy(file1.toPath(), file.toPath().resolve(file1.getName()), StandardCopyOption.REPLACE_EXISTING);
-                    renameFile(new File(file.toPath()+"\\"+file1.getName()), "joi_icon.png");
-                    newChanges = false;
-                }
-            } catch (IOException e) {
-                errorDialogWindow(e);
-            }
-        }
+        saveProject(Story.getInstance().getProjectDirectory());
     }
 
     public void actionSaveProjectAs() {
@@ -703,6 +651,10 @@ public class Controller {
         directoryChooser.setTitle("Save Location");
         File file = directoryChooser.showDialog(null);
 
+        saveProject(file);
+    }
+
+    private void saveProject(File file) {
         if(file != null) {
             if(story.getMetadataObject() == null || story.getMetadataObject().isEmpty()) {
                 //Init metadata

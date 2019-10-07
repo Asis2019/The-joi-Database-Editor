@@ -46,7 +46,6 @@ public class TabNormalOperationController {
 
         textOutlineColorPicker.valueProperty().addListener((observableValue, color, t1) -> {
             outlineColor = removeLastTwoLetters("#"+colorToHex(t1));
-            System.out.println(outlineColor);
             mainTextArea.setStyle("fill-color: "+fillColor+"; outline-color: "+outlineColor+";");
             story.addDataToLineObject(sceneId, onLine-1, "outlineColor", outlineColor);
         });
