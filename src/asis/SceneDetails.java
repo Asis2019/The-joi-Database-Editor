@@ -75,6 +75,7 @@ public class SceneDetails {
 
     public void actionClose() {
         Stage stage = (Stage) sceneDetailBorderPane.getScene().getWindow();
+        Controller.getInstance().getOpenStages().remove(stage);
         stage.close();
     }
 
@@ -115,10 +116,6 @@ public class SceneDetails {
             timerTab.setOnCloseRequest(this::actionTimerCloseRequested);
 
             effectTabs.getTabs().add(1, timerTab);
-
-            if(tabTimerController != null) {
-                tabTimerController.passData(sceneId);
-            }
 
             menuItemAddTimer.setDisable(true);
             Controller.getInstance().setNewChanges();

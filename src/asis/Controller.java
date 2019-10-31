@@ -4,9 +4,6 @@ import asis.custom_objects.Draggable;
 import asis.custom_objects.asis_node.AsisConnectionButton;
 import asis.custom_objects.asis_node.SceneNode;
 import asis.custom_objects.asis_node.SceneNodeMainController;
-import asis.json.JSONArray;
-import asis.json.JSONException;
-import asis.json.JSONObject;
 import javafx.application.Platform;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
@@ -22,6 +19,9 @@ import javafx.stage.DirectoryChooser;
 import javafx.stage.FileChooser;
 import javafx.stage.Modality;
 import javafx.stage.Stage;
+import org.json.JSONArray;
+import org.json.JSONException;
+import org.json.JSONObject;
 
 import java.io.*;
 import java.net.URL;
@@ -45,6 +45,8 @@ public class Controller {
     private boolean newChanges = false;
     private boolean firstScene = false;
     static boolean createNewProject = false;
+
+    private ArrayList<Stage> openStages = new ArrayList<Stage>();
 
     //These should not be used in any code but the newProject method
     static File newProjectFile;
@@ -99,7 +101,7 @@ public class Controller {
         //Handle menu actions
         editSceneItem.setOnAction(actionEvent -> {
             if(selectedScene != null) {
-                openNewWindow(selectedScene.getTitle(), selectedScene);
+                openNewWindow(selectedScene);
             }
         });
 
@@ -240,14 +242,23 @@ public class Controller {
         sceneNode.getPane().setOnMouseClicked(mouseEvent -> {
             //User double clicked
             if(mouseEvent.getButton().equals(MouseButton.PRIMARY)) {
-                if(mouseEvent.getClickCount() == 2){
-                    openNewWindow(sceneNode.getTitle(), sceneNode);
+                if(mouseEvent.getClickCount() == 2) {
+                    openNewWindow(sceneNode);
                 }
             }
         });
     }
 
-    private void openNewWindow(String title, SceneNode sceneNode) {
+    private void openNewWindow(SceneNode sceneNode) {
+        //Check if stage already exists
+        for(Stage stage: getOpenStages()) {
+            if((int) stage.getUserData() == sceneNode.getSceneId()) {
+                stage.requestFocus();
+                return;
+            }
+        }
+
+        //Open new window
         try {
             FXMLLoader fxmlLoader = new FXMLLoader(getClass().getResource("fxml/SceneDetails.fxml"));
             Parent root = fxmlLoader.load();
@@ -257,9 +268,13 @@ public class Controller {
 
             Stage stage = new Stage();
             stage.getIcons().add(new Image(Controller.class.getResourceAsStream("images/icon.png")));
-            stage.setTitle(title);
+            stage.setTitle(sceneNode.getTitle());
+            stage.setUserData(sceneNode.getSceneId());
             stage.setScene(new Scene(root, 1280, 720));
             stage.show();
+
+            stage.setOnCloseRequest(windowEvent -> getOpenStages().remove(stage));
+            getOpenStages().add(stage);
         } catch (IOException e) {
             errorDialogWindow(e);
         }
@@ -386,7 +401,7 @@ public class Controller {
         setNewChanges();
     }
 
-    private void writeJsonToFile(JSONObject jsonObject, String fileName, File saveLocation) {
+    private static void writeJsonToFile(JSONObject jsonObject, String fileName, File saveLocation) {
         try {
             FileWriter fileWriter = new FileWriter(saveLocation.toPath() + File.separator + fileName);
             fileWriter.write(jsonObject.toString());
@@ -397,7 +412,7 @@ public class Controller {
         }
     }
 
-    private JSONObject readJsonFromFile(File file) {
+    private static JSONObject readJsonFromFile(File file) {
         try {
             String text = new String(Files.readAllBytes(file.toPath()));
             return new JSONObject(text);
@@ -851,5 +866,12 @@ public class Controller {
         } catch (IOException e) {
             e.printStackTrace();
         }
+    }
+
+    public ArrayList<Stage> getOpenStages() {
+        return openStages;
+    }
+    public void setOpenStages(ArrayList<Stage> openStages) {
+        this.openStages = openStages;
     }
 }

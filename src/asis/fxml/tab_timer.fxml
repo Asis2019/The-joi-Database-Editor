@@ -45,7 +45,7 @@
                      <content>
                          <VBox spacing="5.0">
                             <children>
-                                <TextField fx:id="totalTimerField" onKeyTyped="#actionTotalTimerField" promptText="Total Time" />
+                                <TextField fx:id="totalTimerField" promptText="Total Time" />
                             </children>
                          </VBox>
                      </content>
@@ -80,6 +80,15 @@
                         </VBox>
                      </content>
                   </TitledPane>
+                  <TitledPane animated="false" layoutX="10.0" layoutY="326.0" text="Tree" wrapText="true">
+                     <content>
+                        <VBox>
+                           <children>
+                              <TreeView fx:id="objectTree" editable="true" prefHeight="200.0" prefWidth="200.0" />
+                           </children>
+                        </VBox>
+                     </content>
+                  </TitledPane>
               </children>
            </VBox>
        </items>
@@ -88,7 +97,7 @@
    <top>
        <ToolBar prefHeight="40.0" prefWidth="200.0" BorderPane.alignment="CENTER">
           <items>
-              <TextField fx:id="goToSecondsTextField" onKeyTyped="#actionGoToSecondsField" promptText="Go to second" />
+              <TextField fx:id="goToSecondsTextField" promptText="Go to second" />
             <Label id="warning-label" fx:id="warningLabel" text="WARNING! Selected second is greater than the total lines." visible="false" />
           </items>
        </ToolBar>

@@ -51,7 +51,7 @@
 }
 
 #mainTextArea .context-menu {
-    -fx-skin: "javafx.scene.control.skin.ContextMenuSkin";
+    -fx-skin: "com.sun.javafx.scene.control.skin.ContextMenuSkin";
     -fx-font-size: 12px;
     -fx-text-fill: black;
     -fx-stroke: transparent;

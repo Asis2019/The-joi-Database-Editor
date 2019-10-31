@@ -1,8 +1,5 @@
 package asis;
 
-import asis.json.JSONArray;
-import asis.json.JSONException;
-import asis.json.JSONObject;
 import javafx.fxml.FXML;
 import javafx.scene.Cursor;
 import javafx.scene.control.TextArea;
@@ -12,6 +9,9 @@ import javafx.scene.image.ImageView;
 import javafx.scene.layout.VBox;
 import javafx.stage.FileChooser;
 import javafx.stage.Stage;
+import org.json.JSONArray;
+import org.json.JSONException;
+import org.json.JSONObject;
 
 import java.io.File;
 

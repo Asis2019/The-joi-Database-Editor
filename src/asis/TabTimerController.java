@@ -2,7 +2,6 @@ package asis;
 
 import asis.custom_objects.AsisCenteredArc;
 import asis.custom_objects.ImageViewPane;
-import asis.json.JSONObject;
 import javafx.fxml.FXML;
 import javafx.scene.control.*;
 import javafx.scene.image.Image;
@@ -12,6 +11,8 @@ import javafx.scene.layout.StackPane;
 import javafx.scene.layout.VBox;
 import javafx.scene.paint.Color;
 import javafx.stage.FileChooser;
+import org.json.JSONArray;
+import org.json.JSONObject;
 
 import java.io.File;
 import java.util.Optional;
@@ -36,6 +37,7 @@ public class TabTimerController {
     @FXML private HBox container;
     @FXML private CheckBox checkBoxStopBeat, checkBoxStartBeat;
     @FXML private Label warningLabel;
+    @FXML private TreeView<String> objectTree;
 
     public void initialize() {
         timerTextArea.setStyle("outline-color: "+outlineColor+"; fill-color: "+fillColor+";");
@@ -53,6 +55,48 @@ public class TabTimerController {
         });
 
         textTextArea.textProperty().bindBidirectional(timerTextArea.textProperty());
+
+        //Setup total time field
+        totalTimerField.textProperty().addListener((observable, s, t1) -> {
+            try {
+                totalSeconds = Integer.parseInt(totalTimerField.getText().trim());
+                asisCenteredArc.setMaxLength(totalSeconds);
+
+                handelSecondsOverTotal();
+            } catch (NumberFormatException e) {
+                System.out.println("User inputted bad character into total time field");
+                if(!t1.isEmpty()) {
+                    t1 = t1.substring(0, t1.length() - 1);
+                    totalTimerField.setText(t1);
+                } else {
+                    totalTimerField.clear();
+                }
+            }
+
+            story().addDataToTimerObject(sceneId, totalSeconds);
+            updateObjectTree();
+        });
+
+        //Setup go to seconds field
+        goToSecondsTextField.textProperty().addListener((observable, s, t1) -> {
+            try {
+                onSecond = Integer.parseInt(goToSecondsTextField.getText().trim());
+                asisCenteredArc.setArcProgress(onSecond);
+
+                handelSecondsOverTotal();
+            } catch (NumberFormatException e) {
+                System.out.println("User inputted bad character into goto second field");
+                if(!t1.isEmpty()) {
+                    t1 = t1.substring(0, t1.length() - 1);
+                    goToSecondsTextField.setText(t1);
+                } else {
+                    onSecond = 0;
+                    asisCenteredArc.setArcProgress(onSecond);
+                }
+            }
+
+            setTextAreaVariables();
+        });
 
         //Setup beat fields
         textFieldBeatPitch.textProperty().addListener((observableValue, s, t1) -> {
@@ -96,6 +140,40 @@ public class TabTimerController {
         container.getChildren().add(asisCenteredArc.getArcPane());
     }
 
+    private void updateObjectTree() {
+        TreeItem<String> root = new TreeItem<>("Timer");
+        objectTree.setRoot(root);
+
+        JSONObject timerObject = Story.getInstance().getTimerData(sceneId);
+
+        if(timerObject != null && !timerObject.isEmpty()) {
+            for (int i = 0; i < timerObject.names().length(); i++) {
+                String key = timerObject.names().getString(i);
+                Object object = timerObject.get(timerObject.names().getString(i));
+                if(object instanceof JSONArray) {
+                    TreeItem<String> item = new TreeItem<>(key);
+                    root.getChildren().add(item);
+
+                    JSONObject lineObject = ((JSONArray) object).getJSONObject(0);
+
+                    for (int ii = 0; ii < lineObject.names().length(); ii++) {
+                        String subKey = lineObject.names().getString(ii);
+                        String subValue = lineObject.get(lineObject.names().getString(ii)).toString();
+
+                        TreeItem<String> subItem = new TreeItem<>(subKey+": "+subValue);
+                        item.getChildren().add(subItem);
+                    }
+                    continue;
+                }
+
+                String value = timerObject.get(timerObject.names().getString(i)).toString();
+
+                TreeItem<String> item = new TreeItem<>(key+": "+value);
+                root.getChildren().add(item);
+            }
+        }
+    }
+
     private String removeLastTwoLetters(String s) {
         return Optional.ofNullable(s)
                 .filter(str -> str.length() != 0)
@@ -124,6 +202,9 @@ public class TabTimerController {
                     asisCenteredArc.setMaxLength(totalSeconds);
                 }
             }
+
+            //Update Tree View
+            updateObjectTree();
         }
     }
 
@@ -137,6 +218,8 @@ public class TabTimerController {
         } else {
             story().removeDataFromTimer(sceneId, "line" + onSecond);
         }
+
+        updateObjectTree();
     }
 
     public void actionAddImage() {
@@ -221,33 +304,6 @@ public class TabTimerController {
         timerStackPane.getChildren().add(0, viewPane);
     }
 
-    public void actionGoToSecondsField() {
-        try {
-            onSecond = Integer.parseInt(goToSecondsTextField.getText().trim());
-            asisCenteredArc.setArcProgress(onSecond);
-
-            if(onSecond > totalSeconds) {
-                warningLabel.setVisible(true);
-                asisCenteredArc.setArcStrokeColor(Color.RED);
-            } else {
-                warningLabel.setVisible(false);
-                asisCenteredArc.setArcStrokeColor(Color.GREEN);
-            }
-        } catch (NumberFormatException e) {
-            System.out.println("User inputted bad character into goto second field");
-            String t1 = goToSecondsTextField.getText();
-            if(!t1.isEmpty()) {
-                t1 = t1.substring(0, t1.length() - 1);
-                goToSecondsTextField.setText(t1);
-            } else {
-                onSecond = 0;
-                asisCenteredArc.setArcProgress(onSecond);
-            }
-        }
-
-        setTextAreaVariables();
-    }
-
     private void setTextAreaVariables() {
         timerTextArea.setText("");
 
@@ -295,18 +351,14 @@ public class TabTimerController {
         }
     }
 
-    public void actionTotalTimerField() {
-        try {
-            totalSeconds = Integer.parseInt(totalTimerField.getText().trim());
-            asisCenteredArc.setMaxLength(totalSeconds);
-        } catch (NumberFormatException e) {
-            System.out.println("User inputted bad character into total time field");
-            String t1 = totalTimerField.getText();
-            t1 = t1.substring(0, t1.length()-1);
-            totalTimerField.setText(t1);
+    private void handelSecondsOverTotal() {
+        if(onSecond > totalSeconds) {
+            warningLabel.setVisible(true);
+            asisCenteredArc.setArcStrokeColor(Color.RED);
+        } else {
+            warningLabel.setVisible(false);
+            asisCenteredArc.setArcStrokeColor(Color.GREEN);
         }
-
-        story().addDataToTimerObject(sceneId, totalSeconds);
     }
 
     public void actionStartBeat() {

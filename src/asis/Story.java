@@ -1,10 +1,11 @@
 package asis;
 
-import asis.json.JSONArray;
-import asis.json.JSONObject;
+import org.json.JSONArray;
+import org.json.JSONObject;
 
 import java.io.File;
 import java.util.ArrayList;
+import java.util.Objects;
 
 public final class Story {
     private static Story instance = null;
@@ -261,22 +262,18 @@ public final class Story {
     }
 
     void addDataToTimerObject(int sceneId, Object value) {
-        int amountOfScenes = storyDataJson.getJSONArray("JOI").length();
-        for(int i=0; i < amountOfScenes; i++) {
-            if(storyDataJson.getJSONArray("JOI").getJSONObject(i).getInt("sceneId") == sceneId) {
-                if(storyDataJson.getJSONArray("JOI").getJSONObject(i).has("timer")) {
-                    storyDataJson.getJSONArray("JOI").getJSONObject(i).getJSONArray("timer").getJSONObject(0).put("totalTime", value);
-                } else {
-                    //add and transition object
-                    JSONObject transitionObject = new JSONObject();
+        JSONObject timerObject = getTimerData(sceneId);
+        if(timerObject == null || timerObject.isEmpty()) {
+            //add and transition object
+            JSONObject transitionObject = new JSONObject();
 
-                    transitionObject.put("totalTime", value);
+            transitionObject.put("totalTime", value);
 
-                    JSONArray wrapper = new JSONArray();
-                    wrapper.put(transitionObject);
-                    storyDataJson.getJSONArray("JOI").getJSONObject(i).put("timer", wrapper);
-                }
-            }
+            JSONArray wrapper = new JSONArray();
+            wrapper.put(transitionObject);
+            Objects.requireNonNull(getSceneObject(sceneId)).put("timer", wrapper);
+        } else {
+            timerObject.put("totalTime", value);
         }
     }
 
@@ -325,15 +322,9 @@ public final class Story {
     }
 
     void removeDataFromTimerLineObject(int sceneId, String lineIndex, String key) {
-        int amountOfScenes = storyDataJson.getJSONArray("JOI").length();
-        for(int i=0; i < amountOfScenes; i++) {
-            if(storyDataJson.getJSONArray("JOI").getJSONObject(i).getInt("sceneId") == sceneId) {
-                if(storyDataJson.getJSONArray("JOI").getJSONObject(i).has("timer")) {
-                    if(storyDataJson.getJSONArray("JOI").getJSONObject(i).getJSONArray("timer").getJSONObject(0).has(lineIndex)) {
-                        storyDataJson.getJSONArray("JOI").getJSONObject(i).getJSONArray("timer").getJSONObject(0).getJSONArray(lineIndex).getJSONObject(0).remove(key);
-                    }
-                }
-            }
+        JSONObject lineObject = getTimerLineData(sceneId, lineIndex);
+        if(lineObject != null) {
+            lineObject.remove(key);
         }
         Controller.getInstance().setNewChanges();
     }
@@ -343,29 +334,13 @@ public final class Story {
         if(timerObject != null && timerObject.has(lineIndex)) {
             timerObject.remove(lineIndex);
         }
-
-        /*for(int i=0; i < getSceneAmount(); i++) {
-            if(storyDataJson.getJSONArray("JOI").getJSONObject(i).getInt("sceneId") == sceneId) {
-                if(storyDataJson.getJSONArray("JOI").getJSONObject(i).has("timer")) {
-                    if(storyDataJson.getJSONArray("JOI").getJSONObject(i).getJSONArray("timer").getJSONObject(0).has(lineIndex)) {
-                        storyDataJson.getJSONArray("JOI").getJSONObject(i).getJSONArray("timer").getJSONObject(0).remove(lineIndex);
-                    }
-                }
-            }
-        }*/
         Controller.getInstance().setNewChanges();
     }
 
     JSONObject getTimerLineData(int sceneId, String lineIndex) {
-        int amountOfScenes = storyDataJson.getJSONArray("JOI").length();
-        for(int i=0; i < amountOfScenes; i++) {
-            if(storyDataJson.getJSONArray("JOI").getJSONObject(i).getInt("sceneId") == sceneId) {
-                if(storyDataJson.getJSONArray("JOI").getJSONObject(i).has("timer")) {
-                    if(storyDataJson.getJSONArray("JOI").getJSONObject(i).getJSONArray("timer").getJSONObject(0).has(lineIndex)) {
-                        return storyDataJson.getJSONArray("JOI").getJSONObject(i).getJSONArray("timer").getJSONObject(0).getJSONArray(lineIndex).getJSONObject(0);
-                    }
-                }
-            }
+        JSONObject timerObject = getTimerData(sceneId);
+        if(timerObject != null && timerObject.has(lineIndex)) {
+            return timerObject.getJSONArray(lineIndex).getJSONObject(0);
         }
 
         return null;
@@ -452,8 +427,7 @@ public final class Story {
     }
 
     void removeDialog(int sceneId) {
-        int amountOfScenes = storyDataJson.getJSONArray("JOI").length();
-        for(int i=0; i < amountOfScenes; i++) {
+        for(int i=0; i < getSceneAmount(); i++) {
             if(storyDataJson.getJSONArray("JOI").getJSONObject(i).getInt("sceneId") == sceneId) {
                 if(storyDataJson.getJSONArray("JOI").getJSONObject(i).has("dialogChoice")) {
                     storyDataJson.getJSONArray("JOI").getJSONObject(i).remove("dialogChoice");
@@ -464,22 +438,15 @@ public final class Story {
     }
 
     void removeDialogOption(int sceneId, int optionNumber) {
-        int amountOfScenes = storyDataJson.getJSONArray("JOI").length();
-        for(int i=0; i < amountOfScenes; i++) {
-            if(storyDataJson.getJSONArray("JOI").getJSONObject(i).getInt("sceneId") == sceneId) {
-                if(storyDataJson.getJSONArray("JOI").getJSONObject(i).has("dialogChoice")) {
-                    if(storyDataJson.getJSONArray("JOI").getJSONObject(i).getJSONArray("dialogChoice").getJSONObject(0).has("option"+optionNumber)) {
-                        storyDataJson.getJSONArray("JOI").getJSONObject(i).getJSONArray("dialogChoice").getJSONObject(0).remove("option"+optionNumber);
-                        Controller.getInstance().setNewChanges();
-                    }
-                }
-            }
+        JSONObject dialogObject = getDialogData(sceneId);
+        if(dialogObject != null && dialogObject.has("option"+optionNumber)) {
+            dialogObject.remove("option"+optionNumber);
+            Controller.getInstance().setNewChanges();
         }
     }
 
     public JSONObject getDialogData(int sceneId) {
-        int amountOfScenes = storyDataJson.getJSONArray("JOI").length();
-        for(int i=0; i < amountOfScenes; i++) {
+        for(int i=0; i < getSceneAmount(); i++) {
             if(storyDataJson.getJSONArray("JOI").getJSONObject(i).getInt("sceneId") == sceneId) {
                 if(storyDataJson.getJSONArray("JOI").getJSONObject(i).has("dialogChoice")) {
                     return storyDataJson.getJSONArray("JOI").getJSONObject(i).getJSONArray("dialogChoice").getJSONObject(0);
@@ -491,70 +458,55 @@ public final class Story {
     }
 
     void addDialogOptionText(int sceneId, String optionText, int optionNumber) {
-        int amountOfScenes = storyDataJson.getJSONArray("JOI").length();
-        for(int i=0; i < amountOfScenes; i++) {
-            if(storyDataJson.getJSONArray("JOI").getJSONObject(i).getInt("sceneId") == sceneId) {
-                if(storyDataJson.getJSONArray("JOI").getJSONObject(i).has("dialogChoice")) {
-                    if(storyDataJson.getJSONArray("JOI").getJSONObject(i).getJSONArray("dialogChoice").getJSONObject(0).has("option"+optionNumber)) {
-                        storyDataJson.getJSONArray("JOI").getJSONObject(i).getJSONArray("dialogChoice")
-                                .getJSONObject(0)
-                                .getJSONArray("option"+optionNumber)
-                                .getJSONObject(0).put("text", optionText);
-                    } else {
-                        //create dialog and rerun method
-                        JSONObject object = new JSONObject();
-                        JSONArray wrapper = new JSONArray();
-                        wrapper.put(object);
-                        storyDataJson.getJSONArray("JOI").getJSONObject(i).getJSONArray("dialogChoice").getJSONObject(0).put("option"+optionNumber, wrapper);
-                        addDialogOptionText(sceneId, optionText, optionNumber);
-                    }
-                } else {
-                    //create dialog and rerun method
-                    JSONObject object = new JSONObject();
-                    JSONArray wrapper = new JSONArray();
-                    wrapper.put(object);
-                    storyDataJson.getJSONArray("JOI").getJSONObject(i).put("dialogChoice", wrapper);
-                    addDialogOptionText(sceneId, optionText, optionNumber);
-                }
+        JSONObject dialogObject = getDialogData(sceneId);
+        if(dialogObject != null) {
+            if (dialogObject.has("option" + optionNumber)) {
+                dialogObject.getJSONArray("option" + optionNumber).getJSONObject(0).put("text", optionText);
+            } else {
+                //create dialog and rerun method
+                JSONObject object = new JSONObject();
+                JSONArray wrapper = new JSONArray();
+                wrapper.put(object);
+                dialogObject.put("option" + optionNumber, wrapper);
+                addDialogOptionText(sceneId, optionText, optionNumber);
             }
+        } else {
+            //create dialog and rerun method
+            JSONObject object = new JSONObject();
+            JSONArray wrapper = new JSONArray();
+            wrapper.put(object);
+            Objects.requireNonNull(getSceneObject(sceneId)).put("dialogChoice", wrapper);
+            addDialogOptionText(sceneId, optionText, optionNumber);
         }
         Controller.getInstance().setNewChanges();
     }
 
     public void addDialogOptionData(int sceneId, int optionNumber, String key, Object value) {
-        int amountOfScenes = storyDataJson.getJSONArray("JOI").length();
-        for(int i=0; i < amountOfScenes; i++) {
-            if(storyDataJson.getJSONArray("JOI").getJSONObject(i).getInt("sceneId") == sceneId) {
-                if(storyDataJson.getJSONArray("JOI").getJSONObject(i).has("dialogChoice")) {
-                    if(storyDataJson.getJSONArray("JOI").getJSONObject(i).getJSONArray("dialogChoice").getJSONObject(0).has("option"+optionNumber)) {
-                        storyDataJson.getJSONArray("JOI").getJSONObject(i).getJSONArray("dialogChoice")
-                                .getJSONObject(0)
-                                .getJSONArray("option"+optionNumber)
-                                .getJSONObject(0).put(key, value);
-                    } else {
-                        //create dialog and rerun method
-                        JSONObject object = new JSONObject();
-                        JSONArray wrapper = new JSONArray();
-                        wrapper.put(object);
-                        storyDataJson.getJSONArray("JOI").getJSONObject(i).getJSONArray("dialogChoice").getJSONObject(0).put("option"+optionNumber, wrapper);
-                        addDialogOptionData(sceneId, optionNumber, key, value);
-                    }
-                } else {
-                    //create dialog and rerun method
-                    JSONObject object = new JSONObject();
-                    JSONArray wrapper = new JSONArray();
-                    wrapper.put(object);
-                    storyDataJson.getJSONArray("JOI").getJSONObject(i).put("dialogChoice", wrapper);
-                    addDialogOptionData(sceneId, optionNumber, key, value);
-                }
+        JSONObject dialogObject = getDialogData(sceneId);
+        if(dialogObject != null) {
+            if(dialogObject.has("option"+optionNumber)) {
+                dialogObject.getJSONArray("option"+optionNumber).getJSONObject(0).put(key, value);
+            } else {
+                //create dialog and rerun method
+                JSONObject object = new JSONObject();
+                JSONArray wrapper = new JSONArray();
+                wrapper.put(object);
+                dialogObject.put("option"+optionNumber, wrapper);
+                addDialogOptionData(sceneId, optionNumber, key, value);
             }
+        } else {
+            //create dialog and rerun method
+            JSONObject object = new JSONObject();
+            JSONArray wrapper = new JSONArray();
+            wrapper.put(object);
+            Objects.requireNonNull(getSceneObject(sceneId)).put("dialogChoice", wrapper);
+            addDialogOptionData(sceneId, optionNumber, key, value);
         }
         Controller.getInstance().setNewChanges();
     }
 
     public void removeDialogOptionData(int sceneId, int optionNumber, String key) {
-        int amountOfScenes = storyDataJson.getJSONArray("JOI").length();
-        for(int i=0; i < amountOfScenes; i++) {
+        for(int i=0; i < getSceneAmount(); i++) {
             if(storyDataJson.getJSONArray("JOI").getJSONObject(i).getInt("sceneId") == sceneId) {
                 if(storyDataJson.getJSONArray("JOI").getJSONObject(i).has("dialogChoice")) {
                     if(storyDataJson.getJSONArray("JOI").getJSONObject(i).getJSONArray("dialogChoice").getJSONObject(0).has("option"+optionNumber)) {
@@ -571,7 +523,7 @@ public final class Story {
 
     public void addValueToDialogOptionGotoRange(int sceneId, int optionNumber, int sceneGotoId) {
         JSONObject dialogData = getDialogData(sceneId);
-        if(dialogData.has("option"+optionNumber)) {
+        if(dialogData != null && dialogData.has("option"+optionNumber)) {
             if(dialogData.getJSONArray("option"+optionNumber).getJSONObject(0).has("gotoSceneInRange")) {
                 dialogData.getJSONArray("option"+optionNumber).getJSONObject(0).getJSONArray("gotoSceneInRange").put(sceneGotoId);
                 Controller.getInstance().setNewChanges();
@@ -585,7 +537,7 @@ public final class Story {
 
     public void removeValueFromDialogOptionGotoRange(int sceneId, int optionNumber, int removeIdValue) {
         JSONObject dialogData = getDialogData(sceneId);
-        if(dialogData.has("option"+optionNumber)) {
+        if(dialogData != null && dialogData.has("option"+optionNumber)) {
             if(dialogData.getJSONArray("option"+optionNumber).getJSONObject(0).has("gotoSceneInRange")) {
                 for(int ii=0; ii < dialogData.getJSONArray("option"+optionNumber).getJSONObject(0).getJSONArray("gotoSceneInRange").length(); ii++) {
                     int arrayValue = dialogData.getJSONArray("option"+optionNumber).getJSONObject(0).getJSONArray("gotoSceneInRange").getInt(ii);
@@ -602,7 +554,7 @@ public final class Story {
 
     public void convertValueFromDialogOptionGotoRangeToSingle(int sceneId, int optionNumber) {
         JSONObject dialogData = getDialogData(sceneId);
-        if(dialogData.has("option"+optionNumber)) {
+        if(dialogData != null && dialogData.has("option"+optionNumber)) {
             if(dialogData.getJSONArray("option"+optionNumber).getJSONObject(0).has("gotoSceneInRange")) {
                 int gotoValue = dialogData.getJSONArray("option"+optionNumber).getJSONObject(0).getJSONArray("gotoSceneInRange").getInt(0);
                 addDialogOptionData(sceneId, optionNumber,"gotoScene", gotoValue);

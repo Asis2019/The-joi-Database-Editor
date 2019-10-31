@@ -1,6 +1,5 @@
 package asis;
 
-import asis.json.JSONObject;
 import javafx.animation.KeyFrame;
 import javafx.animation.KeyValue;
 import javafx.animation.Timeline;
@@ -11,6 +10,7 @@ import javafx.scene.control.TextField;
 import javafx.scene.layout.Pane;
 import javafx.scene.paint.Color;
 import javafx.util.Duration;
+import org.json.JSONObject;
 
 import java.util.Optional;
 

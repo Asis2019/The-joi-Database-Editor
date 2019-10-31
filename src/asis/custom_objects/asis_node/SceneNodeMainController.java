@@ -2,8 +2,6 @@ package asis.custom_objects.asis_node;
 
 import asis.Controller;
 import asis.Story;
-import asis.json.JSONArray;
-import asis.json.JSONObject;
 import javafx.beans.binding.Bindings;
 import javafx.beans.property.DoubleProperty;
 import javafx.beans.property.SimpleDoubleProperty;
@@ -11,6 +9,8 @@ import javafx.geometry.Bounds;
 import javafx.scene.control.ScrollPane;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.Pane;
+import org.json.JSONArray;
+import org.json.JSONObject;
 
 import java.util.ArrayList;
 import java.util.List;
