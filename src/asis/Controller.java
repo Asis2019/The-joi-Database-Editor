@@ -538,7 +538,7 @@ public class Controller {
                         if (storyData.getJSONObject(i).has("sceneId")) {
                             sceneId = storyData.getJSONObject(i).getInt("sceneId");
                         } else {
-                            new Alerts().messageDialog(this.getClass(), "Warning", "The project is not compatible with the editor");
+                            Alerts.messageDialog("Warning", "The project is not compatible with the editor");
                             return false;
                         }
 
@@ -633,7 +633,7 @@ public class Controller {
                     }
                 }
             } else {
-                new Alerts().messageDialog(this.getClass(), "Warning", "This is not a project folder");
+                Alerts.messageDialog("Warning", "This is not a project folder");
                 return false;
             }
         } else {
@@ -801,22 +801,22 @@ public class Controller {
 
     public void actionGettingStarted() {
         String message = getStringFromFile("text_files/getting_started.txt");
-        new Alerts().messageDialog(this.getClass(), "Getting Started", message, 720, 720);
+        Alerts.messageDialog("Getting Started", message, 720, 720);
     }
 
     public void actionProjectDetailsHelp() {
         String message = getStringFromFile("text_files/project_details.txt");
-        new Alerts().messageDialog(this.getClass(), "Getting Started", message, 720, 720);
+        Alerts.messageDialog("Getting Started", message, 720, 720);
     }
 
     public void actionAbout() {
         String message = getStringFromFile("text_files/about.txt");
-        new Alerts().messageDialog(this.getClass(), "About", message, 500, 250);
+        Alerts.messageDialog("About", message, 500, 250);
     }
 
     public void actionSceneEditor() {
         String message = getStringFromFile("text_files/scene_editor.txt");
-        new Alerts().messageDialog(this.getClass(), "Scene Editor", message, 720, 720);
+        Alerts.messageDialog("Scene Editor", message, 720, 720);
     }
 
     private String getStringFromFile(String fileLocation) {
@@ -831,7 +831,7 @@ public class Controller {
             }
             return stringBuilder.toString();
         } catch (IOException e) {
-            return "An error occured while getting text file \n"+e.getMessage();
+            return "An error occurred while getting text file \n"+e.getMessage();
         }
     }
 

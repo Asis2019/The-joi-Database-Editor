@@ -1,9 +1,9 @@
 package asis.custom_objects;
 
+import asis.Alerts;
 import javafx.scene.Node;
 import javafx.scene.Parent;
 import javafx.scene.paint.Color;
-import org.controlsfx.dialog.ExceptionDialog;
 
 import java.io.File;
 import java.util.ArrayList;
@@ -26,10 +26,7 @@ public class AsisUtils {
     }
 
     public static void errorDialogWindow(Exception e) {
-        ExceptionDialog exceptionDialog = new ExceptionDialog(e);
-        exceptionDialog.setTitle("Error");
-        exceptionDialog.setHeaderText("Oh no an error! Send it to Asis so he can feel bad.\n"+e.getMessage());
-        exceptionDialog.show();
+        Alerts.messageDialog("Error", "Oh no an error! Send it to Asis so he can feel bad.\n"+e.getMessage());
     }
 
     public static ArrayList<Node> getAllNodes(Parent root) {

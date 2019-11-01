@@ -11,38 +11,21 @@ import java.io.IOException;
 
 import static asis.custom_objects.AsisUtils.errorDialogWindow;
 
-class Alerts {
+public class Alerts {
 
     private String sceneTitle;
     private int unsavedChangesDialogButtonChoice;
     private boolean yesNoConfirmationChoice;
 
-    void messageDialog(Class calledFrom, String title, String message) {
-        try {
-            Stage stage = new Stage();
-
-            FXMLLoader fxmlLoader = new FXMLLoader(calledFrom.getResource("fxml/dialog_message.fxml"));
-            Parent root = fxmlLoader.load();
-
-            DialogMessageController controller = fxmlLoader.getController();
-            controller.inflate(message);
-            Scene main_scene = new Scene(root);
-
-            stage.initModality(Modality.APPLICATION_MODAL);
-            stage.getIcons().add(new Image(Main.class.getResourceAsStream("images/icon.png")));
-            stage.setScene(main_scene);
-            stage.setTitle(title);
-            stage.showAndWait();
-        } catch (IOException e) {
-            errorDialogWindow(e);
-        }
+    public static void messageDialog(String title, String message) {
+        messageDialog(title, message, 600, 400);
     }
 
-    void messageDialog(Class calledFrom, String title, String message, int width, int height) {
+    public static void messageDialog(String title, String message, int width, int height) {
         try {
             Stage stage = new Stage();
 
-            FXMLLoader fxmlLoader = new FXMLLoader(calledFrom.getResource("fxml/dialog_message.fxml"));
+            FXMLLoader fxmlLoader = new FXMLLoader(Alerts.class.getResource("fxml/dialog_message.fxml"));
             Parent root = fxmlLoader.load();
 
             DialogMessageController controller = fxmlLoader.getController();

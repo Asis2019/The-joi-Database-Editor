@@ -35,7 +35,7 @@
                       <top>
                 </top>
                   </BorderPane>
-                  <TextArea id="mainTextArea" fx:id="timerTextArea" layoutX="50.0" layoutY="275.0" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" onKeyTyped="#actionTextTyped" prefHeight="150.0" prefWidth="500.0" stylesheets="@../css/text_area_sytlesheet.css" wrapText="true" AnchorPane.bottomAnchor="40.0" AnchorPane.leftAnchor="80.0" AnchorPane.rightAnchor="80.0" />
+                  <TextArea id="mainTextArea" fx:id="timerTextArea" layoutX="50.0" layoutY="275.0" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="150.0" prefWidth="500.0" stylesheets="@../css/text_area_sytlesheet.css" wrapText="true" AnchorPane.bottomAnchor="40.0" AnchorPane.leftAnchor="80.0" AnchorPane.rightAnchor="80.0" />
                   <HBox fx:id="container" AnchorPane.leftAnchor="0.0" AnchorPane.topAnchor="0.0" />
               </children>
            </AnchorPane>
@@ -54,7 +54,7 @@
                      <content>
                         <VBox spacing="5.0">
                            <children>
-                              <TextArea fx:id="textTextArea" onKeyTyped="#actionTextTyped" prefHeight="59.0" promptText="Text for current second" wrapText="true" />
+                              <TextArea fx:id="textTextArea" prefHeight="59.0" promptText="Text for current second" wrapText="true" />
                               <Button mnemonicParsing="false" onAction="#actionAddLineImage" text="Line Image" />
                               <Label text="Text Color:" />
                               <ColorPicker fx:id="textColorPicker" promptText="Text Color" />
@@ -80,7 +80,7 @@
                         </VBox>
                      </content>
                   </TitledPane>
-                  <TitledPane animated="false" layoutX="10.0" layoutY="326.0" text="Tree" wrapText="true">
+                  <TitledPane animated="false" layoutX="10.0" layoutY="326.0" text="Timer JSON" wrapText="true">
                      <content>
                         <VBox>
                            <children>
