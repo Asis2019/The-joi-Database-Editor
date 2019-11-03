@@ -25,6 +25,7 @@ public class TabNormalOperationController {
     private String fillColor = "#ffffff";
     private int totalLines = 1;
     private int onLine = 1;
+    private static TabNormalOperationController instance;
 
     private ImageViewPane viewPane = new ImageViewPane();
 
@@ -37,7 +38,13 @@ public class TabNormalOperationController {
     @FXML private Button deleteLineButton, previousLineButton;
     @FXML private CheckBox checkBoxStopBeat, checkBoxStartBeat;
 
+    public static TabNormalOperationController getInstance() {
+        return instance;
+    }
+
     public void initialize() {
+        instance = this;
+
         mainTextArea.setStyle("outline-color: "+outlineColor+"; fill-color: "+fillColor+";");
 
         mainTextArea.textProperty().addListener((observable, oldValue, newValue) -> {
@@ -253,6 +260,10 @@ public class TabNormalOperationController {
 
         JSONObject textObject = story.getLineData(sceneId, onLine-1);
 
+        textObjectValidation(textObject);
+    }
+
+    public void textObjectValidation(JSONObject textObject) {
         if(textObject != null) {
             if(textObject.has("fillColor")) {
                 textColorPicker.setValue(Color.web(textObject.getString("fillColor")));
