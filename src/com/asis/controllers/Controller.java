@@ -47,7 +47,8 @@ public class Controller {
     private boolean firstScene = false;
     static boolean createNewProject = false;
 
-    private ArrayList<Stage> openStages = new ArrayList<Stage>();
+    private ArrayList<Stage> openStages = new ArrayList<>();
+    private ArrayList<SceneNode> sceneNodes = new ArrayList<>();
 
     //These should not be used in any code but the newProject method
     static File newProjectFile;
@@ -64,7 +65,7 @@ public class Controller {
 
     public void initialize() {
         instance = this;
-        sceneNodeMainController = new SceneNodeMainController(this);
+        sceneNodeMainController = new SceneNodeMainController();
         sceneNodeMainController.setPane(anchorPane);
         sceneNodeMainController.setScrollPane(scrollPane);
         //TODO replace fixed number with one from mainMenuBar + height of toolbar
@@ -340,28 +341,45 @@ public class Controller {
 
     private void addScene() {
         String title;
+
         if(numberOfScenes != 0) {
             title = new Alerts().addNewSceneDialog("Scene " + (numberOfScenes+1));
-            if(title == null) {
-                return;
-            }
+            if(title == null) return;
         } else {
             title = "Scene " + (numberOfScenes+1);
         }
 
+        addScene(10, 0, title, numberOfScenes, false);
+    }
+
+    private SceneNode addScene(double xPosition, double yPosition, String title, int sceneId, boolean suppressJSONUpdating) {
         numberOfScenes++;
 
-        story.addNewScene(numberOfScenes-1, title);
+        //Add new scene to json if not suppressed
+        if(!suppressJSONUpdating) story.addNewScene(sceneId, title);
 
-        SceneNode sceneNode = new SceneNode(300, 100, numberOfScenes-1, sceneNodeMainController);
+        SceneNode sceneNode = new SceneNode(300, 100, sceneId, sceneNodeMainController);
         new Draggable.Nature(sceneNode.getPane());
 
         sceneNode.setTitle(title);
 
+        //Set and save position
         if (!addSceneContextMenu) {
-            sceneNode.getPane().setLayoutX(10);
-            story.addDataToScene(sceneNode.getSceneId(), "layoutXPosition", 10);
-            story.addDataToScene(sceneNode.getSceneId(), "layoutYPosition", 0);
+            //TODO issue 5 make new scenes via button adjacent
+            //AsisUtils.getAllNodes(anchorPane)
+            /*for (SceneNode listItem : getSceneNodes()) {
+                if(listItem.getPane().getBoundsInParent().intersects(sceneNode.getPane().getBoundsInParent())) {
+                    System.out.println("There is a scene node here!");
+                }
+            }*/
+
+
+            sceneNode.getPane().setLayoutX(xPosition);
+            sceneNode.getPane().setLayoutY(yPosition);
+            if(!suppressJSONUpdating) {
+                story.addDataToScene(sceneNode.getSceneId(), "layoutXPosition", xPosition);
+                story.addDataToScene(sceneNode.getSceneId(), "layoutYPosition", yPosition);
+            }
         } else {
             Bounds bounds = scrollPane.getViewportBounds();
             double lowestXPixelShown = -1 * bounds.getMinX();
@@ -371,13 +389,14 @@ public class Controller {
             sceneNode.getPane().setLayoutY(lowestYPixelShown + menuEventY);
             addSceneContextMenu = false;
 
-            story.addDataToScene(sceneNode.getSceneId(), "layoutXPosition", lowestXPixelShown + menuEventX);
-            story.addDataToScene(sceneNode.getSceneId(), "layoutYPosition", lowestYPixelShown + menuEventY);
+            if(!suppressJSONUpdating) {
+                story.addDataToScene(sceneNode.getSceneId(), "layoutXPosition", lowestXPixelShown + menuEventX);
+                story.addDataToScene(sceneNode.getSceneId(), "layoutYPosition", lowestYPixelShown + menuEventY);
+            }
         }
 
-
         setClickActionForNode(sceneNode);
-        anchorPane.getChildren().add(sceneNode.getPane());
+        getAnchorPane().getChildren().add(sceneNode.getPane());
 
         if (!firstScene) {
             setNewChanges();
@@ -386,32 +405,8 @@ public class Controller {
             //Override any changes caused by story object
             newChanges = false;
         }
-    }
 
-    private SceneNode addScene(double xPosition, double yPosition, String title, int sceneId) {
-        //Set numberOfScenes to the highest id
-        if(numberOfScenes <= sceneId) {
-            numberOfScenes = sceneId;
-            numberOfScenes++;
-        }
-
-        SceneNode sceneNode = new SceneNode(300, 100, sceneId, sceneNodeMainController);
-        new Draggable.Nature(sceneNode.getPane());
-
-        sceneNode.setTitle(title);
-
-        sceneNode.getPane().setLayoutX(xPosition);
-        sceneNode.getPane().setLayoutY(yPosition);
-
-        setClickActionForNode(sceneNode);
-        anchorPane.getChildren().add(sceneNode.getPane());
-
-        if (!firstScene) {
-            setNewChanges();
-        } else {
-            firstScene = false;
-        }
-
+        getSceneNodes().add(sceneNode);
         return sceneNode;
     }
 
@@ -580,8 +575,12 @@ public class Controller {
                             yPosition = storyData.getJSONObject(i).getDouble("layoutYPosition");
                         }
 
-                        //Create scene
-                        SceneNode sceneNode = addScene(xPosition, yPosition, title, sceneId);
+                        //Create scene and set number of scenes
+                        //Set numberOfScenes to the highest id
+                        if(numberOfScenes <= sceneId) {
+                            numberOfScenes = sceneId;
+                        }
+                        SceneNode sceneNode = addScene(xPosition, yPosition, title, sceneId, true);
 
                         //Set good ending for scene
                         if (storyData.getJSONObject(i).has("joiEnd")) {
@@ -842,11 +841,11 @@ public class Controller {
         Alerts.messageDialog("Scene Editor", message, 720, 720);
     }
 
-    private String getStringFromFile(String fileLocation) {
+    private static String getStringFromFile(String fileLocation) {
         try {
             String message;
             StringBuilder stringBuilder = new StringBuilder();
-            InputStream inputStream = this.getClass().getResourceAsStream(fileLocation);
+            InputStream inputStream = Controller.class.getResourceAsStream(fileLocation);
 
             BufferedReader reader = new BufferedReader(new InputStreamReader(inputStream));
             while ((message = reader.readLine()) != null) {
@@ -859,14 +858,6 @@ public class Controller {
     }
 
     public void actionAddSceneButton() {
-        //TODO issue 5 make new scenes via button adjacent
-        /*ArrayList<Node> nodes = getAllNodes(anchorPane);
-        for (Node node : anchorPane.getChildrenUnmodifiable()) {
-            nodes.add(node);
-            if (node instanceof SceneNode) {
-                System.out.println("found scene node "+((SceneNode) node).getSceneId());
-            }
-        }*/
         addScene();
     }
 
@@ -896,5 +887,19 @@ public class Controller {
     }
     public void setOpenStages(ArrayList<Stage> openStages) {
         this.openStages = openStages;
+    }
+
+    private void setAnchorPane(AnchorPane anchorPane) {
+        this.anchorPane = anchorPane;
+    }
+    private AnchorPane getAnchorPane() {
+        return anchorPane;
+    }
+
+    public ArrayList<SceneNode> getSceneNodes() {
+        return sceneNodes;
+    }
+    public void setSceneNodes(ArrayList<SceneNode> sceneNodes) {
+        this.sceneNodes = sceneNodes;
     }
 }

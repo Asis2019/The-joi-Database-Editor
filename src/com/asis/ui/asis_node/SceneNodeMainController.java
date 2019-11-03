@@ -26,16 +26,11 @@ public class SceneNodeMainController {
     private List<BoundLine> lineList = new ArrayList<>();
 
     private AsisConnectionButton currentOutputConnection;
-    private Controller controller;
 
     private DoubleProperty mouseX = new SimpleDoubleProperty();
     private DoubleProperty mouseY = new SimpleDoubleProperty();
 
     private boolean dragActive = false;
-
-    public SceneNodeMainController(Controller controller) {
-        this.controller = controller;
-    }
 
     public void setScrollPane(ScrollPane scrollPane) {
         this.scrollPane = scrollPane;
