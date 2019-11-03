@@ -21,7 +21,7 @@ import java.util.Optional;
 
 import static com.asis.utilities.AsisUtils.colorToHex;
 
-public class TabTimerController {
+public class TabTimerController extends TabController {
     private int sceneId;
     private String outlineColor = "#000000";
     private String fillColor = "#ffffff";
@@ -31,16 +31,6 @@ public class TabTimerController {
 
     private ImageViewPane viewPane = new ImageViewPane();
     private AsisCenteredArc asisCenteredArc = new AsisCenteredArc();
-
-    @FXML private TextField goToSecondsTextField, totalTimerField, textFieldBeatPitch, textFieldBeatSpeed;
-    @FXML private ColorPicker textColorPicker, textOutlineColorPicker;
-    @FXML private VBox timerIconControllerBox;
-    @FXML private StackPane timerStackPane;
-    @FXML private TextArea timerTextArea, textTextArea;
-    @FXML private HBox container;
-    @FXML private CheckBox checkBoxStopBeat, checkBoxStartBeat;
-    @FXML private Label warningLabel;
-    @FXML private TreeView<String> objectTree;
 
     public void initialize() {
         timerTextArea.setStyle("outline-color: "+outlineColor+"; fill-color: "+fillColor+";");
@@ -323,7 +313,7 @@ public class TabTimerController {
 
         JSONObject textObject = story().getTimerLineData(sceneId, "line"+onSecond);
 
-        TabNormalOperationController.getInstance().textObjectValidation(textObject);
+        updateComponents(textObject);
 
         setLockTextAreaFunctionality(false);
     }

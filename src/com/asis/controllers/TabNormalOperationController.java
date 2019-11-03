@@ -18,33 +18,17 @@ import java.util.Optional;
 
 import static com.asis.utilities.AsisUtils.colorToHex;
 
-public class TabNormalOperationController {
+public class TabNormalOperationController extends TabController {
     private Story story;
     private int sceneId;
     private String outlineColor = "#000000";
     private String fillColor = "#ffffff";
     private int totalLines = 1;
     private int onLine = 1;
-    private static TabNormalOperationController instance;
 
     private ImageViewPane viewPane = new ImageViewPane();
 
-    @FXML private TextArea textTextField, mainTextArea;
-    @FXML private TextField textFieldBeatPitch, textFieldBeatSpeed;
-    @FXML private ColorPicker textColorPicker, textOutlineColorPicker;
-    @FXML private VBox iconControllerBox;
-    @FXML private StackPane stackPane;
-    @FXML private Label lineCounterLabel;
-    @FXML private Button deleteLineButton, previousLineButton;
-    @FXML private CheckBox checkBoxStopBeat, checkBoxStartBeat;
-
-    public static TabNormalOperationController getInstance() {
-        return instance;
-    }
-
     public void initialize() {
-        instance = this;
-
         mainTextArea.setStyle("outline-color: "+outlineColor+"; fill-color: "+fillColor+";");
 
         mainTextArea.textProperty().addListener((observable, oldValue, newValue) -> {
@@ -260,50 +244,7 @@ public class TabNormalOperationController {
 
         JSONObject textObject = story.getLineData(sceneId, onLine-1);
 
-        textObjectValidation(textObject);
-    }
-
-    public void textObjectValidation(JSONObject textObject) {
-        if(textObject != null) {
-            if(textObject.has("fillColor")) {
-                textColorPicker.setValue(Color.web(textObject.getString("fillColor")));
-            }
-
-            if(textObject.has("outlineColor")) {
-                textOutlineColorPicker.setValue(Color.web(textObject.getString("outlineColor")));
-            }
-
-            if(textObject.has("text")) {
-                String text = textObject.getString("text").replaceAll("#", "\n");
-                mainTextArea.setText(text);
-            }
-
-            if(textObject.has("startBeat")) {
-                checkBoxStartBeat.setSelected(true);
-            } else {
-                checkBoxStartBeat.setSelected(false);
-            }
-
-            if(textObject.has("stopBeat")) {
-                checkBoxStopBeat.setSelected(true);
-            } else {
-                checkBoxStopBeat.setSelected(false);
-            }
-
-            if(textObject.has("changeBeatSpeed")) {
-                int speed = textObject.getInt("changeBeatSpeed");
-                textFieldBeatSpeed.setText(String.valueOf(speed));
-            } else {
-                textFieldBeatSpeed.clear();
-            }
-
-            if(textObject.has("changeBeatPitch")) {
-                double speed = textObject.getDouble("changeBeatPitch");
-                textFieldBeatPitch.setText(String.valueOf(speed));
-            } else {
-                textFieldBeatPitch.clear();
-            }
-        }
+        updateComponents(textObject);
     }
 
     void setVisibleImage() {
