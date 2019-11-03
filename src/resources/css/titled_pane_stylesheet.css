@@ -1,0 +1,38 @@
+.titled-pane {
+    -fx-skin: "com.sun.javafx.scene.control.skin.TitledPaneSkin";
+    -fx-text-fill: rgb(187, 187, 187);
+}
+
+.titled-pane > .title {
+    -fx-text-fill: rgb(187, 187, 187);
+
+    -fx-background-radius: 0;
+    -fx-background-color: rgb(60, 63, 65);
+
+    -fx-padding: 5;
+
+    -fx-border-color: rgb(81, 81, 81);
+    -fx-border-width: 0 1 1 0;
+}
+
+.titled-pane:focused > .title {
+    -fx-color: -fx-focus-color;
+}
+
+.titled-pane > .title > .arrow-button {
+    -fx-background-color: null;
+    -fx-background-insets: 0;
+    -fx-background-radius: 0;
+    -fx-padding: 0.0em 0.0em 0.0em 0.0em;
+}
+
+.titled-pane > .title > .arrow-button .arrow {
+    -fx-background-color: null;
+    -fx-background-insets: 1 0 -1 0, 0;
+    -fx-padding: 0.0em 0.0em 0.0em 0.0em;
+    -fx-shape: "";
+}
+
+.titled-pane:focused > .title > .arrow-button .arrow {
+    -fx-background-color: null;
+}
