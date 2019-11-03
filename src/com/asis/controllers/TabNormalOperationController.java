@@ -25,7 +25,6 @@ public class TabNormalOperationController extends TabController {
     private String fillColor = "#ffffff";
     private int totalLines = 1;
     private int onLine = 1;
-    private static TabNormalOperationController instance;
 
     private ImageViewPane viewPane = new ImageViewPane();
 
@@ -38,13 +37,7 @@ public class TabNormalOperationController extends TabController {
 //    @FXML private Button deleteLineButton, previousLineButton;
 //    @FXML private CheckBox checkBoxStopBeat, checkBoxStartBeat;
 
-    public static TabNormalOperationController getInstance() {
-        return instance;
-    }
-
     public void initialize() {
-        instance = this;
-
         mainTextArea.setStyle("outline-color: "+outlineColor+"; fill-color: "+fillColor+";");
 
         mainTextArea.textProperty().addListener((observable, oldValue, newValue) -> {
@@ -260,51 +253,10 @@ public class TabNormalOperationController extends TabController {
 
         JSONObject textObject = story.getLineData(sceneId, onLine-1);
 
-        textObjectValidation(textObject);
+        updateComponents(textObject);
     }
 
-    public void textObjectValidation(JSONObject textObject) {
-        if(textObject != null) {
-            if(textObject.has("fillColor")) {
-                textColorPicker.setValue(Color.web(textObject.getString("fillColor")));
-            }
 
-            if(textObject.has("outlineColor")) {
-                textOutlineColorPicker.setValue(Color.web(textObject.getString("outlineColor")));
-            }
-
-            if(textObject.has("text")) {
-                String text = textObject.getString("text").replaceAll("#", "\n");
-                mainTextArea.setText(text);
-            }
-
-            if(textObject.has("startBeat")) {
-                checkBoxStartBeat.setSelected(true);
-            } else {
-                checkBoxStartBeat.setSelected(false);
-            }
-
-            if(textObject.has("stopBeat")) {
-                checkBoxStopBeat.setSelected(true);
-            } else {
-                checkBoxStopBeat.setSelected(false);
-            }
-
-            if(textObject.has("changeBeatSpeed")) {
-                int speed = textObject.getInt("changeBeatSpeed");
-                textFieldBeatSpeed.setText(String.valueOf(speed));
-            } else {
-                textFieldBeatSpeed.clear();
-            }
-
-            if(textObject.has("changeBeatPitch")) {
-                double speed = textObject.getDouble("changeBeatPitch");
-                textFieldBeatPitch.setText(String.valueOf(speed));
-            } else {
-                textFieldBeatPitch.clear();
-            }
-        }
-    }
 
     void setVisibleImage() {
         //Remove image if any is present
