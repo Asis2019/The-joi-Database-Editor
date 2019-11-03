@@ -18,7 +18,7 @@ import java.util.Optional;
 
 import static com.asis.utilities.AsisUtils.colorToHex;
 
-public class TabNormalOperationController {
+public class TabNormalOperationController extends TabController {
     private Story story;
     private int sceneId;
     private String outlineColor = "#000000";
@@ -29,14 +29,14 @@ public class TabNormalOperationController {
 
     private ImageViewPane viewPane = new ImageViewPane();
 
-    @FXML private TextArea textTextField, mainTextArea;
-    @FXML private TextField textFieldBeatPitch, textFieldBeatSpeed;
-    @FXML private ColorPicker textColorPicker, textOutlineColorPicker;
-    @FXML private VBox iconControllerBox;
-    @FXML private StackPane stackPane;
-    @FXML private Label lineCounterLabel;
-    @FXML private Button deleteLineButton, previousLineButton;
-    @FXML private CheckBox checkBoxStopBeat, checkBoxStartBeat;
+//    @FXML private TextArea textTextField, mainTextArea;
+//    @FXML private TextField textFieldBeatPitch, textFieldBeatSpeed;
+//    @FXML private ColorPicker textColorPicker, textOutlineColorPicker;
+//    @FXML private VBox iconControllerBox;
+//    @FXML private StackPane stackPane;
+//    @FXML private Label lineCounterLabel;
+//    @FXML private Button deleteLineButton, previousLineButton;
+//    @FXML private CheckBox checkBoxStopBeat, checkBoxStartBeat;
 
     public static TabNormalOperationController getInstance() {
         return instance;
