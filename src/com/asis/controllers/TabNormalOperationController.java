@@ -28,15 +28,6 @@ public class TabNormalOperationController extends TabController {
 
     private ImageViewPane viewPane = new ImageViewPane();
 
-//    @FXML private TextArea textTextField, mainTextArea;
-//    @FXML private TextField textFieldBeatPitch, textFieldBeatSpeed;
-//    @FXML private ColorPicker textColorPicker, textOutlineColorPicker;
-//    @FXML private VBox iconControllerBox;
-//    @FXML private StackPane stackPane;
-//    @FXML private Label lineCounterLabel;
-//    @FXML private Button deleteLineButton, previousLineButton;
-//    @FXML private CheckBox checkBoxStopBeat, checkBoxStartBeat;
-
     public void initialize() {
         mainTextArea.setStyle("outline-color: "+outlineColor+"; fill-color: "+fillColor+";");
 
@@ -255,8 +246,6 @@ public class TabNormalOperationController extends TabController {
 
         updateComponents(textObject);
     }
-
-
 
     void setVisibleImage() {
         //Remove image if any is present
