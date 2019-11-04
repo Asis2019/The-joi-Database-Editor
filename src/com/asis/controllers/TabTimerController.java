@@ -21,7 +21,7 @@ import java.util.Optional;
 
 import static com.asis.utilities.AsisUtils.colorToHex;
 
-public class TabTimerController extends TabController {
+public class TabTimerController {
     private int sceneId;
     private String outlineColor = "#000000";
     private String fillColor = "#ffffff";
@@ -313,9 +313,53 @@ public class TabTimerController extends TabController {
 
         JSONObject textObject = story().getTimerLineData(sceneId, "line"+onSecond);
 
-        updateComponents(textObject);
+        if (textObject != null) {
+            if (textObject.has("fillColor")) {
+                textColorPicker.setValue(Color.web(textObject.getString("fillColor")));
+            }
+
+            if (textObject.has("outlineColor")) {
+                textOutlineColorPicker.setValue(Color.web(textObject.getString("outlineColor")));
+            }
+
+            if (textObject.has("text")) {
+                String text = textObject.getString("text").replaceAll("#", "\n");
+                timerTextArea.setText(text);
+            }
+
+            if (textObject.has("startBeat")) {
+                checkBoxStartBeat.setSelected(true);
+            } else {
+                checkBoxStartBeat.setSelected(false);
+            }
+
+            textObjectIfElse(textObject);
+        }
 
         setLockTextAreaFunctionality(false);
+    }
+
+    private void textObjectIfElse(JSONObject textObject) {
+
+        if (textObject.has("stopBeat")) {
+            checkBoxStopBeat.setSelected(true);
+        } else {
+            checkBoxStopBeat.setSelected(false);
+        }
+
+        if(textObject.has("changeBeatSpeed")) {
+            int speed = textObject.getInt("changeBeatSpeed");
+            textFieldBeatSpeed.setText(String.valueOf(speed));
+        } else {
+            textFieldBeatSpeed.clear();
+        }
+
+        if(textObject.has("changeBeatPitch")) {
+            double speed = textObject.getDouble("changeBeatPitch");
+            textFieldBeatPitch.setText(String.valueOf(speed));
+        } else {
+            textFieldBeatPitch.clear();
+        }
     }
 
     private void handelSecondsOverTotal() {
