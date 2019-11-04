@@ -19,11 +19,9 @@ import java.io.File;
 import java.util.Comparator;
 import java.util.Optional;
 
-import static com.asis.controllers.TabNormalOperationController.beatProperties;
-import static com.asis.controllers.TabNormalOperationController.changeBeat;
 import static com.asis.utilities.AsisUtils.colorToHex;
 
-public class TabTimerController {
+public class TabTimerController extends TabController {
     private int sceneId;
     private String outlineColor = "#000000";
     private String fillColor = "#ffffff";

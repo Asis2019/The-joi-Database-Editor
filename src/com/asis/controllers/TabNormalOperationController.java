@@ -19,7 +19,7 @@ import java.util.Optional;
 
 import static com.asis.utilities.AsisUtils.colorToHex;
 
-public class TabNormalOperationController {
+public class TabNormalOperationController extends TabController {
     private Story story;
     private int sceneId;
     private String outlineColor = "#000000";
@@ -263,22 +263,7 @@ public class TabNormalOperationController {
         changeBeat(textObject, textFieldBeatSpeed, "changeBeatSpeed");
     }
 
-    static void beatProperties(JSONObject textObject, CheckBox checkBox, String key) {
-        if (textObject != null && textObject.has(key)) {
-            checkBox.setSelected(true);
-        } else {
-            checkBox.setSelected(false);
-        }
-    }
 
-    static void changeBeat(JSONObject textObject, TextField textField, String key) {
-        if (textObject != null && textObject.has(key)) {
-            double speed = textObject.getDouble(key);
-            textField.setText(String.valueOf(speed));
-        } else {
-            textField.clear();
-        }
-    }
 
     private void textObjectElseIf(JSONObject textObject) {
         if (textObject.has("fillColor")) {
