@@ -13,6 +13,7 @@ import javafx.stage.FileChooser;
 import org.json.JSONArray;
 import org.json.JSONObject;
 
+import javax.xml.soap.Text;
 import java.io.File;
 import java.util.Optional;
 
@@ -253,28 +254,26 @@ public class TabNormalOperationController {
 
         JSONObject textObject = story.getLineData(sceneId, onLine-1);
 
-        if(textObject != null) {
+        if (textObject != null) {
             textObjectElseIf(textObject);
 
-            if(textObject.has("stopBeat")) {
+            if (textObject.has("stopBeat")) {
                 checkBoxStopBeat.setSelected(true);
             } else {
                 checkBoxStopBeat.setSelected(false);
             }
 
-            if (textObject.has("changeBeatSpeed")) {
-                int speed = textObject.getInt("changeBeatSpeed");
-                textFieldBeatSpeed.setText(String.valueOf(speed));
-            } else {
-                textFieldBeatSpeed.clear();
-            }
+            changeBeat(textObject, textFieldBeatPitch, "changeBeatPitch");
+            changeBeat(textObject, textFieldBeatSpeed, "changeBeatSpeed");
+        }
+    }
 
-            if (textObject.has("changeBeatPitch")) {
-                double speed = textObject.getDouble("changeBeatPitch");
-                textFieldBeatPitch.setText(String.valueOf(speed));
-            } else {
-                textFieldBeatPitch.clear();
-            }
+    private void changeBeat(JSONObject textObject, TextField textField, String key) {
+        if (textObject.has(key)) {
+            double speed = textObject.getDouble(key);
+            textField.setText(String.valueOf(speed));
+        } else {
+            textField.clear();
         }
     }
 
