@@ -19,6 +19,8 @@ import java.io.File;
 import java.util.Comparator;
 import java.util.Optional;
 
+import static com.asis.controllers.TabNormalOperationController.beatProperties;
+import static com.asis.controllers.TabNormalOperationController.changeBeat;
 import static com.asis.utilities.AsisUtils.colorToHex;
 
 public class TabTimerController {
@@ -323,56 +325,35 @@ public class TabTimerController {
 
         JSONObject textObject = story().getTimerLineData(sceneId, "line"+onSecond);
 
-        if (textObject != null) {
-            if (textObject.has("fillColor")) {
-                textColorPicker.setValue(Color.web(textObject.getString("fillColor")));
-            }
+        if (textObject != null) { ifStatements(textObject); }
 
-            if (textObject.has("outlineColor")) {
-                textOutlineColorPicker.setValue(Color.web(textObject.getString("outlineColor")));
-            }
-
-            if (textObject.has("text")) {
-                String text = textObject.getString("text").replaceAll("#", "\n");
-                timerTextArea.setText(text);
-            }
-
-            if (textObject.has("startBeat")) {
-                checkBoxStartBeat.setSelected(true);
-            } else {
-                checkBoxStartBeat.setSelected(false);
-            }
-
-            textObjectIfElse(textObject);
-        }
+        beatConfiguration(textObject);
 
         setLockTextAreaFunctionality(false);
     }
 
-    private void textObjectIfElse(JSONObject textObject) {
-
-        if (textObject.has("stopBeat")) {
-            checkBoxStopBeat.setSelected(true);
-        } else {
-            checkBoxStopBeat.setSelected(false);
+    private void ifStatements(JSONObject textObject) {
+        if (textObject.has("fillColor")) {
+            textColorPicker.setValue(Color.web(textObject.getString("fillColor")));
         }
 
-        TabNormalOperationController.changeBeat(textObject, textFieldBeatSpeed, "changeBeatSpeed");
-        TabNormalOperationController.changeBeat(textObject, textFieldBeatPitch, "changeBeatPitch");
-//
-//        if(textObject.has("changeBeatSpeed")) {
-//            int speed = textObject.getInt("changeBeatSpeed");
-//            textFieldBeatSpeed.setText(String.valueOf(speed));
-//        } else {
-//            textFieldBeatSpeed.clear();
-//        }
-//
-//        if(textObject.has("changeBeatPitch")) {
-//            double speed = textObject.getDouble("changeBeatPitch");
-//            textFieldBeatPitch.setText(String.valueOf(speed));
-//        } else {
-//            textFieldBeatPitch.clear();
-//        }
+        if (textObject.has("outlineColor")) {
+            textOutlineColorPicker.setValue(Color.web(textObject.getString("outlineColor")));
+        }
+
+        if (textObject.has("text")) {
+            String text = textObject.getString("text").replaceAll("#", "\n");
+            timerTextArea.setText(text);
+        }
+    }
+
+    private void beatConfiguration(JSONObject textObject) {
+
+        beatProperties(textObject, checkBoxStartBeat, "startBeat");
+        beatProperties(textObject, checkBoxStopBeat, "stopBeat");
+
+        changeBeat(textObject, textFieldBeatSpeed, "changeBeatSpeed");
+        changeBeat(textObject, textFieldBeatPitch, "changeBeatPitch");
     }
 
     private void handelSecondsOverTotal() {

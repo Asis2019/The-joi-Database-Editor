@@ -254,22 +254,25 @@ public class TabNormalOperationController {
 
         JSONObject textObject = story.getLineData(sceneId, onLine-1);
 
-        if (textObject != null) {
-            textObjectElseIf(textObject);
+        if (textObject != null) { textObjectElseIf(textObject); }
 
-            if (textObject.has("stopBeat")) {
-                checkBoxStopBeat.setSelected(true);
-            } else {
-                checkBoxStopBeat.setSelected(false);
-            }
+        beatProperties(textObject, checkBoxStopBeat, "stopBeat");
+        beatProperties(textObject, checkBoxStartBeat, "startBeat");
 
-            changeBeat(textObject, textFieldBeatPitch, "changeBeatPitch");
-            changeBeat(textObject, textFieldBeatSpeed, "changeBeatSpeed");
+        changeBeat(textObject, textFieldBeatPitch, "changeBeatPitch");
+        changeBeat(textObject, textFieldBeatSpeed, "changeBeatSpeed");
+    }
+
+    static void beatProperties(JSONObject textObject, CheckBox checkBox, String key) {
+        if (textObject != null && textObject.has(key)) {
+            checkBox.setSelected(true);
+        } else {
+            checkBox.setSelected(false);
         }
     }
 
-    public static void changeBeat(JSONObject textObject, TextField textField, String key) {
-        if (textObject.has(key)) {
+    static void changeBeat(JSONObject textObject, TextField textField, String key) {
+        if (textObject != null && textObject.has(key)) {
             double speed = textObject.getDouble(key);
             textField.setText(String.valueOf(speed));
         } else {
