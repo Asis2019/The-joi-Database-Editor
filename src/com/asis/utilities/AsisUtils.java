@@ -1,10 +1,14 @@
 package com.asis.utilities;
 
+import com.asis.controllers.Controller;
 import javafx.scene.Node;
 import javafx.scene.Parent;
 import javafx.scene.paint.Color;
+import org.json.JSONException;
+import org.json.JSONObject;
 
-import java.io.File;
+import java.io.*;
+import java.nio.file.Files;
 import java.util.ArrayList;
 
 public class AsisUtils {
@@ -57,5 +61,66 @@ public class AsisUtils {
         String oldFilePath = fileToRename.getPath();
         String newPath = oldFilePath.replace(oldFileName, newName);
         return fileToRename.renameTo(new File(newPath));
+    }
+
+    public static void writeJsonToFile(JSONObject jsonObject, String fileName, File saveLocation) {
+        try {
+            FileWriter fileWriter = new FileWriter(saveLocation.toPath() + File.separator + fileName);
+            fileWriter.write(jsonObject.toString(4));
+            fileWriter.flush();
+            fileWriter.close();
+        } catch (IOException e) {
+            errorDialogWindow(e);
+        }
+    }
+
+    public static JSONObject readJsonFromFile(File file) {
+        try {
+            String text = new String(Files.readAllBytes(file.toPath()));
+            return new JSONObject(text);
+        } catch (IOException | JSONException e) {
+            errorDialogWindow(e);
+        }
+        return null;
+    }
+
+    public static boolean deleteFolder(File folder) {
+        File[] files = folder.listFiles();
+        if(files != null) {
+            for(File f: files) {
+                if(f.isDirectory()) {
+                    deleteFolder(f);
+                } else {
+                    if(!f.delete()) {
+                        System.out.println("Failed to delete file: "+f.getPath());
+                    }
+                }
+            }
+        }
+
+        try {
+            Files.delete(folder.toPath());
+            return true;
+        } catch (IOException e) {
+            AsisUtils.errorDialogWindow(e);
+        }
+
+        return false;
+    }
+
+    public static String getStringFromFile(String fileLocation) {
+        try {
+            String message;
+            StringBuilder stringBuilder = new StringBuilder();
+            InputStream inputStream = Controller.class.getResourceAsStream(fileLocation);
+
+            BufferedReader reader = new BufferedReader(new InputStreamReader(inputStream));
+            while ((message = reader.readLine()) != null) {
+                stringBuilder.append(message).append("\n");
+            }
+            return stringBuilder.toString();
+        } catch (IOException e) {
+            return "An error occurred while getting text file \n"+e.getMessage();
+        }
     }
 }

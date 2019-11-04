@@ -13,7 +13,6 @@ import javafx.stage.FileChooser;
 import org.json.JSONArray;
 import org.json.JSONObject;
 
-import javax.xml.soap.Text;
 import java.io.File;
 import java.util.Optional;
 
@@ -29,14 +28,14 @@ public class TabNormalOperationController extends TabController {
 
     private ImageViewPane viewPane = new ImageViewPane();
 
-    @FXML protected TextArea textTextField, mainTextArea;
-    @FXML protected TextField textFieldBeatPitch, textFieldBeatSpeed;
-    @FXML protected ColorPicker textColorPicker, textOutlineColorPicker;
-    @FXML protected VBox iconControllerBox;
-    @FXML protected StackPane stackPane;
-    @FXML protected Label lineCounterLabel;
-    @FXML protected Button deleteLineButton, previousLineButton;
-    @FXML protected CheckBox checkBoxStopBeat, checkBoxStartBeat;
+    @FXML private TextArea textTextField, mainTextArea;
+    @FXML private TextField textFieldBeatPitch, textFieldBeatSpeed;
+    @FXML private ColorPicker textColorPicker, textOutlineColorPicker;
+    @FXML private VBox iconControllerBox;
+    @FXML private StackPane stackPane;
+    @FXML private Label lineCounterLabel;
+    @FXML private Button deleteLineButton, previousLineButton;
+    @FXML private CheckBox checkBoxStopBeat, checkBoxStartBeat;
 
     public void initialize() {
         mainTextArea.setStyle("outline-color: "+outlineColor+"; fill-color: "+fillColor+";");

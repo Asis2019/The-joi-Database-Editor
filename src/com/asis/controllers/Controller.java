@@ -5,6 +5,7 @@ import com.asis.ui.asis_node.AsisConnectionButton;
 import com.asis.ui.asis_node.SceneNode;
 import com.asis.ui.asis_node.SceneNodeMainController;
 import com.asis.utilities.Alerts;
+import com.asis.utilities.AsisUtils;
 import com.asis.utilities.Draggable;
 import javafx.application.Platform;
 import javafx.fxml.FXML;
@@ -21,10 +22,12 @@ import javafx.scene.input.MouseButton;
 import javafx.scene.layout.AnchorPane;
 import javafx.stage.*;
 import org.json.JSONArray;
-import org.json.JSONException;
 import org.json.JSONObject;
 
-import java.io.*;
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileOutputStream;
+import java.io.IOException;
 import java.net.URL;
 import java.nio.file.Files;
 import java.nio.file.StandardCopyOption;
@@ -419,27 +422,6 @@ public class Controller {
         setNewChanges();
     }
 
-    private static void writeJsonToFile(JSONObject jsonObject, String fileName, File saveLocation) {
-        try {
-            FileWriter fileWriter = new FileWriter(saveLocation.toPath() + File.separator + fileName);
-            fileWriter.write(jsonObject.toString());
-            fileWriter.flush();
-            fileWriter.close();
-        } catch (IOException e) {
-            errorDialogWindow(e);
-        }
-    }
-
-    private static JSONObject readJsonFromFile(File file) {
-        try {
-            String text = new String(Files.readAllBytes(file.toPath()));
-            return new JSONObject(text);
-        } catch (IOException | JSONException e) {
-            errorDialogWindow(e);
-        }
-        return null;
-    }
-
     public void actionNewProject() {
         try {
             FXMLLoader fxmlLoader = new FXMLLoader(getClass().getResource("/resources/fxml/dialog_new_project.fxml"));
@@ -532,12 +514,12 @@ public class Controller {
                     //TODO for the next version we should include multi language support
                     //Load metadata json
                     if (f.getName().equals("info_en.json")) {
-                        story.setMetadataObject(readJsonFromFile(f));
+                        story.setMetadataObject(AsisUtils.readJsonFromFile(f));
                     }
 
                     //Load main json
                     if (f.getName().equals("joi_text_en.json")) {
-                        story.setStoryDataJson(readJsonFromFile(f));
+                        story.setStoryDataJson(AsisUtils.readJsonFromFile(f));
                     }
                 }
 
@@ -713,12 +695,12 @@ public class Controller {
                 metadataObject.put("JOI METADATA", jsonArray);
 
                 story.setMetadataObject(metadataObject);
-                URL url = this.getClass().getResource("images/icon_dev.png");
+                URL url = this.getClass().getResource("/resources/images/icon_dev.png");
                 story.addMetadataIcon(new File(Objects.requireNonNull(url).getPath()));
             }
 
-            writeJsonToFile(story.getMetadataObject(), "info_en.json", file);
-            writeJsonToFile(story.getStoryDataJson(), "joi_text_en.json", file);
+            AsisUtils.writeJsonToFile(story.getMetadataObject(), "info_en.json", file);
+            AsisUtils.writeJsonToFile(story.getStoryDataJson(), "joi_text_en.json", file);
 
             //Copy image to project directory
             for (File file1 : story.getImagesArray()) {
@@ -763,8 +745,8 @@ public class Controller {
             boolean result = tempFile.mkdir();
 
             if(result) {
-                writeJsonToFile(story.getMetadataObject(), "info_en.json", tempFile);
-                writeJsonToFile(story.getStoryDataJson(), "joi_text_en.json", tempFile);
+                AsisUtils.writeJsonToFile(story.getMetadataObject(), "info_en.json", tempFile);
+                AsisUtils.writeJsonToFile(story.getStoryDataJson(), "joi_text_en.json", tempFile);
 
                 //Copy image to project directory
                 for (File file1 : story.getImagesArray()) {
@@ -822,64 +804,27 @@ public class Controller {
     }
 
     public void actionGettingStarted() {
-        String message = getStringFromFile("/resources/text_files/getting_started.txt");
+        String message = AsisUtils.getStringFromFile("/resources/text_files/getting_started.txt");
         Alerts.messageDialog("Getting Started", message, 720, 720);
     }
 
     public void actionProjectDetailsHelp() {
-        String message = getStringFromFile("/resources/text_files/project_details.txt");
+        String message = AsisUtils.getStringFromFile("/resources/text_files/project_details.txt");
         Alerts.messageDialog("Getting Started", message, 720, 720);
     }
 
     public void actionAbout() {
-        String message = getStringFromFile("/resources/text_files/about.txt");
+        String message = AsisUtils.getStringFromFile("/resources/text_files/about.txt");
         Alerts.messageDialog("About", message, 500, 250);
     }
 
     public void actionSceneEditor() {
-        String message = getStringFromFile("/resources/text_files/scene_editor.txt");
+        String message = AsisUtils.getStringFromFile("/resources/text_files/scene_editor.txt");
         Alerts.messageDialog("Scene Editor", message, 720, 720);
-    }
-
-    private static String getStringFromFile(String fileLocation) {
-        try {
-            String message;
-            StringBuilder stringBuilder = new StringBuilder();
-            InputStream inputStream = Controller.class.getResourceAsStream(fileLocation);
-
-            BufferedReader reader = new BufferedReader(new InputStreamReader(inputStream));
-            while ((message = reader.readLine()) != null) {
-                stringBuilder.append(message).append("\n");
-            }
-            return stringBuilder.toString();
-        } catch (IOException e) {
-            return "An error occurred while getting text file \n"+e.getMessage();
-        }
     }
 
     public void actionAddSceneButton() {
         addScene();
-    }
-
-    private void deleteFolder(File folder) {
-        File[] files = folder.listFiles();
-        if(files != null) {
-            for(File f: files) {
-                if(f.isDirectory()) {
-                    deleteFolder(f);
-                } else {
-                    if(!f.delete()) {
-                        System.out.println("Failed to delete file: "+f.getPath());
-                    }
-                }
-            }
-        }
-
-        try {
-            Files.delete(folder.toPath());
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
     }
 
     public ArrayList<Stage> getOpenStages() {
