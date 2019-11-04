@@ -32,6 +32,16 @@ public class TabTimerController {
     private ImageViewPane viewPane = new ImageViewPane();
     private AsisCenteredArc asisCenteredArc = new AsisCenteredArc();
 
+    @FXML private TextField goToSecondsTextField, totalTimerField, textFieldBeatPitch, textFieldBeatSpeed;
+    @FXML private ColorPicker textColorPicker, textOutlineColorPicker;
+    @FXML private VBox timerIconControllerBox;
+    @FXML private StackPane timerStackPane;
+    @FXML private TextArea timerTextArea, textTextArea;
+    @FXML private HBox container;
+    @FXML private CheckBox checkBoxStopBeat, checkBoxStartBeat;
+    @FXML private Label warningLabel;
+    @FXML private TreeView<String> objectTree;
+
     public void initialize() {
         timerTextArea.setStyle("outline-color: "+outlineColor+"; fill-color: "+fillColor+";");
 
@@ -347,19 +357,22 @@ public class TabTimerController {
             checkBoxStopBeat.setSelected(false);
         }
 
-        if(textObject.has("changeBeatSpeed")) {
-            int speed = textObject.getInt("changeBeatSpeed");
-            textFieldBeatSpeed.setText(String.valueOf(speed));
-        } else {
-            textFieldBeatSpeed.clear();
-        }
-
-        if(textObject.has("changeBeatPitch")) {
-            double speed = textObject.getDouble("changeBeatPitch");
-            textFieldBeatPitch.setText(String.valueOf(speed));
-        } else {
-            textFieldBeatPitch.clear();
-        }
+        TabNormalOperationController.changeBeat(textObject, textFieldBeatSpeed, "changeBeatSpeed");
+        TabNormalOperationController.changeBeat(textObject, textFieldBeatPitch, "changeBeatPitch");
+//
+//        if(textObject.has("changeBeatSpeed")) {
+//            int speed = textObject.getInt("changeBeatSpeed");
+//            textFieldBeatSpeed.setText(String.valueOf(speed));
+//        } else {
+//            textFieldBeatSpeed.clear();
+//        }
+//
+//        if(textObject.has("changeBeatPitch")) {
+//            double speed = textObject.getDouble("changeBeatPitch");
+//            textFieldBeatPitch.setText(String.valueOf(speed));
+//        } else {
+//            textFieldBeatPitch.clear();
+//        }
     }
 
     private void handelSecondsOverTotal() {

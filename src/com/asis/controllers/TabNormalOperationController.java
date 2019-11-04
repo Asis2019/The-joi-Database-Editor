@@ -268,7 +268,7 @@ public class TabNormalOperationController {
         }
     }
 
-    private void changeBeat(JSONObject textObject, TextField textField, String key) {
+    public static void changeBeat(JSONObject textObject, TextField textField, String key) {
         if (textObject.has(key)) {
             double speed = textObject.getDouble(key);
             textField.setText(String.valueOf(speed));
