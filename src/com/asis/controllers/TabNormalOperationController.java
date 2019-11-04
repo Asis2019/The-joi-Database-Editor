@@ -13,6 +13,7 @@ import javafx.stage.FileChooser;
 import org.json.JSONArray;
 import org.json.JSONObject;
 
+import javax.xml.soap.Text;
 import java.io.File;
 import java.util.Optional;
 
@@ -27,6 +28,15 @@ public class TabNormalOperationController extends TabController {
     private int onLine = 1;
 
     private ImageViewPane viewPane = new ImageViewPane();
+
+    @FXML protected TextArea textTextField, mainTextArea;
+    @FXML protected TextField textFieldBeatPitch, textFieldBeatSpeed;
+    @FXML protected ColorPicker textColorPicker, textOutlineColorPicker;
+    @FXML protected VBox iconControllerBox;
+    @FXML protected StackPane stackPane;
+    @FXML protected Label lineCounterLabel;
+    @FXML protected Button deleteLineButton, previousLineButton;
+    @FXML protected CheckBox checkBoxStopBeat, checkBoxStartBeat;
 
     public void initialize() {
         mainTextArea.setStyle("outline-color: "+outlineColor+"; fill-color: "+fillColor+";");
@@ -244,7 +254,36 @@ public class TabNormalOperationController extends TabController {
 
         JSONObject textObject = story.getLineData(sceneId, onLine-1);
 
-        updateComponents(textObject);
+        if (textObject != null) { textObjectElseIf(textObject); }
+
+        beatProperties(textObject, checkBoxStopBeat, "stopBeat");
+        beatProperties(textObject, checkBoxStartBeat, "startBeat");
+
+        changeBeat(textObject, textFieldBeatPitch, "changeBeatPitch");
+        changeBeat(textObject, textFieldBeatSpeed, "changeBeatSpeed");
+    }
+
+
+
+    private void textObjectElseIf(JSONObject textObject) {
+        if (textObject.has("fillColor")) {
+            textColorPicker.setValue(Color.web(textObject.getString("fillColor")));
+        }
+
+        if (textObject.has("outlineColor")) {
+            textOutlineColorPicker.setValue(Color.web(textObject.getString("outlineColor")));
+        }
+
+        if (textObject.has("text")) {
+            String text = textObject.getString("text").replaceAll("#", "\n");
+            mainTextArea.setText(text);
+        }
+
+        if (textObject.has("startBeat")) {
+            checkBoxStartBeat.setSelected(true);
+        } else {
+            checkBoxStartBeat.setSelected(false);
+        }
     }
 
     void setVisibleImage() {

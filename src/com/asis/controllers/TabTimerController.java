@@ -32,6 +32,16 @@ public class TabTimerController extends TabController {
     private ImageViewPane viewPane = new ImageViewPane();
     private AsisCenteredArc asisCenteredArc = new AsisCenteredArc();
 
+    @FXML private TextField goToSecondsTextField, totalTimerField, textFieldBeatPitch, textFieldBeatSpeed;
+    @FXML private ColorPicker textColorPicker, textOutlineColorPicker;
+    @FXML private VBox timerIconControllerBox;
+    @FXML private StackPane timerStackPane;
+    @FXML private TextArea timerTextArea, textTextArea;
+    @FXML private HBox container;
+    @FXML private CheckBox checkBoxStopBeat, checkBoxStartBeat;
+    @FXML private Label warningLabel;
+    @FXML private TreeView<String> objectTree;
+
     public void initialize() {
         timerTextArea.setStyle("outline-color: "+outlineColor+"; fill-color: "+fillColor+";");
 
@@ -313,9 +323,35 @@ public class TabTimerController extends TabController {
 
         JSONObject textObject = story().getTimerLineData(sceneId, "line"+onSecond);
 
-        updateComponents(textObject);
+        if (textObject != null) { ifStatements(textObject); }
+
+        beatConfiguration(textObject);
 
         setLockTextAreaFunctionality(false);
+    }
+
+    private void ifStatements(JSONObject textObject) {
+        if (textObject.has("fillColor")) {
+            textColorPicker.setValue(Color.web(textObject.getString("fillColor")));
+        }
+
+        if (textObject.has("outlineColor")) {
+            textOutlineColorPicker.setValue(Color.web(textObject.getString("outlineColor")));
+        }
+
+        if (textObject.has("text")) {
+            String text = textObject.getString("text").replaceAll("#", "\n");
+            timerTextArea.setText(text);
+        }
+    }
+
+    private void beatConfiguration(JSONObject textObject) {
+
+        beatProperties(textObject, checkBoxStartBeat, "startBeat");
+        beatProperties(textObject, checkBoxStopBeat, "stopBeat");
+
+        changeBeat(textObject, textFieldBeatSpeed, "changeBeatSpeed");
+        changeBeat(textObject, textFieldBeatPitch, "changeBeatPitch");
     }
 
     private void handelSecondsOverTotal() {
