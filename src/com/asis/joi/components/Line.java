@@ -1,11 +1,12 @@
 package com.asis.joi.components;
 
+import com.asis.joi.JOISystemInterface;
 import org.json.JSONArray;
 import org.json.JSONObject;
 
 import java.io.File;
 
-public class Line {
+public class Line implements JOISystemInterface {
     private String fillColor, outlineColor, text;
     private File lineImage;
     private int lineNumber; //This is only applicable for the timers lines
@@ -30,6 +31,11 @@ public class Line {
         if(getLineImage() != null) object.put("lineImage", getLineImage().getName());
 
         return new JSONArray().put(object);
+    }
+
+    @Override
+    public void setDataFromJson(JSONObject jsonObject) {
+
     }
 
     @Override

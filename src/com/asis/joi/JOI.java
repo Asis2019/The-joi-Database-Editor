@@ -6,7 +6,7 @@ import org.json.JSONObject;
 
 import java.util.ArrayList;
 
-public class JOI {
+public class JOI implements JOISystemInterface {
     private int sceneIdCounter = 0;
     private ArrayList<Scene> sceneArrayList = new ArrayList<>();
 
@@ -47,6 +47,15 @@ public class JOI {
             }
         }
         return null;
+    }
+
+    @Override
+    public void setDataFromJson(JSONObject jsonObject) {
+        JSONArray array = jsonObject.getJSONArray("JOI");
+        for(int i=0; i<array.length(); i++) {
+            addNewScene();
+            getSceneArrayList().get(i).setDataFromJson(array.getJSONObject(i));
+        }
     }
 
     @Override

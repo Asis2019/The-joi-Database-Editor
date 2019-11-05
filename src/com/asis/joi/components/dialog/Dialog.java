@@ -1,10 +1,12 @@
 package com.asis.joi.components.dialog;
 
+import com.asis.joi.JOISystemInterface;
 import org.json.JSONArray;
+import org.json.JSONObject;
 
 import java.util.ArrayList;
 
-public class Dialog {
+public class Dialog implements JOISystemInterface {
     private ArrayList<DialogOption> optionArrayList = new ArrayList<>();
 
 
@@ -22,6 +24,16 @@ public class Dialog {
         }
 
         return arrayOfOptions;
+    }
+
+    @Override
+    public void setDataFromJson(JSONObject jsonObject) {
+        //set dialog options
+        int i = 0;
+        while (jsonObject.has("option"+i)) {
+            addDialogOption();
+            getOptionArrayList().get(i).setDataFromJson(jsonObject.getJSONArray("option"+i).getJSONObject(0));
+        }
     }
 
     @Override

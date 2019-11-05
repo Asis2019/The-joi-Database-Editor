@@ -8,12 +8,13 @@ import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.StandardCopyOption;
 
+import static com.asis.utilities.AsisUtils.deleteFolder;
+
 public class JOIPackage {
     private String packageLanguageCode = "en";
     private JOI joi = new JOI();
     private MetaData metaData = new MetaData();
-
-    //TODO add import method to create full joi and metadata objects
+    
     public boolean exportPackageAsFiles(File exportDirectory) {
         try {
             //Export json files to export directory
@@ -38,6 +39,60 @@ public class JOIPackage {
             return true;
         } catch (IOException e) {
             AsisUtils.errorDialogWindow(e);
+            return false;
+        }
+    }
+
+    public boolean exportPackageAsZip(File zipFile) {
+        try {
+            //Create temporary folder
+            File temporaryDirectory = new File(zipFile.getParent() + "\\tmp");
+
+            //Delete contents of/and folder if present
+            if (temporaryDirectory.isDirectory()) AsisUtils.deleteFolder(temporaryDirectory);
+
+            //Make folder and begin process
+            if (temporaryDirectory.mkdir()) {
+                //Do normal export to temporary directory
+                exportPackageAsFiles(temporaryDirectory);
+
+                //Compress temporary folder to zip file
+                AsisUtils.writeDirectoryToZip(temporaryDirectory, zipFile);
+
+                //Delete temporary folder
+                deleteFolder(temporaryDirectory);
+            }
+
+            //Process completed successfully;
+            return true;
+        } catch (IOException e) {
+            AsisUtils.errorDialogWindow(e);
+            return false;
+        }
+    }
+
+    public boolean importPackageFromDirectory(File importDirectory) {
+        try {
+            //Start loading chain for joi
+            File joiFile = new File(importDirectory, String.format("joi_text_%s.json", getPackageLanguageCode()));
+            if(joiFile.exists()) {
+                getJoi().setDataFromJson(AsisUtils.readJsonFromFile(joiFile));
+            }
+
+            //Initiate loading for metaData
+            File metaDataFile = new File(importDirectory, String.format("info_%s.json", getPackageLanguageCode()));
+            if(metaDataFile.exists()) {
+                //Set meta data icon
+                File meteDataIcon = new File(importDirectory, "joi_icon.png");
+                if(meteDataIcon.exists()) getMetaData().setJoiIcon(meteDataIcon);
+
+                //Tell metadata to load variables from json
+                getMetaData().setDataFromJson(AsisUtils.readJsonFromFile(metaDataFile).getJSONArray("JOI METADATA").getJSONObject(0));
+            }
+
+            return true;
+        } catch (NullPointerException e) {
+            e.printStackTrace();
             return false;
         }
     }

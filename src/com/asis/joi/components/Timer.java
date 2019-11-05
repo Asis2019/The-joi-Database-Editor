@@ -1,10 +1,11 @@
 package com.asis.joi.components;
 
+import com.asis.joi.JOISystemInterface;
 import org.json.JSONObject;
 
 import java.util.ArrayList;
 
-public class Timer {
+public class Timer implements JOISystemInterface {
 
     private int totalTime;
     private ArrayList<Line> lineArrayList = new ArrayList<>();
@@ -36,6 +37,24 @@ public class Timer {
             }
         }
         return null;
+    }
+
+    @Override
+    public void setDataFromJson(JSONObject jsonObject) {
+        //Set totalTime
+        if (jsonObject.has("totalTime")) {
+            setTotalTime(jsonObject.getInt("totalTime"));
+        }
+
+        //set lines
+        for(int i=0; i<jsonObject.names().length(); i++) {
+            String workingKey = jsonObject.names().getString(i);
+            if(workingKey.matches("^line")) {
+                int lineSecond = workingKey.charAt(workingKey.length()-1);
+                addNewLine(lineSecond);
+                getLine(lineSecond).setDataFromJson(jsonObject.getJSONArray(workingKey).getJSONObject(0));
+            }
+        }
     }
 
     @Override

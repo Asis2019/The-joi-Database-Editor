@@ -1,22 +1,13 @@
 package com.asis.joi.components;
 
+import com.asis.joi.JOISystemInterface;
 import org.json.JSONArray;
 import org.json.JSONObject;
 
-public class Transition {
-    private String fadeColor, transitionTextColor, transitionTextOutlineColor, transitionText;
-    private int waitTime;
-    private double fadeSpeed;
-
-    public Transition() {
-        this("#ffffff", "#000000", 0, 0.02);
-    }
-    public Transition(String transitionTextColor, String transitionTextOutlineColor, int waitTime, double fadeSpeed) {
-        setTransitionTextColor(transitionTextColor);
-        setTransitionTextOutlineColor(transitionTextOutlineColor);
-        setWaitTime(waitTime);
-        setFadeSpeed(fadeSpeed);
-    }
+public class Transition implements JOISystemInterface {
+    private String fadeColor, transitionTextColor="#ffffff", transitionTextOutlineColor="#000000", transitionText;
+    private int waitTime = 0;
+    private double fadeSpeed = 0.02;
 
     public JSONArray getTransitionAsJson() {
         JSONObject data = new JSONObject();
@@ -29,6 +20,39 @@ public class Transition {
 
         JSONArray transitionArray = new JSONArray();
         return transitionArray.put(data);
+    }
+
+    @Override
+    public void setDataFromJson(JSONObject jsonObject) {
+        //Set fade color
+        if (jsonObject.has("fadeColor")) {
+            setFadeColor(jsonObject.getString("fadeColor"));
+        }
+
+        //Set transitionTextColor
+        if (jsonObject.has("transitionTextColor")) {
+            setTransitionTextColor(jsonObject.getString("transitionTextColor"));
+        }
+
+        //Set transitionTextOutlineColor
+        if (jsonObject.has("transitionTextOutlineColor")) {
+            setTransitionTextOutlineColor(jsonObject.getString("transitionTextOutlineColor"));
+        }
+
+        //Set transitionText
+        if (jsonObject.has("transitionText")) {
+            setTransitionText(jsonObject.getString("transitionText"));
+        }
+
+        //Set waitTime
+        if (jsonObject.has("waitTime")) {
+            setWaitTime(jsonObject.getInt("waitTime"));
+        }
+
+        //Set fadeSpeed
+        if (jsonObject.has("fadeSpeed")) {
+            setFadeSpeed(jsonObject.getDouble("fadeSpeed"));
+        }
     }
 
     @Override
