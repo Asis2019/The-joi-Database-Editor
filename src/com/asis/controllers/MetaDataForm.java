@@ -211,7 +211,7 @@ public class MetaDataForm {
 
             if (!titleTextField.getText().equals("") || !preparationsTextField.getText().equals("")|| !displayedFetishesTextField.getText().equals("") || iconFile != null
                     || !joiIdTextField.getText().equals("") || !fetishesArray[0].equals("") || !equipmentArray[0].equals("") || !charactersArray[0].equals("")) {
-                Controller.getInstance().setNewChanges();
+                Controller.getInstance().setNewChanges(true);
             }
 
             //Close window

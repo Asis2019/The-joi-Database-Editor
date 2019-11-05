@@ -204,7 +204,7 @@ public class SceneNode extends Region {
                 inputConnection.setButtonColor("#63c763ff");
             }
 
-            Controller.getInstance().setNewChanges();
+            Controller.getInstance().setNewChanges(true);
         });
 
         badEndProperty().addListener((observableValue, aBoolean, t1) -> {
@@ -230,7 +230,7 @@ public class SceneNode extends Region {
                 inputConnection.setButtonColor("#63c763ff");
             }
 
-            Controller.getInstance().setNewChanges();
+            Controller.getInstance().setNewChanges(true);
         });
     }
 

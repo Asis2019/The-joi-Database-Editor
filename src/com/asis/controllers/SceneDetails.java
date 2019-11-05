@@ -101,7 +101,7 @@ public class SceneDetails {
             }
 
             tabNormalOperationController.setVisibleImage();
-            Controller.getInstance().setNewChanges();
+            Controller.getInstance().setNewChanges(true);
         }
     }
 
@@ -120,7 +120,7 @@ public class SceneDetails {
             effectTabs.getTabs().add(1, timerTab);
 
             menuItemAddTimer.setDisable(true);
-            Controller.getInstance().setNewChanges();
+            Controller.getInstance().setNewChanges(true);
         } catch (IOException e) {
             e.printStackTrace();
         }
@@ -143,7 +143,7 @@ public class SceneDetails {
             menuItemAddTransition.setDisable(true);
 
             story.removeDataFromScene(sceneId, "noFade");
-            Controller.getInstance().setNewChanges();
+            Controller.getInstance().setNewChanges(true);
         } catch (IOException e) {
             e.printStackTrace();
         }
@@ -164,7 +164,7 @@ public class SceneDetails {
             effectTabs.getTabs().add(1, dialogOptionsTab);
 
             menuItemAddDialog.setDisable(true);
-            Controller.getInstance().setNewChanges();
+            Controller.getInstance().setNewChanges(true);
         } catch (IOException e) {
             e.printStackTrace();
         }
@@ -175,20 +175,20 @@ public class SceneDetails {
 
         story.removeTransition(sceneId);
         story.addDataToScene(sceneId, "noFade", true);
-        Controller.getInstance().setNewChanges();
+        Controller.getInstance().setNewChanges(true);
     }
 
     private void actionTimerClosed() {
         menuItemAddTimer.setDisable(false);
         story.removeTimer(sceneId);
-        Controller.getInstance().setNewChanges();
+        Controller.getInstance().setNewChanges(true);
     }
 
     private void actionDialogClosed() {
         menuItemAddDialog.setDisable(false);
         sceneNode.removeAllOutputConnection();
         story.removeDialog(sceneId);
-        Controller.getInstance().setNewChanges();
+        Controller.getInstance().setNewChanges(true);
     }
 
     private void actionDialogCloseRequested(Event event) {

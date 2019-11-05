@@ -53,7 +53,7 @@ public final class Story {
             object.put("sceneId", sceneId);
             object.put("sceneTitle", sceneTitle);
             getStoryDataJson().getJSONArray("JOI").put(object);
-            Controller.getInstance().setNewChanges();
+            Controller.getInstance().setNewChanges(true);
         } else {
             JSONArray jsonArray = new JSONArray();
             getStoryDataJson().put("JOI", jsonArray);
@@ -66,7 +66,7 @@ public final class Story {
         for(int i=0; i < amountOfScenes; i++) {
             if(storyDataJson.getJSONArray("JOI").getJSONObject(i).getInt("sceneId") == sceneId) {
                 storyDataJson.getJSONArray("JOI").remove(i);
-                Controller.getInstance().setNewChanges();
+                Controller.getInstance().setNewChanges(true);
                 break;
             }
         }
@@ -78,7 +78,7 @@ public final class Story {
             if(storyDataJson.getJSONArray("JOI").getJSONObject(i).getInt("sceneId") == sceneId) {
                 if(storyDataJson.getJSONArray("JOI").getJSONObject(i).has("transition")) {
                     storyDataJson.getJSONArray("JOI").getJSONObject(i).remove("transition");
-                    Controller.getInstance().setNewChanges();
+                    Controller.getInstance().setNewChanges(true);
                 }
             }
         }
@@ -90,7 +90,7 @@ public final class Story {
             if(storyDataJson.getJSONArray("JOI").getJSONObject(i).getInt("sceneId") == sceneId) {
                 if(storyDataJson.getJSONArray("JOI").getJSONObject(i).has(key)) {
                     storyDataJson.getJSONArray("JOI").getJSONObject(i).remove(key);
-                    Controller.getInstance().setNewChanges();
+                    Controller.getInstance().setNewChanges(true);
                 }
             }
         }
@@ -115,7 +115,7 @@ public final class Story {
             if(storyDataJson.getJSONArray("JOI").getJSONObject(i).has("sceneId")) {
                 if (storyDataJson.getJSONArray("JOI").getJSONObject(i).getInt("sceneId") == sceneId) {
                     storyDataJson.getJSONArray("JOI").getJSONObject(i).put(key, value);
-                    Controller.getInstance().setNewChanges();
+                    Controller.getInstance().setNewChanges(true);
                 }
             } else {
                 storyDataJson.getJSONArray("JOI").getJSONObject(i).put("sceneId", sceneId);
@@ -131,7 +131,7 @@ public final class Story {
                 if (storyDataJson.getJSONArray("JOI").getJSONObject(i).getInt("sceneId") == sceneId) {
                     if(storyDataJson.getJSONArray("JOI").getJSONObject(i).has("gotoSceneInRange")) {
                         storyDataJson.getJSONArray("JOI").getJSONObject(i).getJSONArray("gotoSceneInRange").put(sceneGotoId);
-                        Controller.getInstance().setNewChanges();
+                        Controller.getInstance().setNewChanges(true);
                     } else {
                         JSONArray array = new JSONArray();
                         array.put(sceneGotoId);
@@ -152,7 +152,7 @@ public final class Story {
                             int arrayValue = storyDataJson.getJSONArray("JOI").getJSONObject(i).getJSONArray("gotoSceneInRange").getInt(ii);
                             if(arrayValue == removeIdValue) {
                                 storyDataJson.getJSONArray("JOI").getJSONObject(i).getJSONArray("gotoSceneInRange").remove(ii);
-                                Controller.getInstance().setNewChanges();
+                                Controller.getInstance().setNewChanges(true);
                             }
                         }
                     } else {
@@ -205,7 +205,7 @@ public final class Story {
                 }
             }
         }
-        Controller.getInstance().setNewChanges();
+        Controller.getInstance().setNewChanges(true);
     }
 
     public void addDataToLineObject(int sceneId, int lineNumber, String key, Object value) {
@@ -215,7 +215,7 @@ public final class Story {
                 storyDataJson.getJSONArray("JOI").getJSONObject(i).getJSONArray("line"+lineNumber).getJSONObject(0).put(key, value);
             }
         }
-        Controller.getInstance().setNewChanges();
+        Controller.getInstance().setNewChanges(true);
     }
 
     public void removeDataFromLineObject(int sceneId, int lineNumber, String key) {
@@ -225,7 +225,7 @@ public final class Story {
                 storyDataJson.getJSONArray("JOI").getJSONObject(i).getJSONArray("line"+lineNumber).getJSONObject(0).remove(key);
             }
         }
-        Controller.getInstance().setNewChanges();
+        Controller.getInstance().setNewChanges(true);
     }
 
     public void addDataToTransition(int sceneId, String key, Object value) {
@@ -246,7 +246,7 @@ public final class Story {
                 }
             }
         }
-        Controller.getInstance().setNewChanges();
+        Controller.getInstance().setNewChanges(true);
     }
 
     public JSONObject getTransitionData(int sceneId) {
@@ -319,7 +319,7 @@ public final class Story {
                 }
             }
         }
-        Controller.getInstance().setNewChanges();
+        Controller.getInstance().setNewChanges(true);
     }
 
     public void removeDataFromTimerLineObject(int sceneId, String lineIndex, String key) {
@@ -327,7 +327,7 @@ public final class Story {
         if(lineObject != null) {
             lineObject.remove(key);
         }
-        Controller.getInstance().setNewChanges();
+        Controller.getInstance().setNewChanges(true);
     }
 
     public void removeDataFromTimer(int sceneId, String lineIndex) {
@@ -335,7 +335,7 @@ public final class Story {
         if(timerObject != null && timerObject.has(lineIndex)) {
             timerObject.remove(lineIndex);
         }
-        Controller.getInstance().setNewChanges();
+        Controller.getInstance().setNewChanges(true);
     }
 
     public JSONObject getTimerLineData(int sceneId, String lineIndex) {
@@ -353,7 +353,7 @@ public final class Story {
             if(storyDataJson.getJSONArray("JOI").getJSONObject(i).getInt("sceneId") == sceneId) {
                 if(storyDataJson.getJSONArray("JOI").getJSONObject(i).has("timer")) {
                     storyDataJson.getJSONArray("JOI").getJSONObject(i).remove("timer");
-                    Controller.getInstance().setNewChanges();
+                    Controller.getInstance().setNewChanges(true);
                 }
             }
         }
@@ -432,7 +432,7 @@ public final class Story {
             if(storyDataJson.getJSONArray("JOI").getJSONObject(i).getInt("sceneId") == sceneId) {
                 if(storyDataJson.getJSONArray("JOI").getJSONObject(i).has("dialogChoice")) {
                     storyDataJson.getJSONArray("JOI").getJSONObject(i).remove("dialogChoice");
-                    Controller.getInstance().setNewChanges();
+                    Controller.getInstance().setNewChanges(true);
                 }
             }
         }
@@ -442,7 +442,7 @@ public final class Story {
         JSONObject dialogObject = getDialogData(sceneId);
         if(dialogObject != null && dialogObject.has("option"+optionNumber)) {
             dialogObject.remove("option"+optionNumber);
-            Controller.getInstance().setNewChanges();
+            Controller.getInstance().setNewChanges(true);
         }
     }
 
@@ -479,7 +479,7 @@ public final class Story {
             Objects.requireNonNull(getSceneObject(sceneId)).put("dialogChoice", wrapper);
             addDialogOptionText(sceneId, optionText, optionNumber);
         }
-        Controller.getInstance().setNewChanges();
+        Controller.getInstance().setNewChanges(true);
     }
 
     public void addDialogOptionData(int sceneId, int optionNumber, String key, Object value) {
@@ -503,7 +503,7 @@ public final class Story {
             Objects.requireNonNull(getSceneObject(sceneId)).put("dialogChoice", wrapper);
             addDialogOptionData(sceneId, optionNumber, key, value);
         }
-        Controller.getInstance().setNewChanges();
+        Controller.getInstance().setNewChanges(true);
     }
 
     public void removeDialogOptionData(int sceneId, int optionNumber, String key) {
@@ -519,7 +519,7 @@ public final class Story {
                 }
             }
         }
-        Controller.getInstance().setNewChanges();
+        Controller.getInstance().setNewChanges(true);
     }
 
     public void addValueToDialogOptionGotoRange(int sceneId, int optionNumber, int sceneGotoId) {
@@ -527,7 +527,7 @@ public final class Story {
         if(dialogData != null && dialogData.has("option"+optionNumber)) {
             if(dialogData.getJSONArray("option"+optionNumber).getJSONObject(0).has("gotoSceneInRange")) {
                 dialogData.getJSONArray("option"+optionNumber).getJSONObject(0).getJSONArray("gotoSceneInRange").put(sceneGotoId);
-                Controller.getInstance().setNewChanges();
+                Controller.getInstance().setNewChanges(true);
             } else {
                 JSONArray array = new JSONArray();
                 array.put(sceneGotoId);
@@ -544,7 +544,7 @@ public final class Story {
                     int arrayValue = dialogData.getJSONArray("option"+optionNumber).getJSONObject(0).getJSONArray("gotoSceneInRange").getInt(ii);
                     if(arrayValue == removeIdValue) {
                         dialogData.getJSONArray("option"+optionNumber).getJSONObject(0).getJSONArray("gotoSceneInRange").remove(ii);
-                        Controller.getInstance().setNewChanges();
+                        Controller.getInstance().setNewChanges(true);
                     }
                 }
             } else {

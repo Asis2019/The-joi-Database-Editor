@@ -183,7 +183,7 @@ public class SceneNodeMainController {
 
                 //Check if after removing there are still multiple lines
                 if (getTotalLinesConnectedToOutput(outputConnection) > 1) {
-                    Controller.getInstance().setNewChanges();
+                    Controller.getInstance().setNewChanges(true);
                     return;
                 }
 
@@ -204,7 +204,7 @@ public class SceneNodeMainController {
 
                 //Check if after removing there are still multiple lines
                 if (getTotalLinesConnectedToOutput(outputConnection) > 1) {
-                    Controller.getInstance().setNewChanges();
+                    Controller.getInstance().setNewChanges(true);
                     return;
                 }
 
@@ -226,7 +226,7 @@ public class SceneNodeMainController {
                 Story.getInstance().removeDataFromScene(outputConnection.getParentSceneId(), "gotoScene");
             }
         }
-        Controller.getInstance().setNewChanges();
+        Controller.getInstance().setNewChanges(true);
     }
 
     private void addConnectionToStory(AsisConnectionButton outputConnection, AsisConnectionButton inputConnection) {
@@ -266,7 +266,7 @@ public class SceneNodeMainController {
                 Story.getInstance().addDataToScene(outputConnection.getParentSceneId(), "gotoScene", inputConnection.getParentSceneId());
             }
         }
-        Controller.getInstance().setNewChanges();
+        Controller.getInstance().setNewChanges(true);
     }
 
     void mouseMoved(MouseEvent mouseEvent) {
