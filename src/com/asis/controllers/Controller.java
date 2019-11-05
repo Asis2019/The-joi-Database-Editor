@@ -71,7 +71,7 @@ public class Controller {
 
     public void initialize() {
         instance = this;
-        loadProject = new LoadProject(numberOfScenes, story, sceneNodeMainController);
+        loadProject = new LoadProject(numberOfScenes, story, sceneNodeMainController, anchorPane);
         sceneNodeMainController = new SceneNodeMainController();
         sceneNodeMainController.setPane(anchorPane);
         sceneNodeMainController.setScrollPane(scrollPane);
