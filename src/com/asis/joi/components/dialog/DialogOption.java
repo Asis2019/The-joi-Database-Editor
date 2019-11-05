@@ -1,4 +1,4 @@
-package com.asis.joi.dialog;
+package com.asis.joi.components.dialog;
 
 import org.json.JSONArray;
 import org.json.JSONObject;

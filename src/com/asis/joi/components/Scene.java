@@ -1,6 +1,6 @@
-package com.asis.joi;
+package com.asis.joi.components;
 
-import com.asis.joi.dialog.Dialog;
+import com.asis.joi.components.dialog.Dialog;
 import org.json.JSONObject;
 
 import java.io.File;
@@ -48,11 +48,13 @@ public class Scene {
         sceneObject.put("gotoScene", getGotoScene());
         sceneObject.put("layoutXPosition", getLayoutXPosition());
         sceneObject.put("layoutYPosition", getLayoutYPosition());
+
         if(isNoFade()) sceneObject.put("noFade", true);
         if(getSceneImage() != null) sceneObject.put("sceneImage", getSceneImage().getName());
         if(getTimer() != null) sceneObject.put("timer", getTimer().getTimerAsJson());
         if(getDialog() != null) sceneObject.put("dialogChoice", getDialog().getDialogAsJson());
         if(getTransition() != null) sceneObject.put("transition", getTransition().getTransitionAsJson());
+
         for(int i=0; i<getLineArrayList().size(); i++) {
             sceneObject.put("line"+i, getLineArrayList().get(i).getLineAsJson());
         }
@@ -63,6 +65,10 @@ public class Scene {
     @Override
     public String toString() {
         return getSceneAsJson().toString(4);
+    }
+
+    private static boolean nullCheck(Object typeCheck, Object valueCheck) {
+        return typeCheck == null || valueCheck == null;
     }
 
     //Getters and Setters
@@ -119,7 +125,7 @@ public class Scene {
         return timer;
     }
     public boolean setTimer(Timer timer) {
-        if(getTimer() == null || timer == null) {
+        if(nullCheck(getTimer(), timer)) {
             this.timer = timer;
             return true;
         }
@@ -130,7 +136,7 @@ public class Scene {
         return dialog;
     }
     public boolean setDialog(Dialog dialog) {
-        if(getDialog() == null || dialog == null) {
+        if(nullCheck(getDialog(), dialog)) {
             this.dialog = dialog;
             return true;
         }
@@ -141,7 +147,7 @@ public class Scene {
         return transition;
     }
     public boolean setTransition(Transition transition) {
-        if(getTransition() == null || transition == null) {
+        if(nullCheck(getTransition(), transition)) {
             if (transition == null) setNoFade(true);
             else setNoFade(false);
 

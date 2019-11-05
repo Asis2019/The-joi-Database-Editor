@@ -63,15 +63,11 @@ public class AsisUtils {
         return fileToRename.renameTo(new File(newPath));
     }
 
-    public static void writeJsonToFile(JSONObject jsonObject, String fileName, File saveLocation) {
-        try {
-            FileWriter fileWriter = new FileWriter(saveLocation.toPath() + File.separator + fileName);
-            fileWriter.write(jsonObject.toString(4));
-            fileWriter.flush();
-            fileWriter.close();
-        } catch (IOException e) {
-            errorDialogWindow(e);
-        }
+    public static void writeJsonToFile(JSONObject jsonObject, String fileName, File saveLocation) throws IOException {
+        FileWriter fileWriter = new FileWriter(saveLocation.toPath() + File.separator + fileName);
+        fileWriter.write(jsonObject.toString(4));
+        fileWriter.flush();
+        fileWriter.close();
     }
 
     public static JSONObject readJsonFromFile(File file) {

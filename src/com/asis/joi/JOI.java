@@ -1,5 +1,6 @@
 package com.asis.joi;
 
+import com.asis.joi.components.Scene;
 import org.json.JSONArray;
 import org.json.JSONObject;
 
@@ -54,10 +55,10 @@ public class JOI {
     }
 
     //Getters and Setters
-    private ArrayList<Scene> getSceneArrayList() {
+    public ArrayList<Scene> getSceneArrayList() {
         return sceneArrayList;
     }
-    private void setSceneArrayList(ArrayList<Scene> sceneArrayList) {
+    public void setSceneArrayList(ArrayList<Scene> sceneArrayList) {
         this.sceneArrayList = sceneArrayList;
     }
 

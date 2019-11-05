@@ -1,4 +1,4 @@
-package com.asis.joi;
+package com.asis.joi.components;
 
 import org.json.JSONObject;
 

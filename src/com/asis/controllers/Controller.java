@@ -699,8 +699,12 @@ public class Controller {
                 story.addMetadataIcon(new File(Objects.requireNonNull(url).getPath()));
             }
 
-            AsisUtils.writeJsonToFile(story.getMetadataObject(), "info_en.json", file);
-            AsisUtils.writeJsonToFile(story.getStoryDataJson(), "joi_text_en.json", file);
+            try {
+                AsisUtils.writeJsonToFile(story.getMetadataObject(), "info_en.json", file);
+                AsisUtils.writeJsonToFile(story.getStoryDataJson(), "joi_text_en.json", file);
+            } catch (IOException e) {
+                errorDialogWindow(e);
+            }
 
             //Copy image to project directory
             for (File file1 : story.getImagesArray()) {
@@ -745,8 +749,12 @@ public class Controller {
             boolean result = tempFile.mkdir();
 
             if(result) {
-                AsisUtils.writeJsonToFile(story.getMetadataObject(), "info_en.json", tempFile);
-                AsisUtils.writeJsonToFile(story.getStoryDataJson(), "joi_text_en.json", tempFile);
+                try {
+                    AsisUtils.writeJsonToFile(story.getMetadataObject(), "info_en.json", tempFile);
+                    AsisUtils.writeJsonToFile(story.getStoryDataJson(), "joi_text_en.json", tempFile);
+                } catch (IOException e) {
+                    errorDialogWindow(e);
+                }
 
                 //Copy image to project directory
                 for (File file1 : story.getImagesArray()) {
