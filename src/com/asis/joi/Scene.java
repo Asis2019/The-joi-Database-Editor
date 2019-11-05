@@ -65,6 +65,10 @@ public class Scene {
         return getSceneAsJson().toString(4);
     }
 
+    private static boolean checkInput(Object typeCheck, Object valueCheck) {
+        return typeCheck == null || valueCheck == null;
+    }
+
     //Getters and Setters
     public int getSceneId() {
         return sceneId;
@@ -119,7 +123,7 @@ public class Scene {
         return timer;
     }
     public boolean setTimer(Timer timer) {
-        if(getTimer() == null || timer == null) {
+        if(checkInput(getTimer(), timer)) {
             this.timer = timer;
             return true;
         }
@@ -130,7 +134,7 @@ public class Scene {
         return dialog;
     }
     public boolean setDialog(Dialog dialog) {
-        if(getDialog() == null || dialog == null) {
+        if(checkInput(getDialog(), dialog)) {
             this.dialog = dialog;
             return true;
         }
@@ -141,7 +145,7 @@ public class Scene {
         return transition;
     }
     public boolean setTransition(Transition transition) {
-        if(getTransition() == null || transition == null) {
+        if(checkInput(getTransition(), transition)) {
             if (transition == null) setNoFade(true);
             else setNoFade(false);
 
