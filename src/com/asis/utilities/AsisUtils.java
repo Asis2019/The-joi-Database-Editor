@@ -4,12 +4,15 @@ import com.asis.controllers.Controller;
 import javafx.scene.Node;
 import javafx.scene.Parent;
 import javafx.scene.paint.Color;
+import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.io.*;
 import java.nio.file.Files;
 import java.util.ArrayList;
+import java.util.zip.ZipEntry;
+import java.util.zip.ZipOutputStream;
 
 public class AsisUtils {
 
@@ -63,15 +66,11 @@ public class AsisUtils {
         return fileToRename.renameTo(new File(newPath));
     }
 
-    public static void writeJsonToFile(JSONObject jsonObject, String fileName, File saveLocation) {
-        try {
-            FileWriter fileWriter = new FileWriter(saveLocation.toPath() + File.separator + fileName);
-            fileWriter.write(jsonObject.toString(4));
-            fileWriter.flush();
-            fileWriter.close();
-        } catch (IOException e) {
-            errorDialogWindow(e);
-        }
+    public static void writeJsonToFile(JSONObject jsonObject, String fileName, File saveLocation) throws IOException {
+        FileWriter fileWriter = new FileWriter(saveLocation.toPath() + File.separator + fileName);
+        fileWriter.write(jsonObject.toString(4));
+        fileWriter.flush();
+        fileWriter.close();
     }
 
     public static JSONObject readJsonFromFile(File file) {
@@ -82,6 +81,26 @@ public class AsisUtils {
             errorDialogWindow(e);
         }
         return null;
+}
+
+    public static void writeDirectoryToZip(File dataDirectory, File zipFile) throws IOException {
+        byte[] buffer = new byte[1024];
+        ZipOutputStream zipOutputStream = new ZipOutputStream(new FileOutputStream(zipFile));
+        File[] files = dataDirectory.listFiles();
+
+        if (files != null) {
+            for (File value : files) {
+                FileInputStream fileInputStream = new FileInputStream(value);
+                zipOutputStream.putNextEntry(new ZipEntry(value.getName()));
+                int length;
+                while ((length = fileInputStream.read(buffer)) > 0) {
+                    zipOutputStream.write(buffer, 0, length);
+                }
+                zipOutputStream.closeEntry();
+                fileInputStream.close();
+            }
+        }
+        zipOutputStream.close();
     }
 
     public static boolean deleteFolder(File folder) {
@@ -122,5 +141,13 @@ public class AsisUtils {
         } catch (IOException e) {
             return "An error occurred while getting text file \n"+e.getMessage();
         }
+    }
+
+    public static ArrayList<Integer> convertJSONArrayToList(JSONArray jsonArray) {
+        ArrayList<Integer> list = new ArrayList<>();
+        for(int i=0; i<jsonArray.length(); i++) {
+            list.add(jsonArray.getInt(i));
+        }
+        return list;
     }
 }
