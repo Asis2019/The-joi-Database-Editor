@@ -32,7 +32,6 @@ public class Scene implements JOISystemInterface {
         setLayoutXPosition(layoutXPosition);
         setLayoutYPosition(layoutYPosition);
         setSceneTitle(sceneTitle);
-        //setTransition(new Transition());
     }
 
     public void addNewLine() {
@@ -71,7 +70,7 @@ public class Scene implements JOISystemInterface {
     }
 
     @Override
-    public void setDataFromJson(JSONObject object) {
+    public void setDataFromJson(JSONObject object, File importDirectory) {
 
         //Set scene id
         if (object.has("sceneId")) {
@@ -82,24 +81,24 @@ public class Scene implements JOISystemInterface {
         }
 
         //Set other fields
-        setData(object.keys(), object);
+        setData(object.keys(), object, importDirectory);
 
         //set lines
         int i=0;
         while(object.has("line"+i)) {
             addNewLine();
-            getLineArrayList().get(i).setDataFromJson(object.getJSONArray("line" + i).getJSONObject(0));
+            getLineArrayList().get(i).setDataFromJson(object.getJSONArray("line" + i).getJSONObject(0), importDirectory);
             i++;
         }
     }
 
-    private void setData(Iterator<String> keys, JSONObject object) {
+    private void setData(Iterator<String> keys, JSONObject object, File importDirectory) {
         while (keys.hasNext()) {
-            setValueAccordingToKey(object, keys.next());
+            setValueAccordingToKey(object, keys.next(), importDirectory);
         }
     }
 
-    private void setValueAccordingToKey(JSONObject object, String key) {
+    private void setValueAccordingToKey(JSONObject object, String key, File importDirectory) {
         switch (key) {
             case "sceneTitle":
                 setSceneTitle(object.getString("sceneTitle"));
@@ -116,22 +115,22 @@ public class Scene implements JOISystemInterface {
                 setBadEnding(true);
                 break;
             case "sceneImage":
-                setSceneImage(new File(object.getString("sceneId")));
+                setSceneImage(new File(importDirectory.getPath()+"\\"+object.getString("sceneImage")));
                 break;
             case "noFade":
                 setNoFade(object.getBoolean("noFade"));
                 break;
             case "transition":
                 setTransition(new Transition());
-                getTransition().setDataFromJson(object.getJSONArray("transition").getJSONObject(0));
+                getTransition().setDataFromJson(object.getJSONArray("transition").getJSONObject(0), importDirectory);
                 break;
             case "timer":
                 setTimer(new Timer());
-                getTimer().setDataFromJson(object.getJSONArray("timer").getJSONObject(0));
+                getTimer().setDataFromJson(object.getJSONArray("timer").getJSONObject(0), importDirectory);
                 break;
             case "dialog":
                 setDialog(new Dialog());
-                getDialog().setDataFromJson(object.getJSONArray("dialog").getJSONObject(0));
+                getDialog().setDataFromJson(object.getJSONArray("dialog").getJSONObject(0), importDirectory);
                 break;
             case "gotoScene":
                 setGotoSceneArrayList(AsisUtils.convertJSONArrayToList(object.getJSONArray("gotoScene")));

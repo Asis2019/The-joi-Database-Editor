@@ -4,6 +4,7 @@ import com.asis.joi.JOISystemInterface;
 import org.json.JSONArray;
 import org.json.JSONObject;
 
+import java.io.File;
 import java.util.ArrayList;
 
 public class Dialog implements JOISystemInterface {
@@ -27,12 +28,12 @@ public class Dialog implements JOISystemInterface {
     }
 
     @Override
-    public void setDataFromJson(JSONObject jsonObject) {
+    public void setDataFromJson(JSONObject jsonObject, File importDirectory) {
         //set dialog options
         int i = 0;
         while (jsonObject.has("option"+i)) {
             addDialogOption();
-            getOptionArrayList().get(i).setDataFromJson(jsonObject.getJSONArray("option"+i).getJSONObject(0));
+            getOptionArrayList().get(i).setDataFromJson(jsonObject.getJSONArray("option"+i).getJSONObject(0), importDirectory);
         }
     }
 

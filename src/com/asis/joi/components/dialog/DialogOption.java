@@ -5,6 +5,7 @@ import com.asis.utilities.AsisUtils;
 import org.json.JSONArray;
 import org.json.JSONObject;
 
+import java.io.File;
 import java.util.ArrayList;
 
 public class DialogOption implements JOISystemInterface {
@@ -31,7 +32,7 @@ public class DialogOption implements JOISystemInterface {
     }
 
     @Override
-    public void setDataFromJson(JSONObject jsonObject) {
+    public void setDataFromJson(JSONObject jsonObject, File importDirectory) {
         //Set option text
         if(jsonObject.has("text")) {
             setOptionText(jsonObject.getString("text"));

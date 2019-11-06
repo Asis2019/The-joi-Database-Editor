@@ -3,6 +3,7 @@ package com.asis.joi.components;
 import com.asis.joi.JOISystemInterface;
 import org.json.JSONObject;
 
+import java.io.File;
 import java.util.ArrayList;
 
 public class Timer implements JOISystemInterface {
@@ -40,7 +41,7 @@ public class Timer implements JOISystemInterface {
     }
 
     @Override
-    public void setDataFromJson(JSONObject jsonObject) {
+    public void setDataFromJson(JSONObject jsonObject, File importDirectory) {
         //Set totalTime
         if (jsonObject.has("totalTime")) {
             setTotalTime(jsonObject.getInt("totalTime"));
@@ -52,7 +53,7 @@ public class Timer implements JOISystemInterface {
             if(workingKey.matches("^line")) {
                 int lineSecond = workingKey.charAt(workingKey.length()-1);
                 addNewLine(lineSecond);
-                getLine(lineSecond).setDataFromJson(jsonObject.getJSONArray(workingKey).getJSONObject(0));
+                getLine(lineSecond).setDataFromJson(jsonObject.getJSONArray(workingKey).getJSONObject(0), importDirectory);
             }
         }
     }

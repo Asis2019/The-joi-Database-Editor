@@ -34,7 +34,7 @@ public class MetaData implements JOISystemInterface{
     }
 
     @Override
-    public void setDataFromJson(JSONObject jsonObject) {
+    public void setDataFromJson(JSONObject jsonObject, File importDirectory) {
         //Set single normal fields
         setData(jsonObject.keys(), jsonObject);
 

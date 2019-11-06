@@ -11,10 +11,20 @@ import java.nio.file.StandardCopyOption;
 import static com.asis.utilities.AsisUtils.deleteFolder;
 
 public class JOIPackage {
+    private File packageDirectory;
     private String packageLanguageCode = "en";
     private JOI joi = new JOI();
     private MetaData metaData = new MetaData();
-    
+
+    public JOIPackage() {
+        this(new File("defaultWorkspace"));
+    }
+    public JOIPackage(File packageDirectory) {
+        if(!packageDirectory.exists()) packageDirectory.mkdir();
+
+        setPackageDirectory(packageDirectory);
+    }
+
     public boolean exportPackageAsFiles(File exportDirectory) {
         try {
             //Export json files to export directory
@@ -72,22 +82,25 @@ public class JOIPackage {
     }
 
     public boolean importPackageFromDirectory(File importDirectory) {
+        //set package directory to importLocation
+        setPackageDirectory(importDirectory);
+
         try {
             //Start loading chain for joi
             File joiFile = new File(importDirectory, String.format("joi_text_%s.json", getPackageLanguageCode()));
             if(joiFile.exists()) {
-                getJoi().setDataFromJson(AsisUtils.readJsonFromFile(joiFile));
+                getJoi().setDataFromJson(AsisUtils.readJsonFromFile(joiFile), importDirectory);
             }
 
             //Initiate loading for metaData
             File metaDataFile = new File(importDirectory, String.format("info_%s.json", getPackageLanguageCode()));
             if(metaDataFile.exists()) {
                 //Set meta data icon
-                File meteDataIcon = new File(importDirectory, "joi_icon.png");
-                if(meteDataIcon.exists()) getMetaData().setJoiIcon(meteDataIcon);
+                File metaDataIcon = new File(importDirectory, "joi_icon.png");
+                if(metaDataIcon.exists()) getMetaData().setJoiIcon(metaDataIcon);
 
                 //Tell metadata to load variables from json
-                getMetaData().setDataFromJson(AsisUtils.readJsonFromFile(metaDataFile).getJSONArray("JOI METADATA").getJSONObject(0));
+                getMetaData().setDataFromJson(AsisUtils.readJsonFromFile(metaDataFile).getJSONArray("JOI METADATA").getJSONObject(0), importDirectory);
             }
 
             return true;
@@ -117,5 +130,13 @@ public class JOIPackage {
     }
     public void setPackageLanguageCode(String packageLanguageCode) {
         this.packageLanguageCode = packageLanguageCode;
+    }
+
+    public File getPackageDirectory() {
+        return packageDirectory;
+    }
+
+    public void setPackageDirectory(File packageDirectory) {
+        this.packageDirectory = packageDirectory;
     }
 }

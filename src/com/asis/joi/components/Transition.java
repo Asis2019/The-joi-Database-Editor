@@ -4,6 +4,7 @@ import com.asis.joi.JOISystemInterface;
 import org.json.JSONArray;
 import org.json.JSONObject;
 
+import java.io.File;
 import java.util.Iterator;
 
 public class Transition implements JOISystemInterface {
@@ -25,7 +26,7 @@ public class Transition implements JOISystemInterface {
     }
 
     @Override
-    public void setDataFromJson(JSONObject jsonObject) {
+    public void setDataFromJson(JSONObject jsonObject, File importDirectory) {
         setData(jsonObject.keys(), jsonObject);
     }
 

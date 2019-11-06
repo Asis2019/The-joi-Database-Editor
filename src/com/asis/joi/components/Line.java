@@ -35,14 +35,14 @@ public class Line implements JOISystemInterface {
     }
 
     @Override
-    public void setDataFromJson(JSONObject jsonObject) {
+    public void setDataFromJson(JSONObject jsonObject, File importDirectory) {
         final Iterator<String> keys = jsonObject.keys();
         while (keys.hasNext()) {
-            setValueAccordingToKey(jsonObject, keys.next());
+            setValueAccordingToKey(jsonObject, keys.next(), importDirectory);
         }
     }
 
-    private void setValueAccordingToKey(JSONObject jsonObject, String key) {
+    private void setValueAccordingToKey(JSONObject jsonObject, String key, File importDirectory) {
         switch (key) {
             case "fillColor":
                 setFillColor(jsonObject.getString("fillColor"));
@@ -54,7 +54,7 @@ public class Line implements JOISystemInterface {
                 setText(jsonObject.getString("text"));
                 break;
             case "lineImage":
-                setLineImage(new File(jsonObject.getString("lineImage")));
+                setLineImage(new File(importDirectory.getPath()+"\\"+jsonObject.getString("lineImage")));
                 break;
         }
     }

@@ -4,6 +4,7 @@ import com.asis.joi.components.Scene;
 import org.json.JSONArray;
 import org.json.JSONObject;
 
+import java.io.File;
 import java.util.ArrayList;
 
 public class JOI implements JOISystemInterface {
@@ -50,11 +51,11 @@ public class JOI implements JOISystemInterface {
     }
 
     @Override
-    public void setDataFromJson(JSONObject jsonObject) {
+    public void setDataFromJson(JSONObject jsonObject, File importDirectory) {
         JSONArray array = jsonObject.getJSONArray("JOI");
         for(int i=0; i<array.length(); i++) {
             addNewScene();
-            getSceneArrayList().get(i).setDataFromJson(array.getJSONObject(i));
+            getSceneArrayList().get(i).setDataFromJson(array.getJSONObject(i), importDirectory);
         }
     }
 
