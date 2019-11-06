@@ -6,6 +6,7 @@ import org.json.JSONObject;
 import java.io.File;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Iterator;
 
 public class MetaData implements JOISystemInterface{
     private File joiIcon;
@@ -34,50 +35,42 @@ public class MetaData implements JOISystemInterface{
 
     @Override
     public void setDataFromJson(JSONObject jsonObject) {
-        //Set preparations
-        if(jsonObject.has("preparations")) {
-            setPreparations(jsonObject.getString("preparations"));
-        }
-
-        //Set name
-        if(jsonObject.has("name")) {
-            setName(jsonObject.getString("name"));
-        }
-
-        //Set joiId
-        if(jsonObject.has("joiId")) {
-            setJoiId(jsonObject.getString("joiId"));
-        }
-
-        //Set versionAdded
-        if(jsonObject.has("versionAdded")) {
-            setVersionAdded(jsonObject.getString("versionAdded"));
-        }
-
-        //Set displayedFetishes
-        if(jsonObject.has("displayedFetishes")) {
-            setDisplayedFetishes(jsonObject.getString("displayedFetishes"));
-        }
+        //Set single normal fields
+        setData(jsonObject.keys(), jsonObject);
 
         //set fetishList
-        int i=0;
-        while(jsonObject.has("fetish"+i)) {
-            getFetishList().add(jsonObject.getString("fetish"+i));
-            i++;
-        }
+        populateListFromCategory(jsonObject, getFetishList(), "fetish");
 
         //set characterList
-        i=0;
-        while(jsonObject.has("character"+i)) {
-            getCharacterList().add(jsonObject.getString("character"+i));
-            i++;
-        }
+        populateListFromCategory(jsonObject, getCharacterList(), "character");
 
         //set equipmentList
-        i=0;
-        while(jsonObject.has("toy"+i)) {
-            getEquipmentList().add(jsonObject.getString("toy"+i));
-            i++;
+        populateListFromCategory(jsonObject, getEquipmentList(), "toy");
+    }
+
+    private void setData(Iterator<String> keys, JSONObject object) {
+        while (keys.hasNext()) {
+            setValueAccordingToKey(object, keys.next());
+        }
+    }
+
+    private void setValueAccordingToKey(JSONObject jsonObject, String key) {
+        switch (key) {
+            case "preparations":
+                setPreparations(jsonObject.getString("preparations"));
+                break;
+            case "name":
+                setName(jsonObject.getString("name"));
+                break;
+            case "joiId":
+                setJoiId(jsonObject.getString("joiId"));
+                break;
+            case "versionAdded":
+                setVersionAdded(jsonObject.getString("versionAdded"));
+                break;
+            case "displayedFetishes":
+                setDisplayedFetishes(jsonObject.getString("displayedFetishes"));
+                break;
         }
     }
 
@@ -93,6 +86,14 @@ public class MetaData implements JOISystemInterface{
     private static void addListToJsonObject(JSONObject object, String key, ArrayList list) {
         for(int i=0; i<list.size(); i++) {
             object.put(key+i, list.get(i));
+        }
+    }
+
+    private static void populateListFromCategory(JSONObject jsonObject, ArrayList<String> listToPopulate, String categoryKey) {
+        int i=0;
+        while(jsonObject.has(categoryKey+i)) {
+            listToPopulate.add(jsonObject.getString(categoryKey+i));
+            i++;
         }
     }
 

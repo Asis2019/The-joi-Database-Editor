@@ -4,6 +4,8 @@ import com.asis.joi.JOISystemInterface;
 import org.json.JSONArray;
 import org.json.JSONObject;
 
+import java.util.Iterator;
+
 public class Transition implements JOISystemInterface {
     private String fadeColor, transitionTextColor="#ffffff", transitionTextOutlineColor="#000000", transitionText;
     private int waitTime = 0;
@@ -24,34 +26,35 @@ public class Transition implements JOISystemInterface {
 
     @Override
     public void setDataFromJson(JSONObject jsonObject) {
-        //Set fade color
-        if (jsonObject.has("fadeColor")) {
-            setFadeColor(jsonObject.getString("fadeColor"));
-        }
+        setData(jsonObject.keys(), jsonObject);
+    }
 
-        //Set transitionTextColor
-        if (jsonObject.has("transitionTextColor")) {
-            setTransitionTextColor(jsonObject.getString("transitionTextColor"));
+    private void setData(Iterator<String> keys, JSONObject object) {
+        while (keys.hasNext()) {
+            setValueAccordingToKey(object, keys.next());
         }
+    }
 
-        //Set transitionTextOutlineColor
-        if (jsonObject.has("transitionTextOutlineColor")) {
-            setTransitionTextOutlineColor(jsonObject.getString("transitionTextOutlineColor"));
-        }
-
-        //Set transitionText
-        if (jsonObject.has("transitionText")) {
-            setTransitionText(jsonObject.getString("transitionText"));
-        }
-
-        //Set waitTime
-        if (jsonObject.has("waitTime")) {
-            setWaitTime(jsonObject.getInt("waitTime"));
-        }
-
-        //Set fadeSpeed
-        if (jsonObject.has("fadeSpeed")) {
-            setFadeSpeed(jsonObject.getDouble("fadeSpeed"));
+    private void setValueAccordingToKey(JSONObject jsonObject, String key) {
+        switch (key) {
+            case "fadeColor":
+                setFadeColor(jsonObject.getString("fadeColor"));
+                break;
+            case "transitionTextColor":
+                setTransitionTextColor(jsonObject.getString("transitionTextColor"));
+                break;
+            case "transitionTextOutlineColor":
+                setTransitionTextOutlineColor(jsonObject.getString("transitionTextOutlineColor"));
+                break;
+            case "transitionText":
+                setTransitionText(jsonObject.getString("transitionText"));
+                break;
+            case "waitTime":
+                setWaitTime(jsonObject.getInt("waitTime"));
+                break;
+            case "fadeSpeed":
+                setFadeSpeed(jsonObject.getDouble("fadeSpeed"));
+                break;
         }
     }
 

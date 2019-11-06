@@ -7,6 +7,7 @@ import org.json.JSONObject;
 
 import java.io.File;
 import java.util.ArrayList;
+import java.util.Iterator;
 
 public class Scene implements JOISystemInterface {
     private int sceneId;
@@ -67,6 +68,7 @@ public class Scene implements JOISystemInterface {
 
     @Override
     public void setDataFromJson(JSONObject object) {
+
         //Set scene id
         if (object.has("sceneId")) {
             setSceneId(object.getInt("sceneId"));
@@ -75,70 +77,61 @@ public class Scene implements JOISystemInterface {
             throw new RuntimeException("Scene id was not present for one or more of the scenes.");
         }
 
-        //Set scene title
-        if (object.has("sceneTitle")) {
-            setSceneTitle(object.getString("sceneTitle"));
-        }
-
-        //Set scene x position
-        if (object.has("layoutXPosition")) {
-            setLayoutXPosition(object.getDouble("layoutXPosition"));
-        }
-
-        //Set scene y position
-        if (object.has("layoutYPosition")) {
-            setLayoutYPosition(object.getDouble("layoutYPosition"));
-        }
-
-        //Set good ending for scene
-        if (object.has("joiEnd")) {
-            setGoodEnding(true);
-        }
-
-        //Set bad ending for scene
-        if (object.has("badJoiEnd")) {
-            setBadEnding(true);
-        }
-
-        //Set scene image
-        if (object.has("sceneImage")) {
-            setSceneImage(new File(object.getString("sceneId")));
-        }
-
-        //Set noFade
-        if (object.has("noFade")) {
-            setNoFade(object.getBoolean("noFade"));
-        }
-
-        //Set transition
-        if (object.has("transition")) {
-            setTransition(new Transition());
-            getTransition().setDataFromJson(object.getJSONArray("transition").getJSONObject(0));
-        }
-
-        //Set timer
-        if (object.has("timer")) {
-            setTimer(new Timer());
-            getTimer().setDataFromJson(object.getJSONArray("timer").getJSONObject(0));
-        }
-
-        //Set dialog
-        if (object.has("dialog")) {
-            setDialog(new Dialog());
-            getDialog().setDataFromJson(object.getJSONArray("dialog").getJSONObject(0));
-        }
+        //Set other fields
+        setData(object.keys(), object);
 
         //set lines
         int i=0;
         while(object.has("line"+i)) {
             addNewLine();
-            getLineArrayList().get(i).setDataFromJson(object.getJSONArray("line"+i).getJSONObject(0));
+            getLineArrayList().get(i).setDataFromJson(object.getJSONArray("line" + i).getJSONObject(0));
             i++;
         }
+    }
 
-        //set gotoScene
-        if (object.has("gotoScene")) {
-            setGotoSceneArrayList(AsisUtils.convertJSONArrayToList(object.getJSONArray("gotoScene")));
+    private void setData(Iterator<String> keys, JSONObject object) {
+        while (keys.hasNext()) {
+            setValueAccordingToKey(object, keys.next());
+        }
+    }
+
+    private void setValueAccordingToKey(JSONObject object, String key) {
+        switch (key) {
+            case "sceneTitle":
+                setSceneTitle(object.getString("sceneTitle"));
+                break;
+            case "layoutXPosition":
+            case "layoutYPosition":
+                setLayoutXPosition(object.getDouble("layoutXPosition"));
+                setLayoutYPosition(object.getDouble("layoutYPosition"));
+                break;
+            case "joiEnd":
+                setGoodEnding(true);
+                break;
+            case "badJoiEnd":
+                setBadEnding(true);
+                break;
+            case "sceneImage":
+                setSceneImage(new File(object.getString("sceneId")));
+                break;
+            case "noFade":
+                setNoFade(object.getBoolean("noFade"));
+                break;
+            case "transition":
+                setTransition(new Transition());
+                getTransition().setDataFromJson(object.getJSONArray("transition").getJSONObject(0));
+                break;
+            case "timer":
+                setTimer(new Timer());
+                getTimer().setDataFromJson(object.getJSONArray("timer").getJSONObject(0));
+                break;
+            case "dialog":
+                setDialog(new Dialog());
+                getDialog().setDataFromJson(object.getJSONArray("dialog").getJSONObject(0));
+                break;
+            case "gotoScene":
+                setGotoSceneArrayList(AsisUtils.convertJSONArrayToList(object.getJSONArray("gotoScene")));
+                break;
         }
     }
 

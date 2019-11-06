@@ -5,6 +5,7 @@ import org.json.JSONArray;
 import org.json.JSONObject;
 
 import java.io.File;
+import java.util.Iterator;
 
 public class Line implements JOISystemInterface {
     private String fillColor, outlineColor, text;
@@ -35,7 +36,27 @@ public class Line implements JOISystemInterface {
 
     @Override
     public void setDataFromJson(JSONObject jsonObject) {
+        final Iterator<String> keys = jsonObject.keys();
+        while (keys.hasNext()) {
+            setValueAccordingToKey(jsonObject, keys.next());
+        }
+    }
 
+    private void setValueAccordingToKey(JSONObject jsonObject, String key) {
+        switch (key) {
+            case "fillColor":
+                setFillColor(jsonObject.getString("fillColor"));
+                break;
+            case "outlineColor":
+                setOutlineColor(jsonObject.getString("outlineColor"));
+                break;
+            case "text":
+                setText(jsonObject.getString("text"));
+                break;
+            case "lineImage":
+                setLineImage(new File(jsonObject.getString("lineImage")));
+                break;
+        }
     }
 
     @Override
