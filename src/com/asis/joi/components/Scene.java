@@ -47,6 +47,12 @@ public class Scene implements JOISystemInterface {
         JSONObject sceneObject = new JSONObject();
 
         //Set values
+        setValues(sceneObject);
+
+        return sceneObject;
+    }
+
+    private void setValues(JSONObject sceneObject) {
         sceneObject.put("sceneId", getSceneId());
         sceneObject.put("sceneTitle", getSceneTitle());
         sceneObject.put("layoutXPosition", getLayoutXPosition());
@@ -62,8 +68,6 @@ public class Scene implements JOISystemInterface {
         for(int i=0; i<getLineArrayList().size(); i++) {
             sceneObject.put("line"+i, getLineArrayList().get(i).getLineAsJson());
         }
-
-        return sceneObject;
     }
 
     @Override

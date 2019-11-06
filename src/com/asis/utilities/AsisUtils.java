@@ -85,22 +85,22 @@ public class AsisUtils {
 
     public static void writeDirectoryToZip(File dataDirectory, File zipFile) throws IOException {
         byte[] buffer = new byte[1024];
-        ZipOutputStream zos = new ZipOutputStream(new FileOutputStream(zipFile));
+        ZipOutputStream zipOutputStream = new ZipOutputStream(new FileOutputStream(zipFile));
         File[] files = dataDirectory.listFiles();
 
         if (files != null) {
             for (File value : files) {
-                FileInputStream fis = new FileInputStream(value);
-                zos.putNextEntry(new ZipEntry(value.getName()));
+                FileInputStream fileInputStream = new FileInputStream(value);
+                zipOutputStream.putNextEntry(new ZipEntry(value.getName()));
                 int length;
-                while ((length = fis.read(buffer)) > 0) {
-                    zos.write(buffer, 0, length);
+                while ((length = fileInputStream.read(buffer)) > 0) {
+                    zipOutputStream.write(buffer, 0, length);
                 }
-                zos.closeEntry();
-                fis.close();
+                zipOutputStream.closeEntry();
+                fileInputStream.close();
             }
         }
-        zos.close();
+        zipOutputStream.close();
     }
 
     public static boolean deleteFolder(File folder) {
