@@ -1,10 +1,11 @@
-package com.asis.controllers;
+package com.asis.controllers.tabs;
 
-import com.asis.Story;
+import com.asis.joi.components.Transition;
 import com.asis.utilities.AsisUtils;
 import javafx.animation.KeyFrame;
 import javafx.animation.KeyValue;
 import javafx.animation.Timeline;
+import javafx.application.Platform;
 import javafx.fxml.FXML;
 import javafx.scene.control.ColorPicker;
 import javafx.scene.control.Label;
@@ -14,53 +15,44 @@ import javafx.scene.paint.Color;
 import javafx.util.Duration;
 import org.json.JSONObject;
 
-import java.util.Optional;
-
-public class TabTransitionController {
-    private Story story;
-    private int sceneId;
+public class TabTransitionController extends TabController {
     private String textOutlineColor = "#000000";
     private String textFillColor = "#ffffff";
     private Timeline timeline = new Timeline();
+    private Transition transition;
 
     @FXML private TextField fadeSpeedField, waitTimeField, transitionTextField;
     @FXML private ColorPicker transitionTextColor, transitionTextOutlineColor, transitionFadeColor;
     @FXML private Label transitionTextLabel;
     @FXML private Pane transitionPaneMask;
 
-    public void initialize() {
-        transitionTextLabel.textProperty().bindBidirectional(transitionTextField.textProperty());
-        transitionTextLabel.setStyle("outline-color: "+textOutlineColor+"; fill-color: "+textFillColor+";");
+    public TabTransitionController(String tabTitle, Transition transition) {
+        super(tabTitle);
 
-        transitionTextOutlineColor.valueProperty().addListener((observableValue, color, t1) -> {
+        setTransition(transition);
+
+        Platform.runLater(() -> {
+            transitionTextLabel.textProperty().bindBidirectional(transitionTextField.textProperty());
+            transitionTextLabel.setStyle("outline-color: "+textOutlineColor+"; fill-color: "+textFillColor+";");
+
+            transitionTextOutlineColor.valueProperty().addListener((observableValue, color, t1) -> {
                 textOutlineColor = removeLastTwoLetters("#"+ AsisUtils.colorToHex(t1));
                 transitionTextLabel.setStyle("fill-color: "+textFillColor+"; outline-color: "+textOutlineColor+";");
-                story.addDataToTransition(sceneId, "transitionTextOutlineColor", removeLastTwoLetters("#"+ AsisUtils.colorToHex(t1)));
+                getTransition().setTransitionTextOutlineColor(removeLastTwoLetters("#"+ AsisUtils.colorToHex(t1)));
+            });
+
+            transitionTextColor.valueProperty().addListener((observableValue, color, t1) -> {
+                textFillColor = removeLastTwoLetters("#"+ AsisUtils.colorToHex(t1));
+                transitionTextLabel.setStyle("fill-color: "+textFillColor+"; outline-color: "+textOutlineColor+";");
+                getTransition().setTransitionTextColor(removeLastTwoLetters("#"+ AsisUtils.colorToHex(t1)));
+            });
+
+            initializeFields();
         });
-
-        transitionTextColor.valueProperty().addListener((observableValue, color, t1) -> {
-            textFillColor = removeLastTwoLetters("#"+ AsisUtils.colorToHex(t1));
-            transitionTextLabel.setStyle("fill-color: "+textFillColor+"; outline-color: "+textOutlineColor+";");
-            story.addDataToTransition(sceneId, "transitionTextColor", removeLastTwoLetters("#"+ AsisUtils.colorToHex(t1)));
-        });
-    }
-
-    private String removeLastTwoLetters(String s) {
-        return Optional.ofNullable(s)
-                .filter(str -> str.length() != 0)
-                .map(str -> str.substring(0, str.length() - 2))
-                .orElse(s);
-    }
-
-    void passData(Story story, int sceneId) {
-        this.story = story;
-        this.sceneId = sceneId;
-
-        initializeFields();
     }
 
     private void initializeFields() {
-        JSONObject transitionObject = story.getTransitionData(sceneId);
+        JSONObject transitionObject = getTransition().getTransitionAsJson().getJSONObject(0);
 
         if(transitionObject != null) {
             //Set text
@@ -101,14 +93,14 @@ public class TabTransitionController {
     public void actionTransitionText() {
         //Add transition text to transition object
         String text = transitionTextField.getText().trim();
-        story.addDataToTransition(sceneId, "transitionText", text);
+        getTransition().setTransitionText(text);
     }
 
     public void actionTransitionWaitTime() {
         //TODO This field needs to be changed to a listener property
         //Add transition wait time to transition object
         try {
-            story.addDataToTransition(sceneId, "waitTime", Integer.valueOf(waitTimeField.getText().trim()));
+            getTransition().setWaitTime(Integer.parseInt(waitTimeField.getText().trim()));
         } catch (NumberFormatException e) {
             System.out.println("Incorrect value entered in waitTime field");
         }
@@ -120,7 +112,7 @@ public class TabTransitionController {
         try {
             double fadeSpeedSeconds = Double.parseDouble(fadeSpeedField.getText().trim());
             double fadeSpeed = 1 / (fadeSpeedSeconds * 60);
-            story.addDataToTransition(sceneId, "fadeSpeed", AsisUtils.clamp(fadeSpeed, 0.0000000001, 5));
+            getTransition().setFadeSpeed(AsisUtils.clamp(fadeSpeed, 0.0000000001, 5));
         } catch (NumberFormatException e) {
             System.out.println("Incorrect value entered in FadeSpeed field");
         }
@@ -131,7 +123,7 @@ public class TabTransitionController {
         transitionPaneMask.setStyle("-fx-background-color: #"+color+";");
 
         color = "#"+color;
-        story.addDataToTransition(sceneId, "fadeColor", color);
+        getTransition().setFadeColor(color);
     }
 
     public void actionPlayTransitionButton() {
@@ -183,5 +175,13 @@ public class TabTransitionController {
             timeline.getKeyFrames().addAll(start, middle1, middle2, end);
             timeline.play();
         }
+    }
+
+    //Getters and setters
+    public Transition getTransition() {
+        return transition;
+    }
+    public void setTransition(Transition transition) {
+        this.transition = transition;
     }
 }

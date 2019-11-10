@@ -50,8 +50,8 @@ public class Timer implements JOISystemInterface {
         //set lines
         for(int i=0; i<jsonObject.names().length(); i++) {
             String workingKey = jsonObject.names().getString(i);
-            if(workingKey.matches("^line")) {
-                int lineSecond = workingKey.charAt(workingKey.length()-1);
+            if(workingKey.matches("line.*")) {
+                int lineSecond = Integer.parseInt(workingKey.replaceAll("[^0-9]", ""));
                 addNewLine(lineSecond);
                 getLine(lineSecond).setDataFromJson(jsonObject.getJSONArray(workingKey).getJSONObject(0), importDirectory);
             }
@@ -61,6 +61,17 @@ public class Timer implements JOISystemInterface {
     @Override
     public String toString() {
         return getTimerAsJson().toString(4);
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (!(o instanceof Timer)) return false;
+
+        Timer timer = (Timer) o;
+
+        if (getTotalTime() != timer.getTotalTime()) return false;
+        return getLineArrayList().equals(timer.getLineArrayList());
     }
 
     //Getters and Setters

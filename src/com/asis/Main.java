@@ -8,16 +8,13 @@ import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.scene.image.Image;
 import javafx.stage.Stage;
-import org.json.JSONObject;
 
 public class Main extends Application {
 
     @Override
     public void start(Stage primaryStage) throws Exception {
-        FXMLLoader fxmlLoader = new FXMLLoader(getClass().getResource("/resources/fxml/Main.fxml"));
-        Parent root = fxmlLoader.load();
+        Parent root = new FXMLLoader(getClass().getResource("/resources/fxml/Main.fxml")).load();
 
-        Controller controller = fxmlLoader.getController();
         Scene main_scene = new Scene(root, 1280, 720);
 
         primaryStage.getIcons().add(new Image(getClass().getResourceAsStream("/resources/images/icon.png")));
@@ -29,14 +26,9 @@ public class Main extends Application {
         Controller.getInstance().actionNewProject();
 
         primaryStage.setOnCloseRequest(event -> {
-            //Check if dialog is needed
-            JSONObject storyData = Story.getInstance().getStoryDataJson();
-            JSONObject metadataObject = Story.getInstance().getMetadataObject();
+            //TODO implement the new joi has changed system
 
-            if(storyData == null && metadataObject == null) {
-                controller.quiteProgram();
-                return;
-            }
+            Controller.getInstance().quiteProgram();
 
             if (Controller.getInstance().getNewChanges()) {
                 int choice = new Alerts().unsavedChangesDialog("Warning", "You have unsaved work, are you sure you want to quit?");
@@ -46,12 +38,12 @@ public class Main extends Application {
                         break;
 
                     case 1:
-                        controller.quiteProgram();
+                        Controller.getInstance().quiteProgram();
                         break;
 
                     case 2:
-                        controller.actionSaveProject();
-                        controller.quiteProgram();
+                        Controller.getInstance().actionSaveProject();
+                        Controller.getInstance().quiteProgram();
                         break;
                 }
             }

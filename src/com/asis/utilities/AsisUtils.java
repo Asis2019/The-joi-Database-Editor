@@ -11,6 +11,7 @@ import org.json.JSONObject;
 import java.io.*;
 import java.nio.file.Files;
 import java.util.ArrayList;
+import java.util.Iterator;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipOutputStream;
 
@@ -149,5 +150,18 @@ public class AsisUtils {
             list.add(jsonArray.getInt(i));
         }
         return list;
+    }
+
+    public static void mergeJSONObjects(JSONObject targetObject, JSONObject includedObject) {
+        JSONObject merged = new JSONObject();
+        JSONObject[] objs = new JSONObject[] { targetObject, includedObject };
+        for (JSONObject obj : objs) {
+            Iterator it = obj.keys();
+            while (it.hasNext()) {
+                String key = (String)it.next();
+                merged.put(key, obj.get(key));
+            }
+        }
+        targetObject=merged;
     }
 }

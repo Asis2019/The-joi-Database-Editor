@@ -6,5 +6,4 @@ import java.io.File;
 
 public interface JOISystemInterface {
     void setDataFromJson(JSONObject jsonObject, File importDirectory);
-    String toString();
 }

@@ -1,6 +1,6 @@
 package com.asis.controllers;
 
-import com.asis.Story;
+import com.asis.joi.JOIPackage;
 import javafx.fxml.FXML;
 import javafx.scene.Cursor;
 import javafx.scene.control.TextArea;
@@ -19,31 +19,30 @@ import java.io.File;
 import static com.asis.utilities.AsisUtils.errorDialogWindow;
 
 public class MetaDataForm {
-
     private File iconFile = null;
-    private Story story;
     private ImageView imageView = new ImageView();
     private boolean hasChanged = false;
+    private JOIPackage joiPackage;
 
     @FXML private VBox mainVBox, iconControllerBox;
     @FXML private TextField titleTextField, preparationsTextField, displayedFetishesTextField, joiIdTextField, gameVersionTextField;
     @FXML private TextArea fetishesTextArea, equipmentTextArea, charactersTextArea;
 
-    void inflateStoryObject(Story story) {
-        this.story = story;
+    void inflateJOIPackageObject(JOIPackage joiPackage) {
+        setJoiPackage(joiPackage);
 
         //Image
-        if(story.getMetadataIcon() != null) {
-            iconFile = story.getMetadataIcon();
-            Image image = new Image(iconFile.toURI().toString());
-            imageView.setImage(image);
+        if(getJoiPackage().getMetaData().getJoiIcon() != null) {
+            setIconFile(getJoiPackage().getMetaData().getJoiIcon());
+            Image image = new Image(getIconFile().toURI().toString());
+            getImageView().setImage(image);
             if (iconControllerBox != null) {
                 mainVBox.getChildren().remove(iconControllerBox);
             }
-            mainVBox.getChildren().add(0, imageView);
+            mainVBox.getChildren().add(0, getImageView());
         }
 
-        JSONObject metadataObject = story.getMetadataObject();
+        JSONObject metadataObject = getJoiPackage().getMetaData().getMetaDataAsJson();
 
         if(metadataObject.has("JOI METADATA")) {
             metadataObject = metadataObject.getJSONArray("JOI METADATA").getJSONObject(0);
@@ -123,51 +122,47 @@ public class MetaDataForm {
     }
 
     public void initialize() {
-        imageView.setFitHeight(300);
-        imageView.setFitWidth(300);
-        imageView.setCursor(Cursor.HAND);
-        imageView.setOnMouseClicked(mouseEvent -> addIcon());
+        getImageView().setFitHeight(300);
+        getImageView().setFitWidth(300);
+        getImageView().setCursor(Cursor.HAND);
+        getImageView().setOnMouseClicked(mouseEvent -> addIcon());
 
         setListeners();
     }
 
     private void setListeners() {
-        titleTextField.setOnKeyTyped(keyEvent -> hasChanged = true);
-        preparationsTextField.setOnKeyTyped(keyEvent -> hasChanged = true);
-        displayedFetishesTextField.setOnKeyTyped(keyEvent -> hasChanged = true);
-        joiIdTextField.setOnKeyTyped(keyEvent -> hasChanged = true);
-        fetishesTextArea.setOnKeyTyped(keyEvent -> hasChanged = true);
-        equipmentTextArea.setOnKeyTyped(keyEvent -> hasChanged = true);
-        charactersTextArea.setOnKeyTyped(keyEvent -> hasChanged = true);
-    }
-
-    Boolean hasChanged() {
-        return this.hasChanged;
+        titleTextField.setOnKeyTyped(keyEvent -> setHasChanged(true));
+        preparationsTextField.setOnKeyTyped(keyEvent -> setHasChanged(true));
+        displayedFetishesTextField.setOnKeyTyped(keyEvent -> setHasChanged(true));
+        joiIdTextField.setOnKeyTyped(keyEvent -> setHasChanged(true));
+        fetishesTextArea.setOnKeyTyped(keyEvent -> setHasChanged(true));
+        equipmentTextArea.setOnKeyTyped(keyEvent -> setHasChanged(true));
+        charactersTextArea.setOnKeyTyped(keyEvent -> setHasChanged(true));
     }
 
     public void addIcon() {
         FileChooser fileChooser = new FileChooser();
         fileChooser.setTitle("Add Icon");
-        fileChooser.setInitialDirectory(story.getProjectDirectory());
+        fileChooser.setInitialDirectory(getJoiPackage().getPackageDirectory());
         fileChooser.getExtensionFilters().add(new FileChooser.ExtensionFilter("png", "*.png"));
         File file = fileChooser.showOpenDialog(new Stage());
 
         if(file != null) {
             //Image file to memory
-            iconFile = file;
+            setIconFile(file);
 
-            if(imageView != null) {
-                mainVBox.getChildren().remove(imageView);
+            if(getImageView() != null) {
+                mainVBox.getChildren().remove(getImageView());
             }
 
             Image image = new Image(file.toURI().toString());
-            imageView.setImage(image);
+            getImageView().setImage(image);
 
             if(iconControllerBox != null) {
                 mainVBox.getChildren().remove(iconControllerBox);
             }
 
-            mainVBox.getChildren().add(0, imageView);
+            mainVBox.getChildren().add(0, getImageView());
         }
     }
 
@@ -206,8 +201,8 @@ public class MetaDataForm {
             JSONObject metadataObject = new JSONObject();
             metadataObject.put("JOI METADATA", jsonArray);
 
-            story.setMetadataObject(metadataObject);
-            story.addMetadataIcon(iconFile);
+            getJoiPackage().getMetaData().setJoiIcon(getIconFile());
+            getJoiPackage().getMetaData().setDataFromJson(metadataObject, getJoiPackage().getPackageDirectory());
 
             if (!titleTextField.getText().equals("") || !preparationsTextField.getText().equals("")|| !displayedFetishesTextField.getText().equals("") || iconFile != null
                     || !joiIdTextField.getText().equals("") || !fetishesArray[0].equals("") || !equipmentArray[0].equals("") || !charactersArray[0].equals("")) {
@@ -220,5 +215,34 @@ public class MetaDataForm {
         } catch (JSONException e) {
             errorDialogWindow(e);
         }
+    }
+
+    //Getters and setters
+    private JOIPackage getJoiPackage() {
+        return joiPackage;
+    }
+    private void setJoiPackage(JOIPackage joiPackage) {
+        this.joiPackage = joiPackage;
+    }
+
+    public File getIconFile() {
+        return iconFile;
+    }
+    public void setIconFile(File iconFile) {
+        this.iconFile = iconFile;
+    }
+
+    public ImageView getImageView() {
+        return imageView;
+    }
+    public void setImageView(ImageView imageView) {
+        this.imageView = imageView;
+    }
+
+    public void setHasChanged(boolean hasChanged) {
+        this.hasChanged = hasChanged;
+    }
+    Boolean hasChanged() {
+        return hasChanged;
     }
 }

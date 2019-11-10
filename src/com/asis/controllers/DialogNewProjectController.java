@@ -1,6 +1,5 @@
 package com.asis.controllers;
 
-import com.asis.Story;
 import com.asis.utilities.Alerts;
 import javafx.fxml.FXML;
 import javafx.scene.control.TextField;
@@ -14,23 +13,25 @@ public class DialogNewProjectController {
 
     @FXML private TextField projectNameTextField, projectDirectoryTextField;
 
-    private File projectPath = Story.getInstance().getProjectDirectory();
+    private File projectPath;
 
     public void initialize() {
-        projectNameTextField.setText("Untitled");
-        projectDirectoryTextField.setText(projectPath.getPath()+"\\Untitled");
+        setProjectPath(Controller.getInstance().getJoiPackage().getPackageDirectory());
 
-        projectNameTextField.setOnKeyTyped(keyEvent -> projectDirectoryTextField.setText(projectPath.getPath()+"\\"+projectNameTextField.getText().trim()));
+        projectNameTextField.setText("Untitled");
+        projectDirectoryTextField.setText(getProjectPath().getAbsolutePath()+"/Untitled");
+
+        projectNameTextField.setOnKeyTyped(keyEvent -> projectDirectoryTextField.setText(getProjectPath().getPath()+"/"+projectNameTextField.getText().trim()));
     }
 
     public void actionBrowsFolder() {
         DirectoryChooser directoryChooser = new DirectoryChooser();
-        directoryChooser.setInitialDirectory(Story.getInstance().getProjectDirectory());
+        directoryChooser.setInitialDirectory(getProjectPath());
         File file = directoryChooser.showDialog(null);
 
         if(file != null) {
             projectPath = file;
-            projectDirectoryTextField.setText(projectPath.getPath()+"\\"+projectNameTextField.getText().trim());
+            projectDirectoryTextField.setText(getProjectPath().getPath()+"/"+projectNameTextField.getText().trim());
         }
     }
 
@@ -51,24 +52,32 @@ public class DialogNewProjectController {
 
                 case 1:
                     Controller.createNewProject = true;
-                    Controller.newProjectFile = projectPath;
+                    Controller.newProjectFile = getProjectPath();
                     Controller.newProjectName = projectNameTextField.getText().trim();
                     break;
 
                 case 2:
                     Controller.getInstance().actionSaveProject();
                     Controller.createNewProject = true;
-                    Controller.newProjectFile = projectPath;
+                    Controller.newProjectFile = getProjectPath();
                     Controller.newProjectName = projectNameTextField.getText().trim();
                     break;
             }
         } else {
             Controller.createNewProject = true;
-            Controller.newProjectFile = projectPath;
+            Controller.newProjectFile = getProjectPath();
             Controller.newProjectName = projectNameTextField.getText().trim();
         }
 
         Stage stage = (Stage) projectNameTextField.getScene().getWindow();
         stage.close();
+    }
+
+    public File getProjectPath() {
+        return projectPath;
+    }
+
+    public void setProjectPath(File projectPath) {
+        this.projectPath = projectPath;
     }
 }
