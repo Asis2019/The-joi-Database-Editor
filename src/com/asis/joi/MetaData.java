@@ -17,11 +17,11 @@ public class MetaData implements JOISystemInterface{
 
     public JSONObject getMetaDataAsJson() {
         JSONObject innerObject = new JSONObject();
-        innerObject.put("joiId", getJoiId());
-        innerObject.put("preparations", getPreparations());
-        innerObject.put("name", getName());
-        innerObject.put("versionAdded", getVersionAdded());
-        innerObject.put("displayedFetishes", getDisplayedFetishes());
+        addStringToJsonWithDefault(innerObject, getName(), getJoiId(),"joiId");
+        addStringToJsonWithDefault(innerObject, "No preparations needed.", getPreparations(),"preparations");
+        addStringToJsonWithDefault(innerObject, "", getName(),"name");
+        addStringToJsonWithDefault(innerObject, "", getVersionAdded(),"versionAdded");
+        addStringToJsonWithDefault(innerObject, "", getDisplayedFetishes(),"displayedFetishes");
 
         addListToJsonObject(innerObject, "fetish", getFetishList());
         addListToJsonObject(innerObject, "character", getCharacterList());
@@ -80,6 +80,7 @@ public class MetaData implements JOISystemInterface{
     }
 
     public static void addCommaSeparatedStringToList(String commaSeparatedString, ArrayList<String> list) {
+        list.clear();
         list.addAll(Arrays.asList(commaSeparatedString.trim().split("\\s*,\\s*")));
     }
 
@@ -95,6 +96,10 @@ public class MetaData implements JOISystemInterface{
             listToPopulate.add(jsonObject.getString(categoryKey+i));
             i++;
         }
+    }
+
+    private static void addStringToJsonWithDefault(JSONObject object, String defaultValue, String value, String key) {
+        object.put(key, value != null && !value.isEmpty() ? value : defaultValue);
     }
 
     //Getters and Setters

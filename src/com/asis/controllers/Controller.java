@@ -184,13 +184,13 @@ public class Controller {
             stage.setScene(new Scene(root, 400, 720));
             stage.show();
 
-            stage.setOnCloseRequest(event -> {
+            /*stage.setOnCloseRequest(event -> {
                 if (metaDataForm.hasChanged()) {
                     if (!new Alerts().confirmationDialog("Warning", "Are you sure you don't want to save?")) {
                         event.consume();
                     }
                 }
-            });
+            });*/
         } catch (IOException e) {
             errorDialogWindow(e);
         }
@@ -584,26 +584,6 @@ public class Controller {
     }
 
     private void saveProject(File file) {
-        //TODO add the following defaults to metadata if empty
-        /*
-            innerMetadataObject.put("name", "");
-            innerMetadataObject.put("preparations", "");
-            innerMetadataObject.put("displayedFetishes", "");
-            innerMetadataObject.put("joiId", "");
-
-            innerMetadataObject.put("fetish0", "");
-            innerMetadataObject.put("toy0", "");
-            innerMetadataObject.put("character0", "");
-
-            JSONArray jsonArray = new JSONArray();
-            jsonArray.put(innerMetadataObject);
-
-            JSONObject metadataObject = new JSONObject();
-            metadataObject.put("JOI METADATA", jsonArray);
-
-            story.setMetadataObject(metadataObject);
-            URL url = this.getClass().getResource("/resources/images/icon_dev.png");
-            story.addMetadataIcon(new File(Objects.requireNonNull(url).getPath()));*/
         if(file != null) {
             getJoiPackage().exportPackageAsFiles(file);
         }
