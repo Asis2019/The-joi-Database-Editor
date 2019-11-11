@@ -107,24 +107,24 @@ public class MetaDataForm {
     }
 
     //Getters and setters
-    private JOIPackage getJoiPackage() {
+    public JOIPackage getJoiPackage() {
         return joiPackage;
     }
-    private void setJoiPackage(JOIPackage joiPackage) {
+    public void setJoiPackage(JOIPackage joiPackage) {
         this.joiPackage = joiPackage;
     }
 
-    public File getIconFile() {
+    private File getIconFile() {
         return iconFile;
     }
-    public void setIconFile(File iconFile) {
+    private void setIconFile(File iconFile) {
         this.iconFile = iconFile;
     }
 
-    public ImageView getImageView() {
+    private ImageView getImageView() {
         return imageView;
     }
-    public void setImageView(ImageView imageView) {
+    private void setImageView(ImageView imageView) {
         this.imageView = imageView;
     }
 }

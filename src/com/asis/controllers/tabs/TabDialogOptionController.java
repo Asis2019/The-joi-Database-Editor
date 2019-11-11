@@ -29,29 +29,27 @@ public class TabDialogOptionController extends TabController {
     }
 
     private void loadDialogOptionsIfPresent() {
-        if(getDialog().getOptionArrayList() != null) {
-            for(DialogOption dialogOption: getDialog().getOptionArrayList()) {
-                StackPane stackPane = new StackPane();
+        for(DialogOption dialogOption: getDialog().getOptionArrayList()) {
+            StackPane stackPane = new StackPane();
 
-                TextField textField = new TextField();
-                textField.setMaxWidth(500);
-                textField.setPromptText("Option " + (dialogOption.getOptionNumber() + 1));
-                textField.setText(dialogOption.getOptionText());
-                textField.setId("optionTextField");
-                textField.setAlignment(Pos.CENTER);
-                textField.getStylesheets().add(getClass().getResource("/resources/css/text_field_stylesheet.css").toString());
+            TextField textField = new TextField();
+            textField.setMaxWidth(500);
+            textField.setPromptText("Option " + (dialogOption.getOptionNumber() + 1));
+            textField.setText(dialogOption.getOptionText());
+            textField.setId("optionTextField");
+            textField.setAlignment(Pos.CENTER);
+            textField.getStylesheets().add(getClass().getResource("/resources/css/text_field_stylesheet.css").toString());
 
-                textField.setOnKeyTyped(keyEvent -> textFieldTyped(textField, dialogOption.getOptionNumber()));
+            textField.setOnKeyTyped(keyEvent -> textFieldTyped(textField, dialogOption.getOptionNumber()));
 
-                Image image = new Image(getClass().getResource("/resources/images/dialog_option_button.png").toString());
-                ImageView imageView = new ImageView(image);
-                imageView.setPreserveRatio(true);
-                imageView.setFitHeight(50);
+            Image image = new Image(getClass().getResource("/resources/images/dialog_option_button.png").toString());
+            ImageView imageView = new ImageView(image);
+            imageView.setPreserveRatio(true);
+            imageView.setFitHeight(50);
 
 
-                stackPane.getChildren().addAll(imageView, textField);
-                buttonContainer.getChildren().add(stackPane);
-            }
+            stackPane.getChildren().addAll(imageView, textField);
+            buttonContainer.getChildren().add(stackPane);
         }
     }
 

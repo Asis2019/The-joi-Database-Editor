@@ -13,7 +13,6 @@ import javafx.scene.control.TextField;
 import javafx.scene.layout.Pane;
 import javafx.scene.paint.Color;
 import javafx.util.Duration;
-import org.json.JSONObject;
 
 public class TabTransitionController extends TabController {
     private String textOutlineColor = "#000000";
@@ -32,90 +31,92 @@ public class TabTransitionController extends TabController {
         setTransition(transition);
 
         Platform.runLater(() -> {
-            transitionTextLabel.textProperty().bindBidirectional(transitionTextField.textProperty());
-            transitionTextLabel.setStyle("outline-color: "+textOutlineColor+"; fill-color: "+textFillColor+";");
+            setupInitialFieldProperties();
 
-            transitionTextOutlineColor.valueProperty().addListener((observableValue, color, t1) -> {
-                textOutlineColor = removeLastTwoLetters("#"+ AsisUtils.colorToHex(t1));
-                transitionTextLabel.setStyle("fill-color: "+textFillColor+"; outline-color: "+textOutlineColor+";");
-                getTransition().setTransitionTextOutlineColor(removeLastTwoLetters("#"+ AsisUtils.colorToHex(t1)));
-            });
-
-            transitionTextColor.valueProperty().addListener((observableValue, color, t1) -> {
-                textFillColor = removeLastTwoLetters("#"+ AsisUtils.colorToHex(t1));
-                transitionTextLabel.setStyle("fill-color: "+textFillColor+"; outline-color: "+textOutlineColor+";");
-                getTransition().setTransitionTextColor(removeLastTwoLetters("#"+ AsisUtils.colorToHex(t1)));
-            });
-
-            initializeFields();
+            addInitialDataToFields();
         });
     }
 
-    private void initializeFields() {
-        JSONObject transitionObject = getTransition().getTransitionAsJson().getJSONObject(0);
+    private void setupInitialFieldProperties() {
+        transitionTextLabel.textProperty().bindBidirectional(transitionTextField.textProperty());
+        transitionTextLabel.setStyle("outline-color: "+textOutlineColor+"; fill-color: "+textFillColor+";");
 
-        if(transitionObject != null) {
-            //Set text
-            if (transitionObject.has("transitionText")) {
-                transitionTextLabel.setText(transitionObject.getString("transitionText"));
-            }
+        transitionTextOutlineColor.valueProperty().addListener((observableValue, color, t1) -> {
+            textOutlineColor = removeLastTwoLetters("#"+ AsisUtils.colorToHex(t1));
+            transitionTextLabel.setStyle("fill-color: "+textFillColor+"; outline-color: "+textOutlineColor+";");
+            getTransition().setTransitionTextOutlineColor(removeLastTwoLetters("#"+ AsisUtils.colorToHex(t1)));
+        });
 
-            //set fill color
-            if (transitionObject.has("transitionTextColor")) {
-                transitionTextColor.setValue(Color.web(transitionObject.getString("transitionTextColor")));
-            }
+        transitionTextColor.valueProperty().addListener((observableValue, color, t1) -> {
+            textFillColor = removeLastTwoLetters("#"+ AsisUtils.colorToHex(t1));
+            transitionTextLabel.setStyle("fill-color: "+textFillColor+"; outline-color: "+textOutlineColor+";");
+            getTransition().setTransitionTextColor(removeLastTwoLetters("#"+ AsisUtils.colorToHex(t1)));
+        });
 
-            //set outline color
-            if (transitionObject.has("transitionTextOutlineColor")) {
-                transitionTextOutlineColor.setValue(Color.web(transitionObject.getString("transitionTextOutlineColor")));
-            }
+        //Add transition fade speed to transition object
+        fadeSpeedField.textProperty().addListener((observableValue, color, t1) -> {
+            try {
+                final double fadeSpeed = Double.parseDouble(t1);
+                getTransition().setFadeSpeed(fadeSpeed);
+            } catch (NumberFormatException e) {
+                System.out.println("Incorrect value entered in FadeSpeed field");
+                if(t1.isEmpty()) {
+                    getTransition().setFadeSpeed(1);
+                    fadeSpeedField.clear();
+                    return;
+                }
 
-            //set wait time
-            if (transitionObject.has("waitTime")) {
-                waitTimeField.setText(String.valueOf(transitionObject.getInt("waitTime")));
+                final String backspacedText = t1.substring(0, t1.length()-1);
+                fadeSpeedField.setText(backspacedText);
             }
+        });
 
-            //set fade speed
-            if (transitionObject.has("fadeSpeed")) {
-                double fadeSpeed = transitionObject.getDouble("fadeSpeed");
-                double fadeSpeedSeconds = 1 / (fadeSpeed * 60);
-                fadeSpeedField.setText(String.valueOf(fadeSpeedSeconds));
-            }
+        //Add transition wait time to transition object
+        waitTimeField.textProperty().addListener((observableValue, color, t1) -> {
+            try {
+                final int waitTime = Integer.parseInt(t1);
+                getTransition().setWaitTime(waitTime);
+            } catch (NumberFormatException e) {
+                System.out.println("Incorrect value entered in waitTime field");
+                if(t1.isEmpty()) {
+                    getTransition().setWaitTime(0);
+                    waitTimeField.clear();
+                    return;
+                }
 
-            //set fade color
-            if (transitionObject.has("fadeColor")) {
-                transitionFadeColor.setValue(Color.web(transitionObject.getString("fadeColor")));
-                transitionPaneMask.setStyle("-fx-background-color: "+transitionObject.getString("fadeColor")+";");
+                final String backspacedText = t1.substring(0, t1.length()-1);
+                waitTimeField.setText(backspacedText);
             }
+        });
+    }
+
+    private void addInitialDataToFields() {
+        //Set text
+        transitionTextLabel.setText(getTransition().getTransitionText());
+
+        //set fill color
+        transitionTextColor.setValue(Color.web(getTransition().getTransitionTextColor()));
+
+        //set outline color
+        transitionTextOutlineColor.setValue(Color.web(getTransition().getTransitionTextOutlineColor()));
+
+        //set wait time
+        waitTimeField.setText(getTransition().getWaitTime() == 0 ? "" : String.valueOf(getTransition().getWaitTime()));
+
+        //set fade speed
+        fadeSpeedField.setText(getTransition().getFadeSpeed() == 1 ? "" : String.valueOf(getTransition().getFadeSpeed()));
+
+        //set fade color
+        if (getTransition().getFadeColor() != null && !getTransition().getFadeColor().isEmpty()) {
+            transitionFadeColor.setValue(Color.web(getTransition().getFadeColor()));
+            transitionPaneMask.setStyle("-fx-background-color: " + getTransition().getFadeColor() + ";");
         }
     }
 
     public void actionTransitionText() {
         //Add transition text to transition object
-        String text = transitionTextField.getText().trim();
+        String text = transitionTextField.getText();
         getTransition().setTransitionText(text);
-    }
-
-    public void actionTransitionWaitTime() {
-        //TODO This field needs to be changed to a listener property
-        //Add transition wait time to transition object
-        try {
-            getTransition().setWaitTime(Integer.parseInt(waitTimeField.getText().trim()));
-        } catch (NumberFormatException e) {
-            System.out.println("Incorrect value entered in waitTime field");
-        }
-    }
-
-    public void actionTransitionFadeSpeed() {
-        //TODO This field needs to be changed to a listener property
-        //Add transition fade speed to transition object
-        try {
-            double fadeSpeedSeconds = Double.parseDouble(fadeSpeedField.getText().trim());
-            double fadeSpeed = 1 / (fadeSpeedSeconds * 60);
-            getTransition().setFadeSpeed(AsisUtils.clamp(fadeSpeed, 0.0000000001, 5));
-        } catch (NumberFormatException e) {
-            System.out.println("Incorrect value entered in FadeSpeed field");
-        }
     }
 
     public void actionFadeColor() {

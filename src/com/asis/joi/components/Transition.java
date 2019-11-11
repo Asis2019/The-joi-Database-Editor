@@ -1,6 +1,7 @@
 package com.asis.joi.components;
 
 import com.asis.joi.JOISystemInterface;
+import com.asis.utilities.AsisUtils;
 import org.json.JSONArray;
 import org.json.JSONObject;
 
@@ -10,7 +11,7 @@ import java.util.Iterator;
 public class Transition implements JOISystemInterface {
     private String fadeColor, transitionTextColor="#ffffff", transitionTextOutlineColor="#000000", transitionText;
     private int waitTime = 0;
-    private double fadeSpeed = 0.02;
+    private double fadeSpeed = 1; //stored as seconds
 
     public JSONArray getTransitionAsJson() {
         JSONObject data = new JSONObject();
@@ -19,10 +20,15 @@ public class Transition implements JOISystemInterface {
         if(getTransitionTextOutlineColor() != null) data.put("transitionTextOutlineColor", getTransitionTextOutlineColor());
         if(getTransitionText() != null) data.put("transitionText", getTransitionText());
         data.put("waitTime", getWaitTime());
-        data.put("fadeSpeed", getFadeSpeed());
+        data.put("fadeSpeed", convertSecondsToGameTime(getFadeSpeed()));
 
         JSONArray transitionArray = new JSONArray();
         return transitionArray.put(data);
+    }
+
+    private static double convertSecondsToGameTime(double timeInSeconds) {
+        final double fadeSpeed = 1 / (timeInSeconds * 60);
+        return AsisUtils.clamp(fadeSpeed, 0.0000000001, 5);
     }
 
     @Override

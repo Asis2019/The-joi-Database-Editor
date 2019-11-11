@@ -184,13 +184,13 @@ public class Controller {
             stage.setScene(new Scene(root, 400, 720));
             stage.show();
 
-            /*stage.setOnCloseRequest(event -> {
-                if (metaDataForm.hasChanged()) {
-                    if (!new Alerts().confirmationDialog("Warning", "Are you sure you don't want to save?")) {
+            stage.setOnCloseRequest(event -> {
+                /*if(!metaDataForm.getJoiPackage().getMetaData().equals(getJoiPackage().getBackupMetaData())) {
+                    if (!new Alerts().confirmationDialog("Warning", "You have unsaved data, are you sure you want to close?")) {
                         event.consume();
                     }
-                }
-            });*/
+                }*/
+            });
         } catch (IOException e) {
             errorDialogWindow(e);
         }

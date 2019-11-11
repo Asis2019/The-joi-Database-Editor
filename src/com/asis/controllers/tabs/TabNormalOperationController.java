@@ -42,7 +42,7 @@ public class TabNormalOperationController extends TabController {
         setScene(scene);
 
         Platform.runLater(() -> {
-            //mainTextArea.setStyle("outline-color: "+outlineColor+"; fill-color: "+fillColor+";");
+            setMainTextAreaColorStyle();
 
             mainTextArea.textProperty().addListener((observable, oldValue, newValue) -> {
                 String text = newValue.trim().replaceAll("\\n", "#");
@@ -78,15 +78,19 @@ public class TabNormalOperationController extends TabController {
     private void addColorPickerListeners() {
         textOutlineColorPicker.valueProperty().addListener((observableValue, color, t1) -> {
             outlineColor = removeLastTwoLetters("#"+colorToHex(t1));
-            mainTextArea.setStyle(String.format("outline-color: %s;fill-color: %s;", outlineColor,fillColor));
+            setMainTextAreaColorStyle();
             getScene().getLine(onLine-1).setOutlineColor(outlineColor);
         });
 
         textColorPicker.valueProperty().addListener((observableValue, color, t1) -> {
             fillColor = removeLastTwoLetters("#"+colorToHex(t1));
-            mainTextArea.setStyle("fill-color: "+fillColor+"; outline-color: "+outlineColor+";");
+            setMainTextAreaColorStyle();
             getScene().getLine(onLine-1).setFillColor(fillColor);
         });
+    }
+
+    private void setMainTextAreaColorStyle() {
+        mainTextArea.setStyle(String.format("outline-color: %s;fill-color: %s;", outlineColor,fillColor));
     }
 
     private void addBeatFieldListeners() {
@@ -94,7 +98,7 @@ public class TabNormalOperationController extends TabController {
         textFieldBeatPitch.textProperty().addListener((observableValue, s, t1) -> {
             //Process beat pitch
             try {
-                double pitch = Double.parseDouble(t1);
+                final double pitch = Double.parseDouble(t1);
                 getScene().getLine(onLine-1).setChangeBeatPitch(pitch);
             } catch (NumberFormatException e) {
                 System.out.println("User put bad value into beat pitch");
@@ -103,8 +107,8 @@ public class TabNormalOperationController extends TabController {
                     textFieldBeatPitch.clear();
                     return;
                 }
-                t1 = t1.substring(0, t1.length()-1);
-                textFieldBeatPitch.setText(t1);
+                final String backspacedText = t1.substring(0, t1.length()-1);
+                textFieldBeatPitch.setText(backspacedText);
             }
         });
 
@@ -112,7 +116,7 @@ public class TabNormalOperationController extends TabController {
         textFieldBeatSpeed.textProperty().addListener((observableValue, s, t1) -> {
             //Process beat speed
             try {
-                int speed = Integer.parseInt(t1);
+                final int speed = Integer.parseInt(t1);
                 getScene().getLine(onLine-1).setChangeBeatSpeed(speed);
             } catch (NumberFormatException e) {
                 System.out.println("User put bad value into beat speed");
@@ -121,8 +125,8 @@ public class TabNormalOperationController extends TabController {
                     textFieldBeatSpeed.clear();
                     return;
                 }
-                t1 = t1.substring(0, t1.length()-1);
-                textFieldBeatSpeed.setText(t1);
+                final String backspacedText = t1.substring(0, t1.length()-1);
+                textFieldBeatSpeed.setText(backspacedText);
             }
         });
     }
