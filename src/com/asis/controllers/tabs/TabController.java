@@ -1,6 +1,7 @@
 package com.asis.controllers.tabs;
 
 import javafx.scene.control.CheckBox;
+import javafx.scene.control.TextArea;
 import javafx.scene.control.TextField;
 import org.json.JSONObject;
 
@@ -12,6 +13,10 @@ public abstract class TabController {
 
     TabController(String tabTitle) {
         setTabTitle(tabTitle);
+    }
+
+    void setMainTextAreaColorStyle(TextArea textArea, String fillColor, String outlineColor) {
+        textArea.setStyle(String.format("outline-color: %s;fill-color: %s;", outlineColor,fillColor));
     }
 
     static void beatProperties(JSONObject textObject, CheckBox checkBox, String key) {

@@ -42,7 +42,7 @@ public class TabNormalOperationController extends TabController {
         setScene(scene);
 
         Platform.runLater(() -> {
-            setMainTextAreaColorStyle();
+            setMainTextAreaColorStyle(mainTextArea, fillColor, outlineColor);
 
             mainTextArea.textProperty().addListener((observable, oldValue, newValue) -> {
                 String text = newValue.trim().replaceAll("\\n", "#");
@@ -78,19 +78,15 @@ public class TabNormalOperationController extends TabController {
     private void addColorPickerListeners() {
         textOutlineColorPicker.valueProperty().addListener((observableValue, color, t1) -> {
             outlineColor = removeLastTwoLetters("#"+colorToHex(t1));
-            setMainTextAreaColorStyle();
+            setMainTextAreaColorStyle(mainTextArea, fillColor, outlineColor);
             getScene().getLine(onLine-1).setOutlineColor(outlineColor);
         });
 
         textColorPicker.valueProperty().addListener((observableValue, color, t1) -> {
             fillColor = removeLastTwoLetters("#"+colorToHex(t1));
-            setMainTextAreaColorStyle();
+            setMainTextAreaColorStyle(mainTextArea, fillColor, outlineColor);
             getScene().getLine(onLine-1).setFillColor(fillColor);
         });
-    }
-
-    private void setMainTextAreaColorStyle() {
-        mainTextArea.setStyle(String.format("outline-color: %s;fill-color: %s;", outlineColor,fillColor));
     }
 
     private void addBeatFieldListeners() {

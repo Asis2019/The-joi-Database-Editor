@@ -51,18 +51,22 @@ public class TabTimerController extends TabController {
         setTimer(timer);
 
         Platform.runLater(() -> {
-            timerTextArea.setStyle("outline-color: "+outlineColor+"; fill-color: "+fillColor+";");
+            setMainTextAreaColorStyle(textTextArea, fillColor, outlineColor);
 
             textOutlineColorPicker.valueProperty().addListener((observableValue, color, t1) -> {
                 outlineColor = removeLastTwoLetters("#"+colorToHex(t1));
-                timerTextArea.setStyle("fill-color: "+fillColor+"; outline-color: "+outlineColor+";");
-                getTimer().getLine(onSecond).setOutlineColor(outlineColor);
+                setMainTextAreaColorStyle(textTextArea, fillColor, outlineColor);
+                if(getTimer().getLine(onSecond) != null) {
+                    getTimer().getLine(onSecond).setOutlineColor(outlineColor);
+                }
             });
 
             textColorPicker.valueProperty().addListener((observableValue, color, t1) -> {
                 fillColor = removeLastTwoLetters("#"+colorToHex(t1));
-                timerTextArea.setStyle("fill-color: "+fillColor+"; outline-color: "+outlineColor+";");
-                getTimer().getLine(onSecond).setFillColor(fillColor);
+                setMainTextAreaColorStyle(textTextArea, fillColor, outlineColor);
+                if(getTimer().getLine(onSecond) != null) {
+                    getTimer().getLine(onSecond).setFillColor(fillColor);
+                }
             });
 
             textTextArea.textProperty().bindBidirectional(timerTextArea.textProperty());
@@ -73,9 +77,9 @@ public class TabTimerController extends TabController {
                     final String formattedText = newValue.replaceAll("\\n", "#");
 
                     if (!newValue.isEmpty()) {
-                        //if(getTimer().getLine(onSecond) == null) {
-                            //getTimer().addNewLine(onSecond);
-                        //}
+                        if(getTimer().getLine(onSecond) == null) {
+                            getTimer().addNewLine(onSecond);
+                        }
 
                         getTimer().getLine(onSecond).setText(formattedText);
                         getTimer().getLine(onSecond).setFillColor(fillColor);
@@ -264,7 +268,7 @@ public class TabTimerController extends TabController {
 
         File file = fileChooser.showOpenDialog(null);
 
-        if(file != null) {
+        if(file != null && getTimer().getLine(onSecond) != null) {
             //Add image to json object
             getTimer().getLine(onSecond).setLineImage(file);
 
@@ -316,8 +320,6 @@ public class TabTimerController extends TabController {
             setFieldsIfNeeded(textObject);
 
             beatConfiguration(textObject);
-        } else {
-            getTimer().addNewLine(onSecond);
         }
 
         setLockTextAreaFunctionality(false);
@@ -375,10 +377,6 @@ public class TabTimerController extends TabController {
         updateObjectTree();
     }
 
-    private TreeView<String> getObjectTree() {
-        return objectTree;
-    }
-
     private Scene getScene() {
         for(Scene scene: Controller.getInstance().getJoiPackage().getJoi().getSceneArrayList()) {
             if(scene.getTimer() != null && scene.getTimer().equals(getTimer())) {
@@ -401,5 +399,9 @@ public class TabTimerController extends TabController {
     }
     public void setTimer(Timer timer) {
         this.timer = timer;
+    }
+
+    private TreeView<String> getObjectTree() {
+        return objectTree;
     }
 }

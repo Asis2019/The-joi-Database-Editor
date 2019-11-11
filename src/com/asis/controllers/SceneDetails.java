@@ -145,25 +145,31 @@ public class SceneDetails {
                 break;
 
             case "Timer":
-                if (!new Alerts().confirmationDialog("Delete Timer", "Are you sure you want to remove the timer?")) {
-                    event.consume();
-                    return;
+                if(!getTabTimerController().getTimer().equals(new Timer())) {
+                    if (!new Alerts().confirmationDialog("Delete Timer", "Are you sure you want to remove the timer?")) {
+                        event.consume();
+                        return;
+                    }
                 }
                 closeTimer();
                 break;
 
             case "Transition":
-                if (!new Alerts().confirmationDialog("Delete Transition", "Are you sure you want to remove the transition?")) {
-                    event.consume();
-                    return;
+                if(!getTabTransitionController().getTransition().equals(new Transition())) {
+                    if (!new Alerts().confirmationDialog("Delete Transition", "Are you sure you want to remove the transition?")) {
+                        event.consume();
+                        return;
+                    }
                 }
                 closeTransition();
                 break;
 
             case "Dialog":
-                if (!new Alerts().confirmationDialog("Delete Dialogs", "Are you sure you want to remove dialogs?")) {
-                    event.consume();
-                    return;
+                if(!getTabDialogOptionController().getDialog().equals(new Dialog())) {
+                    if (!new Alerts().confirmationDialog("Delete Dialogs", "Are you sure you want to remove dialogs?")) {
+                        event.consume();
+                        return;
+                    }
                 }
                 closeDialog();
                 break;

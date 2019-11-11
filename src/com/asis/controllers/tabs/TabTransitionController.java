@@ -116,7 +116,7 @@ public class TabTransitionController extends TabController {
     public void actionTransitionText() {
         //Add transition text to transition object
         String text = transitionTextField.getText();
-        getTransition().setTransitionText(text);
+        getTransition().setTransitionText(text==null || text.isEmpty()?null:text);
     }
 
     public void actionFadeColor() {
