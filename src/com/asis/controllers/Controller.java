@@ -23,14 +23,10 @@ import javafx.stage.DirectoryChooser;
 import javafx.stage.FileChooser;
 import javafx.stage.Modality;
 import javafx.stage.Stage;
-import org.json.JSONObject;
 
 import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
-import java.util.Objects;
-
-import static com.asis.utilities.AsisUtils.errorDialogWindow;
 
 public class Controller {
     private SceneNode selectedScene;
@@ -192,7 +188,7 @@ public class Controller {
                 }*/
             });
         } catch (IOException e) {
-            errorDialogWindow(e);
+            AsisUtils.errorDialogWindow(e);
         }
     }
 
@@ -267,20 +263,12 @@ public class Controller {
             stage.setOnCloseRequest(windowEvent -> getOpenStages().remove(stage));
             getOpenStages().add(stage);
         } catch (IOException e) {
-            errorDialogWindow(e);
+            AsisUtils.errorDialogWindow(e);
         }
     }
 
     public void actionExit() {
         //Check if dialog is needed
-        JSONObject storyData = getJoiPackage().getJoi().getJOIAsJson();
-        JSONObject metadataObject = getJoiPackage().getMetaData().getMetaDataAsJson();
-
-        if(storyData == null && metadataObject == null) {
-            quiteProgram();
-            return;
-        }
-
         if(getNewChanges()) {
             int choice = new Alerts().unsavedChangesDialog("Warning", "You have unsaved work, are you sure you want to quit?");
             switch (choice) {
@@ -307,13 +295,14 @@ public class Controller {
     }
 
     private void addScene() {
+        final String defaultTitle = "Scene " + (numberOfScenes+1);
         String title;
 
         if(numberOfScenes != 0) {
-            title = new Alerts().addNewSceneDialog("Scene " + (numberOfScenes+1));
+            title = new Alerts().addNewSceneDialog(defaultTitle);
             if(title == null) return;
         } else {
-            title = "Scene " + (numberOfScenes+1);
+            title = defaultTitle;
         }
 
         addScene(10, 0, title, numberOfScenes, false);
@@ -401,7 +390,7 @@ public class Controller {
             stage.setScene(new Scene(root, 600, 400));
             stage.showAndWait();
         } catch (IOException e) {
-            errorDialogWindow(e);
+            AsisUtils.errorDialogWindow(e);
         }
 
         if(createNewProject) {
@@ -414,13 +403,8 @@ public class Controller {
 
             String folderPath = newProjectFile.getPath()+"/"+newProjectName;
             File projectDirectory = new File(folderPath);
-            boolean result = projectDirectory.mkdir();
-
-            if(result) {
-                System.out.println("Created folder");
-            } else {
-                System.out.println("Folder already exists");
-            }
+            //noinspection ResultOfMethodCallIgnored
+            projectDirectory.mkdir();
 
             //Set project directory
             getJoiPackage().setPackageDirectory(projectDirectory);
@@ -435,7 +419,7 @@ public class Controller {
     }
 
     public boolean actionLoadProject() {
-        if (getNewChanges()) {
+        /*if (getNewChanges()) {
             int choice = new Alerts().unsavedChangesDialog("Load Project", "You have unsaved work, are you sure you want to continue?");
             switch (choice) {
                 case 0:
@@ -445,57 +429,49 @@ public class Controller {
                     actionSaveProject();
                     break;
             }
-        }
+        }*/
 
         DirectoryChooser directoryChooser = new DirectoryChooser();
         directoryChooser.setInitialDirectory(getJoiPackage().getPackageDirectory());
         File file = directoryChooser.showDialog(null);
 
         if(file != null) {
-            boolean canContinue = false;
-            //Check if project is a joi project
-            for (File f : Objects.requireNonNull(file.listFiles())) {
-                if (f.getName().equals("joi_text_en.json")) {
-                    canContinue = true;
-                    break;
-                }
-            }
+            JOIPackage newJoiPackage = new JOIPackage();
 
-            if (canContinue) {
-                //Remove old things
+            //Set project directory to current
+            newJoiPackage.setPackageDirectory(file);
+
+            //Load joi
+            if (newJoiPackage.importPackageFromDirectory(file)) {
+                //JOI folder was imported successfully
+
+                //Reset old variables
                 numberOfScenes = 0;
                 anchorPane.getChildren().clear();
                 getSceneNodes().clear();
-                setJoiPackage(new JOIPackage());
+                setJoiPackage(newJoiPackage);
 
-                //Set project directory to current
-                getJoiPackage().setPackageDirectory(file);
+                //Create scene nodes
+                for(com.asis.joi.components.Scene scene: getJoiPackage().getJoi().getSceneArrayList()) {
+                    addScene(scene.getLayoutXPosition(), scene.getLayoutYPosition(), scene.getSceneTitle(), scene.getSceneId(), true);
+                }
 
-                //Load joi
-                if (getJoiPackage().importPackageFromDirectory(file)) {
-                    //JOI folder was imported successfully, start creating the appropriate gui elements
+                //Create connections
+                for(com.asis.joi.components.Scene scene: getJoiPackage().getJoi().getSceneArrayList()) {
+                    createConnectionsForDefaultOutput(scene);
 
-                    //Create scene nodes
-                    for(com.asis.joi.components.Scene scene: getJoiPackage().getJoi().getSceneArrayList()) {
-                        addScene(scene.getLayoutXPosition(), scene.getLayoutYPosition(), scene.getSceneTitle(), scene.getSceneId(), true);
-                    }
-
-                    //Create connections
-                    for(com.asis.joi.components.Scene scene: getJoiPackage().getJoi().getSceneArrayList()) {
-                        createConnectionsForDefaultOutput(scene);
-
-                        createConnectionsForDialogOutputs(scene);
-                    }
+                    createConnectionsForDialogOutputs(scene);
                 }
             } else {
-                Alerts.messageDialog("Warning", "This is not a project folder");
                 return false;
             }
+
+            //Loading completed successfully
+            return true;
         }
 
-        //Loading completed successfully
-        newChanges = false;
-        return true;
+        //Loading failed to null file
+        return false;
     }
 
     private void createConnectionsForDialogOutputs(com.asis.joi.components.Scene scene) {
@@ -509,23 +485,19 @@ public class Controller {
 
                 //Check for scene normal connections
                 if(dialogOptionHasSingleGotoScene) {
-                    try {
+                    if(dialogOption.getGotoScene() != null) {
                         AsisConnectionButton input = getSceneNodeWithId(sceneNodes, dialogOption.getGotoScene().getGotoSceneArrayList().get(0)).getInputConnection();
                         sceneNodeMainController.createConnection(output, input);
-                    } catch (NullPointerException e) {
-                        System.out.println("NullPointer exception caught while building gui for loading: "+e.getMessage());
+                    } else {
+                        System.out.println("NullPointer exception caught while building gui for loading.");
                     }
                 }
 
                 //Check for scene range connections
                 if (dialogOptionHasMultipleGotoScene) {
-                    try {
-                        for (int i = 0; i < dialogOption.getGotoScene().getGotoSceneArrayList().size(); i++) {
-                            AsisConnectionButton input = getSceneNodeWithId(sceneNodes, dialogOption.getGotoScene().getGotoSceneArrayList().get(i)).getInputConnection();
-                            sceneNodeMainController.createConnection(output, input);
-                        }
-                    } catch (NullPointerException e) {
-                        System.out.println("NullPointer exception caught while building gui for loading: "+e.getMessage());
+                    for (int i = 0; i < dialogOption.getGotoScene().getGotoSceneArrayList().size(); i++) {
+                        AsisConnectionButton input = getSceneNodeWithId(sceneNodes, dialogOption.getGotoScene().getGotoSceneArrayList().get(i)).getInputConnection();
+                        sceneNodeMainController.createConnection(output, input);
                     }
                 }
             }
@@ -539,23 +511,19 @@ public class Controller {
 
         //Check for scene normal connections
         if(sceneHasSingleGotoScene) {
-            try {
+            if (scene.getGotoScene() != null) {
                 AsisConnectionButton input = getSceneNodeWithId(sceneNodes, scene.getGotoScene().getGotoSceneArrayList().get(0)).getInputConnection();
                 sceneNodeMainController.createConnection(output, input);
-            } catch (NullPointerException e) {
-                System.out.println("NullPointer exception caught while building gui for loading: "+e.getMessage());
+            } else {
+                System.out.println("NullPointer exception caught while building gui for loading.");
             }
         }
 
         //Check for scene range connections
         if (sceneHasMultipleGotoScene) {
-            try {
-                for (int i = 0; i < scene.getGotoScene().getGotoSceneArrayList().size(); i++) {
-                    AsisConnectionButton input = getSceneNodeWithId(sceneNodes, scene.getGotoScene().getGotoSceneArrayList().get(i)).getInputConnection();
-                    sceneNodeMainController.createConnection(output, input);
-                }
-            } catch (NullPointerException e) {
-                System.out.println("NullPointer exception caught while building gui for loading: "+e.getMessage());
+            for (int i = 0; i < scene.getGotoScene().getGotoSceneArrayList().size(); i++) {
+                AsisConnectionButton input = getSceneNodeWithId(sceneNodes, scene.getGotoScene().getGotoSceneArrayList().get(i)).getInputConnection();
+                sceneNodeMainController.createConnection(output, input);
             }
         }
     }

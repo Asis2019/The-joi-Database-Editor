@@ -1,6 +1,7 @@
 package com.asis.joi;
 
 import com.asis.joi.components.Scene;
+import com.asis.utilities.Alerts;
 import com.asis.utilities.AsisUtils;
 
 import java.io.File;
@@ -90,6 +91,8 @@ public class JOIPackage {
             File joiFile = new File(importDirectory, String.format("joi_text_%s.json", getPackageLanguageCode()));
             if(joiFile.exists()) {
                 getJoi().setDataFromJson(AsisUtils.readJsonFromFile(joiFile), importDirectory);
+            } else {
+                throw new RuntimeException("No joi file was found in the selected folder");
             }
 
             //Initiate loading for metaData
@@ -106,6 +109,9 @@ public class JOIPackage {
             return true;
         } catch (NullPointerException e) {
             e.printStackTrace();
+            return false;
+        } catch (RuntimeException e) {
+            Alerts.messageDialog("LOADING FAILED", "The editor was unable to load this joi for the following reason:\n"+e.getMessage(), 600, 200);
             return false;
         }
     }
