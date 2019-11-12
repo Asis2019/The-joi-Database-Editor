@@ -174,6 +174,32 @@ public class Scene implements JOISystemInterface {
         return getSceneAsJson().toString(4);
     }
 
+    @Override
+    public boolean equals(Object object) {
+        if (this == object) return true;
+        if (!(object instanceof Scene)) return false;
+
+        Scene scene = (Scene) object;
+
+        if (getSceneId() != scene.getSceneId()) return false;
+        if (Double.compare(scene.getLayoutXPosition(), getLayoutXPosition()) != 0) return false;
+        if (Double.compare(scene.getLayoutYPosition(), getLayoutYPosition()) != 0) return false;
+        if (isNoFade() != scene.isNoFade()) return false;
+        if (getSceneTitle() != null ? !getSceneTitle().equals(scene.getSceneTitle()) : scene.getSceneTitle() != null)
+            return false;
+        if (getSceneImage() != null ? !getSceneImage().equals(scene.getSceneImage()) : scene.getSceneImage() != null)
+            return false;
+        if (getTimer() != null ? !getTimer().equals(scene.getTimer()) : scene.getTimer() != null) return false;
+        if (getDialog() != null ? !getDialog().equals(scene.getDialog()) : scene.getDialog() != null) return false;
+        if (getTransition() != null ? !getTransition().equals(scene.getTransition()) : scene.getTransition() != null)
+            return false;
+        if (getGotoScene() != null ? !getGotoScene().equals(scene.getGotoScene()) : scene.getGotoScene() != null)
+            return false;
+        if (!getLineArrayList().equals(scene.getLineArrayList())) return false;
+        if (isBadEnd() != scene.isBadEnd()) return false;
+        return isGoodEnd()==scene.isGoodEnd();
+    }
+
     //Getters and Setters
     public int getSceneId() {
         return sceneId;

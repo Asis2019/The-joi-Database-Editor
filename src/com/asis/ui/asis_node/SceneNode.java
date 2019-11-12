@@ -1,6 +1,5 @@
 package com.asis.ui.asis_node;
 
-import com.asis.controllers.Controller;
 import com.asis.joi.components.Scene;
 import javafx.beans.property.ReadOnlyBooleanWrapper;
 import javafx.beans.property.ReadOnlyDoubleProperty;
@@ -187,8 +186,6 @@ public class SceneNode extends Region {
                 setOutputConnectionsVisible();
                 inputConnection.setButtonColor("#63c763ff");
             }
-
-            Controller.getInstance().setNewChanges();
         });
 
         isBadEndProperty().addListener((observableValue, aBoolean, t1) -> {
@@ -201,8 +198,6 @@ public class SceneNode extends Region {
                 setOutputConnectionsVisible();
                 inputConnection.setButtonColor("#63c763ff");
             }
-
-            Controller.getInstance().setNewChanges();
         });
 
         isGoodEndProperty().bindBidirectional(scene.goodEndProperty());

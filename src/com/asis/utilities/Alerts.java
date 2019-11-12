@@ -1,10 +1,7 @@
 package com.asis.utilities;
 
 import com.asis.Main;
-import com.asis.controllers.DialogConfirmation;
-import com.asis.controllers.DialogMessageController;
-import com.asis.controllers.DialogSceneTitleController;
-import com.asis.controllers.DialogUnsavedChangesDialog;
+import com.asis.controllers.*;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
@@ -128,6 +125,25 @@ public class Alerts {
         }
 
         return sceneTitle;
+    }
+
+    public static void newProjectWindow(boolean firstLoadCheck) {
+        try {
+            FXMLLoader fxmlLoader = new FXMLLoader(Alerts.class.getResource("/resources/fxml/dialog_new_project.fxml"));
+            Parent root = fxmlLoader.load();
+
+            DialogNewProjectController dialogNewProjectController = fxmlLoader.getController();
+            dialogNewProjectController.setFirstLoad(firstLoadCheck);
+
+            Stage stage = new Stage();
+            stage.initModality(Modality.APPLICATION_MODAL);
+            stage.getIcons().add(new Image(Alerts.class.getResourceAsStream("/resources/images/icon.png")));
+            stage.setTitle("New Project");
+            stage.setScene(new Scene(root, 600, 400));
+            stage.showAndWait();
+        } catch (IOException e) {
+            AsisUtils.errorDialogWindow(e);
+        }
     }
 
     public void setTitle(String title) {

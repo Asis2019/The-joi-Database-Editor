@@ -23,14 +23,10 @@ public class Main extends Application {
         primaryStage.show();
         primaryStage.setMaximized(true);
 
-        Controller.getInstance().actionNewProject();
+        Alerts.newProjectWindow(true);
 
         primaryStage.setOnCloseRequest(event -> {
-            //TODO implement the new joi has changed system
-
-            Controller.getInstance().quiteProgram();
-
-            if (Controller.getInstance().getNewChanges()) {
+            if (Controller.getInstance().changesHaveOccurred()) {
                 int choice = new Alerts().unsavedChangesDialog("Warning", "You have unsaved work, are you sure you want to quit?");
                 switch (choice) {
                     case 0:

@@ -60,7 +60,7 @@ public class Transition implements JOISystemInterface {
                 setWaitTime(jsonObject.getInt("waitTime"));
                 break;
             case "fadeSpeed":
-                setFadeSpeed(jsonObject.getDouble("fadeSpeed"));
+                setFadeSpeed(convertSecondsToGameTime(jsonObject.getDouble("fadeSpeed")));
                 break;
         }
     }
@@ -84,20 +84,6 @@ public class Transition implements JOISystemInterface {
         if (!getTransitionTextColor().equals(that.getTransitionTextColor())) return false;
         if (!getTransitionTextOutlineColor().equals(that.getTransitionTextOutlineColor())) return false;
         return getTransitionText() != null ? getTransitionText().equals(that.getTransitionText()) : that.getTransitionText() == null;
-    }
-
-    @Override
-    public int hashCode() {
-        int result;
-        long temp;
-        result = getFadeColor() != null ? getFadeColor().hashCode() : 0;
-        result = 31 * result + getTransitionTextColor().hashCode();
-        result = 31 * result + getTransitionTextOutlineColor().hashCode();
-        result = 31 * result + (getTransitionText() != null ? getTransitionText().hashCode() : 0);
-        result = 31 * result + getWaitTime();
-        temp = Double.doubleToLongBits(getFadeSpeed());
-        result = 31 * result + (int) (temp ^ (temp >>> 32));
-        return result;
     }
 
     //Getters and Setters

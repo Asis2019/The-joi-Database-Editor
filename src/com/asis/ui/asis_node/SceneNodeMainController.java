@@ -1,6 +1,5 @@
 package com.asis.ui.asis_node;
 
-import com.asis.controllers.Controller;
 import com.asis.joi.JOIPackage;
 import com.asis.joi.components.GotoScene;
 import com.asis.joi.components.Scene;
@@ -192,7 +191,6 @@ public class SceneNodeMainController {
 
                 //Check if after removing there are still multiple lines
                 if (getTotalLinesConnectedToOutput(outputConnection) > 1) {
-                    Controller.getInstance().setNewChanges();
                     return;
                 }
 
@@ -212,29 +210,16 @@ public class SceneNodeMainController {
 
                 //Check if after removing there are still multiple lines
                 if (getTotalLinesConnectedToOutput(outputConnection) > 1) {
-                    Controller.getInstance().setNewChanges();
                     return;
                 }
 
-                //Convert to old method
                 outputConnection.setButtonColor("#63c763ff");
-                /*JSONArray storyData = Story.getInstance().getStoryDataJson().getJSONArray("JOI");
-                int amountOfScenes = Story.getInstance().getStoryDataJson().getJSONArray("JOI").length();
-                for (int i = 0; i < amountOfScenes; i++) {
-                    if (storyData.getJSONObject(i).has("gotoSceneInRange")) {
-                        int gotoValue = storyData.getJSONObject(i).getJSONArray("gotoSceneInRange").getInt(0);
-                        Story.getInstance().addDataToScene(outputConnection.getParentSceneId(), "GotoScene", gotoValue);
-                        Story.getInstance().removeDataFromScene(outputConnection.getParentSceneId(), "gotoSceneInRange");
-                        break;
-                    }
-                }*/
             } else {
                 lineList.remove(boundLine);
                 outputConnection.setBoundLine(null);
                 scene.setGotoScene(null);
             }
         }
-        Controller.getInstance().setNewChanges();
     }
 
     private void addConnectionToStory(AsisConnectionButton outputConnection, AsisConnectionButton inputConnection) {
@@ -247,14 +232,6 @@ public class SceneNodeMainController {
             if(getTotalLinesConnectedToOutput(outputConnection) > 1) {
                 outputConnection.setButtonColor("#c7c763");
                 dialogOption.getGotoScene().addValue(inputConnection.getParentSceneId());
-
-                //Add old value if present
-                /*JSONObject dialogData = Story.getInstance().getDialogData(outputConnection.getParentSceneId()).getJSONArray("option"+outputConnection.getOptionNumber()).getJSONObject(0);
-                if(dialogData.has("GotoScene")) {
-                    int gotoValue = dialogData.getInt("GotoScene");
-                    Story.getInstance().addValueToDialogOptionGotoRange(outputConnection.getParentSceneId(), outputConnection.getOptionNumber(), gotoValue);
-                    Story.getInstance().removeDialogOptionData(outputConnection.getParentSceneId(), outputConnection.getOptionNumber(), "GotoScene");
-                }*/
             } else {
                 dialogOption.setGotoScene(new GotoScene());
                 dialogOption.getGotoScene().addValue(inputConnection.getParentSceneId());
@@ -263,24 +240,11 @@ public class SceneNodeMainController {
             if(getTotalLinesConnectedToOutput(outputConnection) > 1) {
                 outputConnection.setButtonColor("#c7c763");
                 scene.getGotoScene().addValue(inputConnection.getParentSceneId());
-
-                //Add old value if present
-                /*JSONArray storyData = Story.getInstance().getStoryDataJson().getJSONArray("JOI");
-                int amountOfScenes = Story.getInstance().getStoryDataJson().getJSONArray("JOI").length();
-                for(int i=0; i < amountOfScenes; i++) {
-                    if (storyData.getJSONObject(i).has("GotoScene")) {
-                        int gotoValue = storyData.getJSONObject(i).getInt("GotoScene");
-                        Story.getInstance().addValueToSceneGotoRange(outputConnection.getParentSceneId(), gotoValue);
-                        Story.getInstance().removeDataFromScene(outputConnection.getParentSceneId(), "GotoScene");
-                        break;
-                    }
-                }*/
             } else {
                 scene.setGotoScene(new GotoScene());
                 scene.getGotoScene().addValue(inputConnection.getParentSceneId());
             }
         }
-        Controller.getInstance().setNewChanges();
     }
 
     void mouseMoved(MouseEvent mouseEvent) {

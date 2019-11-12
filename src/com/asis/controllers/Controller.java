@@ -21,7 +21,6 @@ import javafx.scene.input.MouseButton;
 import javafx.scene.layout.AnchorPane;
 import javafx.stage.DirectoryChooser;
 import javafx.stage.FileChooser;
-import javafx.stage.Modality;
 import javafx.stage.Stage;
 
 import java.io.File;
@@ -35,17 +34,12 @@ public class Controller {
     private double menuEventY;
     private Boolean addSceneContextMenu = false;
     private static Controller instance = null;
-    private boolean newChanges = false;
     private boolean firstScene = false;
     static boolean createNewProject = false;
 
     private JOIPackage joiPackage = new JOIPackage();
     private ArrayList<Stage> openStages = new ArrayList<>();
     private ArrayList<SceneNode> sceneNodes = new ArrayList<>();
-
-    //These should not be used in any code but the newProject method
-    static File newProjectFile;
-    static String newProjectName;
 
     private SceneNodeMainController sceneNodeMainController;
 
@@ -181,11 +175,11 @@ public class Controller {
             stage.show();
 
             stage.setOnCloseRequest(event -> {
-                /*if(!metaDataForm.getJoiPackage().getMetaData().equals(getJoiPackage().getBackupMetaData())) {
+                if(metaDataForm.changesHaveOccurred()) {
                     if (!new Alerts().confirmationDialog("Warning", "You have unsaved data, are you sure you want to close?")) {
                         event.consume();
                     }
-                }*/
+                }
             });
         } catch (IOException e) {
             AsisUtils.errorDialogWindow(e);
@@ -267,9 +261,19 @@ public class Controller {
         }
     }
 
+    public boolean changesHaveOccurred() {
+        try {
+            final JOIPackage originalPackage = new JOIPackage();
+            originalPackage.importPackageFromDirectory(getJoiPackage().getPackageDirectory());
+            return !originalPackage.getJoi().equals(getJoiPackage().getJoi()) || !originalPackage.getMetaData().equals(getJoiPackage().getMetaData());
+        }catch (RuntimeException e) {
+            return true;
+        }
+    }
+
     public void actionExit() {
         //Check if dialog is needed
-        if(getNewChanges()) {
+        if(changesHaveOccurred()) {
             int choice = new Alerts().unsavedChangesDialog("Warning", "You have unsaved work, are you sure you want to quit?");
             switch (choice) {
                 case 0:
@@ -357,12 +361,8 @@ public class Controller {
         setClickActionForNode(sceneNode);
         getAnchorPane().getChildren().add(sceneNode.getPane());
 
-        if (!firstScene) {
-            setNewChanges();
-        } else {
+        if (firstScene) {
             firstScene = false;
-            //Override any changes caused by story object
-            newChanges = false;
         }
 
         getSceneNodes().add(sceneNode);
@@ -375,51 +375,32 @@ public class Controller {
         sceneNodeMainController.notifySceneRemoved(sceneNode);
 
         anchorPane.getChildren().remove(sceneNode.getPane());
-        setNewChanges();
     }
 
     public void actionNewProject() {
-        try {
-            FXMLLoader fxmlLoader = new FXMLLoader(getClass().getResource("/resources/fxml/dialog_new_project.fxml"));
-            Parent root = fxmlLoader.load();
+        Alerts.newProjectWindow(false);
+    }
 
-            Stage stage = new Stage();
-            stage.initModality(Modality.APPLICATION_MODAL);
-            stage.getIcons().add(new Image(Controller.class.getResourceAsStream("/resources/images/icon.png")));
-            stage.setTitle("New Project");
-            stage.setScene(new Scene(root, 600, 400));
-            stage.showAndWait();
-        } catch (IOException e) {
-            AsisUtils.errorDialogWindow(e);
-        }
+    void processNewProject(File newProjectFile, String newProjectName) {
+        numberOfScenes = 0;
+        anchorPane.getChildren().clear();
+        setJoiPackage(new JOIPackage());
+        addScene();
 
-        if(createNewProject) {
-            numberOfScenes = 0;
-            anchorPane.getChildren().clear();
-            setJoiPackage(new JOIPackage());
-            addScene();
-            newChanges = false;
-            createNewProject = false;
+        String folderPath = newProjectFile.getPath()+"/"+newProjectName;
+        File projectDirectory = new File(folderPath);
+        //noinspection ResultOfMethodCallIgnored
+        projectDirectory.mkdir();
 
-            String folderPath = newProjectFile.getPath()+"/"+newProjectName;
-            File projectDirectory = new File(folderPath);
-            //noinspection ResultOfMethodCallIgnored
-            projectDirectory.mkdir();
+        //Set project directory
+        getJoiPackage().setPackageDirectory(projectDirectory);
 
-            //Set project directory
-            getJoiPackage().setPackageDirectory(projectDirectory);
-
-            //Add project name as the Title in metadata
-            getJoiPackage().getMetaData().setName(newProjectName);
-
-            //Reset newProject variables
-            newProjectName = null;
-            newProjectFile = null;
-        }
+        //Add project name as the Title in metadata
+        getJoiPackage().getMetaData().setName(newProjectName);
     }
 
     public boolean actionLoadProject() {
-        /*if (getNewChanges()) {
+        if (changesHaveOccurred()) {
             int choice = new Alerts().unsavedChangesDialog("Load Project", "You have unsaved work, are you sure you want to continue?");
             switch (choice) {
                 case 0:
@@ -429,8 +410,12 @@ public class Controller {
                     actionSaveProject();
                     break;
             }
-        }*/
+        }
 
+        return processLoadProject();
+    }
+
+    public boolean processLoadProject() {
         DirectoryChooser directoryChooser = new DirectoryChooser();
         directoryChooser.setInitialDirectory(getJoiPackage().getPackageDirectory());
         File file = directoryChooser.showDialog(null);
@@ -442,35 +427,40 @@ public class Controller {
             newJoiPackage.setPackageDirectory(file);
 
             //Load joi
-            if (newJoiPackage.importPackageFromDirectory(file)) {
-                //JOI folder was imported successfully
+            try {
+                if (newJoiPackage.importPackageFromDirectory(file)) {
+                    //JOI folder was imported successfully
 
-                //Reset old variables
-                numberOfScenes = 0;
-                anchorPane.getChildren().clear();
-                getSceneNodes().clear();
-                setJoiPackage(newJoiPackage);
+                    //Reset old variables
+                    numberOfScenes = 0;
+                    anchorPane.getChildren().clear();
+                    getSceneNodes().clear();
+                    setJoiPackage(newJoiPackage);
 
-                //Create scene nodes
-                for(com.asis.joi.components.Scene scene: getJoiPackage().getJoi().getSceneArrayList()) {
-                    addScene(scene.getLayoutXPosition(), scene.getLayoutYPosition(), scene.getSceneTitle(), scene.getSceneId(), true);
+                    //Create scene nodes
+                    for (com.asis.joi.components.Scene scene : getJoiPackage().getJoi().getSceneArrayList()) {
+                        addScene(scene.getLayoutXPosition(), scene.getLayoutYPosition(), scene.getSceneTitle(), scene.getSceneId(), true);
+                    }
+
+                    //Create connections
+                    for (com.asis.joi.components.Scene scene : getJoiPackage().getJoi().getSceneArrayList()) {
+                        createConnectionsForDefaultOutput(scene);
+
+                        createConnectionsForDialogOutputs(scene);
+                    }
+                } else {
+                    return false;
                 }
 
-                //Create connections
-                for(com.asis.joi.components.Scene scene: getJoiPackage().getJoi().getSceneArrayList()) {
-                    createConnectionsForDefaultOutput(scene);
-
-                    createConnectionsForDialogOutputs(scene);
-                }
-            } else {
+                //Loading completed successfully
+                return true;
+            } catch (RuntimeException e) {
+                Alerts.messageDialog("LOADING FAILED", "The editor was unable to load this joi for the following reason:\n"+e.getMessage(), 600, 200);
                 return false;
             }
-
-            //Loading completed successfully
-            return true;
         }
 
-        //Loading failed to null file
+        //Loading failed do to null file
         return false;
     }
 
@@ -595,13 +585,6 @@ public class Controller {
     }
 
     //Getters and setters
-    public void setNewChanges() {
-        this.newChanges = true;
-    }
-    public boolean getNewChanges() {
-        return newChanges;
-    }
-
     public ArrayList<Stage> getOpenStages() {
         return openStages;
     }

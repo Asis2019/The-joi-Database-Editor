@@ -79,14 +79,36 @@ public class MetaData implements JOISystemInterface{
         return getMetaDataAsJson().toString(4);
     }
 
+    @Override
+    public boolean equals(Object object) {
+        if (this == object) return true;
+        if (!(object instanceof MetaData)) return false;
+
+        MetaData metaData = (MetaData) object;
+
+        if (getJoiIcon() != null ? !getJoiIcon().equals(metaData.getJoiIcon()) : metaData.getJoiIcon() != null)
+            return false;
+        if (getPreparations() != null ? !getPreparations().equals(metaData.getPreparations()) : metaData.getPreparations() != null)
+            return false;
+        if (getName() != null ? !getName().equals(metaData.getName()) : metaData.getName() != null) return false;
+        if (getJoiId() != null ? !getJoiId().equals(metaData.getJoiId()) : metaData.getJoiId() != null) return false;
+        if (getVersionAdded() != null ? !getVersionAdded().equals(metaData.getVersionAdded()) : metaData.getVersionAdded() != null)
+            return false;
+        if (getDisplayedFetishes() != null ? !getDisplayedFetishes().equals(metaData.getDisplayedFetishes()) : metaData.getDisplayedFetishes() != null)
+            return false;
+        if (!getFetishList().equals(metaData.getFetishList())) return false;
+        if (!getCharacterList().equals(metaData.getCharacterList())) return false;
+        return getEquipmentList().equals(metaData.getEquipmentList());
+    }
+
     public static void addCommaSeparatedStringToList(String commaSeparatedString, ArrayList<String> list) {
         list.clear();
         list.addAll(Arrays.asList(commaSeparatedString.trim().split("\\s*,\\s*")));
     }
 
     private static void addListToJsonObject(JSONObject object, String key, ArrayList list) {
-        for(int i=0; i<list.size(); i++) {
-            object.put(key+i, list.get(i));
+        for (int i = 0; i < list.size(); i++) {
+            object.put(key + i, list.get(i));
         }
     }
 

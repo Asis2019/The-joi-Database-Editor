@@ -1,7 +1,6 @@
 package com.asis.joi;
 
 import com.asis.joi.components.Scene;
-import com.asis.utilities.Alerts;
 import com.asis.utilities.AsisUtils;
 
 import java.io.File;
@@ -21,7 +20,8 @@ public class JOIPackage {
         this(new File("defaultWorkspace"));
     }
     public JOIPackage(File packageDirectory) {
-        if(!packageDirectory.exists()) packageDirectory.mkdir();
+        if(!packageDirectory.exists()) //noinspection ResultOfMethodCallIgnored
+            packageDirectory.mkdir();
 
         setPackageDirectory(packageDirectory);
     }
@@ -43,8 +43,10 @@ public class JOIPackage {
             if (getMetaData().getJoiIcon() != null) metaDataIcon = getMetaData().getJoiIcon();
 
             Files.copy(metaDataIcon.toPath(), exportDirectory.toPath().resolve(metaDataIcon.getName()), StandardCopyOption.REPLACE_EXISTING);
-            Files.deleteIfExists(new File(exportDirectory.toString() + "\\" +"joi_icon.png").toPath());
-            AsisUtils.renameFile(new File(exportDirectory.toPath() + "\\" + metaDataIcon.getName()), "joi_icon.png");
+            if(!metaDataIcon.getName().equals("joi_icon.png")) {
+                Files.deleteIfExists(new File(exportDirectory.toString() + "/" + "joi_icon.png").toPath());
+                AsisUtils.renameFile(new File(exportDirectory.toPath() + "/" + metaDataIcon.getName()), "joi_icon.png");
+            }
 
             //Export completed successfully
             return true;
@@ -82,7 +84,7 @@ public class JOIPackage {
         }
     }
 
-    public boolean importPackageFromDirectory(File importDirectory) {
+    public boolean importPackageFromDirectory(File importDirectory) throws RuntimeException {
         //set package directory to importLocation
         setPackageDirectory(importDirectory);
 
@@ -109,9 +111,6 @@ public class JOIPackage {
             return true;
         } catch (NullPointerException e) {
             e.printStackTrace();
-            return false;
-        } catch (RuntimeException e) {
-            Alerts.messageDialog("LOADING FAILED", "The editor was unable to load this joi for the following reason:\n"+e.getMessage(), 600, 200);
             return false;
         }
     }

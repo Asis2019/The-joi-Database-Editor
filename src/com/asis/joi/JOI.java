@@ -64,6 +64,17 @@ public class JOI implements JOISystemInterface {
         return getJOIAsJson().toString(4);
     }
 
+    @Override
+    public boolean equals(Object object) {
+        if (this == object) return true;
+        if (!(object instanceof JOI)) return false;
+
+        JOI joi = (JOI) object;
+
+        if (getSceneIdCounter() != joi.getSceneIdCounter()) return false;
+        return getSceneArrayList().equals(joi.getSceneArrayList());
+    }
+
     //Getters and Setters
     public ArrayList<Scene> getSceneArrayList() {
         return sceneArrayList;

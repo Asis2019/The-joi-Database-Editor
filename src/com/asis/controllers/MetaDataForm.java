@@ -15,8 +15,6 @@ import javafx.stage.Stage;
 import java.io.File;
 
 public class MetaDataForm {
-    //TODO like in main, implement change checking into core joi system
-
     private File iconFile = null;
     private ImageView imageView = new ImageView();
     private JOIPackage joiPackage;
@@ -59,6 +57,11 @@ public class MetaDataForm {
         getImageView().setOnMouseClicked(mouseEvent -> addIcon());
     }
 
+    boolean changesHaveOccurred() {
+        MetaData currentData = addFieldDataToMetaData();
+        return !getJoiPackage().getMetaData().equals(currentData);
+    }
+
     public void addIcon() {
         FileChooser fileChooser = new FileChooser();
         fileChooser.setTitle("Add Icon");
@@ -87,7 +90,15 @@ public class MetaDataForm {
 
     public void actionSaveButton() {
         //Process data from fields
-        MetaData metaData = getJoiPackage().getMetaData();
+        getJoiPackage().setMetaData(addFieldDataToMetaData());
+
+        //Close window
+        Stage stage = (Stage) mainVBox.getScene().getWindow();
+        stage.close();
+    }
+
+    private MetaData addFieldDataToMetaData() {
+        MetaData metaData = new MetaData();
 
         metaData.setJoiIcon(getIconFile());
 
@@ -101,16 +112,14 @@ public class MetaDataForm {
         MetaData.addCommaSeparatedStringToList(equipmentTextArea.getText(), metaData.getEquipmentList());
         MetaData.addCommaSeparatedStringToList(charactersTextArea.getText(), metaData.getCharacterList());
 
-        //Close window
-        Stage stage = (Stage) mainVBox.getScene().getWindow();
-        stage.close();
+        return metaData;
     }
 
     //Getters and setters
-    public JOIPackage getJoiPackage() {
+    private JOIPackage getJoiPackage() {
         return joiPackage;
     }
-    public void setJoiPackage(JOIPackage joiPackage) {
+    private void setJoiPackage(JOIPackage joiPackage) {
         this.joiPackage = joiPackage;
     }
 
