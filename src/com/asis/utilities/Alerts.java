@@ -142,6 +142,7 @@ public class Alerts {
             stage.setScene(new Scene(root, 600, 400));
             stage.showAndWait();
         } catch (IOException e) {
+            e.printStackTrace();
             AsisUtils.errorDialogWindow(e);
         }
     }

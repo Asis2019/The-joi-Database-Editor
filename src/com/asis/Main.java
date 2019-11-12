@@ -20,6 +20,8 @@ public class Main extends Application {
         primaryStage.getIcons().add(new Image(getClass().getResourceAsStream("/resources/images/icon.png")));
         primaryStage.setScene(main_scene);
         primaryStage.setTitle("The joi Database Editor");
+        primaryStage.setMinWidth(640);
+        primaryStage.setMinHeight(480);
         primaryStage.show();
         primaryStage.setMaximized(true);
 

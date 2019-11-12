@@ -2,6 +2,8 @@ package com.asis.joi;
 
 import com.asis.joi.components.Scene;
 import com.asis.utilities.AsisUtils;
+import com.asis.utilities.Config;
+import org.json.JSONArray;
 
 import java.io.File;
 import java.io.IOException;
@@ -90,16 +92,16 @@ public class JOIPackage {
 
         try {
             //Start loading chain for joi
-            File joiFile = new File(importDirectory, String.format("joi_text_%s.json", getPackageLanguageCode()));
-            if(joiFile.exists()) {
+            File joiFile = getFileThatExists(importDirectory, "joi_text_%s.json");
+            if(joiFile != null) {
                 getJoi().setDataFromJson(AsisUtils.readJsonFromFile(joiFile), importDirectory);
             } else {
                 throw new RuntimeException("No joi file was found in the selected folder");
             }
 
             //Initiate loading for metaData
-            File metaDataFile = new File(importDirectory, String.format("info_%s.json", getPackageLanguageCode()));
-            if(metaDataFile.exists()) {
+            File metaDataFile = getFileThatExists(importDirectory, "info_%s.json");
+            if(metaDataFile != null) {
                 //Set meta data icon
                 File metaDataIcon = new File(importDirectory, "joi_icon.png");
                 if(metaDataIcon.exists()) getMetaData().setJoiIcon(metaDataIcon);
@@ -110,9 +112,24 @@ public class JOIPackage {
 
             return true;
         } catch (NullPointerException e) {
-            e.printStackTrace();
+            AsisUtils.errorDialogWindow(e);
             return false;
         }
+    }
+
+    private File getFileThatExists(File importDirectory, String fileName) {
+        Object data = Config.get("LANGUAGES");
+        if(data instanceof JSONArray) {
+            JSONArray jsonArray = ((JSONArray) data);
+            for(int i=0; i<jsonArray.length(); i++) {
+                final String fileCode = jsonArray.getJSONObject(i).getString("file_code");
+                File file = new File(importDirectory, String.format(fileName, fileCode));
+                if(file.exists()) {
+                    return file;
+                }
+            }
+        }
+        return null;
     }
 
     //Getters and Setters

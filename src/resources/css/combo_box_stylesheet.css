@@ -1,0 +1,35 @@
+.combo-box .list-cell {
+    -fx-background-color: transparent;
+    -fx-text-fill: rgb(187, 187, 187);
+}
+
+.combo-box-popup .list-view {
+    -fx-background-color: rgb(100, 100, 100), rgb(100, 100, 100);
+    -fx-background-radius: 0;
+}
+
+.combo-box-popup .list-view .list-cell {
+    -fx-background-color: rgb(69, 73, 74);
+}
+
+.combo-box-popup .list-view .list-cell:filled:hover {
+    -fx-background-color: rgb(75,110,175);
+}
+
+.combo-box-base {
+    -fx-background-color: rgb(69, 73, 74);
+    -fx-background-radius: 0;
+
+    -fx-border-color: rgb(100, 100, 100);
+    -fx-border-width: 1;
+
+    -fx-text-fill: rgb(187, 187, 187);
+}
+
+.combo-box-base:hover {
+    -fx-color: -fx-hover-base;
+}
+
+.combo-box-base:showing {
+    -fx-color: -fx-pressed-base;
+}

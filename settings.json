@@ -1,0 +1,21 @@
+{
+  "LANGUAGES": [{
+    "menu_name": "English",
+    "file_code": "en"
+  }, {
+    "menu_name": "Français",
+    "file_code": "fr"
+  }, {
+    "menu_name": "Русский",
+    "file_code": "ru"
+  }, {
+    "menu_name": "Deutsch",
+    "file_code": "de"
+  }, {
+    "menu_name": "Čeština",
+    "file_code": "cz"
+  }, {
+    "menu_name": "Español",
+    "file_code": "es"
+  }]
+}

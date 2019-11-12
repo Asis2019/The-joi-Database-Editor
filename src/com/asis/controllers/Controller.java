@@ -35,7 +35,6 @@ public class Controller {
     private Boolean addSceneContextMenu = false;
     private static Controller instance = null;
     private boolean firstScene = false;
-    static boolean createNewProject = false;
 
     private JOIPackage joiPackage = new JOIPackage();
     private ArrayList<Stage> openStages = new ArrayList<>();
@@ -264,6 +263,7 @@ public class Controller {
     public boolean changesHaveOccurred() {
         try {
             final JOIPackage originalPackage = new JOIPackage();
+            originalPackage.setPackageLanguageCode(getJoiPackage().getPackageLanguageCode());
             originalPackage.importPackageFromDirectory(getJoiPackage().getPackageDirectory());
             return !originalPackage.getJoi().equals(getJoiPackage().getJoi()) || !originalPackage.getMetaData().equals(getJoiPackage().getMetaData());
         }catch (RuntimeException e) {
@@ -381,14 +381,13 @@ public class Controller {
         Alerts.newProjectWindow(false);
     }
 
-    void processNewProject(File newProjectFile, String newProjectName) {
+    void processNewProject(File newProjectFile, String newProjectName, String defaultProjectLanguageCode) {
         numberOfScenes = 0;
         anchorPane.getChildren().clear();
         setJoiPackage(new JOIPackage());
         addScene();
 
-        String folderPath = newProjectFile.getPath()+"/"+newProjectName;
-        File projectDirectory = new File(folderPath);
+        File projectDirectory = new File(newProjectFile.getPath()+"/"+newProjectName);
         //noinspection ResultOfMethodCallIgnored
         projectDirectory.mkdir();
 
@@ -397,6 +396,9 @@ public class Controller {
 
         //Add project name as the Title in metadata
         getJoiPackage().getMetaData().setName(newProjectName);
+
+        //Set default language code of package
+        getJoiPackage().setPackageLanguageCode(defaultProjectLanguageCode);
     }
 
     public boolean actionLoadProject() {
