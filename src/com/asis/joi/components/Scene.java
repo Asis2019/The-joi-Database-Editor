@@ -2,7 +2,6 @@ package com.asis.joi.components;
 
 import com.asis.joi.JOISystemInterface;
 import com.asis.joi.components.dialog.Dialog;
-import com.asis.utilities.AsisUtils;
 import javafx.beans.property.ReadOnlyBooleanWrapper;
 import org.json.JSONObject;
 
@@ -86,7 +85,7 @@ public class Scene implements JOISystemInterface {
 
         //Merge return object from gotoScene with current
         if(getGotoScene() != null) {
-            AsisUtils.mergeJSONObjects(sceneObject, getGotoScene().getGotoSceneAsJson());
+            sceneObject.put(getGotoScene().getJsonKeyName(), getGotoScene().getJsonValue());
         }
 
         for(int i=0; i<getLineArrayList().size(); i++) {

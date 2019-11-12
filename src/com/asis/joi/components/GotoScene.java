@@ -32,16 +32,12 @@ public class GotoScene implements JOISystemInterface {
         }
     }
 
-    public JSONObject getGotoSceneAsJson() {
-        JSONObject object = new JSONObject();
-
+    public Object getJsonValue() {
         if(getJsonKeyName().equals("gotoScene")) {
-            object.put(getJsonKeyName(), getGotoSceneArrayList().get(0));
+            return getGotoSceneArrayList().get(0);
         } else {
-            object.put(getJsonKeyName(), getGotoSceneArrayList().toArray());
+            return getGotoSceneArrayList().toArray();
         }
-
-        return object;
     }
 
     @Override
@@ -56,7 +52,9 @@ public class GotoScene implements JOISystemInterface {
 
     @Override
     public String toString() {
-        return getGotoSceneAsJson().toString(4);
+        JSONObject object = new JSONObject();
+        object.put(getJsonKeyName(), getJsonValue());
+        return object.toString(4);
     }
 
     @Override

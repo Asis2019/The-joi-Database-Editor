@@ -160,6 +160,8 @@ public class Controller {
     }
 
     public void actionOpenMetadata() {
+        if (requestStageIfOpen("metaData")) return;
+
         try {
             FXMLLoader fxmlLoader = new FXMLLoader(getClass().getResource("/resources/fxml/meta_data_form.fxml"));
             Parent root = fxmlLoader.load();
@@ -170,6 +172,7 @@ public class Controller {
             Stage stage = new Stage();
             stage.getIcons().add(new Image(Controller.class.getResourceAsStream("/resources/images/icon.png")));
             stage.setTitle("Project Details");
+            stage.setUserData("metaData");
             stage.setScene(new Scene(root, 400, 720));
             stage.show();
 
@@ -179,7 +182,9 @@ public class Controller {
                         event.consume();
                     }
                 }
+                getOpenStages().remove(stage);
             });
+            getOpenStages().add(stage);
         } catch (IOException e) {
             AsisUtils.errorDialogWindow(e);
         }
@@ -230,13 +235,7 @@ public class Controller {
     }
 
     private void openSceneDetails(SceneNode sceneNode) {
-        //Check if stage already exists
-        for(Stage stage: getOpenStages()) {
-            if((int) stage.getUserData() == sceneNode.getSceneId()) {
-                stage.requestFocus();
-                return;
-            }
-        }
+        if (requestStageIfOpen(sceneNode.getSceneId())) return;
 
         //Open new window
         try {
@@ -258,6 +257,17 @@ public class Controller {
         } catch (IOException e) {
             AsisUtils.errorDialogWindow(e);
         }
+    }
+
+    private boolean requestStageIfOpen(Object userData) {
+        //Check if stage already exists
+        for(Stage stage: getOpenStages()) {
+            if(stage.getUserData().equals(userData)) {
+                stage.requestFocus();
+                return true;
+            }
+        }
+        return false;
     }
 
     public boolean changesHaveOccurred() {
@@ -438,6 +448,11 @@ public class Controller {
                     anchorPane.getChildren().clear();
                     getSceneNodes().clear();
                     setJoiPackage(newJoiPackage);
+                    sceneNodeMainController.setJoiPackage(newJoiPackage);
+                    for(Stage stage: getOpenStages()) {
+                        stage.close();
+                    }
+                    getOpenStages().clear();
 
                     //Create scene nodes
                     for (com.asis.joi.components.Scene scene : getJoiPackage().getJoi().getSceneArrayList()) {

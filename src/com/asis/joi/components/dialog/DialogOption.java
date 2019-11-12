@@ -2,7 +2,6 @@ package com.asis.joi.components.dialog;
 
 import com.asis.joi.JOISystemInterface;
 import com.asis.joi.components.GotoScene;
-import com.asis.utilities.AsisUtils;
 import org.json.JSONArray;
 import org.json.JSONObject;
 
@@ -21,7 +20,7 @@ public class DialogOption implements JOISystemInterface {
     public JSONObject getDialogOptionAsJson() {
         JSONObject object = new JSONObject();
         object.put("text", getOptionText());
-        if(getGotoScene() != null)  AsisUtils.mergeJSONObjects(object, getGotoScene().getGotoSceneAsJson());
+        if(getGotoScene() != null)  object.put(getGotoScene().getJsonKeyName(), getGotoScene().getJsonValue());
 
         JSONArray wrapper = new JSONArray();
         wrapper.put(object);

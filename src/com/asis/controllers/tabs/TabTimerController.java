@@ -146,7 +146,7 @@ public class TabTimerController extends TabController {
             setVisibleImage();
 
             //total timer
-            JSONObject timerObject = getTimer().getTimerAsJson();
+            JSONObject timerObject = getTimer().getTimerAsJson().getJSONObject(0);
 
             if(timerObject != null) {
                 if(timerObject.has("totalTime")) {
@@ -207,7 +207,7 @@ public class TabTimerController extends TabController {
         TreeItem<String> root = new TreeItem<>("Timer");
         getObjectTree().setRoot(root);
 
-        JSONObject timerObject = getTimer().getTimerAsJson();
+        JSONObject timerObject = getTimer().getTimerAsJson().getJSONObject(0);
 
         if(timerObject != null && !timerObject.isEmpty()) {
             for (int i = 0; i < timerObject.names().length(); i++) {

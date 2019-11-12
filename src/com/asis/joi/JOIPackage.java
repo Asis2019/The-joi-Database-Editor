@@ -44,15 +44,17 @@ public class JOIPackage {
             File metaDataIcon = new File(this.getClass().getResource("/resources/images/icon_dev.png").getPath());
             if (getMetaData().getJoiIcon() != null) metaDataIcon = getMetaData().getJoiIcon();
 
-            Files.copy(metaDataIcon.toPath(), exportDirectory.toPath().resolve(metaDataIcon.getName()), StandardCopyOption.REPLACE_EXISTING);
-            if(!metaDataIcon.getName().equals("joi_icon.png")) {
-                Files.deleteIfExists(new File(exportDirectory.toString() + "/" + "joi_icon.png").toPath());
-                AsisUtils.renameFile(new File(exportDirectory.toPath() + "/" + metaDataIcon.getName()), "joi_icon.png");
+            if(metaDataIcon.exists()) {
+                Files.copy(metaDataIcon.toPath(), exportDirectory.toPath().resolve(metaDataIcon.getName()), StandardCopyOption.REPLACE_EXISTING);
+                if (!metaDataIcon.getName().equals("joi_icon.png")) {
+                    Files.deleteIfExists(new File(exportDirectory.toString() + "/" + "joi_icon.png").toPath());
+                    AsisUtils.renameFile(new File(exportDirectory.toPath() + "/" + metaDataIcon.getName()), "joi_icon.png");
+                }
             }
 
             //Export completed successfully
             return true;
-        } catch (IOException e) {
+        } catch (Exception e) {
             AsisUtils.errorDialogWindow(e);
             return false;
         }
@@ -100,8 +102,8 @@ public class JOIPackage {
             }
 
             //Initiate loading for metaData
-            File metaDataFile = getFileThatExists(importDirectory, "info_%s.json");
-            if(metaDataFile != null) {
+            File metaDataFile = new File(importDirectory, String.format("info_%s.json",getPackageLanguageCode()));
+            if(metaDataFile.exists()) {
                 //Set meta data icon
                 File metaDataIcon = new File(importDirectory, "joi_icon.png");
                 if(metaDataIcon.exists()) getMetaData().setJoiIcon(metaDataIcon);
@@ -114,6 +116,8 @@ public class JOIPackage {
         } catch (NullPointerException e) {
             AsisUtils.errorDialogWindow(e);
             return false;
+        } catch (IOException e) {
+            throw new RuntimeException("Loading failed do to an IOException:\n"+e.getMessage());
         }
     }
 
@@ -125,6 +129,7 @@ public class JOIPackage {
                 final String fileCode = jsonArray.getJSONObject(i).getString("file_code");
                 File file = new File(importDirectory, String.format(fileName, fileCode));
                 if(file.exists()) {
+                    setPackageLanguageCode(fileCode);
                     return file;
                 }
             }

@@ -1,6 +1,7 @@
 package com.asis.joi.components;
 
 import com.asis.joi.JOISystemInterface;
+import org.json.JSONArray;
 import org.json.JSONObject;
 
 import java.io.File;
@@ -18,7 +19,7 @@ public class Timer implements JOISystemInterface {
         return getLineArrayList().remove(getLine(lineNumber));
     }
 
-    public JSONObject getTimerAsJson() {
+    public JSONArray getTimerAsJson() {
         //Make new Object
         JSONObject timerObject = new JSONObject();
 
@@ -28,7 +29,8 @@ public class Timer implements JOISystemInterface {
             timerObject.put("line"+line.getLineNumber(), line.getLineAsJson());
         }
 
-        return timerObject;
+        JSONArray wrapper = new JSONArray();
+        return wrapper.put(timerObject);
     }
 
     public Line getLine(int lineNumber) {
