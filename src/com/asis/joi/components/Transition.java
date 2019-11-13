@@ -19,7 +19,7 @@ public class Transition implements JOISystemInterface {
         if(getTransitionTextColor() != null) data.put("transitionTextColor", getTransitionTextColor());
         if(getTransitionTextOutlineColor() != null) data.put("transitionTextOutlineColor", getTransitionTextOutlineColor());
         if(getTransitionText() != null) data.put("transitionText", getTransitionText());
-        data.put("waitTime", getWaitTime());
+        if(getWaitTime() != 0) data.put("waitTime", getWaitTime()); //Do to a game bug waitTime can't be 0 or the game will not finish the transition
         data.put("fadeSpeed", convertSecondsToGameTime(getFadeSpeed()));
 
         JSONArray transitionArray = new JSONArray();

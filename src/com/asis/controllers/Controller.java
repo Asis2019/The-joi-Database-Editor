@@ -180,9 +180,11 @@ public class Controller {
                 if(metaDataForm.changesHaveOccurred()) {
                     if (!new Alerts().confirmationDialog("Warning", "You have unsaved data, are you sure you want to close?")) {
                         event.consume();
+                        return;
                     }
                 }
                 getOpenStages().remove(stage);
+                stage.close();
             });
             getOpenStages().add(stage);
         } catch (IOException e) {
@@ -392,9 +394,7 @@ public class Controller {
     }
 
     void processNewProject(File newProjectFile, String newProjectName, String defaultProjectLanguageCode) {
-        numberOfScenes = 0;
-        anchorPane.getChildren().clear();
-        setJoiPackage(new JOIPackage());
+        resetJoiPackage(new JOIPackage());
         addScene();
 
         File projectDirectory = new File(newProjectFile.getPath()+"/"+newProjectName);
@@ -409,6 +409,18 @@ public class Controller {
 
         //Set default language code of package
         getJoiPackage().setPackageLanguageCode(defaultProjectLanguageCode);
+    }
+
+    private void resetJoiPackage(JOIPackage joiPackage) {
+        numberOfScenes = 0;
+        anchorPane.getChildren().clear();
+        getSceneNodes().clear();
+        setJoiPackage(joiPackage);
+        sceneNodeMainController.setJoiPackage(joiPackage);
+        for(Stage stage: getOpenStages()) {
+            stage.close();
+        }
+        getOpenStages().clear();
     }
 
     public boolean actionLoadProject() {
@@ -444,15 +456,7 @@ public class Controller {
                     //JOI folder was imported successfully
 
                     //Reset old variables
-                    numberOfScenes = 0;
-                    anchorPane.getChildren().clear();
-                    getSceneNodes().clear();
-                    setJoiPackage(newJoiPackage);
-                    sceneNodeMainController.setJoiPackage(newJoiPackage);
-                    for(Stage stage: getOpenStages()) {
-                        stage.close();
-                    }
-                    getOpenStages().clear();
+                    resetJoiPackage(newJoiPackage);
 
                     //Create scene nodes
                     for (com.asis.joi.components.Scene scene : getJoiPackage().getJoi().getSceneArrayList()) {

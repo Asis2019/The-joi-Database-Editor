@@ -11,6 +11,7 @@ import javafx.scene.image.ImageView;
 import javafx.scene.layout.VBox;
 import javafx.stage.FileChooser;
 import javafx.stage.Stage;
+import javafx.stage.WindowEvent;
 
 import java.io.File;
 
@@ -94,7 +95,7 @@ public class MetaDataForm {
 
         //Close window
         Stage stage = (Stage) mainVBox.getScene().getWindow();
-        stage.close();
+        stage.fireEvent(new WindowEvent(stage, WindowEvent.WINDOW_CLOSE_REQUEST));
     }
 
     private MetaData addFieldDataToMetaData() {

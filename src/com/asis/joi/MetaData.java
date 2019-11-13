@@ -102,8 +102,10 @@ public class MetaData implements JOISystemInterface{
     }
 
     public static void addCommaSeparatedStringToList(String commaSeparatedString, ArrayList<String> list) {
-        list.clear();
-        list.addAll(Arrays.asList(commaSeparatedString.trim().split("\\s*,\\s*")));
+        if(!commaSeparatedString.trim().isEmpty()) {
+            list.clear();
+            list.addAll(Arrays.asList(commaSeparatedString.trim().split("\\s*,\\s*")));
+        }
     }
 
     private static void addListToJsonObject(JSONObject object, String key, ArrayList list) {
