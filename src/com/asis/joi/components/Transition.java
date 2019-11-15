@@ -1,6 +1,7 @@
 package com.asis.joi.components;
 
 import com.asis.joi.JOISystemInterface;
+import com.asis.utilities.AsisUtils;
 import org.json.JSONArray;
 import org.json.JSONObject;
 
@@ -10,7 +11,7 @@ import java.util.Iterator;
 public class Transition implements JOISystemInterface {
     private String fadeColor, transitionTextColor="#ffffff", transitionTextOutlineColor="#000000", transitionText;
     private int waitTime = 0;
-    private double fadeSpeed = 0.02;
+    private double fadeSpeed = 1; //stored as seconds
 
     public JSONArray getTransitionAsJson() {
         JSONObject data = new JSONObject();
@@ -18,11 +19,16 @@ public class Transition implements JOISystemInterface {
         if(getTransitionTextColor() != null) data.put("transitionTextColor", getTransitionTextColor());
         if(getTransitionTextOutlineColor() != null) data.put("transitionTextOutlineColor", getTransitionTextOutlineColor());
         if(getTransitionText() != null) data.put("transitionText", getTransitionText());
-        data.put("waitTime", getWaitTime());
-        data.put("fadeSpeed", getFadeSpeed());
+        if(getWaitTime() != 0) data.put("waitTime", getWaitTime()); //Do to a game bug waitTime can't be 0 or the game will not finish the transition
+        data.put("fadeSpeed", convertSecondsToGameTime(getFadeSpeed()));
 
         JSONArray transitionArray = new JSONArray();
         return transitionArray.put(data);
+    }
+
+    private static double convertSecondsToGameTime(double timeInSeconds) {
+        final double fadeSpeed = 1 / (timeInSeconds * 60);
+        return AsisUtils.clamp(fadeSpeed, 0.0000000001, 5);
     }
 
     @Override
@@ -54,7 +60,7 @@ public class Transition implements JOISystemInterface {
                 setWaitTime(jsonObject.getInt("waitTime"));
                 break;
             case "fadeSpeed":
-                setFadeSpeed(jsonObject.getDouble("fadeSpeed"));
+                setFadeSpeed(convertSecondsToGameTime(jsonObject.getDouble("fadeSpeed")));
                 break;
         }
     }
@@ -62,6 +68,22 @@ public class Transition implements JOISystemInterface {
     @Override
     public String toString() {
         return getTransitionAsJson().toString(4);
+    }
+
+    @Override
+    public boolean equals(Object object) {
+        if (this == object) return true;
+        if (!(object instanceof Transition)) return false;
+
+        Transition that = (Transition) object;
+
+        if (getWaitTime() != that.getWaitTime()) return false;
+        if (Double.compare(that.getFadeSpeed(), getFadeSpeed()) != 0) return false;
+        if (getFadeColor() != null ? !getFadeColor().equals(that.getFadeColor()) : that.getFadeColor() != null)
+            return false;
+        if (!getTransitionTextColor().equals(that.getTransitionTextColor())) return false;
+        if (!getTransitionTextOutlineColor().equals(that.getTransitionTextOutlineColor())) return false;
+        return getTransitionText() != null ? getTransitionText().equals(that.getTransitionText()) : that.getTransitionText() == null;
     }
 
     //Getters and Setters

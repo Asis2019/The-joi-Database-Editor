@@ -1,4 +1,7 @@
 #mainTextArea {
+    fill-color: white;
+    outline-color: black;
+
     -fx-background-color: rgba(86,86,86,0.5);
     -fx-background-radius: 5;
     -fx-background-insets: 0;

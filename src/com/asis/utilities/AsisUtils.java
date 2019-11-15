@@ -9,8 +9,10 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.io.*;
+import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.util.ArrayList;
+import java.util.stream.Collectors;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipOutputStream;
 
@@ -67,17 +69,17 @@ public class AsisUtils {
     }
 
     public static void writeJsonToFile(JSONObject jsonObject, String fileName, File saveLocation) throws IOException {
-        FileWriter fileWriter = new FileWriter(saveLocation.toPath() + File.separator + fileName);
-        fileWriter.write(jsonObject.toString(4));
-        fileWriter.flush();
-        fileWriter.close();
+        try (BufferedWriter bufferedWriter = new BufferedWriter(new OutputStreamWriter(new FileOutputStream(saveLocation.toPath() + File.separator + fileName), StandardCharsets.UTF_8))) {
+            bufferedWriter.write(jsonObject.toString(4));
+        }
     }
 
-    public static JSONObject readJsonFromFile(File file) {
+    public static JSONObject readJsonFromFile(File file) throws IOException {
         try {
-            String text = new String(Files.readAllBytes(file.toPath()));
+            BufferedReader bufferedReader = Files.newBufferedReader(file.toPath(), StandardCharsets.UTF_8);
+            String text = bufferedReader.lines().collect(Collectors.joining(System.lineSeparator()));
             return new JSONObject(text);
-        } catch (IOException | JSONException e) {
+        } catch (JSONException e) {
             errorDialogWindow(e);
         }
         return null;

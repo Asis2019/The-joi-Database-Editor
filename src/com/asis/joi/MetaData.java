@@ -1,5 +1,6 @@
 package com.asis.joi;
 
+import com.asis.controllers.Controller;
 import org.json.JSONArray;
 import org.json.JSONObject;
 
@@ -15,13 +16,21 @@ public class MetaData implements JOISystemInterface{
     private ArrayList<String> characterList = new ArrayList<>();
     private ArrayList<String> equipmentList = new ArrayList<>();
 
+    public MetaData() {
+
+    }
+    public MetaData(MetaData metaData) {
+        JSONObject object = metaData.getMetaDataAsJson().getJSONArray("JOI METADATA").getJSONObject(0);
+        setDataFromJson(object, Controller.getInstance().getJoiPackage().getPackageDirectory());
+    }
+
     public JSONObject getMetaDataAsJson() {
         JSONObject innerObject = new JSONObject();
-        innerObject.put("joiId", getJoiId());
-        innerObject.put("preparations", getPreparations());
-        innerObject.put("name", getName());
-        innerObject.put("versionAdded", getVersionAdded());
-        innerObject.put("displayedFetishes", getDisplayedFetishes());
+        addStringToJsonWithDefault(innerObject, getName(), getJoiId(),"joiId");
+        addStringToJsonWithDefault(innerObject, "No preparations needed.", getPreparations(),"preparations");
+        addStringToJsonWithDefault(innerObject, "", getName(),"name");
+        addStringToJsonWithDefault(innerObject, "", getVersionAdded(),"versionAdded");
+        addStringToJsonWithDefault(innerObject, "", getDisplayedFetishes(),"displayedFetishes");
 
         addListToJsonObject(innerObject, "fetish", getFetishList());
         addListToJsonObject(innerObject, "character", getCharacterList());
@@ -79,13 +88,46 @@ public class MetaData implements JOISystemInterface{
         return getMetaDataAsJson().toString(4);
     }
 
+    @Override
+    public boolean equals(Object object) {
+        if (this == object) return true;
+        if (!(object instanceof MetaData)) return false;
+
+        MetaData metaData = (MetaData) object;
+
+        if (getJoiIcon() != null ? !getJoiIcon().equals(metaData.getJoiIcon()) : metaData.getJoiIcon() != null)
+            return false;
+
+        if (getPreparations() != null ? !getPreparations().equals(metaData.getPreparations()) : metaData.getPreparations() != null)
+            return false;
+
+        if (getName() != null ? !getName().equals(metaData.getName()) : metaData.getName() != null) return false;
+
+        if (getJoiId() != null ? !getJoiId().equals(metaData.getJoiId()) : metaData.getJoiId() != null) return false;
+
+        if (getVersionAdded() != null ? !getVersionAdded().equals(metaData.getVersionAdded()) : metaData.getVersionAdded() != null)
+            return false;
+
+        if (getDisplayedFetishes() != null ? !getDisplayedFetishes().equals(metaData.getDisplayedFetishes()) : metaData.getDisplayedFetishes() != null)
+            return false;
+
+        if (!getFetishList().equals(metaData.getFetishList())) return false;
+
+        if (!getCharacterList().equals(metaData.getCharacterList())) return false;
+
+        return getEquipmentList().equals(metaData.getEquipmentList());
+    }
+
     public static void addCommaSeparatedStringToList(String commaSeparatedString, ArrayList<String> list) {
-        list.addAll(Arrays.asList(commaSeparatedString.trim().split("\\s*,\\s*")));
+        if(!commaSeparatedString.trim().isEmpty()) {
+            list.clear();
+            list.addAll(Arrays.asList(commaSeparatedString.trim().split("\\s*,\\s*")));
+        }
     }
 
     private static void addListToJsonObject(JSONObject object, String key, ArrayList list) {
-        for(int i=0; i<list.size(); i++) {
-            object.put(key+i, list.get(i));
+        for (int i = 0; i < list.size(); i++) {
+            object.put(key + i, list.get(i));
         }
     }
 
@@ -95,6 +137,10 @@ public class MetaData implements JOISystemInterface{
             listToPopulate.add(jsonObject.getString(categoryKey+i));
             i++;
         }
+    }
+
+    private static void addStringToJsonWithDefault(JSONObject object, String defaultValue, String value, String key) {
+        object.put(key, value != null && !value.isEmpty() ? value : defaultValue);
     }
 
     //Getters and Setters

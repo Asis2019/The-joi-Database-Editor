@@ -53,7 +53,7 @@ public class JOI implements JOISystemInterface {
     @Override
     public void setDataFromJson(JSONObject jsonObject, File importDirectory) {
         JSONArray array = jsonObject.getJSONArray("JOI");
-        for(int i=0; i<array.length(); i++) {
+        for (int i = 0; i < array.length(); i++) {
             addNewScene();
             getSceneArrayList().get(i).setDataFromJson(array.getJSONObject(i), importDirectory);
         }
@@ -62,6 +62,17 @@ public class JOI implements JOISystemInterface {
     @Override
     public String toString() {
         return getJOIAsJson().toString(4);
+    }
+
+    @Override
+    public boolean equals(Object object) {
+        if (this == object) return true;
+        if (!(object instanceof JOI)) return false;
+
+        JOI joi = (JOI) object;
+
+        if (getSceneIdCounter() != joi.getSceneIdCounter()) return false;
+        return getSceneArrayList().equals(joi.getSceneArrayList());
     }
 
     //Getters and Setters

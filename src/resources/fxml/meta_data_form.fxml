@@ -6,7 +6,7 @@
 <?import javafx.scene.image.Image?>
 <?import javafx.scene.image.ImageView?>
 <?import javafx.scene.layout.*?>
-<ScrollPane id="root_container" fitToWidth="true" hbarPolicy="NEVER" pannable="true" prefViewportHeight="720.0" prefViewportWidth="400.0" stylesheets="@../../resources/css/meta_data_form.css" xmlns="http://javafx.com/javafx/8" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.asis.controllers.MetaDataForm">
+<ScrollPane id="root_container" fitToWidth="true" hbarPolicy="NEVER" pannable="true" prefViewportHeight="720.0" prefViewportWidth="400.0" stylesheets="@../../resources/css/meta_data_form.css" xmlns="http://javafx.com/javafx/10.0.2-internal" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.asis.controllers.MetaDataForm">
    <content>
        <VBox fx:id="mainVBox" alignment="TOP_CENTER" spacing="8.0">
            <opaqueInsets>
@@ -39,7 +39,7 @@
                  </children>
               </HBox>
               <TextField fx:id="joiIdTextField" promptText="(creator_title)" />
-            <TextField fx:id="gameVersionTextField" layoutX="18.0" layoutY="306.0" promptText="Game Version (e.g 0.0.2.7)" />
+            <TextField fx:id="gameVersionTextField" layoutX="18.0" layoutY="306.0" promptText="Game Version (e.g 0.0.2.9)" />
               <HBox>
                  <children>
                      <Label text="Fetish Tags" textFill="#bbbbbb" />

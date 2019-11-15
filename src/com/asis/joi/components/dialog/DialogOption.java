@@ -1,34 +1,29 @@
 package com.asis.joi.components.dialog;
 
 import com.asis.joi.JOISystemInterface;
-import com.asis.utilities.AsisUtils;
+import com.asis.joi.components.GotoScene;
 import org.json.JSONArray;
 import org.json.JSONObject;
 
 import java.io.File;
-import java.util.ArrayList;
 
 public class DialogOption implements JOISystemInterface {
     private int optionNumber = 0;
     private String optionText = "";
-    private ArrayList<Integer> gotoSceneArrayList = new ArrayList<>();
+    private GotoScene gotoScene;
 
     public DialogOption(int optionNumber, String optionText) {
         setOptionNumber(optionNumber);
         setOptionText(optionText);
     }
 
-    public JSONObject getDialogOptionAsJson() {
+    public JSONArray getDialogOptionAsJson() {
         JSONObject object = new JSONObject();
         object.put("text", getOptionText());
-        if(!getGotoSceneArrayList().isEmpty()) object.put("gotoScene", getGotoSceneArrayList().toArray());
+        if(getGotoScene() != null)  object.put(getGotoScene().getJsonKeyName(), getGotoScene().getJsonValue());
 
         JSONArray wrapper = new JSONArray();
-        wrapper.put(object);
-
-        JSONObject finalObject = new JSONObject();
-        finalObject.put("option"+getOptionNumber(), wrapper);
-        return finalObject;
+        return wrapper.put(object);
     }
 
     @Override
@@ -38,15 +33,34 @@ public class DialogOption implements JOISystemInterface {
             setOptionText(jsonObject.getString("text"));
         }
 
-        //set gotoScene
+        //set GotoScene
         if (jsonObject.has("gotoScene")) {
-            setGotoSceneArrayList(AsisUtils.convertJSONArrayToList(jsonObject.getJSONArray("gotoScene")));
+            setGotoScene(new GotoScene());
+            getGotoScene().addValue(jsonObject.getInt("gotoScene"));
+        }
+
+        //set GotoSceneInRange
+        if (jsonObject.has("gotoSceneInRange")) {
+            setGotoScene(new GotoScene());
+            getGotoScene().setDataFromJson(jsonObject.getJSONArray("gotoSceneInRange"));
         }
     }
 
     @Override
     public String toString() {
         return getDialogOptionAsJson().toString(4);
+    }
+
+    @Override
+    public boolean equals(Object object) {
+        if (this == object) return true;
+        if (!(object instanceof DialogOption)) return false;
+
+        DialogOption that = (DialogOption) object;
+
+        if (getOptionNumber() != that.getOptionNumber()) return false;
+        if (!getOptionText().equals(that.getOptionText())) return false;
+        return getGotoScene() != null ? getGotoScene().equals(that.getGotoScene()) : that.getGotoScene() == null;
     }
 
     //Getters and Setters
@@ -64,10 +78,10 @@ public class DialogOption implements JOISystemInterface {
         this.optionNumber = optionNumber;
     }
 
-    public ArrayList<Integer> getGotoSceneArrayList() {
-        return gotoSceneArrayList;
+    public GotoScene getGotoScene() {
+        return gotoScene;
     }
-    public void setGotoSceneArrayList(ArrayList<Integer> gotoSceneArrayList) {
-        this.gotoSceneArrayList = gotoSceneArrayList;
+    public void setGotoScene(GotoScene gotoScene) {
+        this.gotoScene = gotoScene;
     }
 }

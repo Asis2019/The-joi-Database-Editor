@@ -6,7 +6,7 @@
 <?import javafx.scene.image.ImageView?>
 <?import javafx.scene.layout.*?>
 <?import javafx.scene.paint.Color?>
-<BorderPane prefWidth="1000.0" stylesheets="@../../resources/css/scene_details_stylesheet.css" xmlns="http://javafx.com/javafx/8" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.asis.controllers.TabTimerController">
+<BorderPane prefWidth="1000.0" stylesheets="@../../resources/css/scene_details_stylesheet.css" xmlns="http://javafx.com/javafx/8" xmlns:fx="http://javafx.com/fxml/1">
 <center>
     <SplitPane id="darkThemeBackground" dividerPositions="0.835" styleClass="edge-to-edge">
        <items>

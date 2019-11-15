@@ -1,6 +1,9 @@
 package com.asis.controllers;
 
-import com.asis.Story;
+import com.asis.joi.JOIPackage;
+import com.asis.joi.MetaData;
+import com.asis.joi.components.GotoScene;
+import com.asis.joi.components.dialog.DialogOption;
 import com.asis.ui.asis_node.AsisConnectionButton;
 import com.asis.ui.asis_node.SceneNode;
 import com.asis.ui.asis_node.SceneNodeMainController;
@@ -11,8 +14,6 @@ import javafx.application.Platform;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.geometry.Bounds;
-import javafx.geometry.Point2D;
-import javafx.geometry.Rectangle2D;
 import javafx.scene.Node;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
@@ -20,42 +21,26 @@ import javafx.scene.control.*;
 import javafx.scene.image.Image;
 import javafx.scene.input.MouseButton;
 import javafx.scene.layout.AnchorPane;
-import javafx.stage.*;
-import org.json.JSONArray;
-import org.json.JSONObject;
+import javafx.stage.DirectoryChooser;
+import javafx.stage.FileChooser;
+import javafx.stage.Stage;
 
 import java.io.File;
-import java.io.FileInputStream;
-import java.io.FileOutputStream;
 import java.io.IOException;
-import java.net.URL;
-import java.nio.file.Files;
-import java.nio.file.StandardCopyOption;
 import java.util.ArrayList;
-import java.util.Objects;
-import java.util.zip.ZipEntry;
-import java.util.zip.ZipOutputStream;
-
-import static com.asis.utilities.AsisUtils.*;
 
 public class Controller {
-    private Story story = new Story();
     private SceneNode selectedScene;
     private int numberOfScenes = 0;
     private double menuEventX;
     private double menuEventY;
     private Boolean addSceneContextMenu = false;
     private static Controller instance = null;
-    private boolean newChanges = false;
     private boolean firstScene = false;
-    static boolean createNewProject = false;
 
+    private JOIPackage joiPackage = new JOIPackage();
     private ArrayList<Stage> openStages = new ArrayList<>();
     private ArrayList<SceneNode> sceneNodes = new ArrayList<>();
-
-    //These should not be used in any code but the newProject method
-    static File newProjectFile;
-    static String newProjectName;
 
     private SceneNodeMainController sceneNodeMainController;
 
@@ -68,7 +53,7 @@ public class Controller {
 
     public void initialize() {
         instance = this;
-        sceneNodeMainController = new SceneNodeMainController();
+        sceneNodeMainController = new SceneNodeMainController(getJoiPackage());
         sceneNodeMainController.setPane(anchorPane);
         sceneNodeMainController.setScrollPane(scrollPane);
         //TODO replace fixed number with one from mainMenuBar + height of toolbar
@@ -85,14 +70,6 @@ public class Controller {
         return instance;
     }
 
-    public void setNewChanges() {
-        this.newChanges = true;
-    }
-
-    public boolean getNewChanges() {
-        return newChanges;
-    }
-
     private void setupSceneNodeContextMenu() {
         //Create items and add them to there menu
         MenuItem editSceneItem = new MenuItem("Edit Scene");
@@ -106,7 +83,7 @@ public class Controller {
         //Handle menu actions
         editSceneItem.setOnAction(actionEvent -> {
             if(selectedScene != null) {
-                openNewWindow(selectedScene);
+                openSceneDetails(selectedScene);
             }
         });
 
@@ -117,7 +94,7 @@ public class Controller {
                     return;
                 }
 
-                story.addDataToScene(selectedScene.getSceneId(), "sceneTitle", title);
+                getJoiPackage().getJoi().getScene(selectedScene.getSceneId()).setSceneTitle(title);
                 selectedScene.setTitle(title);
             }
         });
@@ -130,20 +107,20 @@ public class Controller {
 
         goodEndItem.setOnAction(actionEvent -> {
             if(selectedScene != null) {
-                if(selectedScene.goodEndProperty().getValue()) {
-                    selectedScene.setGoodEnd(false);
+                if(selectedScene.isGoodEnd()) {
+                    selectedScene.setIsGoodEnd(false);
                 } else {
-                    selectedScene.setGoodEnd(true);
+                    selectedScene.setIsGoodEnd(true);
                 }
             }
         });
 
         badEndItem.setOnAction(actionEvent -> {
             if(selectedScene != null) {
-                if(selectedScene.badEndProperty().getValue()) {
-                    selectedScene.setBadEnd(false);
+                if(selectedScene.isBadEnd()) {
+                    selectedScene.setIsBadEnd(false);
                 } else {
-                    selectedScene.setBadEnd(true);
+                    selectedScene.setIsBadEnd(true);
                 }
             }
         });
@@ -185,28 +162,35 @@ public class Controller {
     }
 
     public void actionOpenMetadata() {
+        if (requestStageIfOpen("metaData")) return;
+
         try {
             FXMLLoader fxmlLoader = new FXMLLoader(getClass().getResource("/resources/fxml/meta_data_form.fxml"));
             Parent root = fxmlLoader.load();
 
             MetaDataForm metaDataForm = fxmlLoader.getController();
-            metaDataForm.inflateStoryObject(story);
+            metaDataForm.inflateJOIPackageObject(getJoiPackage());
 
             Stage stage = new Stage();
             stage.getIcons().add(new Image(Controller.class.getResourceAsStream("/resources/images/icon.png")));
             stage.setTitle("Project Details");
+            stage.setUserData("metaData");
             stage.setScene(new Scene(root, 400, 720));
             stage.show();
 
             stage.setOnCloseRequest(event -> {
-                if (metaDataForm.hasChanged()) {
-                    if (!new Alerts().confirmationDialog("Warning", "Are you sure you don't want to save?")) {
+                if(metaDataForm.changesHaveOccurred()) {
+                    if (!new Alerts().confirmationDialog("Warning", "You have unsaved data, are you sure you want to close?")) {
                         event.consume();
+                        return;
                     }
                 }
+                getOpenStages().remove(stage);
+                stage.close();
             });
+            getOpenStages().add(stage);
         } catch (IOException e) {
-            errorDialogWindow(e);
+            AsisUtils.errorDialogWindow(e);
         }
     }
 
@@ -224,7 +208,7 @@ public class Controller {
                 sceneNodeContextMenu.getItems().get(sceneNodeContextMenu.getItems().size()-1).setDisable(false);
 
                 //Change name of ending buttons
-                if(sceneNode.badEndProperty().getValue()) {
+                if(sceneNode.isBadEndProperty().getValue()) {
                     sceneNodeContextMenu.getItems().get(3).setText("Remove Ending Tag");
                     sceneNodeContextMenu.getItems().get(2).setDisable(true);
                 } else {
@@ -232,7 +216,7 @@ public class Controller {
                     sceneNodeContextMenu.getItems().get(2).setDisable(false);
                 }
 
-                if(sceneNode.goodEndProperty().getValue()) {
+                if(sceneNode.isGoodEndProperty().getValue()) {
                     sceneNodeContextMenu.getItems().get(2).setText("Remove Ending Tag");
                     sceneNodeContextMenu.getItems().get(3).setDisable(true);
                 } else {
@@ -248,20 +232,14 @@ public class Controller {
             //User double clicked
             if(mouseEvent.getButton().equals(MouseButton.PRIMARY)) {
                 if(mouseEvent.getClickCount() == 2) {
-                    openNewWindow(sceneNode);
+                    openSceneDetails(sceneNode);
                 }
             }
         });
     }
 
-    private void openNewWindow(SceneNode sceneNode) {
-        //Check if stage already exists
-        for(Stage stage: getOpenStages()) {
-            if((int) stage.getUserData() == sceneNode.getSceneId()) {
-                stage.requestFocus();
-                return;
-            }
-        }
+    private void openSceneDetails(SceneNode sceneNode) {
+        if (requestStageIfOpen(sceneNode.getSceneId())) return;
 
         //Open new window
         try {
@@ -269,7 +247,7 @@ public class Controller {
             Parent root = fxmlLoader.load();
 
             SceneDetails sceneDetails = fxmlLoader.getController();
-            sceneDetails.passData(story, sceneNode);
+            sceneDetails.initialize(getJoiPackage().getJoi().getScene(sceneNode.getSceneId()));
 
             Stage stage = new Stage();
             stage.getIcons().add(new Image(Controller.class.getResourceAsStream("/resources/images/icon.png")));
@@ -278,46 +256,47 @@ public class Controller {
             stage.setScene(new Scene(root, 1280, 720));
             stage.show();
 
-            //Move stage to proper window
-            Screen primaryStageScreen = getScreenForStage((Stage) anchorPane.getScene().getWindow());
-            if(primaryStageScreen != null) {
-                Rectangle2D bounds = primaryStageScreen.getVisualBounds();
-                stage.setX(bounds.getMinX() + 100);
-                stage.setY(bounds.getMinY() + 100);
-                stage.centerOnScreen();
-            }
-
             stage.setOnCloseRequest(windowEvent -> getOpenStages().remove(stage));
             getOpenStages().add(stage);
         } catch (IOException e) {
-            errorDialogWindow(e);
+            AsisUtils.errorDialogWindow(e);
         }
     }
 
-    private static Screen getScreenForStage(Stage stage) {
-        //TODO This works but not when fullscreened
-        for (Screen screen : Screen.getScreens()) {
-            Rectangle2D bounds = screen.getVisualBounds();
-            Point2D point = new Point2D(stage.getScene().getWindow().getX(), stage.getScene().getWindow().getY());
-            if(bounds.contains(point)) {
-                return screen;
+    private boolean requestStageIfOpen(Object userData) {
+        //Check if stage already exists
+        for(Stage stage: getOpenStages()) {
+            if(stage.getUserData().equals(userData)) {
+                stage.requestFocus();
+                return true;
             }
         }
+        return false;
+    }
 
-        return null;
+    public boolean changesHaveOccurred() {
+        try {
+            final JOIPackage originalPackage = new JOIPackage();
+            originalPackage.setPackageLanguageCode(getJoiPackage().getPackageLanguageCode());
+            originalPackage.importPackageFromDirectory(getJoiPackage().getPackageDirectory());
+
+            //The icons are set to null, because when a joi is saved it exports and icon
+            //This icon will not be present in the joi stored in memory causing the results
+            //to be inaccurate.
+            MetaData memoryData = new MetaData(getJoiPackage().getMetaData());
+            memoryData.setJoiIcon(null);
+            MetaData fileData = new MetaData(originalPackage.getMetaData());
+            fileData.setJoiIcon(null);
+
+            return !getJoiPackage().getJoi().equals(originalPackage.getJoi()) || !memoryData.equals(fileData);
+        }catch (RuntimeException e) {
+            return true;
+        }
     }
 
     public void actionExit() {
         //Check if dialog is needed
-        JSONObject storyData = Story.getInstance().getStoryDataJson();
-        JSONObject metadataObject = Story.getInstance().getMetadataObject();
-
-        if(storyData == null && metadataObject == null) {
-            quiteProgram();
-            return;
-        }
-
-        if(getNewChanges()) {
+        if(changesHaveOccurred()) {
             int choice = new Alerts().unsavedChangesDialog("Warning", "You have unsaved work, are you sure you want to quit?");
             switch (choice) {
                 case 0:
@@ -343,13 +322,14 @@ public class Controller {
     }
 
     private void addScene() {
+        final String defaultTitle = "Scene " + (numberOfScenes+1);
         String title;
 
         if(numberOfScenes != 0) {
-            title = new Alerts().addNewSceneDialog("Scene " + (numberOfScenes+1));
+            title = new Alerts().addNewSceneDialog(defaultTitle);
             if(title == null) return;
         } else {
-            title = "Scene " + (numberOfScenes+1);
+            title = defaultTitle;
         }
 
         addScene(10, 0, title, numberOfScenes, false);
@@ -359,9 +339,12 @@ public class Controller {
         numberOfScenes++;
 
         //Add new scene to json if not suppressed
-        if(!suppressJSONUpdating) story.addNewScene(sceneId, title);
+        if(!suppressJSONUpdating) {
+            getJoiPackage().getJoi().addNewScene(sceneId);
+            getJoiPackage().getJoi().getScene(sceneId).setSceneTitle(title);
+        }
 
-        SceneNode sceneNode = new SceneNode(300, 100, sceneId, sceneNodeMainController);
+        SceneNode sceneNode = new SceneNode(300, 100, sceneId, sceneNodeMainController, getJoiPackage().getJoi().getScene(sceneId));
         new Draggable.Nature(sceneNode.getPane());
 
         sceneNode.setTitle(title);
@@ -380,8 +363,8 @@ public class Controller {
             sceneNode.getPane().setLayoutX(xPosition);
             sceneNode.getPane().setLayoutY(yPosition);
             if(!suppressJSONUpdating) {
-                story.addDataToScene(sceneNode.getSceneId(), "layoutXPosition", xPosition);
-                story.addDataToScene(sceneNode.getSceneId(), "layoutYPosition", yPosition);
+                getJoiPackage().getJoi().getScene(sceneId).setLayoutXPosition(xPosition);
+                getJoiPackage().getJoi().getScene(sceneId).setLayoutYPosition(yPosition);
             }
         } else {
             Bounds bounds = scrollPane.getViewportBounds();
@@ -393,20 +376,16 @@ public class Controller {
             addSceneContextMenu = false;
 
             if(!suppressJSONUpdating) {
-                story.addDataToScene(sceneNode.getSceneId(), "layoutXPosition", lowestXPixelShown + menuEventX);
-                story.addDataToScene(sceneNode.getSceneId(), "layoutYPosition", lowestYPixelShown + menuEventY);
+                getJoiPackage().getJoi().getScene(sceneId).setLayoutXPosition(lowestXPixelShown + menuEventX);
+                getJoiPackage().getJoi().getScene(sceneId).setLayoutYPosition(lowestYPixelShown + menuEventY);
             }
         }
 
         setClickActionForNode(sceneNode);
         getAnchorPane().getChildren().add(sceneNode.getPane());
 
-        if (!firstScene) {
-            setNewChanges();
-        } else {
+        if (firstScene) {
             firstScene = false;
-            //Override any changes caused by story object
-            newChanges = false;
         }
 
         getSceneNodes().add(sceneNode);
@@ -414,61 +393,50 @@ public class Controller {
     }
 
     private void removeScene(SceneNode sceneNode) {
-        story.removeScene(sceneNode.getSceneId());
+        getJoiPackage().getJoi().removeScene(sceneNode.getSceneId());
 
         sceneNodeMainController.notifySceneRemoved(sceneNode);
 
         anchorPane.getChildren().remove(sceneNode.getPane());
-        setNewChanges();
     }
 
     public void actionNewProject() {
-        try {
-            FXMLLoader fxmlLoader = new FXMLLoader(getClass().getResource("/resources/fxml/dialog_new_project.fxml"));
-            Parent root = fxmlLoader.load();
+        Alerts.newProjectWindow(false);
+    }
 
-            Stage stage = new Stage();
-            stage.initModality(Modality.APPLICATION_MODAL);
-            stage.getIcons().add(new Image(Controller.class.getResourceAsStream("/resources/images/icon.png")));
-            stage.setTitle("New Project");
-            stage.setScene(new Scene(root, 600, 400));
-            stage.showAndWait();
-        } catch (IOException e) {
-            errorDialogWindow(e);
+    void processNewProject(File newProjectFile, String newProjectName, String defaultProjectLanguageCode) {
+        resetJoiPackage(new JOIPackage());
+        addScene();
+
+        File projectDirectory = new File(newProjectFile.getPath()+"/"+newProjectName);
+        //noinspection ResultOfMethodCallIgnored
+        projectDirectory.mkdir();
+
+        //Set project directory
+        getJoiPackage().setPackageDirectory(projectDirectory);
+
+        //Add project name as the Title in metadata
+        getJoiPackage().getMetaData().setName(newProjectName);
+
+        //Set default language code of package
+        getJoiPackage().setPackageLanguageCode(defaultProjectLanguageCode);
+    }
+
+    private void resetJoiPackage(JOIPackage joiPackage) {
+        numberOfScenes = 0;
+        anchorPane.getChildren().clear();
+        getSceneNodes().clear();
+        setJoiPackage(joiPackage);
+        sceneNodeMainController.setJoiPackage(joiPackage);
+        sceneNodeMainController.setLineList(new ArrayList<>());
+        for(Stage stage: getOpenStages()) {
+            stage.close();
         }
-
-        if(createNewProject) {
-            numberOfScenes = 0;
-            anchorPane.getChildren().clear();
-            story = new Story();
-            addScene();
-            newChanges = false;
-            createNewProject = false;
-
-            String folderPath = newProjectFile.getPath()+"\\"+newProjectName;
-            File projectDirectory = new File(folderPath);
-            boolean result = projectDirectory.mkdir();
-
-            if(result) {
-                System.out.println("Created folder");
-            } else {
-                System.out.println("Folder already exists");
-            }
-
-            //Set project directory
-            story.setProjectDirectory(projectDirectory);
-
-            //Add project name as the Title in metadata
-            story.addTitleToMetadataObject(newProjectName);
-
-            //Reset newProject variables
-            newProjectName = null;
-            newProjectFile = null;
-        }
+        getOpenStages().clear();
     }
 
     public boolean actionLoadProject() {
-        if (getNewChanges()) {
+        if (changesHaveOccurred()) {
             int choice = new Alerts().unsavedChangesDialog("Load Project", "You have unsaved work, are you sure you want to continue?");
             switch (choice) {
                 case 0:
@@ -480,177 +448,87 @@ public class Controller {
             }
         }
 
+        return processLoadProject();
+    }
+
+    public boolean processLoadProject() {
         DirectoryChooser directoryChooser = new DirectoryChooser();
-        directoryChooser.setInitialDirectory(story.getProjectDirectory());
+        directoryChooser.setInitialDirectory(getJoiPackage().getPackageDirectory());
         File file = directoryChooser.showDialog(null);
 
         if(file != null) {
-            boolean canContinue = false;
-            //Check if project is a joi project
-            for (File f : Objects.requireNonNull(file.listFiles())) {
-                if (f.getName().equals("joi_text_en.json")) {
-                    canContinue = true;
-                    break;
-                }
-            }
+            JOIPackage newJoiPackage = new JOIPackage();
 
-            if (canContinue) {
-                numberOfScenes = 0;
-                anchorPane.getChildren().clear();
-                story = new Story();
+            //Set project directory to current
+            newJoiPackage.setPackageDirectory(file);
 
-                //Set project directory to current
-                story.setProjectDirectory(file);
+            //Load joi
+            try {
+                if (newJoiPackage.importPackageFromDirectory(file)) {
+                    //JOI folder was imported successfully
 
-                //Add icon to metadata and all other images to the list
-                for (File f : Objects.requireNonNull(file.listFiles())) {
-                    //Check for metadata icon
-                    if (f.getName().equals("joi_icon.png")) {
-                        story.addMetadataIcon(f);
-                    } else if (getFileExtension(f).equals("png") || getFileExtension(f).equals("jpg") || getFileExtension(f).equals("jpeg")) {
-                        story.addImage(f);
+                    //Reset old variables
+                    resetJoiPackage(newJoiPackage);
+
+                    //Create scene nodes
+                    for (com.asis.joi.components.Scene scene : getJoiPackage().getJoi().getSceneArrayList()) {
+                        addScene(scene.getLayoutXPosition(), scene.getLayoutYPosition(), scene.getSceneTitle(), scene.getSceneId(), true);
                     }
 
-                    //TODO for the next version we should include multi language support
-                    //Load metadata json
-                    if (f.getName().equals("info_en.json")) {
-                        story.setMetadataObject(AsisUtils.readJsonFromFile(f));
-                    }
+                    //Create connections
+                    for (com.asis.joi.components.Scene scene : getJoiPackage().getJoi().getSceneArrayList()) {
+                        final AsisConnectionButton output = getSceneNodeWithId(getSceneNodes(), scene.getSceneId()).getOutputButtons().get(0);
+                        createConnections(scene.getGotoScene(), output);
 
-                    //Load main json
-                    if (f.getName().equals("joi_text_en.json")) {
-                        story.setStoryDataJson(AsisUtils.readJsonFromFile(f));
+                        createConnectionsForDialogOutputs(scene);
                     }
+                } else {
+                    return false;
                 }
 
-                //Check story for scenes and add the nodes into proper location
-                if (story.getStoryDataJson().has("JOI")) {
-                    ArrayList<SceneNode> sceneNodes = new ArrayList<>();
-
-                    JSONArray storyData = story.getStoryDataJson().getJSONArray("JOI");
-                    for(int i=0; i<storyData.length(); i++) {
-                        int sceneId;
-                        String title = "Scene " + (numberOfScenes + 1);
-                        double xPosition = 10;
-                        double yPosition = 10;
-
-                        //Get scene id
-                        if (storyData.getJSONObject(i).has("sceneId")) {
-                            sceneId = storyData.getJSONObject(i).getInt("sceneId");
-                        } else {
-                            Alerts.messageDialog("Warning", "The project is not compatible with the editor");
-                            return false;
-                        }
-
-                        //Get scene title
-                        if (storyData.getJSONObject(i).has("sceneTitle")) {
-                            title = storyData.getJSONObject(i).getString("sceneTitle");
-                        }
-
-                        //Get scene x position
-                        if (storyData.getJSONObject(i).has("layoutXPosition")) {
-                            xPosition = storyData.getJSONObject(i).getDouble("layoutXPosition");
-                        }
-
-                        //Get scene y position
-                        if (storyData.getJSONObject(i).has("layoutYPosition")) {
-                            yPosition = storyData.getJSONObject(i).getDouble("layoutYPosition");
-                        }
-
-                        //Create scene and set number of scenes
-                        //Set numberOfScenes to the highest id
-                        if(numberOfScenes <= sceneId) {
-                            numberOfScenes = sceneId;
-                        }
-                        SceneNode sceneNode = addScene(xPosition, yPosition, title, sceneId, true);
-
-                        //Set good ending for scene
-                        if (storyData.getJSONObject(i).has("joiEnd")) {
-                            sceneNode.setGoodEnd(true);
-                        }
-
-                        //Set bad ending for scene
-                        if (storyData.getJSONObject(i).has("badJoiEnd")) {
-                            sceneNode.setBadEnd(true);
-                        }
-
-                        sceneNodes.add(sceneNode);
-                    }
-
-                    //Start linking
-                    for(int i=0; i<storyData.length(); i++) {
-                        //Check for scene normal connections
-                        if (storyData.getJSONObject(i).has("gotoScene")) {
-                            try {
-                                AsisConnectionButton output = sceneNodes.get(i).getOutputButtons().get(0);
-                                AsisConnectionButton input = getSceneNodeWithId(sceneNodes, storyData.getJSONObject(i).getInt("gotoScene")).getInputConnection();
-                                sceneNodeMainController.createConnection(output, input);
-                            } catch (NullPointerException e) {
-                                System.out.println("getSceneNodeWithId(sceneNodes, sceneIdTo.get(ii)) Returned NULL");
-                            }
-                        }
-
-                        //Check for scene range connections
-                        if (storyData.getJSONObject(i).has("gotoSceneInRange")) {
-                            AsisConnectionButton output = sceneNodes.get(i).getOutputButtons().get(0);
-
-                            for(int j=0; j<storyData.getJSONObject(i).getJSONArray("gotoSceneInRange").length(); j++) {
-                                try {
-                                    AsisConnectionButton input = getSceneNodeWithId(sceneNodes, storyData.getJSONObject(i).getJSONArray("gotoSceneInRange").getInt(j)).getInputConnection();
-                                    sceneNodeMainController.createConnection(output, input);
-                                } catch (NullPointerException e) {
-                                    System.out.println("getSceneNodeWithId(sceneNodes, sceneIdTo.get(ii)) Returned NULL");
-                                }
-                            }
-                        }
-
-                        //Check for scene dialog connections
-                        if (storyData.getJSONObject(i).has("dialogChoice")) {
-                            int j = 0;
-                            while (storyData.getJSONObject(i).getJSONArray("dialogChoice").getJSONObject(0).has("option" + j)) {
-                                AsisConnectionButton asisConnectionButton = sceneNodes.get(i).createNewOutputConnectionPoint("Option " + (j + 1), "dialog_option_" + (j + 1));
-                                asisConnectionButton.setOptionNumber(j);
-
-                                if (storyData.getJSONObject(i).getJSONArray("dialogChoice").getJSONObject(0).getJSONArray("option" + j).getJSONObject(0).has("gotoScene")) {
-                                    try {
-                                        int gotoScene = storyData.getJSONObject(i).getJSONArray("dialogChoice").getJSONObject(0).getJSONArray("option" + j).getJSONObject(0).getInt("gotoScene");
-                                        AsisConnectionButton input = getSceneNodeWithId(sceneNodes, gotoScene).getInputConnection();
-                                        sceneNodeMainController.createConnection(asisConnectionButton, input);
-                                    } catch (NullPointerException e) {
-                                        System.out.println("getSceneNodeWithId(sceneNodes, sceneIdTo.get(ii)) Returned NULL");
-                                    }
-                                } else if (storyData.getJSONObject(i).getJSONArray("dialogChoice").getJSONObject(0).getJSONArray("option" + j).getJSONObject(0).has("gotoSceneInRange")){
-                                    for(int jj=0; jj<storyData.getJSONObject(i).getJSONArray("dialogChoice").getJSONObject(0).getJSONArray("option" + j).getJSONObject(0).getJSONArray("gotoSceneInRange").length(); jj++) {
-                                        try {
-                                            int gotoScene = storyData.getJSONObject(i).getJSONArray("dialogChoice").getJSONObject(0).getJSONArray("option" + j).getJSONObject(0).getJSONArray("gotoSceneInRange").getInt(jj);
-                                            AsisConnectionButton input = getSceneNodeWithId(sceneNodes, gotoScene).getInputConnection();
-                                            sceneNodeMainController.createConnection(asisConnectionButton, input);
-                                        } catch (NullPointerException e) {
-                                            System.out.println("getSceneNodeWithId(sceneNodes, sceneIdTo.get(ii)) Returned NULL");
-                                        }
-                                    }
-                                }
-
-                                j++;
-                            }
-                        }
-                    }
-                }
-            } else {
-                Alerts.messageDialog("Warning", "This is not a project folder");
+                //Loading completed successfully
+                return true;
+            } catch (RuntimeException e) {
+                Alerts.messageDialog("LOADING FAILED", "The editor was unable to load this joi for the following reason:\n"+e.getMessage(), 600, 200);
                 return false;
             }
-        } else {
-            //File returned null
-            return false;
         }
 
-        //Loading completed successfully
-        newChanges = false;
-        return true;
+        //Loading failed do to null file
+        return false;
     }
 
-    private SceneNode getSceneNodeWithId(ArrayList<SceneNode> sceneList, int sceneId) {
+    private void createConnectionsForDialogOutputs(com.asis.joi.components.Scene scene) {
+        if(scene.getDialog() != null && !scene.getDialog().getOptionArrayList().isEmpty()) {
+            for(DialogOption dialogOption: scene.getDialog().getOptionArrayList()) {
+                AsisConnectionButton output = getSceneNodeWithId(sceneNodes, scene.getSceneId()).createNewOutputConnectionPoint("Option "+dialogOption.getOptionNumber(), "dialog_option_" + (dialogOption.getOptionNumber() + 1));
+                output.setOptionNumber(dialogOption.getOptionNumber());
+
+                createConnections(dialogOption.getGotoScene(), output);
+            }
+        }
+    }
+
+    private void createConnections(GotoScene gotoScene, AsisConnectionButton output) {
+        final boolean gotoHasSingleOutput = gotoScene != null && gotoScene.getGotoSceneArrayList().size() == 1;
+        final boolean gotoHasMultipleOutput = gotoScene != null && gotoScene.getGotoSceneArrayList().size() > 1;
+
+        //Check for scene normal connections
+        if(gotoHasSingleOutput) {
+            AsisConnectionButton input = getSceneNodeWithId(getSceneNodes(), gotoScene.getGotoSceneArrayList().get(0)).getInputConnection();
+            sceneNodeMainController.createConnection(output, input);
+        }
+
+        //Check for scene range connections
+        if (gotoHasMultipleOutput) {
+            for (int i = 0; i < gotoScene.getGotoSceneArrayList().size(); i++) {
+                AsisConnectionButton input = getSceneNodeWithId(getSceneNodes(), gotoScene.getGotoSceneArrayList().get(i)).getInputConnection();
+                sceneNodeMainController.createConnection(output, input);
+            }
+        }
+    }
+
+    public SceneNode getSceneNodeWithId(ArrayList<SceneNode> sceneList, int sceneId) {
         for (SceneNode scene : sceneList) {
             if(scene.getSceneId() == sceneId) {
                 return scene;
@@ -661,12 +539,12 @@ public class Controller {
     }
 
     public void actionSaveProject() {
-        saveProject(Story.getInstance().getProjectDirectory());
+        saveProject(getJoiPackage().getPackageDirectory());
     }
 
     public void actionSaveProjectAs() {
         DirectoryChooser directoryChooser = new DirectoryChooser();
-        directoryChooser.setInitialDirectory(story.getProjectDirectory());
+        directoryChooser.setInitialDirectory(getJoiPackage().getPackageDirectory());
         directoryChooser.setTitle("Save Location");
         File file = directoryChooser.showDialog(null);
 
@@ -675,139 +553,20 @@ public class Controller {
 
     private void saveProject(File file) {
         if(file != null) {
-            if(story.getMetadataObject() == null || story.getMetadataObject().isEmpty()) {
-                //Init metadata
-                JSONObject innerMetadataObject = new JSONObject();
-                //Single lined info
-                innerMetadataObject.put("name", "");
-                innerMetadataObject.put("preparations", "");
-                innerMetadataObject.put("displayedFetishes", "");
-                innerMetadataObject.put("joiId", "");
-
-                innerMetadataObject.put("fetish0", "");
-                innerMetadataObject.put("toy0", "");
-                innerMetadataObject.put("character0", "");
-
-                JSONArray jsonArray = new JSONArray();
-                jsonArray.put(innerMetadataObject);
-
-                JSONObject metadataObject = new JSONObject();
-                metadataObject.put("JOI METADATA", jsonArray);
-
-                story.setMetadataObject(metadataObject);
-                URL url = this.getClass().getResource("/resources/images/icon_dev.png");
-                story.addMetadataIcon(new File(Objects.requireNonNull(url).getPath()));
-            }
-
-            try {
-                AsisUtils.writeJsonToFile(story.getMetadataObject(), "info_en.json", file);
-                AsisUtils.writeJsonToFile(story.getStoryDataJson(), "joi_text_en.json", file);
-            } catch (IOException e) {
-                errorDialogWindow(e);
-            }
-
-            //Copy image to project directory
-            for (File file1 : story.getImagesArray()) {
-                try {
-                    Files.copy(file1.toPath(), file.toPath().resolve(file1.getName()), StandardCopyOption.REPLACE_EXISTING);
-                    newChanges = false;
-                } catch (IOException e) {
-                    errorDialogWindow(e);
-                }
-            }
-
-            //Copy icon to project directory
-            try {
-                if(story.getMetadataIcon() != null) {
-                    File file1 = story.getMetadataIcon();
-                    Files.copy(file1.toPath(), file.toPath().resolve(file1.getName()), StandardCopyOption.REPLACE_EXISTING);
-                    renameFile(new File(file.toPath()+"\\"+file1.getName()), "joi_icon.png");
-                    newChanges = false;
-                }
-            } catch (IOException e) {
-                errorDialogWindow(e);
-            }
+            getJoiPackage().exportPackageAsFiles(file);
         }
     }
 
     public void actionExportToZip() {
-        //Export everything to temp folder inside selected directory
-        //Compress this folder
-        //Delete temp folder
+        //Export project as zip
         FileChooser fileChooser = new FileChooser();
         fileChooser.setTitle("Save Zip");
-        fileChooser.setInitialDirectory(story.getProjectDirectory());
+        fileChooser.setInitialDirectory(getJoiPackage().getPackageDirectory());
         fileChooser.getExtensionFilters().addAll(new FileChooser.ExtensionFilter("zip", "*.zip"));
         File dest = fileChooser.showSaveDialog(null);
 
         if(dest != null) {
-            File tempFile = new File(dest.getParent() + "\\tmp");
-            if(tempFile.isDirectory()) {
-                deleteFolder(tempFile);
-            }
-
-            boolean result = tempFile.mkdir();
-
-            if(result) {
-                try {
-                    AsisUtils.writeJsonToFile(story.getMetadataObject(), "info_en.json", tempFile);
-                    AsisUtils.writeJsonToFile(story.getStoryDataJson(), "joi_text_en.json", tempFile);
-                } catch (IOException e) {
-                    errorDialogWindow(e);
-                }
-
-                //Copy image to project directory
-                for (File file1 : story.getImagesArray()) {
-                    try {
-                        Files.copy(file1.toPath(), tempFile.toPath().resolve(file1.getName()), StandardCopyOption.REPLACE_EXISTING);
-                    } catch (IOException e) {
-                        errorDialogWindow(e);
-                    }
-                }
-
-                //Copy icon to project directory
-                try {
-                    if(story.getMetadataIcon() != null) {
-                        File file1 = story.getMetadataIcon();
-                        Files.copy(file1.toPath(), tempFile.toPath().resolve(file1.getName()), StandardCopyOption.REPLACE_EXISTING);
-                        renameFile(new File(tempFile.toPath()+"\\"+file1.getName()), "joi_icon.png");
-                    }
-                } catch (IOException e) {
-                    errorDialogWindow(e);
-                }
-
-                //Compress temp folder
-                String zipFile = dest.getPath();
-                String srcDir = tempFile.getPath();
-
-                try {
-                    // create byte buffer
-                    byte[] buffer = new byte[1024];
-                    FileOutputStream fos = new FileOutputStream(zipFile);
-                    ZipOutputStream zos = new ZipOutputStream(fos);
-                    File dir = new File(srcDir);
-                    File[] files = dir.listFiles();
-
-                    if (files != null) {
-                        for (File value : files) {
-                            FileInputStream fis = new FileInputStream(value);
-                            zos.putNextEntry(new ZipEntry(value.getName()));
-                            int length;
-                            while ((length = fis.read(buffer)) > 0) {
-                                zos.write(buffer, 0, length);
-                            }
-                            zos.closeEntry();
-                            fis.close();
-                        }
-                    }
-                    zos.close();
-                } catch (IOException e) {
-                    errorDialogWindow(e);
-                }
-
-                //Delete temp folder
-                deleteFolder(tempFile);
-            }
+            getJoiPackage().exportPackageAsZip(dest);
         }
     }
 
@@ -835,6 +594,7 @@ public class Controller {
         addScene();
     }
 
+    //Getters and setters
     public ArrayList<Stage> getOpenStages() {
         return openStages;
     }
@@ -854,5 +614,12 @@ public class Controller {
     }
     public void setSceneNodes(ArrayList<SceneNode> sceneNodes) {
         this.sceneNodes = sceneNodes;
+    }
+
+    public JOIPackage getJoiPackage() {
+        return joiPackage;
+    }
+    public void setJoiPackage(JOIPackage joiPackage) {
+        this.joiPackage = joiPackage;
     }
 }

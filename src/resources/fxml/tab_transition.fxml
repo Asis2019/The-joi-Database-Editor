@@ -5,7 +5,7 @@
 <?import javafx.scene.layout.*?>
 <?import javafx.scene.paint.Color?>
 <?import javafx.scene.text.Font?>
-<BorderPane stylesheets="@../../resources/css/scene_details_stylesheet.css" xmlns="http://javafx.com/javafx/8.0.172-ea" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.asis.controllers.TabTransitionController">
+<BorderPane stylesheets="@../../resources/css/scene_details_stylesheet.css" xmlns="http://javafx.com/javafx/8.0.172-ea" xmlns:fx="http://javafx.com/fxml/1">
 <center>
     <SplitPane id="darkThemeBackground" dividerPositions="0.835" styleClass="edge-to-edge">
         <AnchorPane>
@@ -32,8 +32,7 @@
         <VBox minHeight="0.0" minWidth="0.0" stylesheets="@../../resources/css/titled_pane_stylesheet.css">
             <TitledPane animated="false" text="Scene Transition Properties" wrapText="true">
                 <VBox spacing="5.0">
-                    <TextField fx:id="transitionTextField" onKeyTyped="#actionTransitionText"
-                               promptText="Transition Text"/>
+                    <TextField fx:id="transitionTextField" promptText="Transition Text"/>
                     <Label fx:id="transitionTextColorLabel" text="Text Color"/>
                     <ColorPicker fx:id="transitionTextColor" promptText="Transition Text Color"/>
                     <Label fx:id="transitionTextOutlineColorLabel" layoutX="20.0" layoutY="72.0"
@@ -45,10 +44,8 @@
                         </value>
                     </ColorPicker>
                     <Separator prefWidth="200.0"/>
-                    <TextField fx:id="waitTimeField" onKeyTyped="#actionTransitionWaitTime"
-                               promptText="Wait Time (default 0)"/>
-                    <TextField fx:id="fadeSpeedField" onKeyTyped="#actionTransitionFadeSpeed"
-                               promptText="Fade Speed (default 1)"/>
+                    <TextField fx:id="waitTimeField" promptText="Wait Time (default 0)"/>
+                    <TextField fx:id="fadeSpeedField" promptText="Fade Speed (default 1)"/>
                     <Label fx:id="transitionFadeColorLabel" text="Fade Color:"/>
                     <ColorPicker fx:id="transitionFadeColor" onAction="#actionFadeColor"
                                  promptText="Fade Color">

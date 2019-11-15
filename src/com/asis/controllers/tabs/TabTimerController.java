@@ -1,8 +1,11 @@
-package com.asis.controllers;
+package com.asis.controllers.tabs;
 
-import com.asis.Story;
+import com.asis.controllers.Controller;
+import com.asis.joi.components.Scene;
+import com.asis.joi.components.Timer;
 import com.asis.ui.AsisCenteredArc;
 import com.asis.ui.ImageViewPane;
+import javafx.application.Platform;
 import javafx.fxml.FXML;
 import javafx.scene.control.*;
 import javafx.scene.image.Image;
@@ -17,12 +20,10 @@ import org.json.JSONObject;
 
 import java.io.File;
 import java.util.Comparator;
-import java.util.Optional;
 
 import static com.asis.utilities.AsisUtils.colorToHex;
 
 public class TabTimerController extends TabController {
-    private int sceneId;
     private String outlineColor = "#000000";
     private String fillColor = "#ffffff";
     private int totalSeconds = 0;
@@ -31,6 +32,8 @@ public class TabTimerController extends TabController {
 
     private ImageViewPane viewPane = new ImageViewPane();
     private AsisCenteredArc asisCenteredArc = new AsisCenteredArc();
+
+    private Timer timer;
 
     @FXML private TextField goToSecondsTextField, totalTimerField, textFieldBeatPitch, textFieldBeatSpeed;
     @FXML private ColorPicker textColorPicker, textOutlineColorPicker;
@@ -42,92 +45,133 @@ public class TabTimerController extends TabController {
     @FXML private Label warningLabel;
     @FXML private TreeView<String> objectTree;
 
-    public void initialize() {
-        timerTextArea.setStyle("outline-color: "+outlineColor+"; fill-color: "+fillColor+";");
+    public TabTimerController(String tabTitle, Timer timer) {
+        super(tabTitle);
 
-        textOutlineColorPicker.valueProperty().addListener((observableValue, color, t1) -> {
-            outlineColor = removeLastTwoLetters("#"+colorToHex(t1));
-            timerTextArea.setStyle("fill-color: "+fillColor+"; outline-color: "+outlineColor+";");
-            story().addDataToTimerLineObject(sceneId, "line"+onSecond, "outlineColor", outlineColor);
-        });
+        setTimer(timer);
 
-        textColorPicker.valueProperty().addListener((observableValue, color, t1) -> {
-            fillColor = removeLastTwoLetters("#"+colorToHex(t1));
-            timerTextArea.setStyle("fill-color: "+fillColor+"; outline-color: "+outlineColor+";");
-            story().addDataToTimerLineObject(sceneId, "line"+onSecond, "fillColor", fillColor);
-        });
+        Platform.runLater(() -> {
+            setNodeColorStyle(textTextArea, fillColor, outlineColor);
 
-        textTextArea.textProperty().bindBidirectional(timerTextArea.textProperty());
+            textOutlineColorPicker.valueProperty().addListener((observableValue, color, t1) -> {
+                outlineColor = removeLastTwoLetters("#"+colorToHex(t1));
+                setNodeColorStyle(textTextArea, fillColor, outlineColor);
+                if(getTimer().getLine(onSecond) != null) {
+                    getTimer().getLine(onSecond).setOutlineColor(outlineColor);
+                }
+            });
 
-        //Setup text area
-        textTextArea.textProperty().addListener((observable, oldValue, newValue) -> {
-            if(!isLockTextAreaFunctionality()) {
-                newValue = newValue.replaceAll("\\n", "#");
+            textColorPicker.valueProperty().addListener((observableValue, color, t1) -> {
+                fillColor = removeLastTwoLetters("#"+colorToHex(t1));
+                setNodeColorStyle(textTextArea, fillColor, outlineColor);
+                if(getTimer().getLine(onSecond) != null) {
+                    getTimer().getLine(onSecond).setFillColor(fillColor);
+                }
+            });
 
-                if (!newValue.isEmpty()) {
-                    story().addDataToTimerLineObject(sceneId, "line" + onSecond, "text", newValue);
-                    story().addDataToTimerLineObject(sceneId, "line" + onSecond, "fillColor", fillColor);
-                    story().addDataToTimerLineObject(sceneId, "line" + onSecond, "outlineColor", outlineColor);
-                } else {
-                    story().removeDataFromTimer(sceneId, "line" + onSecond);
+            textTextArea.textProperty().bindBidirectional(timerTextArea.textProperty());
+
+            //Setup text area
+            textTextArea.textProperty().addListener((observable, oldValue, newValue) -> {
+                if(!isLockTextAreaFunctionality()) {
+                    final String formattedText = newValue.replaceAll("\\n", "#");
+
+                    if (!newValue.isEmpty()) {
+                        if(getTimer().getLine(onSecond) == null) {
+                            getTimer().addNewLine(onSecond);
+                        }
+
+                        getTimer().getLine(onSecond).setText(formattedText);
+                        getTimer().getLine(onSecond).setFillColor(fillColor);
+                        getTimer().getLine(onSecond).setOutlineColor(outlineColor);
+                    } else {
+                        getTimer().removeLine(onSecond);
+                    }
+
+                    updateObjectTree();
+                }
+            });
+
+            //Setup total time field
+            totalTimerField.textProperty().addListener((observable, s, t1) -> {
+                try {
+                    totalSeconds = Integer.parseInt(totalTimerField.getText().trim());
+                    asisCenteredArc.setMaxLength(totalSeconds);
+
+                    handelSecondsOverTotal();
+                } catch (NumberFormatException e) {
+                    System.out.println("User inputted bad character into total time field");
+                    if(!t1.isEmpty()) {
+                        t1 = t1.substring(0, t1.length() - 1);
+                        totalTimerField.setText(t1);
+                    } else {
+                        totalTimerField.clear();
+                    }
                 }
 
+                getTimer().setTotalTime(totalSeconds);
                 updateObjectTree();
-            }
-        });
+            });
 
-        //Setup total time field
-        totalTimerField.textProperty().addListener((observable, s, t1) -> {
-            try {
-                totalSeconds = Integer.parseInt(totalTimerField.getText().trim());
-                asisCenteredArc.setMaxLength(totalSeconds);
-
-                handelSecondsOverTotal();
-            } catch (NumberFormatException e) {
-                System.out.println("User inputted bad character into total time field");
-                if(!t1.isEmpty()) {
-                    t1 = t1.substring(0, t1.length() - 1);
-                    totalTimerField.setText(t1);
-                } else {
-                    totalTimerField.clear();
-                }
-            }
-
-            story().addDataToTimerObject(sceneId, totalSeconds);
-            updateObjectTree();
-        });
-
-        //Setup go to seconds field
-        goToSecondsTextField.textProperty().addListener((observable, s, t1) -> {
-            try {
-                onSecond = Integer.parseInt(goToSecondsTextField.getText().trim());
-                asisCenteredArc.setArcProgress(onSecond);
-
-                handelSecondsOverTotal();
-            } catch (NumberFormatException e) {
-                System.out.println("User inputted bad character into goto second field");
-                if(!t1.isEmpty()) {
-                    t1 = t1.substring(0, t1.length() - 1);
-                    goToSecondsTextField.setText(t1);
-                } else {
-                    onSecond = 0;
+            //Setup go to seconds field
+            goToSecondsTextField.textProperty().addListener((observable, s, t1) -> {
+                try {
+                    onSecond = Integer.parseInt(goToSecondsTextField.getText().trim());
                     asisCenteredArc.setArcProgress(onSecond);
+
+                    handelSecondsOverTotal();
+                } catch (NumberFormatException e) {
+                    System.out.println("User inputted bad character into goto second field");
+                    if(!t1.isEmpty()) {
+                        t1 = t1.substring(0, t1.length() - 1);
+                        goToSecondsTextField.setText(t1);
+                    } else {
+                        onSecond = 0;
+                        asisCenteredArc.setArcProgress(onSecond);
+                    }
                 }
-            }
+
+                setTextAreaVariables();
+                setVisibleImage();
+            });
+
+            addBeatFieldListeners();
+
+            //timer
+            asisCenteredArc.setMaxLength(0);
+            asisCenteredArc.setArcProgress(0);
+            container.getChildren().add(asisCenteredArc.getArcPane());
 
             setTextAreaVariables();
-        });
+            setVisibleImage();
 
+            //total timer
+            JSONObject timerObject = getTimer().getTimerAsJson().getJSONObject(0);
+
+            if(timerObject != null) {
+                if(timerObject.has("totalTime")) {
+                    totalTimerField.setText(String.valueOf(timerObject.getInt("totalTime")));
+                    totalSeconds = Integer.parseInt(totalTimerField.getText().trim());
+                    asisCenteredArc.setMaxLength(totalSeconds);
+                }
+            }
+
+            //Update Tree View
+            updateObjectTree();
+        });
+    }
+
+    private void addBeatFieldListeners() {
         //Setup beat fields
         textFieldBeatPitch.textProperty().addListener((observableValue, s, t1) -> {
             //Process beat pitch
             try {
                 double pitch = Double.parseDouble(t1);
-                story().addDataToTimerLineObject(sceneId, "line"+onSecond, "changeBeatPitch", pitch);
+                getTimer().getLine(onSecond).setChangeBeatPitch(pitch);
             } catch (NumberFormatException e) {
                 System.out.println("User put bad value into beat pitch");
                 if(t1.isEmpty()) {
-                    story().removeDataFromTimerLineObject(sceneId, "line"+onSecond, "changeBeatPitch");
+                    getTimer().getLine(onSecond).setChangeBeatPitch(null);
                     textFieldBeatPitch.clear();
                     updateObjectTree();
                     return;
@@ -143,11 +187,11 @@ public class TabTimerController extends TabController {
             //Process beat speed
             try {
                 int speed = Integer.parseInt(t1);
-                story().addDataToTimerLineObject(sceneId, "line"+onSecond, "changeBeatSpeed", speed);
+                getTimer().getLine(onSecond).setChangeBeatSpeed(speed);
             } catch (NumberFormatException e) {
                 System.out.println("User put bad value into beat speed");
                 if(t1.isEmpty()) {
-                    story().removeDataFromTimerLineObject(sceneId, "line"+onSecond, "changeBeatSpeed");
+                    getTimer().getLine(onSecond).setChangeBeatSpeed(null);
                     textFieldBeatSpeed.clear();
                     updateObjectTree();
                     return;
@@ -157,18 +201,13 @@ public class TabTimerController extends TabController {
                 updateObjectTree();
             }
         });
-
-        //timer
-        asisCenteredArc.setMaxLength(0);
-        asisCenteredArc.setArcProgress(0);
-        container.getChildren().add(asisCenteredArc.getArcPane());
     }
 
     private void updateObjectTree() {
         TreeItem<String> root = new TreeItem<>("Timer");
         getObjectTree().setRoot(root);
 
-        JSONObject timerObject = Story.getInstance().getTimerData(sceneId);
+        JSONObject timerObject = getTimer().getTimerAsJson().getJSONObject(0);
 
         if(timerObject != null && !timerObject.isEmpty()) {
             for (int i = 0; i < timerObject.names().length(); i++) {
@@ -201,43 +240,9 @@ public class TabTimerController extends TabController {
         root.setExpanded(true);
     }
 
-    private String removeLastTwoLetters(String s) {
-        return Optional.ofNullable(s)
-                .filter(str -> str.length() != 0)
-                .map(str -> str.substring(0, str.length() - 2))
-                .orElse(s);
-    }
-
-    void passData(int sceneId) {
-        this.sceneId = sceneId;
-
-        //Set image if already set in scene
-        if(story() != null) {
-            //Set text area
-            setTextAreaVariables();
-
-            //Set the visible image
-            setVisibleImage();
-
-            //total timer
-            JSONObject timerObject = story().getTimerData(sceneId);
-
-            if(timerObject != null) {
-                if(timerObject.has("totalTime")) {
-                    totalTimerField.setText(String.valueOf(timerObject.getInt("totalTime")));
-                    totalSeconds = Integer.parseInt(totalTimerField.getText().trim());
-                    asisCenteredArc.setMaxLength(totalSeconds);
-                }
-            }
-
-            //Update Tree View
-            updateObjectTree();
-        }
-    }
-
     public void actionAddImage() {
         FileChooser fileChooser = new FileChooser();
-        fileChooser.setInitialDirectory(story().getProjectDirectory());
+        fileChooser.setInitialDirectory(Controller.getInstance().getJoiPackage().getPackageDirectory());
         fileChooser.getExtensionFilters().addAll(new FileChooser.ExtensionFilter("png", "*.png"));
         fileChooser.getExtensionFilters().addAll(new FileChooser.ExtensionFilter("jpg", "*.jpg"));
         fileChooser.getExtensionFilters().addAll(new FileChooser.ExtensionFilter("jpeg", "*.jpeg"));
@@ -246,32 +251,32 @@ public class TabTimerController extends TabController {
 
         if(file != null) {
             //Add image to json object
-            story().addDataToScene(sceneId, "sceneImage", file.getName());
-            story().addImage(file);
+            if(getScene() != null) {
+                getScene().setSceneImage(file);
 
-            setVisibleImage();
+                setVisibleImage();
+            }
         }
     }
 
     public void actionAddLineImage() {
         FileChooser fileChooser = new FileChooser();
-        fileChooser.setInitialDirectory(story().getProjectDirectory());
+        fileChooser.setInitialDirectory(Controller.getInstance().getJoiPackage().getPackageDirectory());
         fileChooser.getExtensionFilters().addAll(new FileChooser.ExtensionFilter("png", "*.png"));
         fileChooser.getExtensionFilters().addAll(new FileChooser.ExtensionFilter("jpg", "*.jpg"));
         fileChooser.getExtensionFilters().addAll(new FileChooser.ExtensionFilter("jpeg", "*.jpeg"));
 
         File file = fileChooser.showOpenDialog(null);
 
-        if(file != null) {
+        if(file != null && getTimer().getLine(onSecond) != null) {
             //Add image to json object
-            story().addDataToTimerLineObject(sceneId, "line"+onSecond, "lineImage", file.getName());
-            story().addImage(file);
+            getTimer().getLine(onSecond).setLineImage(file);
 
             setVisibleImage();
         }
     }
 
-    void setVisibleImage() {
+    public void setVisibleImage() {
         //Remove image if any is present
         if(viewPane != null) {
             timerStackPane.getChildren().remove(viewPane);
@@ -281,30 +286,19 @@ public class TabTimerController extends TabController {
         File workingFile = new File("");
 
         //Scene image code
-        String sceneImage = story().getSceneImage(sceneId);
-        if (sceneImage != null) {
-            for (File imageFiles : story().getImagesArray()) {
-                if(imageFiles.getName().equals(sceneImage)) {
-                    workingFile = imageFiles;
+        if(getScene() != null && getScene().getSceneImage() != null) {
+            //Set image file
+            workingFile = getScene().getSceneImage();
 
-                    //Remove add image button
-                    timerStackPane.getChildren().remove(timerIconControllerBox);
-                }
-            }
+            //Remove add image button
+            timerStackPane.getChildren().remove(timerIconControllerBox);
         }
 
         //Line image code
-        JSONObject textObject = story().getTimerLineData(sceneId, "line"+onSecond);
-        if (textObject != null) {
-            if (textObject.has("lineImage")) {
-                String lineImage = textObject.getString("lineImage");
-                if (lineImage != null) {
-                    for (File imageFiles : story().getImagesArray()) {
-                        if(imageFiles.getName().equals(lineImage)) {
-                            workingFile = imageFiles;
-                        }
-                    }
-                }
+        if(getTimer().getLine(onSecond) != null) {
+            if (getTimer().getLine(onSecond).getLineImage() != null) {
+                //Set image file
+                workingFile = getTimer().getLine(onSecond).getLineImage();
             }
         }
 
@@ -321,16 +315,17 @@ public class TabTimerController extends TabController {
         setLockTextAreaFunctionality(true);
         timerTextArea.setText("");
 
-        JSONObject textObject = story().getTimerLineData(sceneId, "line"+onSecond);
+        if(getTimer().getLine(onSecond) != null) {
+            JSONObject textObject = getTimer().getLine(onSecond).getLineAsJson().getJSONObject(0);
+            setFieldsIfNeeded(textObject);
 
-        if (textObject != null) { ifStatements(textObject); }
-
-        beatConfiguration(textObject);
+            beatConfiguration(textObject);
+        }
 
         setLockTextAreaFunctionality(false);
     }
 
-    private void ifStatements(JSONObject textObject) {
+    private void setFieldsIfNeeded(JSONObject textObject) {
         if (textObject.has("fillColor")) {
             textColorPicker.setValue(Color.web(textObject.getString("fillColor")));
         }
@@ -365,35 +360,45 @@ public class TabTimerController extends TabController {
     }
 
     public void actionStartBeat() {
-        //Add startBeat to story()
         if(checkBoxStartBeat.isSelected()) {
-            story().addDataToTimerLineObject(sceneId, "line"+onSecond, "startBeat", true);
+            getTimer().getLine(onSecond).setStartBeat(true);
         } else {
-            story().removeDataFromTimerLineObject(sceneId, "line"+onSecond, "startBeat");
+            getTimer().getLine(onSecond).setStartBeat(null);
         }
         updateObjectTree();
     }
 
     public void actionStopBeat() {
-        //Add stopBeat to story()
         if(checkBoxStopBeat.isSelected()) {
-            story().addDataToTimerLineObject(sceneId, "line"+onSecond, "stopBeat", true);
+            getTimer().getLine(onSecond).setStopBeat(true);
         } else {
-            story().removeDataFromTimerLineObject(sceneId, "line"+onSecond, "stopBeat");
+            getTimer().getLine(onSecond).setStopBeat(null);
         }
         updateObjectTree();
     }
-    
-    private Story story() {
-        return Story.getInstance();
+
+    private Scene getScene() {
+        for(Scene scene: Controller.getInstance().getJoiPackage().getJoi().getSceneArrayList()) {
+            if(scene.getTimer() != null && scene.getTimer().equals(getTimer())) {
+                return scene;
+            }
+        }
+        return null;
     }
 
+    //Getters and setters
     private boolean isLockTextAreaFunctionality() {
         return lockTextAreaFunctionality;
     }
-
     private void setLockTextAreaFunctionality(boolean lockTextAreaFunctionality) {
         this.lockTextAreaFunctionality = lockTextAreaFunctionality;
+    }
+
+    public Timer getTimer() {
+        return timer;
+    }
+    public void setTimer(Timer timer) {
+        this.timer = timer;
     }
 
     private TreeView<String> getObjectTree() {

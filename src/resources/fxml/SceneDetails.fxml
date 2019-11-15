@@ -3,39 +3,39 @@
 <?import javafx.geometry.Insets?>
 <?import javafx.scene.control.*?>
 <?import javafx.scene.layout.*?>
-<BorderPane id="darkThemeBackground" fx:id="sceneDetailBorderPane" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="720.0" prefWidth="800.0" stylesheets="@../../resources/css/scene_details_stylesheet.css" xmlns="http://javafx.com/javafx/8.0.172-ea" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.asis.controllers.SceneDetails">
+<BorderPane id="darkThemeBackground" fx:id="sceneDetailBorderPane" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="720.0" prefWidth="800.0" stylesheets="@../../resources/css/scene_details_stylesheet.css" xmlns="http://javafx.com/javafx/8" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.asis.controllers.SceneDetails">
    <top>
        <VBox BorderPane.alignment="CENTER">
-           <MenuBar stylesheets="@../../resources/css/menu_bar_stylesheet.css">
-               <Menu mnemonicParsing="false" text="File">
-                   <MenuItem mnemonicParsing="false" onAction="#actionClose" text="Close"/>
-               </Menu>
-               <Menu mnemonicParsing="false" text="Edit">
-                   <MenuItem mnemonicParsing="false" onAction="#actionChangeSceneImage" text="Change Scene Image"/>
-               </Menu>
-               <Menu mnemonicParsing="false" text="Scene Items">
-                   <MenuItem fx:id="menuItemAddDialog" mnemonicParsing="false" onAction="#actionAddDialog"
-                             text="Add dialog options to scene"/>
-                   <MenuItem fx:id="menuItemAddTransition" disable="true" mnemonicParsing="false"
-                             onAction="#actionAddTransition" text="Add transition to scene"/>
-                   <MenuItem fx:id="menuItemAddTimer" mnemonicParsing="false" onAction="#actionAddTimer"
-                             text="Add timer to scene"/>
-               </Menu>
-           </MenuBar>
+          <children>
+              <MenuBar stylesheets="@../../resources/css/menu_bar_stylesheet.css">
+                 <menus>
+                     <Menu mnemonicParsing="false" text="File">
+                        <items>
+                            <MenuItem mnemonicParsing="false" onAction="#actionClose" text="Close" />
+                        </items>
+                     </Menu>
+                     <Menu mnemonicParsing="false" text="Edit">
+                        <items>
+                            <MenuItem mnemonicParsing="false" onAction="#actionChangeSceneImage" text="Change Scene Image" />
+                        </items>
+                     </Menu>
+                     <Menu mnemonicParsing="false" text="Scene Items">
+                        <items>
+                            <MenuItem fx:id="menuItemAddDialog" mnemonicParsing="false" onAction="#menuItemAddDialog" text="Add dialog options to scene" />
+                            <MenuItem fx:id="menuItemAddTransition" mnemonicParsing="false" onAction="#menuItemAddTransition" text="Add transition to scene" />
+                            <MenuItem fx:id="menuItemAddTimer" mnemonicParsing="false" onAction="#menuItemAddTimer" text="Add timer to scene" />
+                        </items>
+                     </Menu>
+                 </menus>
+              </MenuBar>
+          </children>
        </VBox>
    </top>
    <center>
-       <TabPane fx:id="effectTabs" focusTraversable="false" stylesheets="@../../resources/css/tabed_pane_stylesheet.css"
-                tabClosingPolicy="ALL_TABS" BorderPane.alignment="TOP_LEFT">
+       <TabPane fx:id="effectTabs" focusTraversable="false" stylesheets="@../../resources/css/tabed_pane_stylesheet.css" tabClosingPolicy="ALL_TABS" BorderPane.alignment="TOP_LEFT">
            <BorderPane.margin>
-               <Insets/>
+               <Insets />
            </BorderPane.margin>
-           <Tab closable="false" text="Normal Operation">
-               <fx:include fx:id="tabNormalOperation" source="tab_normal_operation.fxml"/>
-           </Tab>
-           <Tab fx:id="transitionTab" onCloseRequest="#actionTransitionCloseRequested" text="Transition">
-               <fx:include fx:id="tabTransition" source="tab_transition.fxml"/>
-           </Tab>
        </TabPane>
    </center>
 </BorderPane>

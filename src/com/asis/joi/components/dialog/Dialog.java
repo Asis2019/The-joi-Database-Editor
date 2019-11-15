@@ -10,7 +10,6 @@ import java.util.ArrayList;
 public class Dialog implements JOISystemInterface {
     private ArrayList<DialogOption> optionArrayList = new ArrayList<>();
 
-
     public void addDialogOption() {
         getOptionArrayList().add(new DialogOption(getOptionArrayList().size(), ""));
     }
@@ -19,27 +18,40 @@ public class Dialog implements JOISystemInterface {
     }
 
     public JSONArray getDialogAsJson() {
-        JSONArray arrayOfOptions = new JSONArray();
+        JSONObject object = new JSONObject();
+
         for(DialogOption dialogOption: getOptionArrayList()) {
-            arrayOfOptions.put(dialogOption.getDialogOptionAsJson());
+            object.put("option"+dialogOption.getOptionNumber(), dialogOption.getDialogOptionAsJson());
         }
 
-        return arrayOfOptions;
+        JSONArray arrayOfOptions = new JSONArray();
+        return arrayOfOptions.put(object);
     }
 
     @Override
     public void setDataFromJson(JSONObject jsonObject, File importDirectory) {
         //set dialog options
-        int i = 0;
-        while (jsonObject.has("option"+i)) {
+        int i=0;
+        while(jsonObject.has("option"+i)) {
             addDialogOption();
             getOptionArrayList().get(i).setDataFromJson(jsonObject.getJSONArray("option"+i).getJSONObject(0), importDirectory);
+            i++;
         }
     }
 
     @Override
     public String toString() {
         return getDialogAsJson().toString(4);
+    }
+
+    @Override
+    public boolean equals(Object object) {
+        if (this == object) return true;
+        if (!(object instanceof Dialog)) return false;
+
+        Dialog dialog = (Dialog) object;
+
+        return getOptionArrayList().equals(dialog.getOptionArrayList());
     }
 
     //Getters and Setters
