@@ -18,23 +18,24 @@ public class Dialog implements JOISystemInterface {
     }
 
     public JSONArray getDialogAsJson() {
-        JSONArray arrayOfOptions = new JSONArray();
+        JSONObject object = new JSONObject();
+
         for(DialogOption dialogOption: getOptionArrayList()) {
-            arrayOfOptions.put(dialogOption.getDialogOptionAsJson());
+            object.put("option"+dialogOption.getOptionNumber(), dialogOption.getDialogOptionAsJson());
         }
 
-        return arrayOfOptions;
+        JSONArray arrayOfOptions = new JSONArray();
+        return arrayOfOptions.put(object);
     }
 
     @Override
     public void setDataFromJson(JSONObject jsonObject, File importDirectory) {
         //set dialog options
-        if(jsonObject.has("dialogChoice")) {
-            final JSONArray dialogChoice = jsonObject.getJSONArray("dialogChoice");
-            for (int i = 0; i < dialogChoice.length(); i++) {
-                addDialogOption();
-                getOptionArrayList().get(i).setDataFromJson(dialogChoice.getJSONObject(i).getJSONArray("option" + i).getJSONObject(0), importDirectory);
-            }
+        int i=0;
+        while(jsonObject.has("option"+i)) {
+            addDialogOption();
+            getOptionArrayList().get(i).setDataFromJson(jsonObject.getJSONArray("option"+i).getJSONObject(0), importDirectory);
+            i++;
         }
     }
 

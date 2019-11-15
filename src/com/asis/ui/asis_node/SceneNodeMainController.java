@@ -91,7 +91,7 @@ public class SceneNodeMainController {
 
         root.getChildren().add(0, boundLine);
 
-        lineList.add(boundLine);
+        getLineList().add(boundLine);
 
         if (getTotalLinesConnectedToOutput(from) > 1) {
             from.setButtonColor("#c7c763");
@@ -140,20 +140,20 @@ public class SceneNodeMainController {
                 boundLine.endXProperty().unbind();
                 boundLine.endYProperty().unbind();
                 root.getChildren().remove(boundLine);
-                lineList.remove(boundLine);
+                getLineList().remove(boundLine);
                 inputConnection.setBoundLine(null);
             }
 
             if (currentOutputConnection != null) {
                 if (currentOutputConnection.hasBoundLine()) {
                     //Check if any lines have the same output and input already
-                    for (BoundLine line : lineList) {
+                    for (BoundLine line : getLineList()) {
                         if (line.getStartPointConnectionObject() == currentOutputConnection && line.getEndPointConnectionObject() == inputConnection) {
                             System.out.println("Duplicate line found");
                             currentOutputConnection.getBoundLine().endXProperty().unbind();
                             currentOutputConnection.getBoundLine().endYProperty().unbind();
                             root.getChildren().remove(currentOutputConnection.getBoundLine());
-                            lineList.remove(line);
+                            getLineList().remove(line);
                             currentOutputConnection.setBoundLine(null);
                             dragActive = false;
                             currentOutputConnection = null;
@@ -185,7 +185,7 @@ public class SceneNodeMainController {
         if(outputConnection.getConnectionId().contains("dialog_option")) {
             //Remove from inner dialog location
             if (getTotalLinesConnectedToOutput(outputConnection) > 1) {
-                lineList.remove(boundLine);
+                getLineList().remove(boundLine);
                 scene.getDialog().getOptionArrayList().get(outputConnection.getOptionNumber()).getGotoScene().removeValue(outputConnection.getOptionNumber());
                 outputConnection.setBoundLine(null);
 
@@ -197,14 +197,14 @@ public class SceneNodeMainController {
                 //Convert to old method
                 outputConnection.setButtonColor("#63c763ff");
             } else {
-                lineList.remove(boundLine);
+                getLineList().remove(boundLine);
                 scene.getDialog().getOptionArrayList().get(outputConnection.getOptionNumber()).setGotoScene(null);
                 outputConnection.setBoundLine(null);
             }
         } else {
             //Remove from upper scene location
             if (getTotalLinesConnectedToOutput(outputConnection) > 1) {
-                lineList.remove(boundLine);
+                getLineList().remove(boundLine);
                 scene.getGotoScene().removeValue(inputConnection.getParentSceneId());
                 outputConnection.setBoundLine(null);
 
@@ -215,7 +215,7 @@ public class SceneNodeMainController {
 
                 outputConnection.setButtonColor("#63c763ff");
             } else {
-                lineList.remove(boundLine);
+                getLineList().remove(boundLine);
                 outputConnection.setBoundLine(null);
                 scene.setGotoScene(null);
             }
@@ -263,7 +263,7 @@ public class SceneNodeMainController {
             startDrag();
         } else {
             //Connection is an input type
-            for (BoundLine line : lineList) {
+            for (BoundLine line : getLineList()) {
                 if (line.getEndPointConnectionObject() == asisConnectionButton) {
                     currentOutputConnection = line.getStartPointConnectionObject();
                     root.getChildren().remove(line);
@@ -287,7 +287,7 @@ public class SceneNodeMainController {
 
     public void notifySceneRemoved(SceneNode sceneNode) {
         //Check if connection is present for outputs
-        ArrayList<BoundLine> consistentDataList = new ArrayList<>(lineList);
+        ArrayList<BoundLine> consistentDataList = new ArrayList<>(getLineList());
         for (AsisConnectionButton connection : sceneNode.getOutputButtons()) {
             for (BoundLine line : consistentDataList) {
                 if (connection == line.getStartPointConnectionObject()) {
@@ -309,8 +309,14 @@ public class SceneNodeMainController {
     public JOIPackage getJoiPackage() {
         return joiPackage;
     }
-
     public void setJoiPackage(JOIPackage joiPackage) {
         this.joiPackage = joiPackage;
+    }
+
+    public List<BoundLine> getLineList() {
+        return lineList;
+    }
+    public void setLineList(List<BoundLine> lineList) {
+        this.lineList = lineList;
     }
 }

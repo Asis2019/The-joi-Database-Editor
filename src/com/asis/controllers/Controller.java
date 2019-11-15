@@ -428,6 +428,7 @@ public class Controller {
         getSceneNodes().clear();
         setJoiPackage(joiPackage);
         sceneNodeMainController.setJoiPackage(joiPackage);
+        sceneNodeMainController.setLineList(new ArrayList<>());
         for(Stage stage: getOpenStages()) {
             stage.close();
         }
@@ -476,7 +477,8 @@ public class Controller {
 
                     //Create connections
                     for (com.asis.joi.components.Scene scene : getJoiPackage().getJoi().getSceneArrayList()) {
-                        createConnections(scene, scene.getGotoScene());
+                        final AsisConnectionButton output = getSceneNodeWithId(getSceneNodes(), scene.getSceneId()).getOutputButtons().get(0);
+                        createConnections(scene.getGotoScene(), output);
 
                         createConnectionsForDialogOutputs(scene);
                     }
@@ -502,13 +504,12 @@ public class Controller {
                 AsisConnectionButton output = getSceneNodeWithId(sceneNodes, scene.getSceneId()).createNewOutputConnectionPoint("Option "+dialogOption.getOptionNumber(), "dialog_option_" + (dialogOption.getOptionNumber() + 1));
                 output.setOptionNumber(dialogOption.getOptionNumber());
 
-                createConnections(scene, dialogOption.getGotoScene());
+                createConnections(dialogOption.getGotoScene(), output);
             }
         }
     }
 
-    private void createConnections(com.asis.joi.components.Scene scene, GotoScene gotoScene) {
-        final AsisConnectionButton output = getSceneNodeWithId(getSceneNodes(), scene.getSceneId()).getOutputButtons().get(0);
+    private void createConnections(GotoScene gotoScene, AsisConnectionButton output) {
         final boolean gotoHasSingleOutput = gotoScene != null && gotoScene.getGotoSceneArrayList().size() == 1;
         final boolean gotoHasMultipleOutput = gotoScene != null && gotoScene.getGotoSceneArrayList().size() > 1;
 

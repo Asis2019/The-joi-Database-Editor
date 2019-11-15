@@ -17,17 +17,13 @@ public class DialogOption implements JOISystemInterface {
         setOptionText(optionText);
     }
 
-    public JSONObject getDialogOptionAsJson() {
+    public JSONArray getDialogOptionAsJson() {
         JSONObject object = new JSONObject();
         object.put("text", getOptionText());
         if(getGotoScene() != null)  object.put(getGotoScene().getJsonKeyName(), getGotoScene().getJsonValue());
 
         JSONArray wrapper = new JSONArray();
-        wrapper.put(object);
-
-        JSONObject finalObject = new JSONObject();
-        finalObject.put("option"+getOptionNumber(), wrapper);
-        return finalObject;
+        return wrapper.put(object);
     }
 
     @Override

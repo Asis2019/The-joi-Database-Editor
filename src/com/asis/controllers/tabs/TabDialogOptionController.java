@@ -85,7 +85,7 @@ public class TabDialogOptionController extends TabController {
             if(scene != null) {
                 SceneNode sceneNode = Controller.getInstance().getSceneNodeWithId(Controller.getInstance().getSceneNodes(), scene.getSceneId());
                 AsisConnectionButton asisConnectionButton = sceneNode.createNewOutputConnectionPoint("Option " + totalOptions, "dialog_option_" + totalOptions);
-                asisConnectionButton.setOptionNumber(totalOptions-1);
+                asisConnectionButton.setOptionNumber(totalOptions);
             }
         }
     }
