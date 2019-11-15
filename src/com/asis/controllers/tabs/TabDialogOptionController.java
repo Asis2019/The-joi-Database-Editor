@@ -34,13 +34,13 @@ public class TabDialogOptionController extends TabController {
 
             TextField textField = new TextField();
             textField.setMaxWidth(500);
-            textField.setPromptText("Option " + (dialogOption.getOptionNumber() + 1));
+            textField.setPromptText("Option " + dialogOption.getOptionNumber());
             textField.setText(dialogOption.getOptionText());
             textField.setId("optionTextField");
             textField.setAlignment(Pos.CENTER);
             textField.getStylesheets().add(getClass().getResource("/resources/css/text_field_stylesheet.css").toString());
 
-            textField.setOnKeyTyped(keyEvent -> textFieldTyped(textField, dialogOption.getOptionNumber()));
+            textField.textProperty().addListener((observableValue, s, t1) -> textFieldTyped(textField, dialogOption.getOptionNumber()));
 
             Image image = new Image(getClass().getResource("/resources/images/dialog_option_button.png").toString());
             ImageView imageView = new ImageView(image);
@@ -53,20 +53,23 @@ public class TabDialogOptionController extends TabController {
         }
     }
 
-    @FXML private void actionAddOption() {
+    @FXML public void actionAddOption() {
         final int totalOptions = getDialog().getOptionArrayList().size();
 
-        if(getDialog().getOptionArrayList().size() < 4) {
+        if(totalOptions < 4) {
+            getDialog().addDialogOption();
+
             StackPane stackPane = new StackPane();
 
             TextField textField = new TextField();
             textField.setMaxWidth(500);
-            textField.setPromptText("Option "+(totalOptions+1));
+            textField.setPromptText("Option "+totalOptions);
             textField.setId("optionTextField");
             textField.setAlignment(Pos.CENTER);
             textField.getStylesheets().add(getClass().getResource("/resources/css/text_field_stylesheet.css").toString());
 
-            textField.setOnKeyTyped(keyEvent -> textFieldTyped(textField, totalOptions));
+            System.out.println(totalOptions);
+            textField.textProperty().addListener((observableValue, s, t1) -> textFieldTyped(textField, totalOptions));
 
             Image image = new Image(getClass().getResource("/resources/images/dialog_option_button.png").toString());
             ImageView imageView = new ImageView(image);
@@ -84,12 +87,12 @@ public class TabDialogOptionController extends TabController {
                 AsisConnectionButton asisConnectionButton = sceneNode.createNewOutputConnectionPoint("Option " + totalOptions, "dialog_option_" + totalOptions);
                 asisConnectionButton.setOptionNumber(totalOptions-1);
             }
-
-            getDialog().addDialogOption();
         }
+
+        System.out.println(getDialog());
     }
 
-    @FXML private void actionRemoveOption() {
+    @FXML public void actionRemoveOption() {
         final int totalOptions = getDialog().getOptionArrayList().size();
 
         if(totalOptions > 0) {

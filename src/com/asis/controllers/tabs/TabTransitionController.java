@@ -41,6 +41,8 @@ public class TabTransitionController extends TabController {
         transitionTextLabel.textProperty().bindBidirectional(transitionTextField.textProperty());
         transitionTextLabel.setStyle("outline-color: "+textOutlineColor+"; fill-color: "+textFillColor+";");
 
+        transitionTextField.textProperty().addListener((observableValue, s, t1) -> getTransition().setTransitionText(t1==null || t1.isEmpty()?null:t1));
+
         transitionTextOutlineColor.valueProperty().addListener((observableValue, color, t1) -> {
             textOutlineColor = removeLastTwoLetters("#"+ AsisUtils.colorToHex(t1));
             transitionTextLabel.setStyle("fill-color: "+textFillColor+"; outline-color: "+textOutlineColor+";");
@@ -111,12 +113,6 @@ public class TabTransitionController extends TabController {
             transitionFadeColor.setValue(Color.web(getTransition().getFadeColor()));
             transitionPaneMask.setStyle("-fx-background-color: " + getTransition().getFadeColor() + ";");
         }
-    }
-
-    public void actionTransitionText() {
-        //Add transition text to transition object
-        String text = transitionTextField.getText();
-        getTransition().setTransitionText(text==null || text.isEmpty()?null:text);
     }
 
     public void actionFadeColor() {

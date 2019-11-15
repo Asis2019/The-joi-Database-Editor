@@ -1,5 +1,6 @@
 package com.asis.joi;
 
+import com.asis.controllers.Controller;
 import org.json.JSONArray;
 import org.json.JSONObject;
 
@@ -14,6 +15,14 @@ public class MetaData implements JOISystemInterface{
     private ArrayList<String> fetishList = new ArrayList<>();
     private ArrayList<String> characterList = new ArrayList<>();
     private ArrayList<String> equipmentList = new ArrayList<>();
+
+    public MetaData() {
+
+    }
+    public MetaData(MetaData metaData) {
+        JSONObject object = metaData.getMetaDataAsJson().getJSONArray("JOI METADATA").getJSONObject(0);
+        setDataFromJson(object, Controller.getInstance().getJoiPackage().getPackageDirectory());
+    }
 
     public JSONObject getMetaDataAsJson() {
         JSONObject innerObject = new JSONObject();
@@ -88,16 +97,24 @@ public class MetaData implements JOISystemInterface{
 
         if (getJoiIcon() != null ? !getJoiIcon().equals(metaData.getJoiIcon()) : metaData.getJoiIcon() != null)
             return false;
+
         if (getPreparations() != null ? !getPreparations().equals(metaData.getPreparations()) : metaData.getPreparations() != null)
             return false;
+
         if (getName() != null ? !getName().equals(metaData.getName()) : metaData.getName() != null) return false;
+
         if (getJoiId() != null ? !getJoiId().equals(metaData.getJoiId()) : metaData.getJoiId() != null) return false;
+
         if (getVersionAdded() != null ? !getVersionAdded().equals(metaData.getVersionAdded()) : metaData.getVersionAdded() != null)
             return false;
+
         if (getDisplayedFetishes() != null ? !getDisplayedFetishes().equals(metaData.getDisplayedFetishes()) : metaData.getDisplayedFetishes() != null)
             return false;
+
         if (!getFetishList().equals(metaData.getFetishList())) return false;
+
         if (!getCharacterList().equals(metaData.getCharacterList())) return false;
+
         return getEquipmentList().equals(metaData.getEquipmentList());
     }
 

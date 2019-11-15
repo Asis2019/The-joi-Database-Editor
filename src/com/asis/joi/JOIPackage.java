@@ -7,7 +7,10 @@ import org.json.JSONArray;
 
 import java.io.File;
 import java.io.IOException;
+import java.io.InputStream;
 import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.nio.file.StandardCopyOption;
 
 import static com.asis.utilities.AsisUtils.deleteFolder;
@@ -22,7 +25,8 @@ public class JOIPackage {
         this(new File("defaultWorkspace"));
     }
     public JOIPackage(File packageDirectory) {
-        if(!packageDirectory.exists()) //noinspection ResultOfMethodCallIgnored
+        if(!packageDirectory.exists())
+            //noinspection ResultOfMethodCallIgnored
             packageDirectory.mkdir();
 
         setPackageDirectory(packageDirectory);
@@ -41,21 +45,25 @@ public class JOIPackage {
             }
 
             //Copy icon to export directory and rename it appropriately
-            File metaDataIcon = new File(this.getClass().getResource("/resources/images/icon_dev.png").getPath());
-            if (getMetaData().getJoiIcon() != null) metaDataIcon = getMetaData().getJoiIcon();
-
-            if(metaDataIcon.exists()) {
+            if(getMetaData().getJoiIcon() != null) {
+                File metaDataIcon = getMetaData().getJoiIcon();
                 Files.copy(metaDataIcon.toPath(), exportDirectory.toPath().resolve(metaDataIcon.getName()), StandardCopyOption.REPLACE_EXISTING);
+
                 if (!metaDataIcon.getName().equals("joi_icon.png")) {
                     Files.deleteIfExists(new File(exportDirectory.toString() + "/" + "joi_icon.png").toPath());
                     AsisUtils.renameFile(new File(exportDirectory.toPath() + "/" + metaDataIcon.getName()), "joi_icon.png");
                 }
+            } else {
+                InputStream in = getClass().getResourceAsStream("/resources/images/icon_dev.png");
+                Path path = Paths.get(exportDirectory.toPath()+"/joi_icon.png");
+                Files.copy(in, path, StandardCopyOption.REPLACE_EXISTING);
             }
 
             //Export completed successfully
             return true;
         } catch (Exception e) {
-            AsisUtils.errorDialogWindow(e);
+            e.printStackTrace();
+            //AsisUtils.errorDialogWindow(e);
             return false;
         }
     }

@@ -29,11 +29,12 @@ public class Dialog implements JOISystemInterface {
     @Override
     public void setDataFromJson(JSONObject jsonObject, File importDirectory) {
         //set dialog options
-        int i = 0;
-        while (jsonObject.has("option"+i)) {
-            addDialogOption();
-            getOptionArrayList().get(i).setDataFromJson(jsonObject.getJSONArray("option"+i).getJSONObject(0), importDirectory);
-            i++;
+        if(jsonObject.has("dialogChoice")) {
+            final JSONArray dialogChoice = jsonObject.getJSONArray("dialogChoice");
+            for (int i = 0; i < dialogChoice.length(); i++) {
+                addDialogOption();
+                getOptionArrayList().get(i).setDataFromJson(dialogChoice.getJSONObject(i).getJSONArray("option" + i).getJSONObject(0), importDirectory);
+            }
         }
     }
 

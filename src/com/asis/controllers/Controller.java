@@ -1,6 +1,7 @@
 package com.asis.controllers;
 
 import com.asis.joi.JOIPackage;
+import com.asis.joi.MetaData;
 import com.asis.joi.components.dialog.DialogOption;
 import com.asis.ui.asis_node.AsisConnectionButton;
 import com.asis.ui.asis_node.SceneNode;
@@ -277,7 +278,16 @@ public class Controller {
             final JOIPackage originalPackage = new JOIPackage();
             originalPackage.setPackageLanguageCode(getJoiPackage().getPackageLanguageCode());
             originalPackage.importPackageFromDirectory(getJoiPackage().getPackageDirectory());
-            return !originalPackage.getJoi().equals(getJoiPackage().getJoi()) || !originalPackage.getMetaData().equals(getJoiPackage().getMetaData());
+
+            //The icons are set to null, because when a joi is saved it exports and icon
+            //This icon will not be present in the joi stored in memory causing the results
+            //to be inaccurate.
+            MetaData memoryData = new MetaData(getJoiPackage().getMetaData());
+            memoryData.setJoiIcon(null);
+            MetaData fileData = new MetaData(originalPackage.getMetaData());
+            fileData.setJoiIcon(null);
+
+            return !getJoiPackage().getJoi().equals(originalPackage.getJoi()) || !memoryData.equals(fileData);
         }catch (RuntimeException e) {
             return true;
         }
@@ -488,7 +498,7 @@ public class Controller {
     private void createConnectionsForDialogOutputs(com.asis.joi.components.Scene scene) {
         if(scene.getDialog() != null && !scene.getDialog().getOptionArrayList().isEmpty()) {
             for(DialogOption dialogOption: scene.getDialog().getOptionArrayList()) {
-                AsisConnectionButton output = getSceneNodeWithId(sceneNodes, scene.getSceneId()).createNewOutputConnectionPoint("Option " + (dialogOption.getOptionNumber() + 1), "dialog_option_" + (dialogOption.getOptionNumber() + 1));
+                AsisConnectionButton output = getSceneNodeWithId(sceneNodes, scene.getSceneId()).createNewOutputConnectionPoint("Option "+dialogOption.getOptionNumber(), "dialog_option_" + (dialogOption.getOptionNumber() + 1));
                 output.setOptionNumber(dialogOption.getOptionNumber());
 
                 final boolean dialogOptionHasSingleGotoScene = dialogOption.getGotoScene() != null && dialogOption.getGotoScene().getGotoSceneArrayList().size() == 1;

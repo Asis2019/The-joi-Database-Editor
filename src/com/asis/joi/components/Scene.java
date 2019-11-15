@@ -155,7 +155,7 @@ public class Scene implements JOISystemInterface {
                 break;
             case "dialogChoice":
                 setDialog(new Dialog());
-                getDialog().setDataFromJson(object.getJSONArray("dialogChoice").getJSONObject(0), importDirectory);
+                getDialog().setDataFromJson(object, importDirectory);
                 break;
             case "gotoScene":
                 setGotoScene(new GotoScene());

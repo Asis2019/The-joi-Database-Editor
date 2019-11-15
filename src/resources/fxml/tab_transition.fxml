@@ -32,8 +32,7 @@
         <VBox minHeight="0.0" minWidth="0.0" stylesheets="@../../resources/css/titled_pane_stylesheet.css">
             <TitledPane animated="false" text="Scene Transition Properties" wrapText="true">
                 <VBox spacing="5.0">
-                    <TextField fx:id="transitionTextField" onKeyTyped="#actionTransitionText"
-                               promptText="Transition Text"/>
+                    <TextField fx:id="transitionTextField" promptText="Transition Text"/>
                     <Label fx:id="transitionTextColorLabel" text="Text Color"/>
                     <ColorPicker fx:id="transitionTextColor" promptText="Transition Text Color"/>
                     <Label fx:id="transitionTextOutlineColorLabel" layoutX="20.0" layoutY="72.0"
