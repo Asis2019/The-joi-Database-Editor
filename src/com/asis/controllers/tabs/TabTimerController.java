@@ -51,11 +51,11 @@ public class TabTimerController extends TabController {
         setTimer(timer);
 
         Platform.runLater(() -> {
-            setMainTextAreaColorStyle(textTextArea, fillColor, outlineColor);
+            setNodeColorStyle(textTextArea, fillColor, outlineColor);
 
             textOutlineColorPicker.valueProperty().addListener((observableValue, color, t1) -> {
                 outlineColor = removeLastTwoLetters("#"+colorToHex(t1));
-                setMainTextAreaColorStyle(textTextArea, fillColor, outlineColor);
+                setNodeColorStyle(textTextArea, fillColor, outlineColor);
                 if(getTimer().getLine(onSecond) != null) {
                     getTimer().getLine(onSecond).setOutlineColor(outlineColor);
                 }
@@ -63,7 +63,7 @@ public class TabTimerController extends TabController {
 
             textColorPicker.valueProperty().addListener((observableValue, color, t1) -> {
                 fillColor = removeLastTwoLetters("#"+colorToHex(t1));
-                setMainTextAreaColorStyle(textTextArea, fillColor, outlineColor);
+                setNodeColorStyle(textTextArea, fillColor, outlineColor);
                 if(getTimer().getLine(onSecond) != null) {
                     getTimer().getLine(onSecond).setFillColor(fillColor);
                 }

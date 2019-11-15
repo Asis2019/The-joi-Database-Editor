@@ -2,6 +2,7 @@ package com.asis.controllers;
 
 import com.asis.joi.JOIPackage;
 import com.asis.joi.MetaData;
+import com.asis.joi.components.GotoScene;
 import com.asis.joi.components.dialog.DialogOption;
 import com.asis.ui.asis_node.AsisConnectionButton;
 import com.asis.ui.asis_node.SceneNode;
@@ -475,7 +476,7 @@ public class Controller {
 
                     //Create connections
                     for (com.asis.joi.components.Scene scene : getJoiPackage().getJoi().getSceneArrayList()) {
-                        createConnectionsForDefaultOutput(scene);
+                        createConnections(scene, scene.getGotoScene());
 
                         createConnectionsForDialogOutputs(scene);
                     }
@@ -501,49 +502,26 @@ public class Controller {
                 AsisConnectionButton output = getSceneNodeWithId(sceneNodes, scene.getSceneId()).createNewOutputConnectionPoint("Option "+dialogOption.getOptionNumber(), "dialog_option_" + (dialogOption.getOptionNumber() + 1));
                 output.setOptionNumber(dialogOption.getOptionNumber());
 
-                final boolean dialogOptionHasSingleGotoScene = dialogOption.getGotoScene() != null && dialogOption.getGotoScene().getGotoSceneArrayList().size() == 1;
-                final boolean dialogOptionHasMultipleGotoScene = dialogOption.getGotoScene() != null && dialogOption.getGotoScene().getGotoSceneArrayList().size() > 1;
-
-                //Check for scene normal connections
-                if(dialogOptionHasSingleGotoScene) {
-                    if(dialogOption.getGotoScene() != null) {
-                        AsisConnectionButton input = getSceneNodeWithId(sceneNodes, dialogOption.getGotoScene().getGotoSceneArrayList().get(0)).getInputConnection();
-                        sceneNodeMainController.createConnection(output, input);
-                    } else {
-                        System.out.println("NullPointer exception caught while building gui for loading.");
-                    }
-                }
-
-                //Check for scene range connections
-                if (dialogOptionHasMultipleGotoScene) {
-                    for (int i = 0; i < dialogOption.getGotoScene().getGotoSceneArrayList().size(); i++) {
-                        AsisConnectionButton input = getSceneNodeWithId(sceneNodes, dialogOption.getGotoScene().getGotoSceneArrayList().get(i)).getInputConnection();
-                        sceneNodeMainController.createConnection(output, input);
-                    }
-                }
+                createConnections(scene, dialogOption.getGotoScene());
             }
         }
     }
 
-    private void createConnectionsForDefaultOutput(com.asis.joi.components.Scene scene) {
-        final AsisConnectionButton output = getSceneNodeWithId(sceneNodes, scene.getSceneId()).getOutputButtons().get(0);
-        final boolean sceneHasSingleGotoScene = scene.getGotoScene() != null && scene.getGotoScene().getGotoSceneArrayList().size() == 1;
-        final boolean sceneHasMultipleGotoScene = scene.getGotoScene() != null && scene.getGotoScene().getGotoSceneArrayList().size() > 1;
+    private void createConnections(com.asis.joi.components.Scene scene, GotoScene gotoScene) {
+        final AsisConnectionButton output = getSceneNodeWithId(getSceneNodes(), scene.getSceneId()).getOutputButtons().get(0);
+        final boolean gotoHasSingleOutput = gotoScene != null && gotoScene.getGotoSceneArrayList().size() == 1;
+        final boolean gotoHasMultipleOutput = gotoScene != null && gotoScene.getGotoSceneArrayList().size() > 1;
 
         //Check for scene normal connections
-        if(sceneHasSingleGotoScene) {
-            if (scene.getGotoScene() != null) {
-                AsisConnectionButton input = getSceneNodeWithId(sceneNodes, scene.getGotoScene().getGotoSceneArrayList().get(0)).getInputConnection();
-                sceneNodeMainController.createConnection(output, input);
-            } else {
-                System.out.println("NullPointer exception caught while building gui for loading.");
-            }
+        if(gotoHasSingleOutput) {
+            AsisConnectionButton input = getSceneNodeWithId(getSceneNodes(), gotoScene.getGotoSceneArrayList().get(0)).getInputConnection();
+            sceneNodeMainController.createConnection(output, input);
         }
 
         //Check for scene range connections
-        if (sceneHasMultipleGotoScene) {
-            for (int i = 0; i < scene.getGotoScene().getGotoSceneArrayList().size(); i++) {
-                AsisConnectionButton input = getSceneNodeWithId(sceneNodes, scene.getGotoScene().getGotoSceneArrayList().get(i)).getInputConnection();
+        if (gotoHasMultipleOutput) {
+            for (int i = 0; i < gotoScene.getGotoSceneArrayList().size(); i++) {
+                AsisConnectionButton input = getSceneNodeWithId(getSceneNodes(), gotoScene.getGotoSceneArrayList().get(i)).getInputConnection();
                 sceneNodeMainController.createConnection(output, input);
             }
         }

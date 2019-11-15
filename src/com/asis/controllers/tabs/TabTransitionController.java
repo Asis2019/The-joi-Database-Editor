@@ -39,19 +39,19 @@ public class TabTransitionController extends TabController {
 
     private void setupInitialFieldProperties() {
         transitionTextLabel.textProperty().bindBidirectional(transitionTextField.textProperty());
-        transitionTextLabel.setStyle("outline-color: "+textOutlineColor+"; fill-color: "+textFillColor+";");
+        setNodeColorStyle(transitionTextLabel, textFillColor, textOutlineColor);
 
         transitionTextField.textProperty().addListener((observableValue, s, t1) -> getTransition().setTransitionText(t1==null || t1.isEmpty()?null:t1));
 
         transitionTextOutlineColor.valueProperty().addListener((observableValue, color, t1) -> {
             textOutlineColor = removeLastTwoLetters("#"+ AsisUtils.colorToHex(t1));
-            transitionTextLabel.setStyle("fill-color: "+textFillColor+"; outline-color: "+textOutlineColor+";");
+            setNodeColorStyle(transitionTextLabel, textFillColor, textOutlineColor);
             getTransition().setTransitionTextOutlineColor(removeLastTwoLetters("#"+ AsisUtils.colorToHex(t1)));
         });
 
         transitionTextColor.valueProperty().addListener((observableValue, color, t1) -> {
             textFillColor = removeLastTwoLetters("#"+ AsisUtils.colorToHex(t1));
-            transitionTextLabel.setStyle("fill-color: "+textFillColor+"; outline-color: "+textOutlineColor+";");
+            setNodeColorStyle(transitionTextLabel, textFillColor, textOutlineColor);
             getTransition().setTransitionTextColor(removeLastTwoLetters("#"+ AsisUtils.colorToHex(t1)));
         });
 

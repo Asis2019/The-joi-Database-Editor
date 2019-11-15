@@ -88,8 +88,6 @@ public class TabDialogOptionController extends TabController {
                 asisConnectionButton.setOptionNumber(totalOptions-1);
             }
         }
-
-        System.out.println(getDialog());
     }
 
     @FXML public void actionRemoveOption() {

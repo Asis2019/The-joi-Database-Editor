@@ -74,7 +74,6 @@ public class Scene implements JOISystemInterface {
         sceneObject.put("layoutXPosition", getLayoutXPosition());
         sceneObject.put("layoutYPosition", getLayoutYPosition());
 
-        //if(!getGotoSceneArrayList().isEmpty()) sceneObject.put("GotoScene", getGotoSceneArrayList().toArray());
         if(isNoFade()) sceneObject.put("noFade", true);
         if(goodEndProperty().getValue()) sceneObject.put("joiEnd", true);
         if(badEndProperty().getValue()) sceneObject.put("badJoiEnd", true);
@@ -82,11 +81,7 @@ public class Scene implements JOISystemInterface {
         if(getTimer() != null) sceneObject.put("timer", getTimer().getTimerAsJson());
         if(getDialog() != null) sceneObject.put("dialogChoice", getDialog().getDialogAsJson());
         if(getTransition() != null) sceneObject.put("transition", getTransition().getTransitionAsJson());
-
-        //Merge return object from gotoScene with current
-        if(getGotoScene() != null) {
-            sceneObject.put(getGotoScene().getJsonKeyName(), getGotoScene().getJsonValue());
-        }
+        if(getGotoScene() != null) sceneObject.put(getGotoScene().getJsonKeyName(), getGotoScene().getJsonValue());
 
         for(int i=0; i<getLineArrayList().size(); i++) {
             sceneObject.put("line"+i, getLineArrayList().get(i).getLineAsJson());
@@ -140,7 +135,11 @@ public class Scene implements JOISystemInterface {
                 setBadEnd(true);
                 break;
             case "sceneImage":
-                setSceneImage(new File(importDirectory.getPath()+"\\"+object.getString("sceneImage")));
+                if(object.get("sceneImage") instanceof JSONObject) {
+                    setSceneImage(new File(importDirectory.getPath()+File.separator+object.getJSONObject("sceneImage").getString("name")));
+                } else {
+                    setSceneImage(new File(importDirectory.getPath()+File.separator+object.getString("sceneImage")));
+                }
                 break;
             case "noFade":
                 setNoFade(object.getBoolean("noFade"));

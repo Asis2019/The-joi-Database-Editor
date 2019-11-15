@@ -42,7 +42,7 @@ public class TabNormalOperationController extends TabController {
         setScene(scene);
 
         Platform.runLater(() -> {
-            setMainTextAreaColorStyle(mainTextArea, fillColor, outlineColor);
+            setNodeColorStyle(mainTextArea, fillColor, outlineColor);
 
             mainTextArea.textProperty().addListener((observable, oldValue, newValue) -> {
                 String text = newValue.trim().replaceAll("\\n", "#");
@@ -78,13 +78,13 @@ public class TabNormalOperationController extends TabController {
     private void addColorPickerListeners() {
         textOutlineColorPicker.valueProperty().addListener((observableValue, color, t1) -> {
             outlineColor = removeLastTwoLetters("#"+colorToHex(t1));
-            setMainTextAreaColorStyle(mainTextArea, fillColor, outlineColor);
+            setNodeColorStyle(mainTextArea, fillColor, outlineColor);
             getScene().getLine(onLine-1).setOutlineColor(outlineColor);
         });
 
         textColorPicker.valueProperty().addListener((observableValue, color, t1) -> {
             fillColor = removeLastTwoLetters("#"+colorToHex(t1));
-            setMainTextAreaColorStyle(mainTextArea, fillColor, outlineColor);
+            setNodeColorStyle(mainTextArea, fillColor, outlineColor);
             getScene().getLine(onLine-1).setFillColor(fillColor);
         });
     }
@@ -265,11 +265,16 @@ public class TabNormalOperationController extends TabController {
 
         //Scene image code
         if(getScene().getSceneImage() != null) {
-            //Set image file
-            workingFile = getScene().getSceneImage();
+            //check if file exists
+            if(getScene().getSceneImage().exists()) {
+                //Set image file
+                workingFile = getScene().getSceneImage();
 
-            //Remove add image button
-            stackPane.getChildren().remove(iconControllerBox);
+                //Remove add image button
+                stackPane.getChildren().remove(iconControllerBox);
+            } else {
+                System.out.println("Scene titled: "+scene.getSceneTitle()+", contains and invalid scene image.");
+            }
         }
 
         //Line image code

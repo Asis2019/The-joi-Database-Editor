@@ -1,6 +1,7 @@
 package com.asis.joi;
 
 import com.asis.joi.components.Scene;
+import com.asis.utilities.Alerts;
 import com.asis.utilities.AsisUtils;
 import com.asis.utilities.Config;
 import org.json.JSONArray;
@@ -41,7 +42,17 @@ public class JOIPackage {
             //Copy joi images to export directory
             for (Scene scene : getJoi().getSceneArrayList()) {
                 File imageFile = getJoi().getScene(scene.getSceneId()).getSceneImage();
-                if(imageFile != null) Files.copy(imageFile.toPath(), exportDirectory.toPath().resolve(imageFile.getName()), StandardCopyOption.REPLACE_EXISTING);
+                if(imageFile != null) {
+                    if(imageFile.exists()) {
+                        Files.copy(imageFile.toPath(), exportDirectory.toPath().resolve(imageFile.getName()), StandardCopyOption.REPLACE_EXISTING);
+                    } else {
+                        Alerts.messageDialog("WARNING",
+                                String.format("Scene image: %s could not be found at %s and will be skipped.",
+                                    scene.getSceneImage().getName(),
+                                    scene.getSceneImage().getAbsolutePath()),
+                                480, 240);
+                    }
+                }
             }
 
             //Copy icon to export directory and rename it appropriately
@@ -62,8 +73,7 @@ public class JOIPackage {
             //Export completed successfully
             return true;
         } catch (Exception e) {
-            e.printStackTrace();
-            //AsisUtils.errorDialogWindow(e);
+            AsisUtils.errorDialogWindow(e);
             return false;
         }
     }
