@@ -38,26 +38,6 @@ public class SceneNodeMainController {
         setJoiPackage(joiPackage);
     }
 
-    public void setScrollPane(ScrollPane scrollPane) {
-        this.scrollPane = scrollPane;
-    }
-
-    ScrollPane getScrollPane() {
-        return this.scrollPane;
-    }
-
-    public void setMenuBarOffset(double height) {
-        this.menuBarOffset = height;
-    }
-
-    public void setPane(Pane pane) {
-        root = pane;
-    }
-
-    public Pane getPane() {
-        return this.root;
-    }
-
     private Optional<AsisConnectionButton> findNode(double x, double y) {
         for (AsisConnectionButton n : inputConnections) {
             Bounds boundsInScene = n.localToScene(n.getBoundsInLocal());
@@ -318,5 +298,23 @@ public class SceneNodeMainController {
     }
     public void setLineList(List<BoundLine> lineList) {
         this.lineList = lineList;
+    }
+
+    public void setScrollPane(ScrollPane scrollPane) {
+        this.scrollPane = scrollPane;
+    }
+    public ScrollPane getScrollPane() {
+        return this.scrollPane;
+    }
+
+    public void setMenuBarOffset(double height) {
+        this.menuBarOffset = height;
+    }
+
+    public void setPane(Pane pane) {
+        root = pane;
+    }
+    public Pane getPane() {
+        return this.root;
     }
 }

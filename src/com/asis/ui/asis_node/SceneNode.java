@@ -2,8 +2,6 @@ package com.asis.ui.asis_node;
 
 import com.asis.joi.components.Scene;
 import javafx.beans.property.ReadOnlyBooleanWrapper;
-import javafx.beans.property.ReadOnlyDoubleProperty;
-import javafx.beans.property.ReadOnlyDoubleWrapper;
 import javafx.geometry.Bounds;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
@@ -26,9 +24,6 @@ public class SceneNode extends Region {
     private int sceneId;
     private List<AsisConnectionButton> outputConnections = new ArrayList<>();
     private AsisConnectionButton inputConnection;
-
-    private ReadOnlyDoubleWrapper xPosition = new ReadOnlyDoubleWrapper();
-    private ReadOnlyDoubleWrapper yPosition = new ReadOnlyDoubleWrapper();
 
     private ReadOnlyBooleanWrapper isBadEnd = new ReadOnlyBooleanWrapper();
     private ReadOnlyBooleanWrapper isGoodEnd = new ReadOnlyBooleanWrapper();
@@ -64,20 +59,13 @@ public class SceneNode extends Region {
         createNewOutputConnectionPoint("Default", "normal_output");
 
         borderPane.translateXProperty().addListener((observableValue, number, t1) -> {
-            Bounds bounds = sceneNodeMainController.getScrollPane().getViewportBounds();
-            double lowestXPixelShown = -1 * bounds.getMinX();
-            Bounds borderBounds = borderPane.localToScene(borderPane.getLayoutBounds());
-            xPosition.set(lowestXPixelShown + borderBounds.getMinX());
+            Bounds borderBounds = getPane().getBoundsInParent();
+            scene.setLayoutXPosition(borderBounds.getMinX());
         });
         borderPane.translateYProperty().addListener((observableValue, number, t1) -> {
-            Bounds bounds = sceneNodeMainController.getScrollPane().getViewportBounds();
-            double lowestYPixelShown = -1 * bounds.getMinY() - 70; //Like the other fixed value this should be replaced with a dynamic value
-            Bounds borderBounds = borderPane.localToScene(borderPane.getLayoutBounds());
-            yPosition.set(lowestYPixelShown + borderBounds.getMinY());
+            Bounds borderBounds = getPane().getBoundsInParent();
+            scene.setLayoutYPosition(borderBounds.getMinY());
         });
-
-        xPositionProperty().addListener((observableValue, number, t1) -> scene.setLayoutXPosition(t1.doubleValue()));
-        yPositionProperty().addListener((observableValue, number, t1) -> scene.setLayoutYPosition(t1.doubleValue()));
 
         initializeEndVariables();
     }
@@ -154,27 +142,6 @@ public class SceneNode extends Region {
 
     }
 
-    public int getSceneId() {
-        return sceneId;
-    }
-    public Pane getPane() {
-        return borderPane;
-    }
-
-    public String getTitle() {
-        return titleLabel.getText();
-    }
-    public void setTitle(String title) {
-        titleLabel.setText(title);
-    }
-
-    private ReadOnlyDoubleProperty xPositionProperty() {
-        return this.xPosition.getReadOnlyProperty();
-    }
-    private ReadOnlyDoubleProperty yPositionProperty() {
-        return this.yPosition.getReadOnlyProperty();
-    }
-
     private void initializeEndVariables() {
         isGoodEndProperty().addListener((observableValue, aBoolean, t1) -> {
             if(isGoodEnd()) {
@@ -202,6 +169,21 @@ public class SceneNode extends Region {
 
         isGoodEndProperty().bindBidirectional(scene.goodEndProperty());
         isBadEndProperty().bindBidirectional(scene.badEndProperty());
+    }
+
+    //Getters and setters
+    public int getSceneId() {
+        return sceneId;
+    }
+    public Pane getPane() {
+        return borderPane;
+    }
+
+    public String getTitle() {
+        return titleLabel.getText();
+    }
+    public void setTitle(String title) {
+        titleLabel.setText(title);
     }
 
     private void setOutputConnectionsInvisible() {
