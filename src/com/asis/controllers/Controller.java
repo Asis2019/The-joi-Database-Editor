@@ -31,7 +31,6 @@ import java.util.ArrayList;
 
 public class Controller {
     private SceneNode selectedScene;
-    private int numberOfScenes = 0;
     private double menuEventX;
     private double menuEventY;
     private Boolean addSceneContextMenu = false;
@@ -267,6 +266,7 @@ public class Controller {
         //Check if stage already exists
         for(Stage stage: getOpenStages()) {
             if(stage.getUserData().equals(userData)) {
+                stage.setIconified(false);
                 stage.requestFocus();
                 return true;
             }
@@ -322,22 +322,21 @@ public class Controller {
     }
 
     private void addScene() {
-        final String defaultTitle = "Scene " + (numberOfScenes+1);
+        final int sceneId = getJoiPackage().getJoi().getSceneIdCounter()+1;
+        final String defaultTitle = "Scene " + (sceneId+1);
         String title;
 
-        if(numberOfScenes != 0) {
+        if(firstScene) {
+            title = defaultTitle;
+        } else {
             title = new Alerts().addNewSceneDialog(defaultTitle);
             if(title == null) return;
-        } else {
-            title = defaultTitle;
         }
 
-        addScene(10, 0, title, numberOfScenes, false);
+        addScene(10, 0, title, sceneId, false);
     }
 
     private SceneNode addScene(double xPosition, double yPosition, String title, int sceneId, boolean suppressJSONUpdating) {
-        numberOfScenes++;
-
         //Add new scene to json if not suppressed
         if(!suppressJSONUpdating) {
             getJoiPackage().getJoi().addNewScene(sceneId);
@@ -423,7 +422,6 @@ public class Controller {
     }
 
     private void resetJoiPackage(JOIPackage joiPackage) {
-        numberOfScenes = 0;
         anchorPane.getChildren().clear();
         getSceneNodes().clear();
         setJoiPackage(joiPackage);

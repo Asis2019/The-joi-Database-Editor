@@ -83,7 +83,7 @@ public class JOI implements JOISystemInterface {
         this.sceneArrayList = sceneArrayList;
     }
 
-    private int getSceneIdCounter() {
+    public int getSceneIdCounter() {
         return sceneIdCounter;
     }
     private void setSceneIdCounter(int sceneIdCounter) {
