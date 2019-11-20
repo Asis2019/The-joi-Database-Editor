@@ -54,8 +54,12 @@ public class JOI implements JOISystemInterface {
     public void setDataFromJson(JSONObject jsonObject, File importDirectory) {
         JSONArray array = jsonObject.getJSONArray("JOI");
         for (int i = 0; i < array.length(); i++) {
-            addNewScene();
-            getSceneArrayList().get(i).setDataFromJson(array.getJSONObject(i), importDirectory);
+            if (array.getJSONObject(i).has("sceneId")) {
+                addNewScene(array.getJSONObject(i).getInt("sceneId"));
+                getSceneArrayList().get(i).setDataFromJson(array.getJSONObject(i), importDirectory);
+            } else {
+                throw new RuntimeException("Scene id was not present for one or more of the scenes.");
+            }
         }
     }
 

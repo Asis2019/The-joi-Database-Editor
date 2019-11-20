@@ -17,7 +17,6 @@ import javafx.util.Duration;
 public class TabTransitionController extends TabController {
     private String textOutlineColor = "#000000";
     private String textFillColor = "#ffffff";
-    private Timeline timeline = new Timeline();
     private Transition transition;
 
     @FXML private TextField fadeSpeedField, waitTimeField, transitionTextField;
@@ -32,7 +31,6 @@ public class TabTransitionController extends TabController {
 
         Platform.runLater(() -> {
             setupInitialFieldProperties();
-
             addInitialDataToFields();
         });
     }
@@ -46,13 +44,13 @@ public class TabTransitionController extends TabController {
         transitionTextOutlineColor.valueProperty().addListener((observableValue, color, t1) -> {
             textOutlineColor = removeLastTwoLetters("#"+ AsisUtils.colorToHex(t1));
             setNodeColorStyle(transitionTextLabel, textFillColor, textOutlineColor);
-            getTransition().setTransitionTextOutlineColor(removeLastTwoLetters("#"+ AsisUtils.colorToHex(t1)));
+            getTransition().setTransitionTextOutlineColor(textOutlineColor);
         });
 
         transitionTextColor.valueProperty().addListener((observableValue, color, t1) -> {
             textFillColor = removeLastTwoLetters("#"+ AsisUtils.colorToHex(t1));
             setNodeColorStyle(transitionTextLabel, textFillColor, textOutlineColor);
-            getTransition().setTransitionTextColor(removeLastTwoLetters("#"+ AsisUtils.colorToHex(t1)));
+            getTransition().setTransitionTextColor(textFillColor);
         });
 
         //Add transition fade speed to transition object
@@ -116,30 +114,29 @@ public class TabTransitionController extends TabController {
     }
 
     public void actionFadeColor() {
-        String color = removeLastTwoLetters(AsisUtils.colorToHex(transitionFadeColor.getValue()));
-        transitionPaneMask.setStyle("-fx-background-color: #"+color+";");
-
-        color = "#"+color;
+        final String color = removeLastTwoLetters("#"+AsisUtils.colorToHex(transitionFadeColor.getValue()));
+        transitionPaneMask.setStyle("-fx-background-color: "+color+";");
         getTransition().setFadeColor(color);
     }
 
     public void actionPlayTransitionButton() {
-        int waitTimeFieldValue = 0; //Default 0 seconds
+        final int waitTimeFieldValue = (int) setVariable(waitTimeField, 0);
+        final double fadeSpeedFieldValue = setVariable(fadeSpeedField, 1d); //game default is 0.02 must be converted from number
 
+        createAndRunTimeLine(waitTimeFieldValue, fadeSpeedFieldValue);
+    }
+
+    private double setVariable(TextField dataContainer, double defaultValue) {
         try {
-            waitTimeFieldValue = Integer.parseInt(waitTimeField.getText().trim());
+            return Double.parseDouble(dataContainer.getText().trim());
         } catch (NumberFormatException e) {
             System.out.println("Caught error: "+e.getMessage());
         }
+        return defaultValue;
+    }
 
-        double fadeSpeedFieldValue = 1d; //Default 1 second
-
-        try {
-            fadeSpeedFieldValue = Double.parseDouble(fadeSpeedField.getText().trim()); //game default is 0.02 must be converted from number
-        } catch (NumberFormatException e) {
-            System.out.println("Caught error: "+e.getMessage());
-        }
-
+    private void createAndRunTimeLine(final int waitTimeFieldValue, final double fadeSpeedFieldValue) {
+        Timeline timeline = new Timeline();
         timeline.setOnFinished(e -> {
             transitionPaneMask.setOpacity(0);
             transitionTextLabel.setOpacity(1);

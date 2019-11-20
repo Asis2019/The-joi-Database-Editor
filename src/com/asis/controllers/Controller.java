@@ -35,7 +35,6 @@ public class Controller {
     private double menuEventY;
     private Boolean addSceneContextMenu = false;
     private static Controller instance = null;
-    private boolean firstScene = false;
 
     private JOIPackage joiPackage = new JOIPackage();
     private ArrayList<Stage> openStages = new ArrayList<>();
@@ -60,9 +59,7 @@ public class Controller {
 
         setupMainContextMenu();
         setupSceneNodeContextMenu();
-
-        firstScene = true;
-        addScene();
+        addScene(true);
     }
 
     public static Controller getInstance() {
@@ -134,7 +131,7 @@ public class Controller {
         //Handle menu actions
         newSceneItem.setOnAction(event -> {
             addSceneContextMenu = true;
-            addScene();
+            addScene(false);
         });
 
         scrollPane.setContextMenu(mainContextMenu);
@@ -321,19 +318,19 @@ public class Controller {
         System.exit(0);
     }
 
-    private void addScene() {
+    private void addScene(final boolean isFirstScene) {
         final int sceneId = getJoiPackage().getJoi().getSceneIdCounter()+1;
-        final String defaultTitle = "Scene " + (sceneId+1);
+        final String defaultTitle = "Scene " + sceneId;
         String title;
 
-        if(firstScene) {
+        if(isFirstScene) {
             title = defaultTitle;
         } else {
             title = new Alerts().addNewSceneDialog(defaultTitle);
             if(title == null) return;
         }
 
-        addScene(10, 0, title, sceneId, false);
+        addScene(10, 0, title, sceneId-1, false);
     }
 
     private SceneNode addScene(double xPosition, double yPosition, String title, int sceneId, boolean suppressJSONUpdating) {
@@ -383,10 +380,6 @@ public class Controller {
         setClickActionForNode(sceneNode);
         getAnchorPane().getChildren().add(sceneNode.getPane());
 
-        if (firstScene) {
-            firstScene = false;
-        }
-
         getSceneNodes().add(sceneNode);
         return sceneNode;
     }
@@ -405,7 +398,7 @@ public class Controller {
 
     void processNewProject(File newProjectFile, String newProjectName, String defaultProjectLanguageCode) {
         resetJoiPackage(new JOIPackage());
-        addScene();
+        addScene(true);
 
         File projectDirectory = new File(newProjectFile.getPath()+"/"+newProjectName);
         //noinspection ResultOfMethodCallIgnored
@@ -589,7 +582,7 @@ public class Controller {
     }
 
     public void actionAddSceneButton() {
-        addScene();
+        addScene(false);
     }
 
     //Getters and setters

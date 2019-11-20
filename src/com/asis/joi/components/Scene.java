@@ -90,15 +90,7 @@ public class Scene implements JOISystemInterface {
 
     @Override
     public void setDataFromJson(JSONObject object, File importDirectory) {
-
-        //Set scene id
-        if (object.has("sceneId")) {
-            setSceneId(object.getInt("sceneId"));
-        } else {
-            //Throw scene id error
-            throw new RuntimeException("Scene id was not present for one or more of the scenes.");
-        }
-
+        //Note scene id is not set here, it is set by the joi class
         //Set other fields
         setData(object.keys(), object, importDirectory);
 
