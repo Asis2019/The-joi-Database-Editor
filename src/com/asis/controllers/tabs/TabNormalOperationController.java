@@ -204,19 +204,11 @@ public class TabNormalOperationController extends TabController {
     }
 
     public void actionStartBeat() {
-        if(checkBoxStartBeat.isSelected()) {
-            getScene().getLine(onLine-1).setStartBeat(true);
-        } else {
-            getScene().getLine(onLine-1).setStartBeat(null);
-        }
+        setLineStartCheckBoxState(getScene().getLine(onLine-1), checkBoxStartBeat);
     }
 
     public void actionStopBeat() {
-        if(checkBoxStopBeat.isSelected()) {
-            getScene().getLine(onLine-1).setStopBeat(true);
-        } else {
-            getScene().getLine(onLine-1).setStopBeat(null);
-        }
+        setLineStopCheckBoxState(getScene().getLine(onLine-1), checkBoxStopBeat);
     }
 
     private void setLineVariables() {
@@ -229,8 +221,8 @@ public class TabNormalOperationController extends TabController {
         beatProperties(textObject, checkBoxStopBeat, "stopBeat");
         beatProperties(textObject, checkBoxStartBeat, "startBeat");
 
-        changeBeat(textObject, textFieldBeatPitch, "changeBeatPitch");
-        changeBeat(textObject, textFieldBeatSpeed, "changeBeatSpeed");
+        changeBeatSpeed(textObject, textFieldBeatPitch, "changeBeatPitch");
+        changeBeatSpeed(textObject, textFieldBeatSpeed, "changeBeatSpeed");
     }
 
     private void textObjectElseIf(JSONObject textObject) {
@@ -260,6 +252,18 @@ public class TabNormalOperationController extends TabController {
             stackPane.getChildren().remove(viewPane);
         }
 
+        File workingFile = getImageFile();
+
+        //Make image visible
+        Image image = new Image(workingFile.toURI().toString());
+        ImageView sceneImageView = new ImageView();
+        sceneImageView.setImage(image);
+        sceneImageView.setPreserveRatio(true);
+        viewPane.setImageView(sceneImageView);
+        stackPane.getChildren().add(0, viewPane);
+    }
+
+    private File getImageFile() {
         //Create and set working file to passed in var if not null
         File workingFile = new File("");
 
@@ -282,14 +286,7 @@ public class TabNormalOperationController extends TabController {
             //Set image file
             workingFile = getScene().getLine(onLine-1).getLineImage();
         }
-
-        //Make image visible
-        Image image = new Image(workingFile.toURI().toString());
-        ImageView sceneImageView = new ImageView();
-        sceneImageView.setImage(image);
-        sceneImageView.setPreserveRatio(true);
-        viewPane.setImageView(sceneImageView);
-        stackPane.getChildren().add(0, viewPane);
+        return workingFile;
     }
 
     private void initializeText() {

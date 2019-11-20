@@ -80,7 +80,7 @@ public class TabDialogOptionController extends TabController {
             buttonContainer.getChildren().add(stackPane);
 
             //Add new connection point to scene
-            Scene scene = getScene();
+            Scene scene = getScene(getDialog());
 
             if(scene != null) {
                 SceneNode sceneNode = Controller.getInstance().getSceneNodeWithId(Controller.getInstance().getSceneNodes(), scene.getSceneId());
@@ -95,7 +95,7 @@ public class TabDialogOptionController extends TabController {
 
         if(totalOptions > 0) {
             buttonContainer.getChildren().remove(totalOptions-1);
-            Scene scene = getScene();
+            Scene scene = getScene(getDialog());
 
             if(scene != null) {
                 SceneNode sceneNode = Controller.getInstance().getSceneNodeWithId(Controller.getInstance().getSceneNodes(), scene.getSceneId());
@@ -104,15 +104,6 @@ public class TabDialogOptionController extends TabController {
 
             getDialog().removeDialogOption(totalOptions-1);
         }
-    }
-
-    private Scene getScene() {
-        for(Scene scene: Controller.getInstance().getJoiPackage().getJoi().getSceneArrayList()) {
-            if(scene.getDialog() != null && scene.getDialog().equals(getDialog())) {
-                return scene;
-            }
-        }
-        return null;
     }
 
     private void textFieldTyped(TextField textField, int optionNumber) {

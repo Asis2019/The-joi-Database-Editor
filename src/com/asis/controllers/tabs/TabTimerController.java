@@ -1,7 +1,6 @@
 package com.asis.controllers.tabs;
 
 import com.asis.controllers.Controller;
-import com.asis.joi.components.Scene;
 import com.asis.joi.components.Timer;
 import com.asis.ui.AsisCenteredArc;
 import com.asis.ui.ImageViewPane;
@@ -56,17 +55,13 @@ public class TabTimerController extends TabController {
             textOutlineColorPicker.valueProperty().addListener((observableValue, color, t1) -> {
                 outlineColor = removeLastTwoLetters("#"+colorToHex(t1));
                 setNodeColorStyle(textTextArea, fillColor, outlineColor);
-                if(getTimer().getLine(onSecond) != null) {
-                    getTimer().getLine(onSecond).setOutlineColor(outlineColor);
-                }
+                if(getTimer().getLine(onSecond) != null) getTimer().getLine(onSecond).setOutlineColor(outlineColor);
             });
 
             textColorPicker.valueProperty().addListener((observableValue, color, t1) -> {
                 fillColor = removeLastTwoLetters("#"+colorToHex(t1));
                 setNodeColorStyle(textTextArea, fillColor, outlineColor);
-                if(getTimer().getLine(onSecond) != null) {
-                    getTimer().getLine(onSecond).setFillColor(fillColor);
-                }
+                if(getTimer().getLine(onSecond) != null) getTimer().getLine(onSecond).setFillColor(fillColor);
             });
 
             textTextArea.textProperty().bindBidirectional(timerTextArea.textProperty());
@@ -229,10 +224,8 @@ public class TabTimerController extends TabController {
                     continue;
                 }
 
-                String value = timerObject.get(timerObject.names().getString(i)).toString();
-
-                TreeItem<String> item = new TreeItem<>(key+": "+value);
-                root.getChildren().add(item);
+                final String value = timerObject.get(timerObject.names().getString(i)).toString();
+                root.getChildren().add(new TreeItem<>(key+": "+value));
             }
         }
 
@@ -251,8 +244,8 @@ public class TabTimerController extends TabController {
 
         if(file != null) {
             //Add image to json object
-            if(getScene() != null) {
-                getScene().setSceneImage(file);
+            if(getScene(getTimer()) != null) {
+                getScene(getTimer()).setSceneImage(file);
 
                 setVisibleImage();
             }
@@ -282,25 +275,7 @@ public class TabTimerController extends TabController {
             timerStackPane.getChildren().remove(viewPane);
         }
 
-        //Create and set working file to passed in var if not null
-        File workingFile = new File("");
-
-        //Scene image code
-        if(getScene() != null && getScene().getSceneImage() != null) {
-            //Set image file
-            workingFile = getScene().getSceneImage();
-
-            //Remove add image button
-            timerStackPane.getChildren().remove(timerIconControllerBox);
-        }
-
-        //Line image code
-        if(getTimer().getLine(onSecond) != null) {
-            if (getTimer().getLine(onSecond).getLineImage() != null) {
-                //Set image file
-                workingFile = getTimer().getLine(onSecond).getLineImage();
-            }
-        }
+        File workingFile = getImageFile();
 
         //Make image visible
         Image image = new Image(workingFile.toURI().toString());
@@ -309,6 +284,27 @@ public class TabTimerController extends TabController {
         sceneImageView.setPreserveRatio(true);
         viewPane.setImageView(sceneImageView);
         timerStackPane.getChildren().add(0, viewPane);
+    }
+
+    private File getImageFile() {
+        //Create and set working file to passed in var if not null
+        File workingFile = new File("");
+
+        //Scene image code
+        if(getScene(getTimer()) != null && getScene(getTimer()).getSceneImage() != null) {
+            //Set image file
+            workingFile = getScene(getTimer()).getSceneImage();
+
+            //Remove add image button
+            timerStackPane.getChildren().remove(timerIconControllerBox);
+        }
+
+        //Line image code
+        if(getTimer().getLine(onSecond) != null && getTimer().getLine(onSecond).getLineImage() != null) {
+            //Set image file
+            workingFile = getTimer().getLine(onSecond).getLineImage();
+        }
+        return workingFile;
     }
 
     private void setTextAreaVariables() {
@@ -341,12 +337,11 @@ public class TabTimerController extends TabController {
     }
 
     private void beatConfiguration(JSONObject textObject) {
-
         beatProperties(textObject, checkBoxStartBeat, "startBeat");
         beatProperties(textObject, checkBoxStopBeat, "stopBeat");
 
-        changeBeat(textObject, textFieldBeatSpeed, "changeBeatSpeed");
-        changeBeat(textObject, textFieldBeatPitch, "changeBeatPitch");
+        changeBeatSpeed(textObject, textFieldBeatSpeed, "changeBeatSpeed");
+        changeBeatSpeed(textObject, textFieldBeatPitch, "changeBeatPitch");
     }
 
     private void handelSecondsOverTotal() {
@@ -360,30 +355,13 @@ public class TabTimerController extends TabController {
     }
 
     public void actionStartBeat() {
-        if(checkBoxStartBeat.isSelected()) {
-            getTimer().getLine(onSecond).setStartBeat(true);
-        } else {
-            getTimer().getLine(onSecond).setStartBeat(null);
-        }
+        setLineStartCheckBoxState(getTimer().getLine(onSecond), checkBoxStartBeat);
         updateObjectTree();
     }
 
     public void actionStopBeat() {
-        if(checkBoxStopBeat.isSelected()) {
-            getTimer().getLine(onSecond).setStopBeat(true);
-        } else {
-            getTimer().getLine(onSecond).setStopBeat(null);
-        }
+        setLineStopCheckBoxState(getTimer().getLine(onSecond), checkBoxStopBeat);
         updateObjectTree();
-    }
-
-    private Scene getScene() {
-        for(Scene scene: Controller.getInstance().getJoiPackage().getJoi().getSceneArrayList()) {
-            if(scene.getTimer() != null && scene.getTimer().equals(getTimer())) {
-                return scene;
-            }
-        }
-        return null;
     }
 
     //Getters and setters

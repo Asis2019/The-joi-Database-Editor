@@ -1,13 +1,14 @@
 package com.asis.joi.components.dialog;
 
 import com.asis.joi.JOISystemInterface;
+import com.asis.joi.components.FirstLevelEffect;
 import org.json.JSONArray;
 import org.json.JSONObject;
 
 import java.io.File;
 import java.util.ArrayList;
 
-public class Dialog implements JOISystemInterface {
+public class Dialog implements JOISystemInterface, FirstLevelEffect {
     private ArrayList<DialogOption> optionArrayList = new ArrayList<>();
 
     public void addDialogOption() {

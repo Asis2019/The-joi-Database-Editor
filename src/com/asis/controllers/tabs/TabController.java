@@ -1,5 +1,9 @@
 package com.asis.controllers.tabs;
 
+import com.asis.controllers.Controller;
+import com.asis.joi.components.FirstLevelEffect;
+import com.asis.joi.components.Line;
+import com.asis.joi.components.Scene;
 import javafx.scene.Node;
 import javafx.scene.control.CheckBox;
 import javafx.scene.control.TextField;
@@ -19,6 +23,15 @@ public abstract class TabController {
         node.setStyle(String.format("outline-color: %s;fill-color: %s;", outlineColor,fillColor));
     }
 
+    <T extends FirstLevelEffect> Scene getScene(T effect) {
+        for(Scene scene: Controller.getInstance().getJoiPackage().getJoi().getSceneArrayList()) {
+            if(scene.hasFirstLevelEffect(effect)) {
+                return scene;
+            }
+        }
+        return null;
+    }
+
     static void beatProperties(JSONObject textObject, CheckBox checkBox, String key) {
         if (textObject != null && textObject.has(key)) {
             checkBox.setSelected(true);
@@ -26,7 +39,28 @@ public abstract class TabController {
             checkBox.setSelected(false);
         }
     }
-    static void changeBeat(JSONObject textObject, TextField textField, String key) {
+
+    static void setLineStartCheckBoxState(Line line, CheckBox checkBox) {
+        if(line == null) return;
+
+        if(checkBox.isSelected()) {
+            line.setStartBeat(true);
+        } else {
+            line.setStartBeat(null);
+        }
+    }
+
+    static void setLineStopCheckBoxState(Line line, CheckBox checkBox) {
+        if(line == null) return;
+
+        if(checkBox.isSelected()) {
+            line.setStopBeat(true);
+        } else {
+            line.setStopBeat(null);
+        }
+    }
+
+    static void changeBeatSpeed(JSONObject textObject, TextField textField, String key) {
         if (textObject != null && textObject.has(key)) {
             double speed = textObject.getDouble(key);
             textField.setText(String.valueOf(speed));
@@ -34,6 +68,7 @@ public abstract class TabController {
             textField.clear();
         }
     }
+
     static String removeLastTwoLetters(String s) {
         return Optional.ofNullable(s)
                 .filter(str -> str.length() != 0)

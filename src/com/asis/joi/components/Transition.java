@@ -8,7 +8,7 @@ import org.json.JSONObject;
 import java.io.File;
 import java.util.Iterator;
 
-public class Transition implements JOISystemInterface {
+public class Transition implements JOISystemInterface, FirstLevelEffect {
     private String fadeColor, transitionTextColor="#ffffff", transitionTextOutlineColor="#000000", transitionText;
     private int waitTime = 0;
     private double fadeSpeed = 1; //stored as seconds

@@ -7,7 +7,7 @@ import org.json.JSONObject;
 import java.io.File;
 import java.util.ArrayList;
 
-public class Timer implements JOISystemInterface {
+public class Timer implements JOISystemInterface, FirstLevelEffect {
 
     private int totalTime;
     private ArrayList<Line> lineArrayList = new ArrayList<>();

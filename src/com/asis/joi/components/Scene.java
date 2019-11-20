@@ -68,6 +68,22 @@ public class Scene implements JOISystemInterface {
         return sceneObject;
     }
 
+    public boolean hasFirstLevelEffect(FirstLevelEffect effect) {
+        if(effect instanceof Timer) {
+            return getTimer().equals(effect);
+        }
+
+        if(effect instanceof Dialog) {
+            return getDialog().equals(effect);
+        }
+
+        if(effect instanceof Transition) {
+            return getTransition().equals(effect);
+        }
+
+        return false;
+    }
+
     private void setValues(JSONObject sceneObject) {
         sceneObject.put("sceneId", getSceneId());
         sceneObject.put("sceneTitle", getSceneTitle());
