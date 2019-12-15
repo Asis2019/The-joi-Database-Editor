@@ -5,6 +5,8 @@ import com.asis.joi.components.Timer;
 import com.asis.ui.AsisCenteredArc;
 import com.asis.ui.ImageViewPane;
 import javafx.application.Platform;
+import javafx.beans.value.ChangeListener;
+import javafx.beans.value.ObservableValue;
 import javafx.fxml.FXML;
 import javafx.scene.control.*;
 import javafx.scene.image.Image;
@@ -40,7 +42,7 @@ public class TabTimerController extends TabController {
     @FXML private StackPane timerStackPane;
     @FXML private TextArea timerTextArea, textTextArea;
     @FXML private HBox container;
-    @FXML private CheckBox checkBoxStopBeat, checkBoxStartBeat;
+    @FXML private CheckBox checkBoxStopBeat, checkBoxStartBeat, checkBoxHideTime, checkBoxHideTimer;
     @FXML private Label warningLabel;
     @FXML private TreeView<String> objectTree;
 
@@ -130,6 +132,8 @@ public class TabTimerController extends TabController {
                 setVisibleImage();
             });
 
+            addCheckBoxFieldListeners();
+
             addBeatFieldListeners();
 
             //timer
@@ -141,18 +145,34 @@ public class TabTimerController extends TabController {
             setVisibleImage();
 
             //total timer
-            JSONObject timerObject = getTimer().getTimerAsJson().getJSONObject(0);
+            totalTimerField.setText(String.valueOf(getTimer().getTotalTime()));
+            totalSeconds = Integer.parseInt(totalTimerField.getText().trim());
+            asisCenteredArc.setMaxLength(totalSeconds);
 
-            if(timerObject != null) {
-                if(timerObject.has("totalTime")) {
-                    totalTimerField.setText(String.valueOf(timerObject.getInt("totalTime")));
-                    totalSeconds = Integer.parseInt(totalTimerField.getText().trim());
-                    asisCenteredArc.setMaxLength(totalSeconds);
-                }
-            }
+            //Check boxes
+            if(getTimer().isTimerHidden()) checkBoxHideTimer.setSelected(true);
+            if(getTimer().isTimeHidden()) checkBoxHideTime.setSelected(true);
 
             //Update Tree View
             updateObjectTree();
+        });
+    }
+
+    private void addCheckBoxFieldListeners() {
+        checkBoxHideTime.selectedProperty().addListener(new ChangeListener<Boolean>() {
+            @Override
+            public void changed(ObservableValue<? extends Boolean> observableValue, Boolean oldValue, Boolean newValue) {
+                getTimer().setTimeHidden(newValue);
+                asisCenteredArc.hideProgress(newValue);
+            }
+        });
+
+        checkBoxHideTimer.selectedProperty().addListener(new ChangeListener<Boolean>() {
+            @Override
+            public void changed(ObservableValue<? extends Boolean> observableValue, Boolean oldValue, Boolean newValue) {
+                getTimer().setTimerHidden(newValue);
+                asisCenteredArc.getArcPane().setVisible(!newValue);
+            }
         });
     }
 

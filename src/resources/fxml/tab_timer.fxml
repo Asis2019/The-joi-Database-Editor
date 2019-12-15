@@ -6,7 +6,7 @@
 <?import javafx.scene.image.ImageView?>
 <?import javafx.scene.layout.*?>
 <?import javafx.scene.paint.Color?>
-<BorderPane prefWidth="1000.0" stylesheets="@../../resources/css/scene_details_stylesheet.css" xmlns="http://javafx.com/javafx/8" xmlns:fx="http://javafx.com/fxml/1">
+<BorderPane prefWidth="1000.0" stylesheets="@../../resources/css/scene_details_stylesheet.css" xmlns="http://javafx.com/javafx/10.0.2-internal" xmlns:fx="http://javafx.com/fxml/1">
 <center>
     <SplitPane id="darkThemeBackground" dividerPositions="0.835" styleClass="edge-to-edge">
        <items>
@@ -46,6 +46,8 @@
                          <VBox spacing="5.0">
                             <children>
                                 <TextField fx:id="totalTimerField" promptText="Total Time" />
+                              <CheckBox fx:id="checkBoxHideTime" mnemonicParsing="false" text="Hide Time" />
+                              <CheckBox fx:id="checkBoxHideTimer" layoutX="20.0" layoutY="50.0" mnemonicParsing="false" text="Hide Timer" />
                             </children>
                          </VBox>
                      </content>

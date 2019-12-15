@@ -21,6 +21,8 @@ public class AsisCenteredArc {
     private double maxLength = 100;
     private double currentProgress = 100;
 
+    private boolean hideProgress = false;
+
     private final Arc arc;
     private final Pane arcPane;
     private final Label progressLabel;
@@ -87,9 +89,19 @@ public class AsisCenteredArc {
 
     public void setArcProgress(double progress) {
         currentProgress = progress;
-        progressLabel.setText(String.valueOf((int) getArcProgress()));
-        double multiplicationKey = 360/getMaxLength();
-        getArc().setLength(multiplicationKey*progress);
+        if(isHideProgress()) {
+            progressLabel.setText("???");
+            getArc().setLength(360);
+        } else {
+            progressLabel.setText(String.valueOf((int) getArcProgress()));
+            double multiplicationKey = 360 / getMaxLength();
+            getArc().setLength(multiplicationKey * progress);
+        }
+    }
+
+    public void hideProgress(boolean value) {
+        hideProgress = value;
+        setArcProgress(getArcProgress());
     }
 
     public Arc getArc() {
@@ -98,5 +110,9 @@ public class AsisCenteredArc {
 
     public Pane getArcPane() {
         return arcPane;
+    }
+
+    public boolean isHideProgress() {
+        return hideProgress;
     }
 }

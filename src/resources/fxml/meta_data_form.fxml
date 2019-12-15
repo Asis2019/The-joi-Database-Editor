@@ -39,7 +39,7 @@
                  </children>
               </HBox>
               <TextField fx:id="joiIdTextField" promptText="(creator_title)" />
-            <TextField fx:id="gameVersionTextField" layoutX="18.0" layoutY="306.0" promptText="Game Version (e.g 0.0.2.9)" />
+            <TextField fx:id="gameVersionTextField" layoutX="18.0" layoutY="306.0" promptText="Game Version (e.g 0.0.3.0)" />
               <HBox>
                  <children>
                      <Label text="Fetish Tags" textFill="#bbbbbb" />

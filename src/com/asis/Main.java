@@ -28,18 +28,15 @@ public class Main extends Application {
                 switch (choice) {
                     case 0:
                         event.consume();
-                        break;
-
-                    case 1:
-                        Controller.getInstance().quiteProgram();
-                        break;
+                        return;
 
                     case 2:
                         Controller.getInstance().actionSaveProject();
-                        Controller.getInstance().quiteProgram();
                         break;
                 }
             }
+
+            Controller.getInstance().quiteProgram();
         });
     }
 

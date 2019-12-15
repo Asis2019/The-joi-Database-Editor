@@ -11,6 +11,7 @@ public class Timer implements JOISystemInterface, FirstLevelEffect {
 
     private int totalTime;
     private ArrayList<Line> lineArrayList = new ArrayList<>();
+    private boolean timerHidden=false, timeHidden=false;
 
     public void addNewLine(int lineNumber) {
         getLineArrayList().add(new Line(lineNumber));
@@ -25,6 +26,9 @@ public class Timer implements JOISystemInterface, FirstLevelEffect {
 
         //Set values
         timerObject.put("totalTime", getTotalTime());
+        if(isTimeHidden()) timerObject.put("timeHidden", true);
+        if(isTimerHidden()) timerObject.put("timerHidden", true);
+
         for(Line line: getLineArrayList()) {
             timerObject.put("line"+line.getLineNumber(), line.getLineAsJson());
         }
@@ -45,9 +49,13 @@ public class Timer implements JOISystemInterface, FirstLevelEffect {
     @Override
     public void setDataFromJson(JSONObject jsonObject, File importDirectory) {
         //Set totalTime
-        if (jsonObject.has("totalTime")) {
-            setTotalTime(jsonObject.getInt("totalTime"));
-        }
+        if (jsonObject.has("totalTime")) setTotalTime(jsonObject.getInt("totalTime"));
+
+        //Set timeHidden
+        if (jsonObject.has("timeHidden")) setTimeHidden(true);
+
+        //Set timerHidden
+        if (jsonObject.has("timerHidden")) setTimerHidden(true);
 
         //set lines
         for(int i=0; i<jsonObject.names().length(); i++) {
@@ -73,6 +81,8 @@ public class Timer implements JOISystemInterface, FirstLevelEffect {
         Timer timer = (Timer) o;
 
         if (getTotalTime() != timer.getTotalTime()) return false;
+        if (isTimerHidden() != timer.isTimerHidden()) return false;
+        if (isTimeHidden() != timer.isTimeHidden()) return false;
         return getLineArrayList().equals(timer.getLineArrayList());
     }
 
@@ -89,5 +99,19 @@ public class Timer implements JOISystemInterface, FirstLevelEffect {
     }
     public void setTotalTime(int totalTime) {
         this.totalTime = totalTime;
+    }
+
+    public boolean isTimerHidden() {
+        return timerHidden;
+    }
+    public void setTimerHidden(boolean timerHidden) {
+        this.timerHidden = timerHidden;
+    }
+
+    public boolean isTimeHidden() {
+        return timeHidden;
+    }
+    public void setTimeHidden(boolean timeHidden) {
+        this.timeHidden = timeHidden;
     }
 }

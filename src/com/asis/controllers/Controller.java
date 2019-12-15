@@ -299,23 +299,17 @@ public class Controller {
                 case 0:
                     return;
 
-                case 1:
-                    quiteProgram();
-                    break;
-
                 case 2:
                     actionSaveProject();
-                    quiteProgram();
                     break;
             }
-        } else {
-            quiteProgram();
         }
+
+        quiteProgram();
     }
 
     public void quiteProgram() {
         Platform.exit();
-        System.exit(0);
     }
 
     private void addScene(final boolean isFirstScene) {
