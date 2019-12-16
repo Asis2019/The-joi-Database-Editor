@@ -11,7 +11,7 @@ import java.util.Iterator;
 
 public class MetaData implements JOISystemInterface{
     private File joiIcon;
-    private String preparations, name, joiId, versionAdded, displayedFetishes;
+    private String preparations, name, joiId, versionAdded, displayedFetishes, creator;
     private ArrayList<String> fetishList = new ArrayList<>();
     private ArrayList<String> characterList = new ArrayList<>();
     private ArrayList<String> equipmentList = new ArrayList<>();
@@ -31,6 +31,7 @@ public class MetaData implements JOISystemInterface{
         addStringToJsonWithDefault(innerObject, "", getName(),"name");
         addStringToJsonWithDefault(innerObject, "", getVersionAdded(),"versionAdded");
         addStringToJsonWithDefault(innerObject, "", getDisplayedFetishes(),"displayedFetishes");
+        addStringToJsonWithDefault(innerObject, "", getCreator(),"creator");
 
         addListToJsonObject(innerObject, "fetish", getFetishList());
         addListToJsonObject(innerObject, "character", getCharacterList());
@@ -119,7 +120,7 @@ public class MetaData implements JOISystemInterface{
     }
 
     public static void addCommaSeparatedStringToList(String commaSeparatedString, ArrayList<String> list) {
-        if(!commaSeparatedString.trim().isEmpty()) {
+        if(commaSeparatedString != null && !commaSeparatedString.trim().isEmpty()) {
             list.clear();
             list.addAll(Arrays.asList(commaSeparatedString.trim().split("\\s*,\\s*")));
         }
@@ -205,5 +206,12 @@ public class MetaData implements JOISystemInterface{
     }
     public void setJoiIcon(File joiIcon) {
         this.joiIcon = joiIcon;
+    }
+
+    public String getCreator() {
+        return creator;
+    }
+    public void setCreator(String creator) {
+        this.creator = creator;
     }
 }

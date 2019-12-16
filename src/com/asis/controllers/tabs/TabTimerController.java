@@ -5,8 +5,6 @@ import com.asis.joi.components.Timer;
 import com.asis.ui.AsisCenteredArc;
 import com.asis.ui.ImageViewPane;
 import javafx.application.Platform;
-import javafx.beans.value.ChangeListener;
-import javafx.beans.value.ObservableValue;
 import javafx.fxml.FXML;
 import javafx.scene.control.*;
 import javafx.scene.image.Image;
@@ -159,20 +157,14 @@ public class TabTimerController extends TabController {
     }
 
     private void addCheckBoxFieldListeners() {
-        checkBoxHideTime.selectedProperty().addListener(new ChangeListener<Boolean>() {
-            @Override
-            public void changed(ObservableValue<? extends Boolean> observableValue, Boolean oldValue, Boolean newValue) {
-                getTimer().setTimeHidden(newValue);
-                asisCenteredArc.hideProgress(newValue);
-            }
+        checkBoxHideTime.selectedProperty().addListener((observableValue, oldValue, newValue) -> {
+            getTimer().setTimeHidden(newValue);
+            asisCenteredArc.hideProgress(newValue);
         });
 
-        checkBoxHideTimer.selectedProperty().addListener(new ChangeListener<Boolean>() {
-            @Override
-            public void changed(ObservableValue<? extends Boolean> observableValue, Boolean oldValue, Boolean newValue) {
-                getTimer().setTimerHidden(newValue);
-                asisCenteredArc.getArcPane().setVisible(!newValue);
-            }
+        checkBoxHideTimer.selectedProperty().addListener((observableValue, oldValue, newValue) -> {
+            getTimer().setTimerHidden(newValue);
+            asisCenteredArc.getArcPane().setVisible(!newValue);
         });
     }
 

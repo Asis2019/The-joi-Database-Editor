@@ -33,13 +33,9 @@
               <TextField fx:id="titleTextField" promptText="Title" />
               <TextField fx:id="preparationsTextField" layoutX="10.0" layoutY="137.0" promptText="Preparations" />
               <TextField fx:id="displayedFetishesTextField" layoutX="10.0" layoutY="137.0" promptText="Displayed Fetishes" />
-              <HBox>
-                 <children>
-                     <Label text="Joi Id" textFill="#bbbbbb" />
-                 </children>
-              </HBox>
-              <TextField fx:id="joiIdTextField" promptText="(creator_title)" />
+            <TextField fx:id="creatorTextField" promptText="Creator" />
             <TextField fx:id="gameVersionTextField" layoutX="18.0" layoutY="306.0" promptText="Game Version (e.g 0.0.3.0)" />
+              <TextField fx:id="joiIdTextField" disable="true" editable="false" promptText="Joi Id" />
               <HBox>
                  <children>
                      <Label text="Fetish Tags" textFill="#bbbbbb" />

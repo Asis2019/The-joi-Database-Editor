@@ -74,11 +74,11 @@ public class Timer implements JOISystemInterface, FirstLevelEffect {
     }
 
     @Override
-    public boolean equals(Object o) {
-        if (this == o) return true;
-        if (!(o instanceof Timer)) return false;
+    public boolean equals(Object object) {
+        if (this == object) return true;
+        if (!(object instanceof Timer)) return false;
 
-        Timer timer = (Timer) o;
+        Timer timer = (Timer) object;
 
         if (getTotalTime() != timer.getTotalTime()) return false;
         if (isTimerHidden() != timer.isTimerHidden()) return false;

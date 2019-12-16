@@ -21,7 +21,7 @@ public class MetaDataForm {
     private JOIPackage joiPackage;
 
     @FXML private VBox mainVBox, iconControllerBox;
-    @FXML private TextField titleTextField, preparationsTextField, displayedFetishesTextField, joiIdTextField, gameVersionTextField;
+    @FXML private TextField titleTextField, preparationsTextField, displayedFetishesTextField, joiIdTextField, gameVersionTextField, creatorTextField;
     @FXML private TextArea fetishesTextArea, equipmentTextArea, charactersTextArea;
 
     void inflateJOIPackageObject(JOIPackage joiPackage) {
@@ -46,9 +46,28 @@ public class MetaDataForm {
         displayedFetishesTextField.setText(metaData.getDisplayedFetishes());
         joiIdTextField.setText(metaData.getJoiId());
         gameVersionTextField.setText(metaData.getVersionAdded());
+        creatorTextField.setText(metaData.getCreator());
         fetishesTextArea.setText(String.join(",", metaData.getFetishList()));
         charactersTextArea.setText(String.join(",", metaData.getCharacterList()));
         equipmentTextArea.setText(String.join(",", metaData.getEquipmentList()));
+
+        setIdUpdatingListeners();
+    }
+
+    private void setIdUpdatingListeners() {
+        titleTextField.textProperty().addListener((observableValue, s, t1) -> updateJoiField(creatorTextField.getText(), t1));
+
+        creatorTextField.textProperty().addListener((observableValue, s, t1) -> updateJoiField(t1, titleTextField.getText()));
+    }
+
+    private void updateJoiField(final String creator, final String title) {
+        String preparedCreator="", preparedTitle="";
+
+        if(creator != null && !creator.isEmpty()) preparedCreator = creator.toLowerCase().replaceAll(" ","_");
+        if(title != null && !title.isEmpty()) preparedTitle = title.toLowerCase().replaceAll(" ","_");
+
+        joiIdTextField.clear();
+        joiIdTextField.setText(preparedCreator+"_"+preparedTitle);
     }
 
     public void initialize() {
@@ -108,9 +127,10 @@ public class MetaDataForm {
         metaData.setDisplayedFetishes(displayedFetishesTextField.getText());
         metaData.setJoiId(joiIdTextField.getText());
         metaData.setVersionAdded(gameVersionTextField.getText());
+        metaData.setCreator(creatorTextField.getText());
 
-        MetaData.addCommaSeparatedStringToList(fetishesTextArea.getText(), metaData.getFetishList());
-        MetaData.addCommaSeparatedStringToList(equipmentTextArea.getText(), metaData.getEquipmentList());
+        MetaData.addCommaSeparatedStringToList(fetishesTextArea.getText().toLowerCase(), metaData.getFetishList());
+        MetaData.addCommaSeparatedStringToList(equipmentTextArea.getText().toLowerCase(), metaData.getEquipmentList());
         MetaData.addCommaSeparatedStringToList(charactersTextArea.getText(), metaData.getCharacterList());
 
         return metaData;
