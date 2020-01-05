@@ -72,6 +72,9 @@ public class MetaData implements JOISystemInterface{
             case "name":
                 setName(jsonObject.getString("name"));
                 break;
+            case "creator":
+                setCreator(jsonObject.getString("creator"));
+                break;
             case "joiId":
                 setJoiId(jsonObject.getString("joiId"));
                 break;

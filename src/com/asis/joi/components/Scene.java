@@ -17,6 +17,7 @@ public class Scene implements JOISystemInterface {
     private File sceneImage;
     private Timer timer;
     private Dialog dialog;
+    private CustomDialogueBox customDialogueBox;
     private Transition transition = new Transition();
     private GotoScene gotoScene;
     private ArrayList<Line> lineArrayList = new ArrayList<>();
@@ -70,15 +71,15 @@ public class Scene implements JOISystemInterface {
 
     public boolean hasFirstLevelEffect(FirstLevelEffect effect) {
         if(effect instanceof Timer) {
-            return getTimer().equals(effect);
+            if(getTimer() != null) return getTimer().equals(effect);
         }
 
         if(effect instanceof Dialog) {
-            return getDialog().equals(effect);
+            if(getDialog() != null) return getDialog().equals(effect);
         }
 
         if(effect instanceof Transition) {
-            return getTransition().equals(effect);
+            if(getTransition() != null) return getTransition().equals(effect);
         }
 
         return false;
@@ -97,6 +98,7 @@ public class Scene implements JOISystemInterface {
         if(getTimer() != null) sceneObject.put("timer", getTimer().getTimerAsJson());
         if(getDialog() != null) sceneObject.put("dialogChoice", getDialog().getDialogAsJson());
         if(getTransition() != null) sceneObject.put("transition", getTransition().getTransitionAsJson());
+        if(getCustomDialogueBox() != null) sceneObject.put("customDialogueBox", getCustomDialogueBox().getCustomDialogueBoxAsJson());
         if(getGotoScene() != null) sceneObject.put(getGotoScene().getJsonKeyName(), getGotoScene().getJsonValue());
 
         for(int i=0; i<getLineArrayList().size(); i++) {
@@ -160,6 +162,11 @@ public class Scene implements JOISystemInterface {
                 setTimer(new Timer());
                 getTimer().setDataFromJson(object.getJSONArray("timer").getJSONObject(0), importDirectory);
                 break;
+            case "customDialogueBox":
+                JSONObject customDialogueBoxJson = object.getJSONObject("customDialogueBox");
+                setCustomDialogueBox(new CustomDialogueBox(new File(importDirectory.getPath()+File.separator+customDialogueBoxJson.getString("image"))));
+                getCustomDialogueBox().setDataFromJson(customDialogueBoxJson, importDirectory);
+                break;
             case "dialogChoice":
                 setDialog(new Dialog());
                 getDialog().setDataFromJson(object.getJSONArray("dialogChoice").getJSONObject(0), importDirectory);
@@ -197,6 +204,7 @@ public class Scene implements JOISystemInterface {
             return false;
         if (getTimer() != null ? !getTimer().equals(scene.getTimer()) : scene.getTimer() != null) return false;
         if (getDialog() != null ? !getDialog().equals(scene.getDialog()) : scene.getDialog() != null) return false;
+        if (getCustomDialogueBox() != null ? !getCustomDialogueBox().equals(scene.getCustomDialogueBox()) : scene.getCustomDialogueBox() != null) return false;
         if (getTransition() != null ? !getTransition().equals(scene.getTransition()) : scene.getTransition() != null)
             return false;
         if (getGotoScene() != null ? !getGotoScene().equals(scene.getGotoScene()) : scene.getGotoScene() != null)
@@ -305,5 +313,12 @@ public class Scene implements JOISystemInterface {
     }
     public void setGoodEnd(boolean goodEnd) {
         this.goodEnd.set(goodEnd);
+    }
+
+    public CustomDialogueBox getCustomDialogueBox() {
+        return customDialogueBox;
+    }
+    public void setCustomDialogueBox(CustomDialogueBox customDialogueBox) {
+        this.customDialogueBox = customDialogueBox;
     }
 }

@@ -327,7 +327,7 @@ public class Controller {
         addScene(10, 0, title, sceneId-1, false);
     }
 
-    private SceneNode addScene(double xPosition, double yPosition, String title, int sceneId, boolean suppressJSONUpdating) {
+    private void addScene(double xPosition, double yPosition, String title, int sceneId, boolean suppressJSONUpdating) {
         //Add new scene to json if not suppressed
         if(!suppressJSONUpdating) {
             getJoiPackage().getJoi().addNewScene(sceneId);
@@ -375,7 +375,6 @@ public class Controller {
         getAnchorPane().getChildren().add(sceneNode.getPane());
 
         getSceneNodes().add(sceneNode);
-        return sceneNode;
     }
 
     private void removeScene(SceneNode sceneNode) {
