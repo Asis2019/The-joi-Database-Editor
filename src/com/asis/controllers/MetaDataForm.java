@@ -50,14 +50,6 @@ public class MetaDataForm {
         fetishesTextArea.setText(String.join(",", metaData.getFetishList()));
         charactersTextArea.setText(String.join(",", metaData.getCharacterList()));
         equipmentTextArea.setText(String.join(",", metaData.getEquipmentList()));
-
-        setIdUpdatingListeners();
-    }
-
-    private void setIdUpdatingListeners() {
-        titleTextField.textProperty().addListener((observableValue, s, t1) -> updateJoiField(creatorTextField.getText(), t1));
-
-        creatorTextField.textProperty().addListener((observableValue, s, t1) -> updateJoiField(t1, titleTextField.getText()));
     }
 
     private void updateJoiField(final String creator, final String title) {
@@ -75,6 +67,14 @@ public class MetaDataForm {
         getImageView().setFitWidth(300);
         getImageView().setCursor(Cursor.HAND);
         getImageView().setOnMouseClicked(mouseEvent -> addIcon());
+
+        setIdUpdatingListeners();
+    }
+
+    private void setIdUpdatingListeners() {
+        titleTextField.textProperty().addListener((observableValue, s, t1) -> updateJoiField(creatorTextField.getText(), t1));
+
+        creatorTextField.textProperty().addListener((observableValue, s, t1) -> updateJoiField(t1, titleTextField.getText()));
     }
 
     boolean changesHaveOccurred() {
