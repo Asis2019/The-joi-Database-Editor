@@ -2,21 +2,21 @@ package com.asis.ui.asis_node;
 
 import com.asis.joi.components.Scene;
 import javafx.beans.property.ReadOnlyBooleanWrapper;
+import javafx.beans.value.ObservableValue;
 import javafx.geometry.Bounds;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
 import javafx.scene.control.Label;
-import javafx.scene.layout.*;
+import javafx.scene.layout.BorderPane;
+import javafx.scene.layout.HBox;
+import javafx.scene.layout.VBox;
 import javafx.scene.paint.Color;
 
 import java.util.ArrayList;
 import java.util.List;
 
-public class SceneNode extends Region {
-    //TODO make border pane 0.75 opacity
-
+public class SceneNode extends BorderPane {
     private Scene scene;
-    private BorderPane borderPane = new BorderPane();
     private SceneNodeMainController sceneNodeMainController;
     private VBox outputContainer = new VBox();
     private VBox inputContainer = new VBox();
@@ -33,41 +33,57 @@ public class SceneNode extends Region {
         this.sceneId = sceneId;
         this.sceneNodeMainController = sceneNodeMainController;
 
-        borderPane.setUserData("sceneNode");
-
-        initializeVBoxes();
-
-        borderPane.setMinSize(width, height);
-
         titleLabel.setStyle(
                 "-fx-text-fill: white;" +
-                "-fx-font-size: 25px;"
+                        "-fx-font-size: 25px;" +
+                        "-fx-focus-color: blue;"
         );
 
-        borderPane.setStyle(
-                "-fx-background-color: #5a5a5a;" +
-                "-fx-background-radius: 10;" +
-                "-fx-background-insets: 8;" +
-                "-fx-effect: dropshadow(three-pass-box, black, 10, 0, 0, 1);" +
-                "-fx-opacity: 1;"
-        );
+        setUserData("sceneNode");
+        setMinSize(width, height);
+        setFocusTraversable(true);
+        setCenter(titleLabel);
 
-        borderPane.setCenter(titleLabel);
 
-        createNewInputConnectionPoint();
-
-        createNewOutputConnectionPoint("Default", "normal_output");
-
-        borderPane.translateXProperty().addListener((observableValue, number, t1) -> {
-            Bounds borderBounds = getPane().getBoundsInParent();
+        translateXProperty().addListener((observableValue, number, t1) -> {
+            Bounds borderBounds = getBoundsInParent();
             scene.setLayoutXPosition(borderBounds.getMinX());
         });
-        borderPane.translateYProperty().addListener((observableValue, number, t1) -> {
-            Bounds borderBounds = getPane().getBoundsInParent();
+        translateYProperty().addListener((observableValue, number, t1) -> {
+            Bounds borderBounds = getBoundsInParent();
             scene.setLayoutYPosition(borderBounds.getMinY());
         });
+        focusedProperty().addListener((ObservableValue<? extends Boolean> observable, Boolean oldValue, Boolean newValue) -> {
+            focusState(newValue);
+        });
 
+        initializeVBoxes();
         initializeEndVariables();
+
+        createNewInputConnectionPoint();
+        createNewOutputConnectionPoint("Default", "normal_output");
+
+        focusState(false);
+    }
+
+    private void focusState(boolean value) {
+        if (value) {
+            setStyle(
+                    "-fx-background-color: #5a5a5a;" +
+                            "-fx-background-radius: 10;" +
+                            "-fx-background-insets: 8;" +
+                            "-fx-effect: dropshadow(three-pass-box, deepskyblue, 10, 0, 0, 1);" +
+                            "-fx-opacity: 1;"
+            );
+        } else {
+            setStyle(
+                    "-fx-background-color: #5a5a5a;" +
+                            "-fx-background-radius: 10;" +
+                            "-fx-background-insets: 8;" +
+                            "-fx-effect: dropshadow(three-pass-box, black, 10, 0, 0, 1);" +
+                            "-fx-opacity: 1;"
+            );
+        }
     }
 
     public List<AsisConnectionButton> getOutputButtons() {
@@ -109,18 +125,25 @@ public class SceneNode extends Region {
         return connection;
     }
 
+    public void refreshConnectionCenters() {
+        inputConnection.calcCenter();
+        for (AsisConnectionButton connectionButton : getOutputButtons()) {
+            connectionButton.calcCenter();
+        }
+    }
+
     public void removeOutputConnection() {
-        outputContainer.getChildren().remove(outputConnections.size()-1);
-        outputConnections.remove(outputConnections.size()-1);
+        outputContainer.getChildren().remove(outputConnections.size() - 1);
+        outputConnections.remove(outputConnections.size() - 1);
     }
 
     public void removeAllOutputConnection() {
-        for(int i=outputContainer.getChildren().size(); i>1; i--) {
-            outputContainer.getChildren().remove(i-1);
+        for (int i = outputContainer.getChildren().size(); i > 1; i--) {
+            outputContainer.getChildren().remove(i - 1);
         }
 
-        for(int i=outputConnections.size(); i>1; i--) {
-            outputConnections.remove(i-1);
+        for (int i = outputConnections.size(); i > 1; i--) {
+            outputConnections.remove(i - 1);
         }
     }
 
@@ -135,16 +158,15 @@ public class SceneNode extends Region {
         outputContainer.setAlignment(Pos.CENTER_RIGHT);
         outputContainer.setSpacing(5);
         outputContainer.setPadding(new Insets(20, 0, 20, 0));
-        borderPane.setRight(outputContainer);
+        setRight(outputContainer);
 
         inputContainer.setAlignment(Pos.CENTER_LEFT);
-        borderPane.setLeft(inputContainer);
-
+        setLeft(inputContainer);
     }
 
     private void initializeEndVariables() {
         isGoodEndProperty().addListener((observableValue, aBoolean, t1) -> {
-            if(isGoodEnd()) {
+            if (isGoodEnd()) {
                 // Make children hidden
                 setOutputConnectionsInvisible();
                 inputConnection.setButtonColor("#6392c7ff");
@@ -156,7 +178,7 @@ public class SceneNode extends Region {
         });
 
         isBadEndProperty().addListener((observableValue, aBoolean, t1) -> {
-            if(isBadEnd()) {
+            if (isBadEnd()) {
                 // Make children hidden
                 setOutputConnectionsInvisible();
                 inputConnection.setButtonColor("#c76363ff");
@@ -175,25 +197,24 @@ public class SceneNode extends Region {
     public int getSceneId() {
         return sceneId;
     }
-    public Pane getPane() {
-        return borderPane;
-    }
 
     public String getTitle() {
         return titleLabel.getText();
     }
+
     public void setTitle(String title) {
         titleLabel.setText(title);
     }
 
     private void setOutputConnectionsInvisible() {
-        for(int i =0; i < outputContainer.getChildren().size(); i++) {
+        for (int i = 0; i < outputContainer.getChildren().size(); i++) {
             outputContainer.getChildren().get(i).setDisable(true);
             outputContainer.getChildren().get(i).setVisible(false);
         }
     }
+
     private void setOutputConnectionsVisible() {
-        for(int i =0; i < outputContainer.getChildren().size(); i++) {
+        for (int i = 0; i < outputContainer.getChildren().size(); i++) {
             outputContainer.getChildren().get(i).setDisable(false);
             outputContainer.getChildren().get(i).setVisible(true);
         }
@@ -202,9 +223,11 @@ public class SceneNode extends Region {
     public boolean isBadEnd() {
         return isBadEnd.get();
     }
+
     public ReadOnlyBooleanWrapper isBadEndProperty() {
         return isBadEnd;
     }
+
     public void setIsBadEnd(boolean isBadEnd) {
         this.isBadEnd.set(isBadEnd);
     }
@@ -212,9 +235,11 @@ public class SceneNode extends Region {
     public boolean isGoodEnd() {
         return isGoodEnd.get();
     }
+
     public ReadOnlyBooleanWrapper isGoodEndProperty() {
         return isGoodEnd;
     }
+
     public void setIsGoodEnd(boolean isGoodEnd) {
         this.isGoodEnd.set(isGoodEnd);
     }

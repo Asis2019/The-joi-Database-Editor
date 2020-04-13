@@ -17,13 +17,13 @@ public class AsisConnectionButton extends Button {
     private String id = null;
 
     //What scene there a part of
-    private int parentSceneId;
+    private final int parentSceneId;
 
     //The line object connected
     private BoundLine boundLine;
 
     //The connection type
-    private boolean connectionType; //false is output true is input
+    private final boolean connectionType; //false is output true is input
 
     //Option number
     private int optionNumber;
@@ -48,7 +48,7 @@ public class AsisConnectionButton extends Button {
         setStyle(outputConnectorStyle);
         setCursor(Cursor.HAND);
 
-        this.localToSceneTransformProperty().addListener((observableValue, transform, t1) -> calcCenter());
+        localToSceneTransformProperty().addListener((observableValue, transform, t1) -> calcCenter());
     }
 
     void setBoundLine(BoundLine boundLine) {
@@ -76,10 +76,10 @@ public class AsisConnectionButton extends Button {
         return boundLine != null;
     }
 
-    private void calcCenter() {
-        Bounds bounds = parentPane.sceneToLocal(this.localToScene(this.getBoundsInLocal()));
-        centerX.set(bounds.getMinX() + bounds.getWidth()  / 2);
-        centerY.set(bounds.getMinY() + bounds.getHeight()  / 2);
+    void calcCenter() {
+        Bounds bounds = parentPane.sceneToLocal(localToScene(getBoundsInLocal()));
+        centerX.set(bounds.getMinX() + bounds.getWidth() / 2);
+        centerY.set(bounds.getMinY() + bounds.getHeight() / 2);
     }
 
     void setConnectionId(String id) {

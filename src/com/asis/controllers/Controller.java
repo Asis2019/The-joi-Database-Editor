@@ -42,8 +42,8 @@ public class Controller {
 
     private SceneNodeMainController sceneNodeMainController;
 
-    private ContextMenu mainContextMenu =  new ContextMenu();
-    private ContextMenu sceneNodeContextMenu =  new ContextMenu();
+    private final ContextMenu mainContextMenu =  new ContextMenu();
+    private final ContextMenu sceneNodeContextMenu =  new ContextMenu();
 
     @FXML private AnchorPane anchorPane;
     @FXML private ScrollPane scrollPane;
@@ -103,21 +103,13 @@ public class Controller {
 
         goodEndItem.setOnAction(actionEvent -> {
             if(selectedScene != null) {
-                if(selectedScene.isGoodEnd()) {
-                    selectedScene.setIsGoodEnd(false);
-                } else {
-                    selectedScene.setIsGoodEnd(true);
-                }
+                selectedScene.setIsGoodEnd(!selectedScene.isGoodEnd());
             }
         });
 
         badEndItem.setOnAction(actionEvent -> {
             if(selectedScene != null) {
-                if(selectedScene.isBadEnd()) {
-                    selectedScene.setIsBadEnd(false);
-                } else {
-                    selectedScene.setIsBadEnd(true);
-                }
+                selectedScene.setIsBadEnd(!selectedScene.isBadEnd());
             }
         });
     }
@@ -139,6 +131,7 @@ public class Controller {
         //Used to get the coordinates for spawning the scene node and for hiding/showing the proper menu
         scrollPane.setOnContextMenuRequested(contextMenuEvent -> {
             for (Node n: anchorPane.getChildren()) {
+                if(n.getUserData() == null) continue;
 
                 if(n.getUserData().equals("sceneNode")) {
                     Bounds boundsInScene = n.localToScene(n.getBoundsInLocal());
@@ -191,7 +184,7 @@ public class Controller {
     }
 
     private void setClickActionForNode(SceneNode sceneNode) {
-        sceneNode.getPane().setOnContextMenuRequested(contextMenuEvent -> {
+        sceneNode.setOnContextMenuRequested(contextMenuEvent -> {
             selectedScene = sceneNode;
 
             //Change behaviour for first scene
@@ -222,9 +215,12 @@ public class Controller {
             }
         });
 
-        sceneNode.setOnMousePressed(mouseEvent -> sceneNodeContextMenu.hide());
+        sceneNode.setOnMousePressed(mouseEvent -> {
+            sceneNode.requestFocus();
+            sceneNodeContextMenu.hide();
+        });
 
-        sceneNode.getPane().setOnMouseClicked(mouseEvent -> {
+        sceneNode.setOnMouseClicked(mouseEvent -> {
             //User double clicked
             if(mouseEvent.getButton().equals(MouseButton.PRIMARY)) {
                 if(mouseEvent.getClickCount() == 2) {
@@ -335,7 +331,7 @@ public class Controller {
         }
 
         SceneNode sceneNode = new SceneNode(300, 100, sceneId, sceneNodeMainController, getJoiPackage().getJoi().getScene(sceneId));
-        new Draggable.Nature(sceneNode.getPane());
+        new Draggable.Nature(sceneNode);
 
         sceneNode.setTitle(title);
 
@@ -344,14 +340,14 @@ public class Controller {
             //TODO issue 5 make new scenes via button adjacent
             //AsisUtils.getAllNodes(anchorPane)
             /*for (SceneNode listItem : getSceneNodes()) {
-                if(listItem.getPane().getBoundsInParent().intersects(sceneNode.getPane().getBoundsInParent())) {
+                if(listItem.getPane().getBoundsInParent().intersects(sceneNode.getBoundsInParent())) {
                     System.out.println("There is a scene node here!");
                 }
             }*/
 
 
-            sceneNode.getPane().setLayoutX(xPosition);
-            sceneNode.getPane().setLayoutY(yPosition);
+            sceneNode.setLayoutX(xPosition);
+            sceneNode.setLayoutY(yPosition);
             if(!suppressJSONUpdating) {
                 getJoiPackage().getJoi().getScene(sceneId).setLayoutXPosition(xPosition);
                 getJoiPackage().getJoi().getScene(sceneId).setLayoutYPosition(yPosition);
@@ -361,8 +357,8 @@ public class Controller {
             double lowestXPixelShown = -1 * bounds.getMinX();
             double lowestYPixelShown = -1 * bounds.getMinY();
 
-            sceneNode.getPane().setLayoutX(lowestXPixelShown + menuEventX);
-            sceneNode.getPane().setLayoutY(lowestYPixelShown + menuEventY);
+            sceneNode.setLayoutX(lowestXPixelShown + menuEventX);
+            sceneNode.setLayoutY(lowestYPixelShown + menuEventY);
             addSceneContextMenu = false;
 
             if(!suppressJSONUpdating) {
@@ -372,9 +368,10 @@ public class Controller {
         }
 
         setClickActionForNode(sceneNode);
-        getAnchorPane().getChildren().add(sceneNode.getPane());
+        getAnchorPane().getChildren().add(sceneNode);
 
         getSceneNodes().add(sceneNode);
+        sceneNode.refreshConnectionCenters();
     }
 
     private void removeScene(SceneNode sceneNode) {
@@ -382,7 +379,7 @@ public class Controller {
 
         sceneNodeMainController.notifySceneRemoved(sceneNode);
 
-        anchorPane.getChildren().remove(sceneNode.getPane());
+        anchorPane.getChildren().remove(sceneNode);
     }
 
     public void actionNewProject() {
