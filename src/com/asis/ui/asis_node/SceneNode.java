@@ -167,11 +167,11 @@ public class SceneNode extends BorderPane {
             if (isGoodEnd()) {
                 // Make children hidden
                 setOutputConnectionsInvisible();
-                inputConnection.setButtonColor("#6392c7ff");
+                inputConnection.setButtonColor(AsisConnectionButton.GOOD_END_COLOR);
             } else {
                 // Make children visible
                 setOutputConnectionsVisible();
-                inputConnection.setButtonColor("#63c763ff");
+                inputConnection.setButtonColor(AsisConnectionButton.DEFAULT_COLOR);
             }
         });
 
@@ -179,11 +179,11 @@ public class SceneNode extends BorderPane {
             if (isBadEnd()) {
                 // Make children hidden
                 setOutputConnectionsInvisible();
-                inputConnection.setButtonColor("#c76363ff");
+                inputConnection.setButtonColor(AsisConnectionButton.BAD_END_COLOR);
             } else {
                 // Make children visible
                 setOutputConnectionsVisible();
-                inputConnection.setButtonColor("#63c763ff");
+                inputConnection.setButtonColor(AsisConnectionButton.DEFAULT_COLOR);
             }
         });
 

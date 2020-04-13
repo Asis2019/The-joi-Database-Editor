@@ -8,6 +8,12 @@ import javafx.scene.control.Button;
 import javafx.scene.layout.Pane;
 
 public class AsisConnectionButton extends Button {
+
+    public static final String DEFAULT_COLOR = "#63c763ff";
+    public static final String BAD_END_COLOR = "#c76363ff";
+    public static final String GOOD_END_COLOR = "#6392c7ff";
+    public static final String RANDOM_OUT_COLOR = "#c7c763ff";
+
     private ReadOnlyDoubleWrapper centerX = new ReadOnlyDoubleWrapper();
     private ReadOnlyDoubleWrapper centerY = new ReadOnlyDoubleWrapper();
 
@@ -29,16 +35,16 @@ public class AsisConnectionButton extends Button {
     private int optionNumber;
 
     private static final String outputConnectorStyle =
-            "-fx-background-color: #63c763ff, transparent, transparent;" +
-            "-fx-background-radius: 5em;" +
-            "-fx-border-radius: 5em;" +
-            "-fx-min-width: 15px; " +
-            "-fx-min-height: 15px; " +
-            "-fx-max-width: 15px; " +
-            "-fx-max-height: 15px;" +
-            "-fx-border-color: black;" +
-            "-fx-border-width: 1;" +
-            "-fx-background-insets: 1;";
+            "-fx-background-color: " + DEFAULT_COLOR + ", transparent, transparent;" +
+                    "-fx-background-radius: 5em;" +
+                    "-fx-border-radius: 5em;" +
+                    "-fx-min-width: 15px; " +
+                    "-fx-min-height: 15px; " +
+                    "-fx-max-width: 15px; " +
+                    "-fx-max-height: 15px;" +
+                    "-fx-border-color: black;" +
+                    "-fx-border-width: 1;" +
+                    "-fx-background-insets: 1;";
 
     AsisConnectionButton(Pane parentPane, boolean connectionType, int parentSceneId) {
         this.parentPane = parentPane;
@@ -56,7 +62,7 @@ public class AsisConnectionButton extends Button {
     }
 
     void setButtonColor(String hexColor) {
-        setStyle("-fx-background-color: "+hexColor+", transparent, transparent;" +
+        setStyle("-fx-background-color: " + hexColor + ", transparent, transparent;" +
                 "-fx-background-radius: 5em;" +
                 "-fx-border-radius: 5em;" +
                 "-fx-min-width: 15px; " +

@@ -5,7 +5,6 @@ import com.asis.joi.JOIPackage;
 import com.asis.joi.components.GotoScene;
 import com.asis.joi.components.Scene;
 import com.asis.joi.components.dialog.DialogOption;
-import javafx.beans.binding.Bindings;
 import javafx.beans.property.DoubleProperty;
 import javafx.beans.property.SimpleDoubleProperty;
 import javafx.geometry.Bounds;
@@ -53,28 +52,16 @@ public class SceneNodeMainController {
     }
 
     public void createConnection(AsisConnectionButton from, AsisConnectionButton to) {
-        BoundLine boundLine = new BoundLine(from.centerXProperty(), from.centerYProperty());
+        BoundLine boundLine = new BoundLine(from, to);
         from.setBoundLine(boundLine);
         to.setBoundLine(boundLine);
-        boundLine.setStartPointConnectionObject(from);
-
-        boundLine.controlX1Property().bind(Bindings.add(boundLine.startXProperty(), 100));
-        boundLine.controlX2Property().bind(Bindings.add(boundLine.endXProperty(), -100));
-        boundLine.controlY1Property().bind(Bindings.add(boundLine.startYProperty(), 0));
-        boundLine.controlY2Property().bind(Bindings.add(boundLine.endYProperty(), 0));
-
-        boundLine.setUserData(from);
-        boundLine.endXProperty().bind(to.centerXProperty());
-        boundLine.endYProperty().bind(to.centerYProperty());
-        boundLine.setEndPointConnectionObject(to);
 
         root.getChildren().add(0, boundLine);
 
         getLineList().add(boundLine);
 
-        if (getTotalLinesConnectedToOutput(from) > 1) {
-            from.setButtonColor("#c7c763");
-        }
+        if (getTotalLinesConnectedToOutput(from) > 1)
+            from.setButtonColor(AsisConnectionButton.RANDOM_OUT_COLOR);
     }
 
     private int getTotalLinesConnectedToOutput(AsisConnectionButton asisConnectionButton) {
@@ -94,65 +81,42 @@ public class SceneNodeMainController {
         dragActive = true;
         currentOutputConnection.calcCenter();
 
-        BoundLine boundLine = new BoundLine(currentOutputConnection.centerXProperty(), currentOutputConnection.centerYProperty());
-        currentOutputConnection.setBoundLine(boundLine);
-        boundLine.setStartPointConnectionObject(currentOutputConnection);
+        BoundLine connectionLine = new BoundLine(currentOutputConnection);
+        currentOutputConnection.setBoundLine(connectionLine);
 
-        boundLine.controlX1Property().bind(Bindings.add(boundLine.startXProperty(), 100));
-        boundLine.controlX2Property().bind(Bindings.add(boundLine.endXProperty(), -100));
-        boundLine.controlY1Property().bind(Bindings.add(boundLine.startYProperty(), 0));
-        boundLine.controlY2Property().bind(Bindings.add(boundLine.endYProperty(), 0));
+        //Set the line's end to follow the mouse properties
+        connectionLine.endXProperty().bind(mouseX);
+        connectionLine.endYProperty().bind(mouseY);
 
-        boundLine.setUserData(currentOutputConnection);
-        boundLine.endXProperty().bind(mouseX);
-        boundLine.endYProperty().bind(mouseY);
-
-        lineList.add(boundLine);
-
-        root.getChildren().add(0, boundLine);
+        getLineList().add(connectionLine);
+        root.getChildren().add(0, connectionLine);
     }
 
     private void stopDrag(AsisConnectionButton inputConnection) {
-        inputConnection.calcCenter();
+        if (currentOutputConnection != null && currentOutputConnection.hasBoundLine()) {
+            //Check if any lines have the same output and input already
+            for (BoundLine line : getLineList()) {
+                if (line.getStartPointConnectionObject() == currentOutputConnection && line.getEndPointConnectionObject() == inputConnection) {
+                    currentOutputConnection.getBoundLine().unbindEnd();
 
-        //Destroy line if input connection is somehow an output type
-        if (!inputConnection.getConnectionType()) {
-            BoundLine boundLine = inputConnection.getBoundLine();
-            boundLine.endXProperty().unbind();
-            boundLine.endYProperty().unbind();
-            root.getChildren().remove(boundLine);
-            getLineList().remove(boundLine);
-            inputConnection.setBoundLine(null);
-        }
-
-        if (currentOutputConnection != null) {
-            if (currentOutputConnection.hasBoundLine()) {
-                //Check if any lines have the same output and input already
-                for (BoundLine line : getLineList()) {
-                    if (line.getStartPointConnectionObject() == currentOutputConnection && line.getEndPointConnectionObject() == inputConnection) {
-                        System.out.println("Duplicate line found");
-                        currentOutputConnection.getBoundLine().endXProperty().unbind();
-                        currentOutputConnection.getBoundLine().endYProperty().unbind();
-                        root.getChildren().remove(currentOutputConnection.getBoundLine());
-                        getLineList().remove(line);
-                        currentOutputConnection.setBoundLine(null);
-                        dragActive = false;
-                        currentOutputConnection = null;
-                        return;
-                    }
+                    root.getChildren().remove(currentOutputConnection.getBoundLine());
+                    getLineList().remove(currentOutputConnection.getBoundLine());
+                    currentOutputConnection.setBoundLine(null);
+                    dragActive = false;
+                    currentOutputConnection = null;
+                    return;
                 }
-
-                //Connection properly established
-                BoundLine boundLine = currentOutputConnection.getBoundLine();
-                boundLine.endXProperty().unbind();
-                boundLine.endYProperty().unbind();
-                boundLine.endXProperty().bind(inputConnection.centerXProperty());
-                boundLine.endYProperty().bind(inputConnection.centerYProperty());
-                inputConnection.setBoundLine(boundLine);
-                boundLine.setEndPointConnectionObject(inputConnection);
-
-                addConnectionToStory(currentOutputConnection, inputConnection);
             }
+
+            //Connection properly established
+            inputConnection.calcCenter();
+            BoundLine boundLine = currentOutputConnection.getBoundLine();
+            boundLine.unbindEnd();
+
+            boundLine.setEndPointConnectionObject(inputConnection);
+            inputConnection.setBoundLine(boundLine);
+
+            addConnectionToStory(currentOutputConnection, inputConnection);
         }
 
         dragActive = false;
@@ -175,7 +139,7 @@ public class SceneNodeMainController {
                 }
 
                 //Convert to old method
-                outputConnection.setButtonColor("#63c763ff");
+                outputConnection.setButtonColor(AsisConnectionButton.DEFAULT_COLOR);
             } else {
                 getLineList().remove(boundLine);
                 scene.getDialog().getOptionArrayList().get(outputConnection.getOptionNumber()).setGotoScene(null);
@@ -193,7 +157,7 @@ public class SceneNodeMainController {
                     return;
                 }
 
-                outputConnection.setButtonColor("#63c763ff");
+                outputConnection.setButtonColor(AsisConnectionButton.DEFAULT_COLOR);
             } else {
                 getLineList().remove(boundLine);
                 outputConnection.setBoundLine(null);
@@ -209,21 +173,19 @@ public class SceneNodeMainController {
         if(outputConnection.getConnectionId().contains("dialog_option")) {
             final DialogOption dialogOption = scene.getDialog().getOptionArrayList().get(outputConnection.getOptionNumber());
 
-            if(getTotalLinesConnectedToOutput(outputConnection) > 1) {
-                outputConnection.setButtonColor("#c7c763");
-                dialogOption.getGotoScene().addValue(inputConnection.getParentSceneId());
-            } else {
+            if(getTotalLinesConnectedToOutput(outputConnection) > 1)
+                outputConnection.setButtonColor(AsisConnectionButton.RANDOM_OUT_COLOR);
+            else
                 dialogOption.setGotoScene(new GotoScene());
-                dialogOption.getGotoScene().addValue(inputConnection.getParentSceneId());
-            }
+
+            dialogOption.getGotoScene().addValue(inputConnection.getParentSceneId());
         } else {
-            if(getTotalLinesConnectedToOutput(outputConnection) > 1) {
-                outputConnection.setButtonColor("#c7c763");
-                scene.getGotoScene().addValue(inputConnection.getParentSceneId());
-            } else {
+            if(getTotalLinesConnectedToOutput(outputConnection) > 1)
+                outputConnection.setButtonColor(AsisConnectionButton.RANDOM_OUT_COLOR);
+            else
                 scene.setGotoScene(new GotoScene());
-                scene.getGotoScene().addValue(inputConnection.getParentSceneId());
-            }
+
+            scene.getGotoScene().addValue(inputConnection.getParentSceneId());
         }
     }
 
@@ -251,6 +213,7 @@ public class SceneNodeMainController {
                     currentOutputConnection = line.getStartPointConnectionObject();
                     root.getChildren().remove(line);
                     removeConnectionFromStory(currentOutputConnection, asisConnectionButton, line);
+
                     startDrag();
                     break;
                 }
@@ -264,7 +227,15 @@ public class SceneNodeMainController {
         if (asisConnectionButton.isPresent()) {
             stopDrag(asisConnectionButton.get());
         } else {
-            stopDrag(currentOutputConnection);
+            BoundLine boundLine = currentOutputConnection.getBoundLine();
+            boundLine.unbindEnd();
+
+            root.getChildren().remove(boundLine);
+            getLineList().remove(boundLine);
+            currentOutputConnection.setBoundLine(null);
+
+            dragActive = false;
+            currentOutputConnection = null;
         }
     }
 
@@ -305,9 +276,6 @@ public class SceneNodeMainController {
 
     public void setScrollPane(ScrollPane scrollPane) {
         this.scrollPane = scrollPane;
-    }
-    public ScrollPane getScrollPane() {
-        return this.scrollPane;
     }
 
     public void setPane(Pane pane) {
