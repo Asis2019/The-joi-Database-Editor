@@ -1,5 +1,6 @@
 package com.asis.ui.asis_node;
 
+import com.asis.controllers.Controller;
 import com.asis.joi.JOIPackage;
 import com.asis.joi.components.GotoScene;
 import com.asis.joi.components.Scene;
@@ -19,8 +20,6 @@ import java.util.Optional;
 public class SceneNodeMainController {
     private Pane root = new Pane();
     private ScrollPane scrollPane;
-
-    private double menuBarOffset;
 
     private List<AsisConnectionButton> inputConnections = new ArrayList<>();
     private List<BoundLine> lineList = new ArrayList<>();
@@ -93,6 +92,7 @@ public class SceneNodeMainController {
             return;
 
         dragActive = true;
+        currentOutputConnection.calcCenter();
 
         BoundLine boundLine = new BoundLine(currentOutputConnection.centerXProperty(), currentOutputConnection.centerYProperty());
         currentOutputConnection.setBoundLine(boundLine);
@@ -113,50 +113,50 @@ public class SceneNodeMainController {
     }
 
     private void stopDrag(AsisConnectionButton inputConnection) {
-        if(inputConnection != null) {
-            //Destroy line if input connection is somehow an output type
-            if (!inputConnection.getConnectionType()) {
-                BoundLine boundLine = inputConnection.getBoundLine();
+        inputConnection.calcCenter();
+
+        //Destroy line if input connection is somehow an output type
+        if (!inputConnection.getConnectionType()) {
+            BoundLine boundLine = inputConnection.getBoundLine();
+            boundLine.endXProperty().unbind();
+            boundLine.endYProperty().unbind();
+            root.getChildren().remove(boundLine);
+            getLineList().remove(boundLine);
+            inputConnection.setBoundLine(null);
+        }
+
+        if (currentOutputConnection != null) {
+            if (currentOutputConnection.hasBoundLine()) {
+                //Check if any lines have the same output and input already
+                for (BoundLine line : getLineList()) {
+                    if (line.getStartPointConnectionObject() == currentOutputConnection && line.getEndPointConnectionObject() == inputConnection) {
+                        System.out.println("Duplicate line found");
+                        currentOutputConnection.getBoundLine().endXProperty().unbind();
+                        currentOutputConnection.getBoundLine().endYProperty().unbind();
+                        root.getChildren().remove(currentOutputConnection.getBoundLine());
+                        getLineList().remove(line);
+                        currentOutputConnection.setBoundLine(null);
+                        dragActive = false;
+                        currentOutputConnection = null;
+                        return;
+                    }
+                }
+
+                //Connection properly established
+                BoundLine boundLine = currentOutputConnection.getBoundLine();
                 boundLine.endXProperty().unbind();
                 boundLine.endYProperty().unbind();
-                root.getChildren().remove(boundLine);
-                getLineList().remove(boundLine);
-                inputConnection.setBoundLine(null);
+                boundLine.endXProperty().bind(inputConnection.centerXProperty());
+                boundLine.endYProperty().bind(inputConnection.centerYProperty());
+                inputConnection.setBoundLine(boundLine);
+                boundLine.setEndPointConnectionObject(inputConnection);
+
+                addConnectionToStory(currentOutputConnection, inputConnection);
             }
-
-            if (currentOutputConnection != null) {
-                if (currentOutputConnection.hasBoundLine()) {
-                    //Check if any lines have the same output and input already
-                    for (BoundLine line : getLineList()) {
-                        if (line.getStartPointConnectionObject() == currentOutputConnection && line.getEndPointConnectionObject() == inputConnection) {
-                            System.out.println("Duplicate line found");
-                            currentOutputConnection.getBoundLine().endXProperty().unbind();
-                            currentOutputConnection.getBoundLine().endYProperty().unbind();
-                            root.getChildren().remove(currentOutputConnection.getBoundLine());
-                            getLineList().remove(line);
-                            currentOutputConnection.setBoundLine(null);
-                            dragActive = false;
-                            currentOutputConnection = null;
-                            return;
-                        }
-                    }
-
-                    //Connection properly established
-                    BoundLine boundLine = currentOutputConnection.getBoundLine();
-                    boundLine.endXProperty().unbind();
-                    boundLine.endYProperty().unbind();
-                    boundLine.endXProperty().bind(inputConnection.centerXProperty());
-                    boundLine.endYProperty().bind(inputConnection.centerYProperty());
-                    inputConnection.setBoundLine(boundLine);
-                    boundLine.setEndPointConnectionObject(inputConnection);
-
-                    addConnectionToStory(currentOutputConnection, inputConnection);
-                }
-            }
-
-            dragActive = false;
-            currentOutputConnection = null;
         }
+
+        dragActive = false;
+        currentOutputConnection = null;
     }
 
     private void removeConnectionFromStory(AsisConnectionButton outputConnection, AsisConnectionButton inputConnection, BoundLine boundLine) {
@@ -228,6 +228,9 @@ public class SceneNodeMainController {
     }
 
     void mouseMoved(MouseEvent mouseEvent) {
+        Controller controller = Controller.getInstance();
+        final double menuBarOffset = controller.mainMenuBar.getHeight() + controller.toolBar.getHeight();
+
         Bounds bounds = scrollPane.getViewportBounds();
         double lowestXPixelShown = -1 * bounds.getMinX();
         double lowestYPixelShown = -1 * bounds.getMinY() - menuBarOffset;
@@ -305,10 +308,6 @@ public class SceneNodeMainController {
     }
     public ScrollPane getScrollPane() {
         return this.scrollPane;
-    }
-
-    public void setMenuBarOffset(double height) {
-        this.menuBarOffset = height;
     }
 
     public void setPane(Pane pane) {

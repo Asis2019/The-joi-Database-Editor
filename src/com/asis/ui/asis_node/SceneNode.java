@@ -53,9 +53,7 @@ public class SceneNode extends BorderPane {
             Bounds borderBounds = getBoundsInParent();
             scene.setLayoutYPosition(borderBounds.getMinY());
         });
-        focusedProperty().addListener((ObservableValue<? extends Boolean> observable, Boolean oldValue, Boolean newValue) -> {
-            focusState(newValue);
-        });
+        focusedProperty().addListener((ObservableValue<? extends Boolean> observable, Boolean oldValue, Boolean newValue) -> focusState(newValue));
 
         initializeVBoxes();
         initializeEndVariables();

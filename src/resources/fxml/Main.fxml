@@ -33,7 +33,7 @@
                         </Menu>
                     </menus>
                 </MenuBar>
-                <ToolBar prefHeight="40.0" prefWidth="200.0">
+                <ToolBar fx:id="toolBar" prefHeight="40.0" prefWidth="200.0">
                     <items>
                         <Button mnemonicParsing="false" onAction="#actionAddSceneButton" text="Add new scene" />
                         <Button layoutX="10.0" layoutY="11.0" mnemonicParsing="false" onAction="#actionOpenMetadata" text="Project Details" />

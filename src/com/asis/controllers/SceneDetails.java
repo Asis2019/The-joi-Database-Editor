@@ -7,6 +7,7 @@ import com.asis.joi.components.Transition;
 import com.asis.joi.components.dialog.Dialog;
 import com.asis.utilities.Alerts;
 import com.asis.utilities.AsisUtils;
+import com.asis.utilities.StageManager;
 import javafx.application.Platform;
 import javafx.event.Event;
 import javafx.fxml.FXML;
@@ -200,8 +201,7 @@ public class SceneDetails {
 
     @FXML private void actionClose() {
         Stage stage = (Stage) sceneDetailBorderPane.getScene().getWindow();
-        Controller.getInstance().getOpenStages().remove(stage);
-        stage.close();
+        StageManager.getInstance().closeStage(stage);
     }
 
     @FXML private void actionChangeSceneImage() {
