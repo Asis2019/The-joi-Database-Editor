@@ -1,10 +1,10 @@
 package com.asis.controllers;
 
 import com.asis.controllers.tabs.*;
-import com.asis.joi.components.Scene;
-import com.asis.joi.components.Timer;
-import com.asis.joi.components.Transition;
-import com.asis.joi.components.dialog.Dialog;
+import com.asis.joi.model.components.Scene;
+import com.asis.joi.model.components.Timer;
+import com.asis.joi.model.components.Transition;
+import com.asis.joi.model.components.dialog.Dialog;
 import com.asis.utilities.Alerts;
 import com.asis.utilities.AsisUtils;
 import com.asis.utilities.StageManager;
@@ -17,7 +17,6 @@ import javafx.scene.control.MenuItem;
 import javafx.scene.control.Tab;
 import javafx.scene.control.TabPane;
 import javafx.scene.layout.BorderPane;
-import javafx.stage.FileChooser;
 import javafx.stage.Stage;
 
 import java.io.File;
@@ -205,13 +204,7 @@ public class SceneDetails {
     }
 
     @FXML private void actionChangeSceneImage() {
-        FileChooser fileChooser = new FileChooser();
-        fileChooser.setInitialDirectory(Controller.getInstance().getJoiPackage().getPackageDirectory());
-        fileChooser.getExtensionFilters().addAll(new FileChooser.ExtensionFilter("png", "*.png"));
-        fileChooser.getExtensionFilters().addAll(new FileChooser.ExtensionFilter("jpg", "*.jpg"));
-        fileChooser.getExtensionFilters().addAll(new FileChooser.ExtensionFilter("jpeg", "*.jpeg"));
-
-        File file = fileChooser.showOpenDialog(null);
+        File file = AsisUtils.imageFileChooser();
 
         if(file != null) {
             //Add image to json object

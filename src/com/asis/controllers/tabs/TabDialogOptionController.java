@@ -1,9 +1,9 @@
 package com.asis.controllers.tabs;
 
 import com.asis.controllers.Controller;
-import com.asis.joi.components.Scene;
-import com.asis.joi.components.dialog.Dialog;
-import com.asis.joi.components.dialog.DialogOption;
+import com.asis.joi.model.components.Scene;
+import com.asis.joi.model.components.dialog.Dialog;
+import com.asis.joi.model.components.dialog.DialogOption;
 import com.asis.ui.asis_node.AsisConnectionButton;
 import com.asis.ui.asis_node.SceneNode;
 import javafx.application.Platform;

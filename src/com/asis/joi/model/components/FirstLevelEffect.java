@@ -1,4 +1,4 @@
-package com.asis.joi.components;
+package com.asis.joi.model.components;
 
 public interface FirstLevelEffect {
 }

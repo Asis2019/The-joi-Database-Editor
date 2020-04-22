@@ -1,6 +1,6 @@
 package com.asis.ui.asis_node;
 
-import com.asis.joi.components.Scene;
+import com.asis.joi.model.components.Scene;
 import javafx.beans.property.ReadOnlyBooleanWrapper;
 import javafx.beans.value.ObservableValue;
 import javafx.geometry.Bounds;
@@ -56,11 +56,11 @@ public class SceneNode extends BorderPane {
         focusedProperty().addListener((ObservableValue<? extends Boolean> observable, Boolean oldValue, Boolean newValue) -> focusState(newValue));
 
         initializeVBoxes();
-        initializeEndVariables();
 
         createNewInputConnectionPoint();
         createNewOutputConnectionPoint("Default", "normal_output");
 
+        initializeEndVariables();
         focusState(false);
     }
 

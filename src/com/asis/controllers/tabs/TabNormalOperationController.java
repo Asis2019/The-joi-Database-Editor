@@ -1,8 +1,8 @@
 package com.asis.controllers.tabs;
 
-import com.asis.controllers.Controller;
-import com.asis.joi.components.Scene;
+import com.asis.joi.model.components.Scene;
 import com.asis.ui.ImageViewPane;
+import com.asis.utilities.AsisUtils;
 import javafx.application.Platform;
 import javafx.fxml.FXML;
 import javafx.scene.control.*;
@@ -11,7 +11,6 @@ import javafx.scene.image.ImageView;
 import javafx.scene.layout.StackPane;
 import javafx.scene.layout.VBox;
 import javafx.scene.paint.Color;
-import javafx.stage.FileChooser;
 import org.json.JSONObject;
 
 import java.io.File;
@@ -128,13 +127,7 @@ public class TabNormalOperationController extends TabController {
     }
 
     public void actionAddImage() {
-        FileChooser fileChooser = new FileChooser();
-        fileChooser.setInitialDirectory(Controller.getInstance().getJoiPackage().getPackageDirectory());
-        fileChooser.getExtensionFilters().addAll(new FileChooser.ExtensionFilter("png", "*.png"));
-        fileChooser.getExtensionFilters().addAll(new FileChooser.ExtensionFilter("jpg", "*.jpg"));
-        fileChooser.getExtensionFilters().addAll(new FileChooser.ExtensionFilter("jpeg", "*.jpeg"));
-
-        File file = fileChooser.showOpenDialog(null);
+        File file = AsisUtils.imageFileChooser();
 
         if(file != null) {
             //Add image to json object
@@ -145,13 +138,7 @@ public class TabNormalOperationController extends TabController {
     }
 
     public void actionAddLineImage() {
-        FileChooser fileChooser = new FileChooser();
-        fileChooser.setInitialDirectory(Controller.getInstance().getJoiPackage().getPackageDirectory());
-        fileChooser.getExtensionFilters().addAll(new FileChooser.ExtensionFilter("png", "*.png"));
-        fileChooser.getExtensionFilters().addAll(new FileChooser.ExtensionFilter("jpg", "*.jpg"));
-        fileChooser.getExtensionFilters().addAll(new FileChooser.ExtensionFilter("jpeg", "*.jpeg"));
-
-        File file = fileChooser.showOpenDialog(null);
+        File file = AsisUtils.imageFileChooser();
 
         if(file != null) {
             //Add image to json object
@@ -239,11 +226,7 @@ public class TabNormalOperationController extends TabController {
             mainTextArea.setText(text);
         }
 
-        if (textObject.has("startBeat")) {
-            checkBoxStartBeat.setSelected(true);
-        } else {
-            checkBoxStartBeat.setSelected(false);
-        }
+        checkBoxStartBeat.setSelected(textObject.has("startBeat"));
     }
 
     public void setVisibleImage() {

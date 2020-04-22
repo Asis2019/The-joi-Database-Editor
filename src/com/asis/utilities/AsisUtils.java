@@ -1,9 +1,11 @@
 package com.asis.utilities;
 
 import com.asis.controllers.Controller;
+import com.asis.joi.JOIPackageManager;
 import javafx.scene.Node;
 import javafx.scene.Parent;
 import javafx.scene.paint.Color;
+import javafx.stage.FileChooser;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -151,5 +153,39 @@ public class AsisUtils {
             list.add(jsonArray.getInt(i));
         }
         return list;
+    }
+
+    public static String getLanguageCodeForName(String name) {
+        Object data = Config.get("LANGUAGES");
+        if(data instanceof JSONArray) {
+            for(int i=0; i<((JSONArray) data).length(); i++) {
+                if(((JSONArray) data).getJSONObject(i).getString("menu_name").equals(name)) {
+                    return ((JSONArray) data).getJSONObject(i).getString("file_code");
+                }
+            }
+        }
+        throw new IllegalArgumentException(String.format("The language code for %s could not be found in settings.json\nPlease make sure to select a valid option from the dropdown.", name));
+    }
+
+    public static String getLanguageNameForCode(String name) {
+        Object data = Config.get("LANGUAGES");
+        if(data instanceof JSONArray) {
+            for(int i=0; i<((JSONArray) data).length(); i++) {
+                if(((JSONArray) data).getJSONObject(i).getString("file_code").equals(name)) {
+                    return ((JSONArray) data).getJSONObject(i).getString("menu_name");
+                }
+            }
+        }
+        throw new IllegalArgumentException(String.format("The language code for %s could not be found in settings.json\nPlease make sure to select a valid option from the dropdown.", name));
+    }
+
+    public static File imageFileChooser() {
+        FileChooser fileChooser = new FileChooser();
+        fileChooser.setInitialDirectory(JOIPackageManager.getInstance().getJoiPackageDirectory());
+        fileChooser.getExtensionFilters().addAll(new FileChooser.ExtensionFilter("png", "*.png"));
+        fileChooser.getExtensionFilters().addAll(new FileChooser.ExtensionFilter("jpg", "*.jpg"));
+        fileChooser.getExtensionFilters().addAll(new FileChooser.ExtensionFilter("jpeg", "*.jpeg"));
+
+        return fileChooser.showOpenDialog(null);
     }
 }

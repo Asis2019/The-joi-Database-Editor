@@ -1,6 +1,6 @@
-package com.asis.joi;
+package com.asis.joi.model;
 
-import com.asis.joi.components.Scene;
+import com.asis.joi.model.components.Scene;
 import org.json.JSONArray;
 import org.json.JSONObject;
 

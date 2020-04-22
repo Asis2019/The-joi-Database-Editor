@@ -1,6 +1,6 @@
-package com.asis.joi.components;
+package com.asis.joi.model.components;
 
-import com.asis.joi.JOISystemInterface;
+import com.asis.joi.model.JOISystemInterface;
 import org.json.JSONObject;
 
 import java.io.File;

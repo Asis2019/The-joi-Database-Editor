@@ -1,11 +1,11 @@
-package com.asis.controllers;
+package com.asis.controllers.dialogs;
 
 import com.asis.utilities.Alerts;
 import javafx.fxml.FXML;
 import javafx.scene.control.Label;
 import javafx.stage.Stage;
 
-public class DialogUnsavedChangesDialog {
+public class DialogUnsavedChanges {
 
     @FXML private Label messageLabel;
 

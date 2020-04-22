@@ -1,9 +1,9 @@
 package com.asis.controllers.tabs;
 
-import com.asis.controllers.Controller;
-import com.asis.joi.components.Timer;
+import com.asis.joi.model.components.Timer;
 import com.asis.ui.AsisCenteredArc;
 import com.asis.ui.ImageViewPane;
+import com.asis.utilities.AsisUtils;
 import javafx.application.Platform;
 import javafx.fxml.FXML;
 import javafx.scene.control.*;
@@ -13,7 +13,6 @@ import javafx.scene.layout.HBox;
 import javafx.scene.layout.StackPane;
 import javafx.scene.layout.VBox;
 import javafx.scene.paint.Color;
-import javafx.stage.FileChooser;
 import org.json.JSONArray;
 import org.json.JSONObject;
 
@@ -246,13 +245,7 @@ public class TabTimerController extends TabController {
     }
 
     public void actionAddImage() {
-        FileChooser fileChooser = new FileChooser();
-        fileChooser.setInitialDirectory(Controller.getInstance().getJoiPackage().getPackageDirectory());
-        fileChooser.getExtensionFilters().addAll(new FileChooser.ExtensionFilter("png", "*.png"));
-        fileChooser.getExtensionFilters().addAll(new FileChooser.ExtensionFilter("jpg", "*.jpg"));
-        fileChooser.getExtensionFilters().addAll(new FileChooser.ExtensionFilter("jpeg", "*.jpeg"));
-
-        File file = fileChooser.showOpenDialog(null);
+        File file = AsisUtils.imageFileChooser();
 
         if(file != null) {
             //Add image to json object
@@ -265,13 +258,7 @@ public class TabTimerController extends TabController {
     }
 
     public void actionAddLineImage() {
-        FileChooser fileChooser = new FileChooser();
-        fileChooser.setInitialDirectory(Controller.getInstance().getJoiPackage().getPackageDirectory());
-        fileChooser.getExtensionFilters().addAll(new FileChooser.ExtensionFilter("png", "*.png"));
-        fileChooser.getExtensionFilters().addAll(new FileChooser.ExtensionFilter("jpg", "*.jpg"));
-        fileChooser.getExtensionFilters().addAll(new FileChooser.ExtensionFilter("jpeg", "*.jpeg"));
-
-        File file = fileChooser.showOpenDialog(null);
+        File file = AsisUtils.imageFileChooser();
 
         if(file != null && getTimer().getLine(onSecond) != null) {
             //Add image to json object

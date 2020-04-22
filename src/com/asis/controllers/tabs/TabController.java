@@ -1,9 +1,9 @@
 package com.asis.controllers.tabs;
 
 import com.asis.controllers.Controller;
-import com.asis.joi.components.FirstLevelEffect;
-import com.asis.joi.components.Line;
-import com.asis.joi.components.Scene;
+import com.asis.joi.model.components.FirstLevelEffect;
+import com.asis.joi.model.components.Line;
+import com.asis.joi.model.components.Scene;
 import javafx.scene.Node;
 import javafx.scene.control.CheckBox;
 import javafx.scene.control.TextField;
@@ -33,11 +33,7 @@ public abstract class TabController {
     }
 
     static void beatProperties(JSONObject textObject, CheckBox checkBox, String key) {
-        if (textObject != null && textObject.has(key)) {
-            checkBox.setSelected(true);
-        } else {
-            checkBox.setSelected(false);
-        }
+        checkBox.setSelected(textObject != null && textObject.has(key));
     }
 
     static void setLineStartCheckBoxState(Line line, CheckBox checkBox) {

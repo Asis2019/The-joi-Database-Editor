@@ -1,7 +1,10 @@
 package com.asis.utilities;
 
 import com.asis.Main;
-import com.asis.controllers.*;
+import com.asis.controllers.dialogs.DialogConfirmation;
+import com.asis.controllers.dialogs.DialogMessageController;
+import com.asis.controllers.dialogs.DialogNewProjectController;
+import com.asis.controllers.dialogs.DialogUnsavedChanges;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
@@ -12,8 +15,6 @@ import javafx.stage.Stage;
 import java.io.IOException;
 
 public class Alerts {
-
-    private String sceneTitle;
     private int unsavedChangesDialogButtonChoice;
     private boolean yesNoConfirmationChoice;
 
@@ -78,7 +79,7 @@ public class Alerts {
             FXMLLoader fxmlLoader = new FXMLLoader(Alerts.class.getResource("/resources/fxml/dialog_unsaved_changes_dialog.fxml"));
             Parent root = fxmlLoader.load();
 
-            DialogUnsavedChangesDialog controller = fxmlLoader.getController();
+            DialogUnsavedChanges controller = fxmlLoader.getController();
             controller.inflate(this, message);
             Scene main_scene = new Scene(root);
 
@@ -100,33 +101,6 @@ public class Alerts {
         this.unsavedChangesDialogButtonChoice = result;
     }
 
-    public String addNewSceneDialog(String defaultTitle) {
-        sceneTitle = defaultTitle;
-
-        try {
-            Stage stage = new Stage();
-
-            FXMLLoader fxmlLoader = new FXMLLoader(Alerts.class.getResource("/resources/fxml/dialog_set_scene_title.fxml"));
-            Parent root = fxmlLoader.load();
-
-            DialogSceneTitleController controller = fxmlLoader.getController();
-            controller.inflate(this, sceneTitle);
-            Scene main_scene = new Scene(root);
-
-            stage.setOnCloseRequest(windowEvent -> sceneTitle = null);
-
-            stage.initModality(Modality.APPLICATION_MODAL);
-            stage.getIcons().add(new Image(Main.class.getResourceAsStream("/resources/images/icon.png")));
-            stage.setScene(main_scene);
-            stage.setTitle("Scene Title");
-            stage.showAndWait();
-        } catch (IOException e) {
-            AsisUtils.errorDialogWindow(e);
-        }
-
-        return sceneTitle;
-    }
-
     public static void newProjectWindow(boolean firstLoadCheck) {
         try {
             FXMLLoader fxmlLoader = new FXMLLoader(Alerts.class.getResource("/resources/fxml/dialog_new_project.fxml"));
@@ -142,12 +116,7 @@ public class Alerts {
             stage.setScene(new Scene(root, 600, 400));
             stage.showAndWait();
         } catch (IOException e) {
-            e.printStackTrace();
             AsisUtils.errorDialogWindow(e);
         }
-    }
-
-    public void setTitle(String title) {
-        this.sceneTitle = title;
     }
 }

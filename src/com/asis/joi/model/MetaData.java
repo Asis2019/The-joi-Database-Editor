@@ -1,6 +1,6 @@
-package com.asis.joi;
+package com.asis.joi.model;
 
-import com.asis.controllers.Controller;
+import com.asis.joi.JOIPackageManager;
 import org.json.JSONArray;
 import org.json.JSONObject;
 
@@ -21,7 +21,7 @@ public class MetaData implements JOISystemInterface{
     }
     public MetaData(MetaData metaData) {
         JSONObject object = metaData.getMetaDataAsJson().getJSONArray("JOI METADATA").getJSONObject(0);
-        setDataFromJson(object, Controller.getInstance().getJoiPackage().getPackageDirectory());
+        setDataFromJson(object, JOIPackageManager.getInstance().getJoiPackageDirectory());
     }
 
     public JSONObject getMetaDataAsJson() {

@@ -1,9 +1,11 @@
 package com.asis.controllers;
 
-import com.asis.joi.JOIPackage;
-import com.asis.joi.MetaData;
-import com.asis.joi.components.GotoScene;
-import com.asis.joi.components.dialog.DialogOption;
+import com.asis.controllers.dialogs.DialogSceneTitleController;
+import com.asis.joi.JOIPackageManager;
+import com.asis.joi.model.JOIPackage;
+import com.asis.joi.model.MetaData;
+import com.asis.joi.model.components.GotoScene;
+import com.asis.joi.model.components.dialog.DialogOption;
 import com.asis.ui.asis_node.AsisConnectionButton;
 import com.asis.ui.asis_node.SceneNode;
 import com.asis.ui.asis_node.SceneNodeMainController;
@@ -37,8 +39,8 @@ public class Controller {
     private Boolean addSceneContextMenu = false;
     private static Controller instance = null;
 
-    private JOIPackage joiPackage = new JOIPackage();
-    private ArrayList<SceneNode> sceneNodes = new ArrayList<>();
+    private JOIPackage joiPackage;
+    private final ArrayList<SceneNode> sceneNodes = new ArrayList<>();
 
     private SceneNodeMainController sceneNodeMainController;
 
@@ -53,13 +55,9 @@ public class Controller {
 
     public void initialize() {
         instance = this;
-        sceneNodeMainController = new SceneNodeMainController(getJoiPackage());
-        sceneNodeMainController.setPane(anchorPane);
-        sceneNodeMainController.setScrollPane(scrollPane);
 
         setupMainContextMenu();
         setupSceneNodeContextMenu();
-        addScene(true);
     }
 
     public static Controller getInstance() {
@@ -85,10 +83,7 @@ public class Controller {
 
         editNameItem.setOnAction(actionEvent -> {
             if (selectedScene != null) {
-                String title = new Alerts().addNewSceneDialog(selectedScene.getTitle());
-                if (title == null) {
-                    return;
-                }
+                String title = DialogSceneTitleController.addNewSceneDialog(selectedScene.getTitle());
 
                 getJoiPackage().getJoi().getScene(selectedScene.getSceneId()).setSceneTitle(title);
                 selectedScene.setTitle(title);
@@ -181,6 +176,28 @@ public class Controller {
         }
     }
 
+    public void actionOpenTranslationEditor() {
+        if (StageManager.getInstance().requestStageFocus("translationEditor")) return;
+
+        try {
+            FXMLLoader fxmlLoader = new FXMLLoader(getClass().getResource("/resources/fxml/translation_editor.fxml"));
+            Parent root = fxmlLoader.load();
+
+            Stage stage = new Stage();
+            stage.getIcons().add(new Image(Controller.class.getResourceAsStream("/resources/images/icon.png")));
+            stage.setTitle("Translation Editor");
+            stage.setUserData("translationEditor");
+            stage.setScene(new Scene(root, 1280, 720));
+            StageManager.getInstance().openStage(stage);
+            stage.setOnCloseRequest(event -> {
+                StageManager.getInstance().closeStage(stage);
+            });
+
+        } catch (IOException e) {
+            AsisUtils.errorDialogWindow(e);
+        }
+    }
+
     private void setClickActionForNode(SceneNode sceneNode) {
         sceneNode.setOnContextMenuRequested(contextMenuEvent -> {
             selectedScene = sceneNode;
@@ -253,9 +270,7 @@ public class Controller {
 
     public boolean changesHaveOccurred() {
         try {
-            final JOIPackage originalPackage = new JOIPackage();
-            originalPackage.setPackageLanguageCode(getJoiPackage().getPackageLanguageCode());
-            originalPackage.importPackageFromDirectory(getJoiPackage().getPackageDirectory());
+            final JOIPackage originalPackage = JOIPackageManager.getInstance().getJOIPackage(getJoiPackage().getPackageLanguageCode());
 
             //The icons are set to null, because when a joi is saved it exports and icon
             //This icon will not be present in the joi stored in memory causing the results
@@ -266,7 +281,7 @@ public class Controller {
             fileData.setJoiIcon(null);
 
             return !getJoiPackage().getJoi().equals(originalPackage.getJoi()) || !memoryData.equals(fileData);
-        } catch (RuntimeException e) {
+        } catch (RuntimeException | IOException e) {
             return true;
         }
     }
@@ -300,8 +315,7 @@ public class Controller {
         if (isFirstScene) {
             title = defaultTitle;
         } else {
-            title = new Alerts().addNewSceneDialog(defaultTitle);
-            if (title == null) return;
+            title = DialogSceneTitleController.addNewSceneDialog(defaultTitle);
         }
 
         addScene(10, 0, title, sceneId - 1, false);
@@ -370,28 +384,24 @@ public class Controller {
         Alerts.newProjectWindow(false);
     }
 
-    void processNewProject(File newProjectFile, String newProjectName, String defaultProjectLanguageCode) {
-        resetJoiPackage(new JOIPackage());
+    public void processNewProject(File newProjectFile, String newProjectName, String defaultProjectLanguageCode) {
+        JOIPackageManager.getInstance().clear();
+        JOIPackageManager.getInstance().setJoiPackageDirectory(new File(newProjectFile.getPath() + File.separator + newProjectName));
+        resetJoiPackage(JOIPackageManager.getInstance().getNewJOIPackage(defaultProjectLanguageCode));
         addScene(true);
-
-        File projectDirectory = new File(newProjectFile.getPath() + "/" + newProjectName);
-        //noinspection ResultOfMethodCallIgnored
-        projectDirectory.mkdir();
-
-        //Set project directory
-        getJoiPackage().setPackageDirectory(projectDirectory);
-
-        //Add project name as the Title in metadata
-        getJoiPackage().getMetaData().setName(newProjectName);
-
-        //Set default language code of package
-        getJoiPackage().setPackageLanguageCode(defaultProjectLanguageCode);
     }
 
     private void resetJoiPackage(JOIPackage joiPackage) {
+        setJoiPackage(joiPackage);
+
+        if(sceneNodeMainController == null) {
+            sceneNodeMainController = new SceneNodeMainController(getJoiPackage());
+            sceneNodeMainController.setPane(anchorPane);
+            sceneNodeMainController.setScrollPane(scrollPane);
+        }
+
         anchorPane.getChildren().clear();
         getSceneNodes().clear();
-        setJoiPackage(joiPackage);
         sceneNodeMainController.setJoiPackage(joiPackage);
         sceneNodeMainController.setLineList(new ArrayList<>());
         StageManager.getInstance().closeAllStages();
@@ -410,43 +420,44 @@ public class Controller {
             }
         }
 
-        return processLoadProject();
+        try {
+            return processLoadProject();
+        } catch (IOException e) {
+            AsisUtils.errorDialogWindow(e);
+            return false;
+        }
     }
 
-    public boolean processLoadProject() {
+    public boolean processLoadProject() throws IOException {
         DirectoryChooser directoryChooser = new DirectoryChooser();
-        directoryChooser.setInitialDirectory(getJoiPackage().getPackageDirectory());
+        directoryChooser.setInitialDirectory(JOIPackageManager.getInstance().getJoiPackageDirectory());
         File file = directoryChooser.showDialog(null);
 
         if (file != null) {
-            JOIPackage newJoiPackage = new JOIPackage();
-
             //Set project directory to current
-            newJoiPackage.setPackageDirectory(file);
+            JOIPackageManager.getInstance().clear();
+            JOIPackageManager.getInstance().setJoiPackageDirectory(file);
+            JOIPackage newJoiPackage = JOIPackageManager.getInstance().getJOIPackage();
 
             //Load joi
             try {
-                if (newJoiPackage.importPackageFromDirectory(file)) {
                     //JOI folder was imported successfully
 
                     //Reset old variables
                     resetJoiPackage(newJoiPackage);
 
                     //Create scene nodes
-                    for (com.asis.joi.components.Scene scene : getJoiPackage().getJoi().getSceneArrayList()) {
+                    for (com.asis.joi.model.components.Scene scene : getJoiPackage().getJoi().getSceneArrayList()) {
                         addScene(scene.getLayoutXPosition(), scene.getLayoutYPosition(), scene.getSceneTitle(), scene.getSceneId(), true);
                     }
 
                     //Create connections
-                    for (com.asis.joi.components.Scene scene : getJoiPackage().getJoi().getSceneArrayList()) {
+                    for (com.asis.joi.model.components.Scene scene : getJoiPackage().getJoi().getSceneArrayList()) {
                         final AsisConnectionButton output = getSceneNodeWithId(getSceneNodes(), scene.getSceneId()).getOutputButtons().get(0);
                         createConnections(scene.getGotoScene(), output);
 
                         createConnectionsForDialogOutputs(scene);
                     }
-                } else {
-                    return false;
-                }
 
                 //Loading completed successfully
                 return true;
@@ -460,7 +471,7 @@ public class Controller {
         return false;
     }
 
-    private void createConnectionsForDialogOutputs(com.asis.joi.components.Scene scene) {
+    private void createConnectionsForDialogOutputs(com.asis.joi.model.components.Scene scene) {
         if (scene.getDialog() != null && !scene.getDialog().getOptionArrayList().isEmpty()) {
             for (DialogOption dialogOption : scene.getDialog().getOptionArrayList()) {
                 AsisConnectionButton output = getSceneNodeWithId(sceneNodes, scene.getSceneId()).createNewOutputConnectionPoint("Option " + dialogOption.getOptionNumber(), "dialog_option_" + (dialogOption.getOptionNumber() + 1));
@@ -501,12 +512,12 @@ public class Controller {
     }
 
     public void actionSaveProject() {
-        saveProject(getJoiPackage().getPackageDirectory());
+        saveProject(JOIPackageManager.getInstance().getJoiPackageDirectory());
     }
 
     public void actionSaveProjectAs() {
         DirectoryChooser directoryChooser = new DirectoryChooser();
-        directoryChooser.setInitialDirectory(getJoiPackage().getPackageDirectory());
+        directoryChooser.setInitialDirectory(JOIPackageManager.getInstance().getJoiPackageDirectory());
         directoryChooser.setTitle("Save Location");
         File file = directoryChooser.showDialog(null);
 
@@ -514,22 +525,18 @@ public class Controller {
     }
 
     private void saveProject(File file) {
-        if (file != null) {
-            getJoiPackage().exportPackageAsFiles(file);
-        }
+        if (file != null) JOIPackageManager.getInstance().exportJOIPackageAsFiles(file);
     }
 
     public void actionExportToZip() {
         //Export project as zip
         FileChooser fileChooser = new FileChooser();
         fileChooser.setTitle("Save Zip");
-        fileChooser.setInitialDirectory(getJoiPackage().getPackageDirectory());
+        fileChooser.setInitialDirectory(JOIPackageManager.getInstance().getJoiPackageDirectory());
         fileChooser.getExtensionFilters().addAll(new FileChooser.ExtensionFilter("zip", "*.zip"));
         File dest = fileChooser.showSaveDialog(null);
 
-        if (dest != null) {
-            getJoiPackage().exportPackageAsZip(dest);
-        }
+        if (dest != null) JOIPackageManager.getInstance().exportJOIPackageAsZip(dest);
     }
 
     public void actionGettingStarted() {
@@ -557,20 +564,12 @@ public class Controller {
     }
 
     //Getters and setters
-    private void setAnchorPane(AnchorPane anchorPane) {
-        this.anchorPane = anchorPane;
-    }
-
     private AnchorPane getAnchorPane() {
         return anchorPane;
     }
 
     public ArrayList<SceneNode> getSceneNodes() {
         return sceneNodes;
-    }
-
-    public void setSceneNodes(ArrayList<SceneNode> sceneNodes) {
-        this.sceneNodes = sceneNodes;
     }
 
     public JOIPackage getJoiPackage() {

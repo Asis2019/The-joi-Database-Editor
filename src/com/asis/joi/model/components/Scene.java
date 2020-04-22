@@ -1,7 +1,7 @@
-package com.asis.joi.components;
+package com.asis.joi.model.components;
 
-import com.asis.joi.JOISystemInterface;
-import com.asis.joi.components.dialog.Dialog;
+import com.asis.joi.model.JOISystemInterface;
+import com.asis.joi.model.components.dialog.Dialog;
 import javafx.beans.property.ReadOnlyBooleanWrapper;
 import org.json.JSONObject;
 
@@ -275,8 +275,7 @@ public class Scene implements JOISystemInterface {
         return transition;
     }
     public void setTransition(Transition transition) {
-        if (transition == null) setNoFade(true);
-        else setNoFade(false);
+        setNoFade(transition == null);
 
         this.transition = transition;
     }

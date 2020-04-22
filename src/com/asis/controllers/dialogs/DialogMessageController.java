@@ -1,4 +1,4 @@
-package com.asis.controllers;
+package com.asis.controllers.dialogs;
 
 import javafx.fxml.FXML;
 import javafx.scene.control.Label;

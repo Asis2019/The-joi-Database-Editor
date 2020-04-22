@@ -1,10 +1,10 @@
 package com.asis.ui.asis_node;
 
 import com.asis.controllers.Controller;
-import com.asis.joi.JOIPackage;
-import com.asis.joi.components.GotoScene;
-import com.asis.joi.components.Scene;
-import com.asis.joi.components.dialog.DialogOption;
+import com.asis.joi.model.JOIPackage;
+import com.asis.joi.model.components.GotoScene;
+import com.asis.joi.model.components.Scene;
+import com.asis.joi.model.components.dialog.DialogOption;
 import javafx.beans.property.DoubleProperty;
 import javafx.beans.property.SimpleDoubleProperty;
 import javafx.geometry.Bounds;
@@ -190,6 +190,7 @@ public class SceneNodeMainController {
     }
 
     void mouseMoved(MouseEvent mouseEvent) {
+        //TODO save this so that it doesn't need to be calculated every time
         Controller controller = Controller.getInstance();
         final double menuBarOffset = controller.mainMenuBar.getHeight() + controller.toolBar.getHeight();
 

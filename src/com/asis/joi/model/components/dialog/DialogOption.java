@@ -1,7 +1,7 @@
-package com.asis.joi.components.dialog;
+package com.asis.joi.model.components.dialog;
 
-import com.asis.joi.JOISystemInterface;
-import com.asis.joi.components.GotoScene;
+import com.asis.joi.model.JOISystemInterface;
+import com.asis.joi.model.components.GotoScene;
 import org.json.JSONArray;
 import org.json.JSONObject;
 

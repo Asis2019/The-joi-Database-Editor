@@ -4,49 +4,48 @@
 <?import javafx.scene.control.*?>
 <?import javafx.scene.layout.*?>
 <?import java.net.URL?>
-<BorderPane id="darkThemeBackground" maxHeight="-Infinity" maxWidth="-Infinity" prefHeight="400.0" prefWidth="600.0" xmlns="http://javafx.com/javafx/10.0.2-internal" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.asis.controllers.DialogNewProjectController">
-   <bottom>
-      <ToolBar prefHeight="40.0" prefWidth="200.0" BorderPane.alignment="CENTER">
-         <Button id="btnLoadProject" mnemonicParsing="false" onAction="#onActionLoadProject" text="Load Project" />
-         <Pane HBox.hgrow="ALWAYS" />
-         <Button mnemonicParsing="false" onAction="#actionButtonFinish" text="Create New Project" />
-      </ToolBar>
-   </bottom>
-   <stylesheets>
-      <URL value="@../css/main_stylesheet.css" />
-      <URL value="@../css/text_field_stylesheet.css" />
-      <URL value="@../css/combo_box_stylesheet.css" />
-   </stylesheets>
-   <top>
-      <VBox spacing="8.0" BorderPane.alignment="CENTER">
-         <padding>
-            <Insets bottom="16.0" left="16.0" right="16.0" top="16.0" />
-         </padding>
-         <HBox alignment="CENTER_LEFT" spacing="10.0">
-            <Label maxWidth="1.7976931348623157E308" minWidth="-Infinity" text="Project Name:" textFill="WHITE">
-               <padding>
-                  <Insets right="61.0" />
-               </padding>
-            </Label>
-            <TextField fx:id="projectNameTextField" HBox.hgrow="ALWAYS" />
-            <Button id="browsFoldersButton" disable="true" mnemonicParsing="false" text="..." visible="false" />
-         </HBox>
-         <HBox alignment="CENTER_LEFT" layoutX="10.0" layoutY="10.0" spacing="10.0">
-            <Label maxWidth="1.7976931348623157E308" minWidth="-Infinity" text="Project Location:" textFill="WHITE">
-               <padding>
-                  <Insets right="49.0" />
-               </padding>
-            </Label>
-            <TextField fx:id="projectDirectoryTextField" HBox.hgrow="ALWAYS" />
-            <Button id="browsFoldersButton" mnemonicParsing="false" onAction="#actionBrowsFolder" text="..." />
-         </HBox>
-         <HBox alignment="CENTER_LEFT" layoutX="26.0" layoutY="26.0" spacing="10.0">
-            <children>
-               <Label minWidth="-Infinity" text="Default Project Language:" textFill="WHITE" />
-               <ComboBox fx:id="languagesDropDown" prefWidth="100.0" promptText="Language" />
-               <Button id="browsFoldersButton" disable="true" mnemonicParsing="false" text="..." visible="false" />
-            </children>
-         </HBox>
-      </VBox>
-   </top>
+<BorderPane id="darkThemeBackground" maxHeight="-Infinity" maxWidth="-Infinity" prefHeight="400.0" prefWidth="600.0" xmlns="http://javafx.com/javafx/10.0.2-internal" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.asis.controllers.dialogs.DialogNewProjectController">
+    <bottom>
+        <ToolBar prefHeight="40.0" prefWidth="200.0" BorderPane.alignment="CENTER">
+            <Button id="btnLoadProject" mnemonicParsing="false" onAction="#onActionLoadProject" text="Load Project" />
+            <Pane HBox.hgrow="ALWAYS" />
+            <Button mnemonicParsing="false" onAction="#actionButtonFinish" text="Create New Project" />
+        </ToolBar>
+    </bottom>
+    <stylesheets>
+        <URL value="@../css/main_stylesheet.css" />
+        <URL value="@../css/text_field_stylesheet.css" />
+        <URL value="@../css/combo_box_stylesheet.css" />
+    </stylesheets>
+    <top>
+        <VBox spacing="8.0" BorderPane.alignment="CENTER">
+            <padding>
+                <Insets bottom="16.0" left="16.0" right="16.0" top="16.0" />
+            </padding>
+            <HBox alignment="CENTER_LEFT" spacing="10.0">
+                <Label maxWidth="1.7976931348623157E308" minWidth="-Infinity" text="Project Name:" textFill="WHITE">
+                    <padding>
+                        <Insets right="61.0" />
+                    </padding>
+                </Label>
+                <TextField fx:id="projectNameTextField" HBox.hgrow="ALWAYS" />
+                <Button id="browsFoldersButton" disable="true" mnemonicParsing="false" text="..." visible="false" />
+            </HBox>
+            <HBox alignment="CENTER_LEFT" layoutX="10.0" layoutY="10.0" spacing="10.0">
+                <Label maxWidth="1.7976931348623157E308" minWidth="-Infinity" text="Project Location:" textFill="WHITE">
+                    <padding>
+                        <Insets right="49.0" />
+                    </padding>
+                </Label>
+                <TextField fx:id="projectDirectoryTextField" editable="false" HBox.hgrow="ALWAYS" />
+                <Button id="browsFoldersButton" mnemonicParsing="false" onAction="#actionBrowsFolder" text="..." />
+            </HBox>
+            <HBox alignment="CENTER_LEFT" layoutX="26.0" layoutY="26.0" spacing="10.0">
+                <children>
+                    <Label minWidth="-Infinity" text="Default Project Language:" textFill="WHITE" />
+                    <ComboBox fx:id="languagesDropDown" prefWidth="100.0" promptText="Language" />
+                </children>
+            </HBox>
+        </VBox>
+    </top>
 </BorderPane>

@@ -1,6 +1,9 @@
-package com.asis.controllers;
+package com.asis.controllers.dialogs;
 
+import com.asis.controllers.Controller;
+import com.asis.joi.JOIPackageManager;
 import com.asis.utilities.Alerts;
+import com.asis.utilities.AsisUtils;
 import com.asis.utilities.Config;
 import javafx.fxml.FXML;
 import javafx.scene.control.ComboBox;
@@ -10,6 +13,9 @@ import javafx.stage.Stage;
 import org.json.JSONArray;
 
 import java.io.File;
+import java.io.IOException;
+
+import static com.asis.utilities.AsisUtils.getLanguageCodeForName;
 
 
 public class DialogNewProjectController {
@@ -22,7 +28,7 @@ public class DialogNewProjectController {
     private boolean firstLoad = false;
 
     public void initialize() {
-        setProjectPath(Controller.getInstance().getJoiPackage().getPackageDirectory());
+        setProjectPath(JOIPackageManager.getInstance().getJoiPackageDirectory());
 
         projectNameTextField.setText("Untitled");
         projectDirectoryTextField.setText(getProjectPath().getAbsolutePath()+File.separator+projectNameTextField.getText().trim());
@@ -35,6 +41,8 @@ public class DialogNewProjectController {
                 getLanguagesDropDown().getItems().add(((JSONArray) data).getJSONObject(i).getString("menu_name"));
             }
         }
+
+        getLanguagesDropDown().getSelectionModel().select(0);
     }
 
     public void actionBrowsFolder() {
@@ -53,7 +61,12 @@ public class DialogNewProjectController {
         if(!isFirstLoad()) {
             result = Controller.getInstance().actionLoadProject();
         } else {
-            result = Controller.getInstance().processLoadProject();
+            try {
+                result = Controller.getInstance().processLoadProject();
+            } catch (IOException e) {
+                AsisUtils.errorDialogWindow(e);
+                result = false;
+            }
         }
 
         if(result) {
@@ -63,39 +76,32 @@ public class DialogNewProjectController {
     }
 
     public void actionButtonFinish() {
-        if (!isFirstLoad() && Controller.getInstance().changesHaveOccurred()) {
-            int choice = new Alerts().unsavedChangesDialog("New Project", "You have unsaved work, are you sure you want to continue?");
-            switch (choice) {
-                case 0:
-                    return;
+        try {
+            if (!isFirstLoad() && Controller.getInstance().changesHaveOccurred()) {
+                int choice = new Alerts().unsavedChangesDialog("New Project", "You have unsaved work, are you sure you want to continue?");
+                switch (choice) {
+                    case 0:
+                        return;
 
-                case 1:
-                    Controller.getInstance().processNewProject(getProjectPath(), projectNameTextField.getText().trim(), getLanguageCodeForName(getLanguagesDropDown().getValue()));
-                    break;
+                    case 1:
+                        Controller.getInstance().processNewProject(getProjectPath(), projectNameTextField.getText().trim(), getLanguageCodeForName(getLanguagesDropDown().getValue()));
+                        break;
 
-                case 2:
-                    Controller.getInstance().actionSaveProject();
-                    Controller.getInstance().processNewProject(getProjectPath(), projectNameTextField.getText().trim(), getLanguageCodeForName(getLanguagesDropDown().getValue()));
-                    break;
-            }
-        } else {
-            Controller.getInstance().processNewProject(getProjectPath(), projectNameTextField.getText().trim(), getLanguageCodeForName(getLanguagesDropDown().getValue()));
-        }
-
-        Stage stage = (Stage) projectNameTextField.getScene().getWindow();
-        stage.close();
-    }
-
-    private String getLanguageCodeForName(String name) {
-        Object data = Config.get("LANGUAGES");
-        if(data instanceof JSONArray) {
-            for(int i=0; i<((JSONArray) data).length(); i++) {
-                if(((JSONArray) data).getJSONObject(i).getString("menu_name").equals(name)) {
-                    return ((JSONArray) data).getJSONObject(i).getString("file_code");
+                    case 2:
+                        Controller.getInstance().actionSaveProject();
+                        Controller.getInstance().processNewProject(getProjectPath(), projectNameTextField.getText().trim(), getLanguageCodeForName(getLanguagesDropDown().getValue()));
+                        break;
                 }
+            } else {
+                Controller.getInstance().processNewProject(getProjectPath(), projectNameTextField.getText().trim(), getLanguageCodeForName(getLanguagesDropDown().getValue()));
             }
+
+            Stage stage = (Stage) projectNameTextField.getScene().getWindow();
+            stage.close();
+
+        } catch (IllegalArgumentException e) {
+            Alerts.messageDialog("Error", e.getMessage());
         }
-        return "en";
     }
 
     //Getters and setters
