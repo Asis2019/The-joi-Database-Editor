@@ -33,15 +33,24 @@ public class TabTimerController extends TabController {
 
     private Timer timer;
 
-    @FXML private TextField goToSecondsTextField, totalTimerField, textFieldBeatPitch, textFieldBeatSpeed;
-    @FXML private ColorPicker textColorPicker, textOutlineColorPicker;
-    @FXML private VBox timerIconControllerBox;
-    @FXML private StackPane timerStackPane;
-    @FXML private TextArea timerTextArea, textTextArea;
-    @FXML private HBox container;
-    @FXML private CheckBox checkBoxStopBeat, checkBoxStartBeat, checkBoxHideTime, checkBoxHideTimer;
-    @FXML private Label warningLabel;
-    @FXML private TreeView<String> objectTree;
+    @FXML
+    private TextField goToSecondsTextField, totalTimerField, textFieldBeatPitch, textFieldBeatSpeed;
+    @FXML
+    private ColorPicker textColorPicker, textOutlineColorPicker;
+    @FXML
+    private VBox timerIconControllerBox;
+    @FXML
+    private StackPane timerStackPane;
+    @FXML
+    private TextArea timerTextArea, textTextArea;
+    @FXML
+    private HBox container;
+    @FXML
+    private CheckBox checkBoxStopBeat, checkBoxStartBeat, checkBoxHideTime, checkBoxHideTimer;
+    @FXML
+    private Label warningLabel;
+    @FXML
+    private TreeView<String> objectTree;
 
     public TabTimerController(String tabTitle, Timer timer) {
         super(tabTitle);
@@ -51,27 +60,16 @@ public class TabTimerController extends TabController {
         Platform.runLater(() -> {
             setNodeColorStyle(textTextArea, fillColor, outlineColor);
 
-            textOutlineColorPicker.valueProperty().addListener((observableValue, color, t1) -> {
-                outlineColor = removeLastTwoLetters("#"+colorToHex(t1));
-                setNodeColorStyle(textTextArea, fillColor, outlineColor);
-                if(getTimer().getLine(onSecond) != null) getTimer().getLine(onSecond).setOutlineColor(outlineColor);
-            });
-
-            textColorPicker.valueProperty().addListener((observableValue, color, t1) -> {
-                fillColor = removeLastTwoLetters("#"+colorToHex(t1));
-                setNodeColorStyle(textTextArea, fillColor, outlineColor);
-                if(getTimer().getLine(onSecond) != null) getTimer().getLine(onSecond).setFillColor(fillColor);
-            });
-
-            textTextArea.textProperty().bindBidirectional(timerTextArea.textProperty());
 
             //Setup text area
+            textTextArea.textProperty().bindBidirectional(timerTextArea.textProperty());
+
             textTextArea.textProperty().addListener((observable, oldValue, newValue) -> {
-                if(!isLockTextAreaFunctionality()) {
+                if (!isLockTextAreaFunctionality()) {
                     final String formattedText = newValue.replaceAll("\\n", "#");
 
                     if (!newValue.isEmpty()) {
-                        if(getTimer().getLine(onSecond) == null) {
+                        if (getTimer().getLine(onSecond) == null) {
                             getTimer().addNewLine(onSecond);
                         }
 
@@ -86,6 +84,8 @@ public class TabTimerController extends TabController {
                 }
             });
 
+            addColorPickerListeners();
+
             //Setup total time field
             totalTimerField.textProperty().addListener((observable, s, t1) -> {
                 try {
@@ -95,7 +95,7 @@ public class TabTimerController extends TabController {
                     handelSecondsOverTotal();
                 } catch (NumberFormatException e) {
                     System.out.println("User inputted bad character into total time field");
-                    if(!t1.isEmpty()) {
+                    if (!t1.isEmpty()) {
                         t1 = t1.substring(0, t1.length() - 1);
                         totalTimerField.setText(t1);
                     } else {
@@ -116,7 +116,7 @@ public class TabTimerController extends TabController {
                     handelSecondsOverTotal();
                 } catch (NumberFormatException e) {
                     System.out.println("User inputted bad character into goto second field");
-                    if(!t1.isEmpty()) {
+                    if (!t1.isEmpty()) {
                         t1 = t1.substring(0, t1.length() - 1);
                         goToSecondsTextField.setText(t1);
                     } else {
@@ -147,10 +147,26 @@ public class TabTimerController extends TabController {
             asisCenteredArc.setMaxLength(totalSeconds);
 
             //Check boxes
-            if(getTimer().isTimerHidden()) checkBoxHideTimer.setSelected(true);
-            if(getTimer().isTimeHidden()) checkBoxHideTime.setSelected(true);
+            if (getTimer().isTimerHidden()) checkBoxHideTimer.setSelected(true);
+            if (getTimer().isTimeHidden()) checkBoxHideTime.setSelected(true);
 
             //Update Tree View
+            updateObjectTree();
+        });
+    }
+
+    private void addColorPickerListeners() {
+        textOutlineColorPicker.valueProperty().addListener((observableValue, color, t1) -> {
+            outlineColor = removeLastTwoLetters("#" + colorToHex(t1));
+            setNodeColorStyle(timerTextArea, fillColor, outlineColor);
+            if (getTimer().getLine(onSecond) != null) getTimer().getLine(onSecond).setOutlineColor(outlineColor);
+            updateObjectTree();
+        });
+
+        textColorPicker.valueProperty().addListener((observableValue, color, t1) -> {
+            fillColor = removeLastTwoLetters("#" + colorToHex(t1));
+            setNodeColorStyle(timerTextArea, fillColor, outlineColor);
+            if (getTimer().getLine(onSecond) != null) getTimer().getLine(onSecond).setFillColor(fillColor);
             updateObjectTree();
         });
     }
@@ -176,13 +192,13 @@ public class TabTimerController extends TabController {
                 getTimer().getLine(onSecond).setChangeBeatPitch(pitch);
             } catch (NumberFormatException e) {
                 System.out.println("User put bad value into beat pitch");
-                if(t1.isEmpty()) {
+                if (t1.isEmpty()) {
                     getTimer().getLine(onSecond).setChangeBeatPitch(null);
                     textFieldBeatPitch.clear();
                     updateObjectTree();
                     return;
                 }
-                t1 = t1.substring(0, t1.length()-1);
+                t1 = t1.substring(0, t1.length() - 1);
                 textFieldBeatPitch.setText(t1);
                 updateObjectTree();
             }
@@ -196,13 +212,13 @@ public class TabTimerController extends TabController {
                 getTimer().getLine(onSecond).setChangeBeatSpeed(speed);
             } catch (NumberFormatException e) {
                 System.out.println("User put bad value into beat speed");
-                if(t1.isEmpty()) {
+                if (t1.isEmpty()) {
                     getTimer().getLine(onSecond).setChangeBeatSpeed(null);
                     textFieldBeatSpeed.clear();
                     updateObjectTree();
                     return;
                 }
-                t1 = t1.substring(0, t1.length()-1);
+                t1 = t1.substring(0, t1.length() - 1);
                 textFieldBeatSpeed.setText(t1);
                 updateObjectTree();
             }
@@ -215,11 +231,11 @@ public class TabTimerController extends TabController {
 
         JSONObject timerObject = getTimer().getTimerAsJson().getJSONObject(0);
 
-        if(timerObject != null && !timerObject.isEmpty()) {
+        if (timerObject != null && !timerObject.isEmpty()) {
             for (int i = 0; i < timerObject.names().length(); i++) {
                 String key = timerObject.names().getString(i);
                 Object object = timerObject.get(timerObject.names().getString(i));
-                if(object instanceof JSONArray) {
+                if (object instanceof JSONArray) {
                     TreeItem<String> item = new TreeItem<>(key);
                     root.getChildren().add(item);
 
@@ -229,27 +245,27 @@ public class TabTimerController extends TabController {
                         String subKey = lineObject.names().getString(ii);
                         String subValue = lineObject.get(lineObject.names().getString(ii)).toString();
 
-                        TreeItem<String> subItem = new TreeItem<>(subKey+": "+subValue);
+                        TreeItem<String> subItem = new TreeItem<>(subKey + ": " + subValue);
                         item.getChildren().add(subItem);
                     }
                     continue;
                 }
 
                 final String value = timerObject.get(timerObject.names().getString(i)).toString();
-                root.getChildren().add(new TreeItem<>(key+": "+value));
+                root.getChildren().add(new TreeItem<>(key + ": " + value));
             }
         }
 
-        root.getChildren().sort(Comparator.comparing(t->t.getValue().length()));
+        root.getChildren().sort(Comparator.comparing(t -> t.getValue().length()));
         root.setExpanded(true);
     }
 
     public void actionAddImage() {
         File file = AsisUtils.imageFileChooser();
 
-        if(file != null) {
+        if (file != null) {
             //Add image to json object
-            if(getScene(getTimer()) != null) {
+            if (getScene(getTimer()) != null) {
                 getScene(getTimer()).setSceneImage(file);
 
                 setVisibleImage();
@@ -260,7 +276,7 @@ public class TabTimerController extends TabController {
     public void actionAddLineImage() {
         File file = AsisUtils.imageFileChooser();
 
-        if(file != null && getTimer().getLine(onSecond) != null) {
+        if (file != null && getTimer().getLine(onSecond) != null) {
             //Add image to json object
             getTimer().getLine(onSecond).setLineImage(file);
 
@@ -270,9 +286,7 @@ public class TabTimerController extends TabController {
 
     public void setVisibleImage() {
         //Remove image if any is present
-        if(viewPane != null) {
-            timerStackPane.getChildren().remove(viewPane);
-        }
+        if (viewPane != null) timerStackPane.getChildren().remove(viewPane);
 
         File workingFile = getImageFile();
 
@@ -290,7 +304,7 @@ public class TabTimerController extends TabController {
         File workingFile = new File("");
 
         //Scene image code
-        if(getScene(getTimer()) != null && getScene(getTimer()).getSceneImage() != null) {
+        if (getScene(getTimer()) != null && getScene(getTimer()).getSceneImage() != null) {
             //Set image file
             workingFile = getScene(getTimer()).getSceneImage();
 
@@ -299,7 +313,7 @@ public class TabTimerController extends TabController {
         }
 
         //Line image code
-        if(getTimer().getLine(onSecond) != null && getTimer().getLine(onSecond).getLineImage() != null) {
+        if (getTimer().getLine(onSecond) != null && getTimer().getLine(onSecond).getLineImage() != null) {
             //Set image file
             workingFile = getTimer().getLine(onSecond).getLineImage();
         }
@@ -310,7 +324,7 @@ public class TabTimerController extends TabController {
         setLockTextAreaFunctionality(true);
         timerTextArea.setText("");
 
-        if(getTimer().getLine(onSecond) != null) {
+        if (getTimer().getLine(onSecond) != null) {
             JSONObject textObject = getTimer().getLine(onSecond).getLineAsJson().getJSONObject(0);
             setFieldsIfNeeded(textObject);
 
@@ -344,7 +358,7 @@ public class TabTimerController extends TabController {
     }
 
     private void handelSecondsOverTotal() {
-        if(onSecond > totalSeconds) {
+        if (onSecond > totalSeconds) {
             warningLabel.setVisible(true);
             asisCenteredArc.setArcStrokeColor(Color.RED);
         } else {
@@ -367,6 +381,7 @@ public class TabTimerController extends TabController {
     private boolean isLockTextAreaFunctionality() {
         return lockTextAreaFunctionality;
     }
+
     private void setLockTextAreaFunctionality(boolean lockTextAreaFunctionality) {
         this.lockTextAreaFunctionality = lockTextAreaFunctionality;
     }
@@ -374,6 +389,7 @@ public class TabTimerController extends TabController {
     public Timer getTimer() {
         return timer;
     }
+
     public void setTimer(Timer timer) {
         this.timer = timer;
     }
