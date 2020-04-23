@@ -6,9 +6,14 @@ import com.asis.utilities.Alerts;
 import com.asis.utilities.AsisUtils;
 import com.asis.utilities.Config;
 import javafx.fxml.FXML;
+import javafx.fxml.FXMLLoader;
+import javafx.scene.Parent;
+import javafx.scene.Scene;
 import javafx.scene.control.ComboBox;
 import javafx.scene.control.TextField;
+import javafx.scene.image.Image;
 import javafx.stage.DirectoryChooser;
+import javafx.stage.Modality;
 import javafx.stage.Stage;
 import org.json.JSONArray;
 
@@ -104,6 +109,28 @@ public class DialogNewProjectController {
         }
     }
 
+    public static void newProjectWindow(boolean firstLoadCheck) {
+        try {
+            FXMLLoader fxmlLoader = new FXMLLoader(Alerts.class.getResource("/resources/fxml/dialog_new_project.fxml"));
+            Parent root = fxmlLoader.load();
+
+            DialogNewProjectController dialogNewProjectController = fxmlLoader.getController();
+            dialogNewProjectController.setFirstLoad(firstLoadCheck);
+
+            Stage stage = new Stage();
+            stage.initModality(Modality.APPLICATION_MODAL);
+            stage.getIcons().add(new Image(Alerts.class.getResourceAsStream("/resources/images/icon.png")));
+            stage.setTitle("New Project");
+            stage.setScene(new Scene(root, 600, 400));
+            stage.setOnCloseRequest(windowEvent -> {
+                if (firstLoadCheck) Controller.getInstance().quiteProgram();
+            });
+            stage.showAndWait();
+        } catch (IOException e) {
+            AsisUtils.errorDialogWindow(e);
+        }
+    }
+
     //Getters and setters
     public File getProjectPath() {
         return projectPath;
@@ -122,7 +149,5 @@ public class DialogNewProjectController {
     public ComboBox<String> getLanguagesDropDown() {
         return languagesDropDown;
     }
-    public void setLanguagesDropDown(ComboBox<String> languagesDropDown) {
-        this.languagesDropDown = languagesDropDown;
-    }
+
 }

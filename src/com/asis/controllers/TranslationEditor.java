@@ -6,23 +6,23 @@ import com.asis.joi.model.JOIPackage;
 import com.asis.joi.model.components.Line;
 import com.asis.joi.model.components.Scene;
 import com.asis.utilities.AsisUtils;
+import javafx.beans.property.ReadOnlyObjectWrapper;
 import javafx.collections.FXCollections;
-import javafx.collections.ListChangeListener;
 import javafx.collections.ObservableList;
 import javafx.fxml.FXML;
 import javafx.scene.control.TableColumn;
 import javafx.scene.control.TableView;
-import javafx.scene.control.cell.PropertyValueFactory;
 import javafx.scene.control.cell.TextFieldTableCell;
 import javafx.stage.Stage;
 import javafx.stage.WindowEvent;
 
 import java.io.IOException;
+import java.util.ArrayList;
 
 public class TranslationEditor {
 
     @FXML
-    private TableView<Line> tableView;
+    private TableView<TableRow> tableView;
 
     public void initialize() {
         initTable();
@@ -30,51 +30,85 @@ public class TranslationEditor {
     }
 
     private void initTable() {
+        tableView.getColumns().clear();
+        tableView.getItems().clear();
+        tableView.getSelectionModel().setCellSelectionEnabled(true);
+
         initColumns();
-    }
 
-    private void initColumns() {
-        for(String languageCode: JOIPackageManager.getInstance().getJoiPackageLanguages()) {
-            TableColumn<Line, String> columnLineText = new TableColumn<>(AsisUtils.getLanguageNameForCode(languageCode));
-            columnLineText.setCellValueFactory(new PropertyValueFactory<>("text"));
-
-            editableColumns(columnLineText);
-        }
-
-        JOIPackageManager.getInstance().getJoiPackageLanguages().addListener((ListChangeListener<String>) change -> {
-            change.next();
-            TableColumn<Line, String> columnLineText = new TableColumn<>(AsisUtils.getLanguageNameForCode(change.getAddedSubList().get(0)));
-            columnLineText.setCellValueFactory(new PropertyValueFactory<>("text"));
-
-            editableColumns(columnLineText);
-        });
-    }
-
-    private void editableColumns(TableColumn<Line, String> tableColumn) {
-        tableColumn.setCellFactory(TextFieldTableCell.forTableColumn());
-
-        tableColumn.setOnEditCommit(e-> {
-            e.getTableView().getItems().get(e.getTablePosition().getRow()).setText(e.getNewValue());
-            System.out.println("Table commit");
-        });
-        tableColumn.setOnEditCancel(e->System.out.println("Table cancel"));
-        tableColumn.setOnEditStart(e->System.out.println("Table start"));
-
-        tableView.getColumns().add(tableColumn);
         tableView.setEditable(true);
     }
 
-    private void loadData() {
-        ObservableList<Line> itemsList = FXCollections.observableArrayList();
+    private void initColumns() {
+        ObservableList<String> joiPackageLanguages = JOIPackageManager.getInstance().getJoiPackageLanguages();
+        for (int i = 0; i < joiPackageLanguages.size(); i++) {
+            String languageCode = joiPackageLanguages.get(i);
 
-        for(JOIPackage joiPackage: JOIPackageManager.getInstance().getJoiPackages()) {
-            for(Scene scene: joiPackage.getJoi().getSceneArrayList()) {
-                itemsList.addAll(scene.getLineArrayList());
-                if(scene.getTimer() != null) itemsList.addAll(scene.getTimer().getLineArrayList());
+            TableColumn<TableRow, String> columnLineText = new TableColumn<>(AsisUtils.getLanguageNameForCode(languageCode));
+            columnLineText.setSortable(false);
+
+            final int finalI = i;
+            columnLineText.setCellValueFactory(param -> new ReadOnlyObjectWrapper<>(param.getValue().getRowData().get(finalI).getText()));
+
+            editableColumns(columnLineText, i);
+        }
+    }
+
+    private void editableColumns(TableColumn<TableRow, String> tableColumn, final int dataIndex) {
+        tableColumn.setCellFactory(TextFieldTableCell.forTableColumn());
+
+        tableColumn.setOnEditCommit(e-> e.getTableView().getItems().get(e.getTablePosition().getRow()).getRowData().get(dataIndex).setText(e.getNewValue()));
+
+        tableView.getColumns().add(tableColumn);
+    }
+
+    private void loadData() {
+        ObservableList<TableRow> itemsList = FXCollections.observableArrayList();
+
+        ArrayList<String> unloadedLanguages = new ArrayList<>(JOIPackageManager.getInstance().getJoiPackageLanguages());
+        JOIPackageManager.getInstance().getJoiPackages().forEach(i -> unloadedLanguages.remove(i.getPackageLanguageCode()));
+        unloadedLanguages.forEach(i -> {
+            try {
+                JOIPackageManager.getInstance().getJOIPackage(i);
+            } catch (IOException e) {
+                e.printStackTrace();
+                AsisUtils.errorDialogWindow(e);
+            }
+        });
+
+        ArrayList<JOIPackage> joiPackages = JOIPackageManager.getInstance().getJoiPackages();
+        for (int i = 0; i < joiPackages.size(); i++) {
+            JOIPackage joiPackage = joiPackages.get(i);
+
+            int rowIndex = 0;
+            for (Scene scene : joiPackage.getJoi().getSceneArrayList()) {
+
+                for(Line line: scene.getLineArrayList()) {
+                    addLineToRow(itemsList, i, rowIndex, line);
+                    rowIndex++;
+                }
+
+                if (scene.getTimer() != null) {
+                    for(Line line: scene.getTimer().getLineArrayList()) {
+                        addLineToRow(itemsList, i, rowIndex, line);
+                        rowIndex++;
+                    }
+                }
             }
         }
 
         tableView.setItems(itemsList);
+    }
+
+    private void addLineToRow(ObservableList<TableRow> itemsList, int i, int rowIndex, Line line) {
+        TableRow tableRow;
+        if(itemsList.size()-1 >= rowIndex) {
+            tableRow = itemsList.get(rowIndex);
+            tableRow.getRowData().add(i, line);
+        } else {
+            tableRow = new TableRow();tableRow.getRowData().add(i, line);
+            itemsList.add(tableRow);
+        }
     }
 
     public void actionAddLanguage() {
@@ -85,6 +119,9 @@ public class TranslationEditor {
             joiPackage.setPackageLanguageCode(newLanguage);
 
             JOIPackageManager.getInstance().addJOIPackage(joiPackage);
+
+            //Add to table
+            initTable();
         } catch (IOException e) {
             AsisUtils.errorDialogWindow(e);
         }
@@ -95,4 +132,11 @@ public class TranslationEditor {
         stage.fireEvent(new WindowEvent(stage, WindowEvent.WINDOW_CLOSE_REQUEST));
     }
 
+    private static class TableRow {
+        ObservableList<Line> rowData = FXCollections.observableArrayList();
+
+        public ObservableList<Line> getRowData() {
+            return rowData;
+        }
+    }
 }

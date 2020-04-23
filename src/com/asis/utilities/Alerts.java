@@ -3,7 +3,6 @@ package com.asis.utilities;
 import com.asis.Main;
 import com.asis.controllers.dialogs.DialogConfirmation;
 import com.asis.controllers.dialogs.DialogMessageController;
-import com.asis.controllers.dialogs.DialogNewProjectController;
 import com.asis.controllers.dialogs.DialogUnsavedChanges;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
@@ -15,6 +14,7 @@ import javafx.stage.Stage;
 import java.io.IOException;
 
 public class Alerts {
+    //TODO these methods should be moved to there respective controllers
     private int unsavedChangesDialogButtonChoice;
     private boolean yesNoConfirmationChoice;
 
@@ -99,24 +99,5 @@ public class Alerts {
 
     public void setUnsavedChangesResult(int result) {
         this.unsavedChangesDialogButtonChoice = result;
-    }
-
-    public static void newProjectWindow(boolean firstLoadCheck) {
-        try {
-            FXMLLoader fxmlLoader = new FXMLLoader(Alerts.class.getResource("/resources/fxml/dialog_new_project.fxml"));
-            Parent root = fxmlLoader.load();
-
-            DialogNewProjectController dialogNewProjectController = fxmlLoader.getController();
-            dialogNewProjectController.setFirstLoad(firstLoadCheck);
-
-            Stage stage = new Stage();
-            stage.initModality(Modality.APPLICATION_MODAL);
-            stage.getIcons().add(new Image(Alerts.class.getResourceAsStream("/resources/images/icon.png")));
-            stage.setTitle("New Project");
-            stage.setScene(new Scene(root, 600, 400));
-            stage.showAndWait();
-        } catch (IOException e) {
-            AsisUtils.errorDialogWindow(e);
-        }
     }
 }

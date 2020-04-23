@@ -1,5 +1,6 @@
 package com.asis.controllers;
 
+import com.asis.controllers.dialogs.DialogNewProjectController;
 import com.asis.controllers.dialogs.DialogSceneTitleController;
 import com.asis.joi.JOIPackageManager;
 import com.asis.joi.model.JOIPackage;
@@ -194,6 +195,7 @@ public class Controller {
             });
 
         } catch (IOException e) {
+            e.printStackTrace();
             AsisUtils.errorDialogWindow(e);
         }
     }
@@ -381,7 +383,7 @@ public class Controller {
     }
 
     public void actionNewProject() {
-        Alerts.newProjectWindow(false);
+        DialogNewProjectController.newProjectWindow(false);
     }
 
     public void processNewProject(File newProjectFile, String newProjectName, String defaultProjectLanguageCode) {

@@ -1,6 +1,7 @@
 package com.asis;
 
 import com.asis.controllers.Controller;
+import com.asis.controllers.dialogs.DialogNewProjectController;
 import com.asis.utilities.Alerts;
 import javafx.application.Application;
 import javafx.fxml.FXMLLoader;
@@ -20,7 +21,7 @@ public class Main extends Application {
         primaryStage.show();
         primaryStage.setMaximized(true);
 
-        Alerts.newProjectWindow(true);
+        DialogNewProjectController.newProjectWindow(true);
 
         primaryStage.setOnCloseRequest(event -> {
             if (Controller.getInstance().changesHaveOccurred()) {

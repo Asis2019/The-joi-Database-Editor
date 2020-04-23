@@ -1,0 +1,79 @@
+.table-view {
+    -fx-background-color: rgb(43, 43, 43);
+}
+
+/*.table-view .column-header {
+    -fx-border-width: 1px;
+    -fx-border-color: rgb(45, 47, 48);
+    -fx-background-color: rgb(60, 63, 65);
+    -fx-background-radius: 0em;
+    -fx-border-radius: 0em;
+}
+
+.table-view .column-header-background {
+    -fx-border-width: 0px;
+    -fx-background-radius: 0em;
+    -fx-border-radius: 0em;
+}
+
+.table-view .column-header-background .filler {
+    -fx-background-color: rgb(60, 63, 65);
+}
+
+.table-view .column-header .label {
+    -fx-background-color: rgb(60, 63, 65);
+    -fx-text-fill: white;
+}*/
+
+.table-view .table-cell {
+    -fx-text-fill: white;
+    -fx-border-color: rgb(45, 47, 48);
+    -fx-border-width: 1px;
+    -fx-border-radius: 0em;
+}
+
+.table-view .table-row-cell:selected {
+    -fx-background-color: rgb(75, 110, 175);
+    -fx-alignment: center-left;
+}
+
+.table-row-cell {
+    -fx-background-color: rgb(60, 63, 65);
+}
+
+
+/*------------------------SCROLLBAR CODE-----------------------------*/
+.table-view > .virtual-flow > .scroll-bar:vertical,
+.table-view > .virtual-flow > .scroll-bar:vertical > .track,
+.table-view > .virtual-flow > .scroll-bar:vertical > .track-background,
+.table-view > .virtual-flow > .scroll-bar:horizontal,
+.table-view > .virtual-flow > .scroll-bar:horizontal > .track,
+.table-view > .virtual-flow > .scroll-bar:horizontal > .track-background {
+    -fx-background-color: transparent;
+}
+
+/* The increment and decrement button CSS class of scrollbar */
+.table-view .increment-button ,.table-view .decrement-button {
+    -fx-background-color: transparent;
+    -fx-background-radius: 0em;
+    -fx-padding: 0;
+    -fx-shape: "";
+
+}
+
+/* The main scrollbar **track** CSS class  */
+.table-view .scroll-bar:horizontal .track,
+.table-view .scroll-bar:vertical .track{
+    -fx-background-color: rgb(60, 63, 65);
+    -fx-border-color: transparent;
+
+    -fx-background-radius: 0em;
+}
+
+/* The main scrollbar **thumb** CSS class which we drag every time (movable) */
+.table-view .scroll-bar:horizontal .thumb,
+.table-view .scroll-bar:vertical .thumb {
+    -fx-background-color: rgb(78, 78, 78);
+    -fx-background-radius: 0em;
+
+}

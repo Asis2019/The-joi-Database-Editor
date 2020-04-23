@@ -5,6 +5,7 @@ import com.asis.joi.JOIPackageManager;
 import com.asis.utilities.Alerts;
 import com.asis.utilities.AsisUtils;
 import com.asis.utilities.Config;
+import javafx.event.Event;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
@@ -35,6 +36,8 @@ public class DialogRequestLanguage {
                 }
             }
         }
+
+        languagesDropDown.getSelectionModel().select(0);
     }
 
     public void actionContinue() {
@@ -57,6 +60,7 @@ public class DialogRequestLanguage {
             stage.getIcons().add(new Image(Main.class.getResourceAsStream("/resources/images/icon.png")));
             stage.setScene(new Scene(root));
             stage.setTitle("Chose project language");
+            stage.setOnCloseRequest(Event::consume);
             stage.showAndWait();
         } catch (IOException e) {
             AsisUtils.errorDialogWindow(e);
