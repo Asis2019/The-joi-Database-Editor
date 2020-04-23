@@ -18,6 +18,7 @@ import org.json.JSONArray;
 
 import java.io.IOException;
 
+//TODO requires a way for the calling class to controll the languages that display in the dropdown
 public class DialogRequestLanguage {
     @FXML
     private ComboBox<String> languagesDropDown;

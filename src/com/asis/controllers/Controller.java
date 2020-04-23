@@ -190,9 +190,7 @@ public class Controller {
             stage.setUserData("translationEditor");
             stage.setScene(new Scene(root, 1280, 720));
             StageManager.getInstance().openStage(stage);
-            stage.setOnCloseRequest(event -> {
-                StageManager.getInstance().closeStage(stage);
-            });
+            stage.setOnCloseRequest(event -> StageManager.getInstance().closeStage(stage));
 
         } catch (IOException e) {
             e.printStackTrace();

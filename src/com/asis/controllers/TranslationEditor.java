@@ -5,6 +5,7 @@ import com.asis.joi.JOIPackageManager;
 import com.asis.joi.model.JOIPackage;
 import com.asis.joi.model.components.Line;
 import com.asis.joi.model.components.Scene;
+import com.asis.utilities.Alerts;
 import com.asis.utilities.AsisUtils;
 import javafx.beans.property.ReadOnlyObjectWrapper;
 import javafx.collections.FXCollections;
@@ -46,9 +47,19 @@ public class TranslationEditor {
 
             TableColumn<TableRow, String> columnLineText = new TableColumn<>(AsisUtils.getLanguageNameForCode(languageCode));
             columnLineText.setSortable(false);
+            columnLineText.setPrefWidth(300d);
 
             final int finalI = i;
-            columnLineText.setCellValueFactory(param -> new ReadOnlyObjectWrapper<>(param.getValue().getRowData().get(finalI).getText()));
+            columnLineText.setCellValueFactory(param -> {
+                ReadOnlyObjectWrapper<String> readOnlyObjectWrapper;
+                if(param.getValue().getRowData().size()-1 >= finalI) {
+                    readOnlyObjectWrapper = new ReadOnlyObjectWrapper<>(param.getValue().getRowData().get(finalI).getText());
+                } else {
+                    readOnlyObjectWrapper = new ReadOnlyObjectWrapper<>();
+                }
+
+                return readOnlyObjectWrapper;
+            });
 
             editableColumns(columnLineText, i);
         }
@@ -57,7 +68,16 @@ public class TranslationEditor {
     private void editableColumns(TableColumn<TableRow, String> tableColumn, final int dataIndex) {
         tableColumn.setCellFactory(TextFieldTableCell.forTableColumn());
 
-        tableColumn.setOnEditCommit(e-> e.getTableView().getItems().get(e.getTablePosition().getRow()).getRowData().get(dataIndex).setText(e.getNewValue()));
+        tableColumn.setOnEditCommit(e-> {
+            TableRow tableRow = e.getTableView().getItems().get(e.getTablePosition().getRow());
+            if(tableRow.getRowData().size()-1 >= dataIndex) {
+                tableRow.getRowData().get(dataIndex).setText(e.getNewValue());
+            } else {
+                Alerts.messageDialog("Error", "The field was unable to update, because the line/scene data structure is missing in the joi_text file." +
+                        " Please make sure all joi_text files have the same structure before attempting to translate.\n");
+                e.consume();
+            }
+        });
 
         tableView.getColumns().add(tableColumn);
     }
@@ -115,6 +135,10 @@ public class TranslationEditor {
         try {
             String newLanguage = DialogRequestLanguage.requestLanguage(true);
 
+            /*
+            TODO fix bug when package exists only in memory and not on drive. Cloning the package should be memory
+            depended not file depended.
+            */
             JOIPackage joiPackage = JOIPackageManager.getInstance().getJOIPackage(Controller.getInstance().getJoiPackage().getPackageLanguageCode());
             joiPackage.setPackageLanguageCode(newLanguage);
 
@@ -123,6 +147,7 @@ public class TranslationEditor {
             //Add to table
             initTable();
         } catch (IOException e) {
+            e.printStackTrace();
             AsisUtils.errorDialogWindow(e);
         }
     }
