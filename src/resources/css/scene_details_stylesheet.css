@@ -28,14 +28,18 @@
 }
 
 .asis-progress-label {
-    -fx-text-fill: white;
+    timer-fill-color: white;
+    timer-outline-color: white;
+    timer-stroke-width: 0;
+
+    -fx-text-fill: timer-fill-color;
     -fx-font-family: "Segoe UI", Helvetica, Arial, sans-serif;
     -fx-font-size: 40px;
 }
 
 .asis-progress-label .text {
-    -fx-stroke: black;
-    -fx-stroke-width: 1;
+    -fx-stroke: timer-outline-color;
+    -fx-stroke-width: timer-stroke-width;
 }
 
 .tool-bar {

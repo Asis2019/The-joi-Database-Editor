@@ -28,17 +28,17 @@ public class TabTimerController extends TabController {
     private int onSecond = 0;
     private boolean lockTextAreaFunctionality = false;
 
-    private ImageViewPane viewPane = new ImageViewPane();
-    private AsisCenteredArc asisCenteredArc = new AsisCenteredArc();
+    private final ImageViewPane viewPane = new ImageViewPane();
+    private final AsisCenteredArc asisCenteredArc = new AsisCenteredArc();
 
     private Timer timer;
 
     @FXML
     private TextField goToSecondsTextField, totalTimerField, textFieldBeatPitch, textFieldBeatSpeed;
     @FXML
-    private ColorPicker textColorPicker, textOutlineColorPicker;
+    private ColorPicker textColorPicker, textOutlineColorPicker, timerTextColorPicker, timerTextOutlineColorPicker;
     @FXML
-    private VBox timerIconControllerBox;
+    private VBox timerIconControllerBox, timerTextColorContainer;
     @FXML
     private StackPane timerStackPane;
     @FXML
@@ -169,17 +169,43 @@ public class TabTimerController extends TabController {
             if (getTimer().getLine(onSecond) != null) getTimer().getLine(onSecond).setFillColor(fillColor);
             updateObjectTree();
         });
+
+        //Timer text color
+        timerTextColorPicker.valueProperty().addListener((observableValue, color, t1) -> {
+            //outlineColor = removeLastTwoLetters("#" + colorToHex(t1));
+            //setNodeColorStyle(timerTextArea, fillColor, outlineColor);
+            setTimerTextColors();
+        });
+
+        timerTextOutlineColorPicker.valueProperty().addListener((observableValue, color, t1) -> {
+            //fillColor = removeLastTwoLetters("#" + colorToHex(t1));
+            //setNodeColorStyle(timerTextArea, fillColor, outlineColor);
+            setTimerTextColors();
+        });
+    }
+
+    private void setTimerTextColors(String... optionalColorOverride) {
+        if(optionalColorOverride.length == 0) {
+            getTimer().setTimerTextColor(removeLastTwoLetters("#" + colorToHex(timerTextColorPicker.getValue())));
+            getTimer().setTimerTextOutlineColor(removeLastTwoLetters("#" + colorToHex(timerTextOutlineColorPicker.getValue())));
+            asisCenteredArc.setLabelColor(getTimer().getTimerTextColor(), getTimer().getTimerTextOutlineColor(), 1);
+            updateObjectTree();
+        } else if(optionalColorOverride.length == 2) {
+            asisCenteredArc.setLabelColor(optionalColorOverride[0], optionalColorOverride[1], 0);
+        }
     }
 
     private void addCheckBoxFieldListeners() {
         checkBoxHideTime.selectedProperty().addListener((observableValue, oldValue, newValue) -> {
             getTimer().setTimeHidden(newValue);
             asisCenteredArc.hideProgress(newValue);
+            updateObjectTree();
         });
 
         checkBoxHideTimer.selectedProperty().addListener((observableValue, oldValue, newValue) -> {
             getTimer().setTimerHidden(newValue);
             asisCenteredArc.getArcPane().setVisible(!newValue);
+            updateObjectTree();
         });
     }
 
@@ -374,6 +400,18 @@ public class TabTimerController extends TabController {
 
     public void actionStopBeat() {
         setLineStopCheckBoxState(getTimer().getLine(onSecond), checkBoxStopBeat);
+        updateObjectTree();
+    }
+
+    public void actionToggleTimerTextColorPickers() {
+        timerTextColorContainer.setDisable(!timerTextColorContainer.isDisabled());
+        if(timerTextColorContainer.isDisabled()) {
+            getTimer().setTimerTextColor(null);
+            getTimer().setTimerTextOutlineColor(null);
+            setTimerTextColors("#ffffff", "#ffffff");
+        } else {
+            setTimerTextColors();
+        }
         updateObjectTree();
     }
 

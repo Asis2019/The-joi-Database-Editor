@@ -10,14 +10,15 @@ import java.util.ArrayList;
 public class Timer implements JOISystemInterface, FirstLevelEffect {
 
     private int totalTime;
-    private ArrayList<Line> lineArrayList = new ArrayList<>();
+    private final ArrayList<Line> lineArrayList = new ArrayList<>();
     private boolean timerHidden=false, timeHidden=false;
+    private String timerTextColor, timerTextOutlineColor;
 
     public void addNewLine(int lineNumber) {
         getLineArrayList().add(new Line(lineNumber));
     }
-    public boolean removeLine(int lineNumber) {
-        return getLineArrayList().remove(getLine(lineNumber));
+    public void removeLine(int lineNumber) {
+        getLineArrayList().remove(getLine(lineNumber));
     }
 
     public JSONArray getTimerAsJson() {
@@ -28,6 +29,10 @@ public class Timer implements JOISystemInterface, FirstLevelEffect {
         timerObject.put("totalTime", getTotalTime());
         if(isTimeHidden()) timerObject.put("timeHidden", true);
         if(isTimerHidden()) timerObject.put("timerHidden", true);
+        if(getTimerTextColor() != null && getTimerTextOutlineColor() != null) {
+            timerObject.put("timerTextColor", getTimerTextColor());
+            timerObject.put("timerTextOutlineColor", getTimerTextOutlineColor());
+        }
 
         for(Line line: getLineArrayList()) {
             timerObject.put("line"+line.getLineNumber(), line.getLineAsJson());
@@ -57,6 +62,12 @@ public class Timer implements JOISystemInterface, FirstLevelEffect {
         //Set timerHidden
         if (jsonObject.has("timerHidden")) setTimerHidden(true);
 
+        //Set timerTextColor
+        if (jsonObject.has("timerTextColor")) setTimerTextColor(jsonObject.getString("timerTextColor"));
+
+        //Set timerTextOutlineColor
+        if (jsonObject.has("timerTextOutlineColor")) setTimerTextOutlineColor(jsonObject.getString("timerTextOutlineColor"));
+
         //set lines
         for(int i=0; i<jsonObject.names().length(); i++) {
             String workingKey = jsonObject.names().getString(i);
@@ -74,24 +85,25 @@ public class Timer implements JOISystemInterface, FirstLevelEffect {
     }
 
     @Override
-    public boolean equals(Object object) {
-        if (this == object) return true;
-        if (!(object instanceof Timer)) return false;
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (!(o instanceof Timer)) return false;
 
-        Timer timer = (Timer) object;
+        Timer timer = (Timer) o;
 
         if (getTotalTime() != timer.getTotalTime()) return false;
         if (isTimerHidden() != timer.isTimerHidden()) return false;
         if (isTimeHidden() != timer.isTimeHidden()) return false;
-        return getLineArrayList().equals(timer.getLineArrayList());
+        if (getLineArrayList() != null ? !getLineArrayList().equals(timer.getLineArrayList()) : timer.getLineArrayList() != null)
+            return false;
+        if (getTimerTextColor() != null ? !getTimerTextColor().equals(timer.getTimerTextColor()) : timer.getTimerTextColor() != null)
+            return false;
+        return getTimerTextOutlineColor() != null ? getTimerTextOutlineColor().equals(timer.getTimerTextOutlineColor()) : timer.getTimerTextOutlineColor() == null;
     }
 
     //Getters and Setters
     public ArrayList<Line> getLineArrayList() {
         return lineArrayList;
-    }
-    public void setLineArrayList(ArrayList<Line> lineArrayList) {
-        this.lineArrayList = lineArrayList;
     }
 
     public int getTotalTime() {
@@ -113,5 +125,19 @@ public class Timer implements JOISystemInterface, FirstLevelEffect {
     }
     public void setTimeHidden(boolean timeHidden) {
         this.timeHidden = timeHidden;
+    }
+
+    public String getTimerTextColor() {
+        return timerTextColor;
+    }
+    public void setTimerTextColor(String timerTextColor) {
+        this.timerTextColor = timerTextColor;
+    }
+
+    public String getTimerTextOutlineColor() {
+        return timerTextOutlineColor;
+    }
+    public void setTimerTextOutlineColor(String timerTextOutlineColor) {
+        this.timerTextOutlineColor = timerTextOutlineColor;
     }
 }
