@@ -8,7 +8,7 @@
 <?import java.net.URL?>
 <ScrollPane id="darkThemeBackground" fitToWidth="true" hbarPolicy="NEVER" pannable="true" prefViewportHeight="150.0"
             prefViewportWidth="400.0" xmlns:fx="http://javafx.com/fxml/1" xmlns="http://javafx.com/javafx/8"
-            fx:controller="com.asis.controllers.dialogs.DialogMessageController">
+            fx:controller="com.asis.controllers.dialogs.DialogMessage">
    <stylesheets>
       <URL value="@../../resources/css/main_stylesheet.css"/>
       <URL value="@../../resources/css/meta_data_form.css"/>

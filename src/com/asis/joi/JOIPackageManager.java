@@ -78,6 +78,30 @@ public class JOIPackageManager {
         }
     }
 
+    public JOIPackage cloneJOIPackage(JOIPackage joiPackage) throws IOException {
+        //Functions by saving and loading from a temp directory
+        //Will be changed to deep memory cloning once model is improved
+        File temporaryDirectory = new File(getJoiPackageDirectory() + "/tmp");
+        if (temporaryDirectory.isDirectory()) AsisUtils.deleteFolder(temporaryDirectory);
+        if (temporaryDirectory.mkdir()) {
+
+            joiPackage.exportPackageAsFiles(temporaryDirectory);
+
+            JOIPackage clonedPackage = new JOIPackage();
+            clonedPackage.setPackageLanguageCode(joiPackage.getPackageLanguageCode());
+            clonedPackage.setJoi(importJoiFromDirectory(joiPackage.getPackageLanguageCode(), temporaryDirectory));
+            clonedPackage.setMetaData(importMetaDataFromDirectory(joiPackage.getPackageLanguageCode(), temporaryDirectory));
+
+            deleteFolder(temporaryDirectory);
+
+            return clonedPackage;
+        }
+
+        deleteFolder(temporaryDirectory);
+
+        return null;
+    }
+
     public void addJOIPackage(JOIPackage joiPackage) {
         getJoiPackages().add(joiPackage);
         if(!getJoiPackageLanguages().contains(joiPackage.getPackageLanguageCode()))
@@ -86,8 +110,20 @@ public class JOIPackageManager {
 
     public JOIPackage getJOIPackage() throws IOException {
         String languageCode;
-        if (getJoiPackageLanguages().size() > 1)
-            languageCode = DialogRequestLanguage.requestLanguage(false);
+        if (getJoiPackageLanguages().size() > 1) {
+            ArrayList<String> languages = new ArrayList<>();
+            Object data = Config.get("LANGUAGES");
+            if(data instanceof JSONArray) {
+                for(int i=0; i<((JSONArray) data).length(); i++) {
+                    String languageKey = ((JSONArray) data).getJSONObject(i).getString("file_code");
+                    if(JOIPackageManager.getInstance().getJoiPackageLanguages().contains(languageKey))
+                        languages.add(languageKey);
+                }
+            }
+
+            languageCode = DialogRequestLanguage.requestLanguage(languages);
+            if(languageCode == null) return null;
+        }
         else languageCode = getJoiPackageLanguages().get(0);
 
         return getJOIPackage(languageCode);
@@ -117,33 +153,41 @@ public class JOIPackageManager {
     }
 
     private JOI importJoiFromDirectory(String languageCode) throws IOException {
+        return importJoiFromDirectory(languageCode, getJoiPackageDirectory());
+    }
+
+    private MetaData importMetaDataFromDirectory(String languageCode) throws IOException {
+        return importMetaDataFromDirectory(languageCode, getJoiPackageDirectory());
+    }
+
+    private JOI importJoiFromDirectory(String languageCode, File joiPackageDirectory) throws IOException {
         //Initiate loading for joi
         JOI joi = new JOI();
-        File joiFile = new File(getJoiPackageDirectory(), String.format("joi_text_%s.json", languageCode));
+        File joiFile = new File(joiPackageDirectory, String.format("joi_text_%s.json", languageCode));
 
         JSONObject jsonObject = AsisUtils.readJsonFromFile(joiFile);
         if (jsonObject != null)
-            joi.setDataFromJson(jsonObject, getJoiPackageDirectory());
+            joi.setDataFromJson(jsonObject, joiPackageDirectory);
         else
             AsisUtils.errorDialogWindow(new NullPointerException(String.format("Null value was received when reading joi from joi_text_%s.json", languageCode)));
 
         return joi;
     }
 
-    private MetaData importMetaDataFromDirectory(String languageCode) throws IOException {
+    private MetaData importMetaDataFromDirectory(String languageCode, File joiPackageDirectory) throws IOException {
         //Initiate loading for metaData
         MetaData metaData = new MetaData();
-        File metaDataFile = new File(getJoiPackageDirectory(), String.format("info_%s.json", languageCode));
+        File metaDataFile = new File(joiPackageDirectory, String.format("info_%s.json", languageCode));
 
         if (metaDataFile.exists()) {
             //Set meta data icon
-            File metaDataIcon = new File(getJoiPackageDirectory(), "joi_icon.png");
+            File metaDataIcon = new File(joiPackageDirectory, "joi_icon.png");
             if (metaDataIcon.exists()) metaData.setJoiIcon(metaDataIcon);
 
             //Tell metadata to load variables from json
             JSONObject jsonObject = AsisUtils.readJsonFromFile(metaDataFile);
             if (jsonObject != null)
-                metaData.setDataFromJson(jsonObject.getJSONArray("JOI METADATA").getJSONObject(0), getJoiPackageDirectory());
+                metaData.setDataFromJson(jsonObject.getJSONArray("JOI METADATA").getJSONObject(0), joiPackageDirectory);
             else
                 AsisUtils.errorDialogWindow(new NullPointerException(String.format("Null value was received when reading metadata from info_%s.json", languageCode)));
 

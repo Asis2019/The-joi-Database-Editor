@@ -15,7 +15,7 @@ import javafx.stage.Stage;
 import java.io.IOException;
 
 
-public class DialogSceneTitleController {
+public class DialogSceneTitle {
     @FXML private TextField sceneTitleTextField;
     private static String sceneTitle;
 
@@ -36,7 +36,7 @@ public class DialogSceneTitleController {
             FXMLLoader fxmlLoader = new FXMLLoader(Alerts.class.getResource("/resources/fxml/dialog_set_scene_title.fxml"));
             Parent root = fxmlLoader.load();
 
-            DialogSceneTitleController controller = fxmlLoader.getController();
+            DialogSceneTitle controller = fxmlLoader.getController();
             controller.inflate(defaultTitle);
             Scene main_scene = new Scene(root);
 

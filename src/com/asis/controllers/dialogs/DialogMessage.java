@@ -3,7 +3,7 @@ package com.asis.controllers.dialogs;
 import javafx.fxml.FXML;
 import javafx.scene.control.Label;
 
-public class DialogMessageController {
+public class DialogMessage {
 
     @FXML private Label messageLabel;
 

@@ -7,6 +7,7 @@ import com.asis.joi.model.components.Line;
 import com.asis.joi.model.components.Scene;
 import com.asis.utilities.Alerts;
 import com.asis.utilities.AsisUtils;
+import com.asis.utilities.Config;
 import javafx.beans.property.ReadOnlyObjectWrapper;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
@@ -16,9 +17,11 @@ import javafx.scene.control.TableView;
 import javafx.scene.control.cell.TextFieldTableCell;
 import javafx.stage.Stage;
 import javafx.stage.WindowEvent;
+import org.json.JSONArray;
 
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Comparator;
 
 public class TranslationEditor {
 
@@ -97,6 +100,7 @@ public class TranslationEditor {
         });
 
         ArrayList<JOIPackage> joiPackages = JOIPackageManager.getInstance().getJoiPackages();
+        joiPackages.sort(Comparator.comparing(JOIPackage::getPackageLanguageCode));
         for (int i = 0; i < joiPackages.size(); i++) {
             JOIPackage joiPackage = joiPackages.get(i);
 
@@ -133,19 +137,27 @@ public class TranslationEditor {
 
     public void actionAddLanguage() {
         try {
-            String newLanguage = DialogRequestLanguage.requestLanguage(true);
+            ArrayList<String> languages = new ArrayList<>();
+            Object data = Config.get("LANGUAGES");
+            if(data instanceof JSONArray) {
+                for(int i=0; i<((JSONArray) data).length(); i++) {
+                    String languageCode = ((JSONArray) data).getJSONObject(i).getString("file_code");
+                    if(!JOIPackageManager.getInstance().getJoiPackageLanguages().contains(languageCode))
+                        languages.add(languageCode);
+                }
+            }
 
-            /*
-            TODO fix bug when package exists only in memory and not on drive. Cloning the package should be memory
-            depended not file depended.
-            */
-            JOIPackage joiPackage = JOIPackageManager.getInstance().getJOIPackage(Controller.getInstance().getJoiPackage().getPackageLanguageCode());
+            String newLanguage = DialogRequestLanguage.requestLanguage(languages);
+            if(newLanguage == null) return;
+
+            JOIPackage joiPackage = JOIPackageManager.getInstance().cloneJOIPackage(Controller.getInstance().getJoiPackage());
             joiPackage.setPackageLanguageCode(newLanguage);
 
             JOIPackageManager.getInstance().addJOIPackage(joiPackage);
 
             //Add to table
             initTable();
+            loadData();
         } catch (IOException e) {
             e.printStackTrace();
             AsisUtils.errorDialogWindow(e);

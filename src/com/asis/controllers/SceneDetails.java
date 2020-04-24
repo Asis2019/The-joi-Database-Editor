@@ -1,5 +1,6 @@
 package com.asis.controllers;
 
+import com.asis.controllers.dialogs.DialogConfirmation;
 import com.asis.controllers.tabs.*;
 import com.asis.joi.model.components.Scene;
 import com.asis.joi.model.components.Timer;
@@ -146,7 +147,7 @@ public class SceneDetails {
 
             case "Timer":
                 if(!getTabTimerController().getTimer().equals(new Timer())) {
-                    if (!new Alerts().confirmationDialog("Delete Timer", "Are you sure you want to remove the timer?")) {
+                    if (!DialogConfirmation.show("Delete Timer", "Are you sure you want to remove the timer?")) {
                         event.consume();
                         return;
                     }
@@ -156,7 +157,7 @@ public class SceneDetails {
 
             case "Transition":
                 if(!getTabTransitionController().getTransition().equals(new Transition())) {
-                    if (!new Alerts().confirmationDialog("Delete Transition", "Are you sure you want to remove the transition?")) {
+                    if (!DialogConfirmation.show("Delete Transition", "Are you sure you want to remove the transition?")) {
                         event.consume();
                         return;
                     }
@@ -166,7 +167,7 @@ public class SceneDetails {
 
             case "Dialog":
                 if(!getTabDialogOptionController().getDialog().equals(new Dialog())) {
-                    if (!new Alerts().confirmationDialog("Delete Dialogs", "Are you sure you want to remove dialogs?")) {
+                    if (!DialogConfirmation.show("Delete Dialogs", "Are you sure you want to remove dialogs?")) {
                         event.consume();
                         return;
                     }
@@ -252,9 +253,6 @@ public class SceneDetails {
 
     private TabPane getEffectTabs() {
         return effectTabs;
-    }
-    private void setEffectTabs(TabPane effectTabs) {
-        this.effectTabs = effectTabs;
     }
 
     private TabNormalOperationController getTabNormalOperationController() {

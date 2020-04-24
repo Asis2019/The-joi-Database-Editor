@@ -1,7 +1,8 @@
 package com.asis.controllers;
 
-import com.asis.controllers.dialogs.DialogNewProjectController;
-import com.asis.controllers.dialogs.DialogSceneTitleController;
+import com.asis.controllers.dialogs.DialogConfirmation;
+import com.asis.controllers.dialogs.DialogNewProject;
+import com.asis.controllers.dialogs.DialogSceneTitle;
 import com.asis.joi.JOIPackageManager;
 import com.asis.joi.model.JOIPackage;
 import com.asis.joi.model.MetaData;
@@ -48,11 +49,15 @@ public class Controller {
     private final ContextMenu mainContextMenu = new ContextMenu();
     private final ContextMenu sceneNodeContextMenu = new ContextMenu();
 
-    @FXML private AnchorPane anchorPane;
-    @FXML private ScrollPane scrollPane;
+    @FXML
+    private AnchorPane anchorPane;
+    @FXML
+    private ScrollPane scrollPane;
 
-    @FXML public MenuBar mainMenuBar;
-    @FXML public ToolBar toolBar;
+    @FXML
+    public MenuBar mainMenuBar;
+    @FXML
+    public ToolBar toolBar;
 
     public void initialize() {
         instance = this;
@@ -84,7 +89,7 @@ public class Controller {
 
         editNameItem.setOnAction(actionEvent -> {
             if (selectedScene != null) {
-                String title = DialogSceneTitleController.addNewSceneDialog(selectedScene.getTitle());
+                String title = DialogSceneTitle.addNewSceneDialog(selectedScene.getTitle());
 
                 getJoiPackage().getJoi().getScene(selectedScene.getSceneId()).setSceneTitle(title);
                 selectedScene.setTitle(title);
@@ -164,7 +169,7 @@ public class Controller {
             StageManager.getInstance().openStage(stage);
             stage.setOnCloseRequest(event -> {
                 if (metaDataForm.changesHaveOccurred()) {
-                    if (!new Alerts().confirmationDialog("Warning", "You have unsaved data, are you sure you want to close?")) {
+                    if (!DialogConfirmation.show("Warning", "You have unsaved data, are you sure you want to close?")) {
                         event.consume();
                         return;
                     }
@@ -315,7 +320,7 @@ public class Controller {
         if (isFirstScene) {
             title = defaultTitle;
         } else {
-            title = DialogSceneTitleController.addNewSceneDialog(defaultTitle);
+            title = DialogSceneTitle.addNewSceneDialog(defaultTitle);
         }
 
         addScene(10, 0, title, sceneId - 1, false);
@@ -381,7 +386,7 @@ public class Controller {
     }
 
     public void actionNewProject() {
-        DialogNewProjectController.newProjectWindow(false);
+        DialogNewProject.newProjectWindow(false);
     }
 
     public void processNewProject(File newProjectFile, String newProjectName, String defaultProjectLanguageCode) {
@@ -394,7 +399,7 @@ public class Controller {
     private void resetJoiPackage(JOIPackage joiPackage) {
         setJoiPackage(joiPackage);
 
-        if(sceneNodeMainController == null) {
+        if (sceneNodeMainController == null) {
             sceneNodeMainController = new SceneNodeMainController(getJoiPackage());
             sceneNodeMainController.setPane(anchorPane);
             sceneNodeMainController.setScrollPane(scrollPane);
@@ -438,26 +443,25 @@ public class Controller {
             JOIPackageManager.getInstance().clear();
             JOIPackageManager.getInstance().setJoiPackageDirectory(file);
             JOIPackage newJoiPackage = JOIPackageManager.getInstance().getJOIPackage();
+            if(newJoiPackage == null) return false;
 
             //Load joi
             try {
-                    //JOI folder was imported successfully
+                //Reset old variables
+                resetJoiPackage(newJoiPackage);
 
-                    //Reset old variables
-                    resetJoiPackage(newJoiPackage);
+                //Create scene nodes
+                for (com.asis.joi.model.components.Scene scene : getJoiPackage().getJoi().getSceneArrayList()) {
+                    addScene(scene.getLayoutXPosition(), scene.getLayoutYPosition(), scene.getSceneTitle(), scene.getSceneId(), true);
+                }
 
-                    //Create scene nodes
-                    for (com.asis.joi.model.components.Scene scene : getJoiPackage().getJoi().getSceneArrayList()) {
-                        addScene(scene.getLayoutXPosition(), scene.getLayoutYPosition(), scene.getSceneTitle(), scene.getSceneId(), true);
-                    }
+                //Create connections
+                for (com.asis.joi.model.components.Scene scene : getJoiPackage().getJoi().getSceneArrayList()) {
+                    final AsisConnectionButton output = getSceneNodeWithId(getSceneNodes(), scene.getSceneId()).getOutputButtons().get(0);
+                    createConnections(scene.getGotoScene(), output);
 
-                    //Create connections
-                    for (com.asis.joi.model.components.Scene scene : getJoiPackage().getJoi().getSceneArrayList()) {
-                        final AsisConnectionButton output = getSceneNodeWithId(getSceneNodes(), scene.getSceneId()).getOutputButtons().get(0);
-                        createConnections(scene.getGotoScene(), output);
-
-                        createConnectionsForDialogOutputs(scene);
-                    }
+                    createConnectionsForDialogOutputs(scene);
+                }
 
                 //Loading completed successfully
                 return true;

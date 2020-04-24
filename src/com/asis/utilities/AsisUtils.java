@@ -2,8 +2,6 @@ package com.asis.utilities;
 
 import com.asis.controllers.Controller;
 import com.asis.joi.JOIPackageManager;
-import javafx.scene.Node;
-import javafx.scene.Parent;
 import javafx.scene.paint.Color;
 import javafx.stage.FileChooser;
 import org.json.JSONArray;
@@ -39,25 +37,6 @@ public class AsisUtils {
         Alerts.messageDialog("Error", "Oh no an error! Send it to Asis so he can feel bad.\n"+e.getMessage());
     }
 
-    public static ArrayList<Node> getAllNodes(Parent root) {
-        ArrayList<Node> nodes = new ArrayList<>();
-        addAllDescendants(root, nodes);
-        return nodes;
-    }
-
-    private static void addAllDescendants(Parent parent, ArrayList<Node> nodes) {
-        for (Node node : parent.getChildrenUnmodifiable()) {
-            nodes.add(node);
-            if (node instanceof Parent)
-                addAllDescendants((Parent)node, nodes);
-        }
-    }
-
-    public static String getFileExtension(File file) {
-        String fileName = file.getName();
-        return fileName.substring(fileName.lastIndexOf(".") + 1, file.getName().length());
-    }
-
     public static double clamp(double val, double min, double max) {
         return Math.max(min, Math.min(max, val));
     }
@@ -82,6 +61,7 @@ public class AsisUtils {
             String text = bufferedReader.lines().collect(Collectors.joining(System.lineSeparator()));
             return new JSONObject(text);
         } catch (JSONException e) {
+            e.printStackTrace();
             errorDialogWindow(e);
         }
         return null;
@@ -125,6 +105,7 @@ public class AsisUtils {
             Files.delete(folder.toPath());
             return true;
         } catch (IOException e) {
+            e.printStackTrace();
             AsisUtils.errorDialogWindow(e);
         }
 

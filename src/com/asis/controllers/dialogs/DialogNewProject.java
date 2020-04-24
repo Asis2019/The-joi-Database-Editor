@@ -23,7 +23,7 @@ import java.io.IOException;
 import static com.asis.utilities.AsisUtils.getLanguageCodeForName;
 
 
-public class DialogNewProjectController {
+public class DialogNewProject {
 
     @FXML private TextField projectNameTextField, projectDirectoryTextField;
 
@@ -114,8 +114,8 @@ public class DialogNewProjectController {
             FXMLLoader fxmlLoader = new FXMLLoader(Alerts.class.getResource("/resources/fxml/dialog_new_project.fxml"));
             Parent root = fxmlLoader.load();
 
-            DialogNewProjectController dialogNewProjectController = fxmlLoader.getController();
-            dialogNewProjectController.setFirstLoad(firstLoadCheck);
+            DialogNewProject dialogNewProject = fxmlLoader.getController();
+            dialogNewProject.setFirstLoad(firstLoadCheck);
 
             Stage stage = new Stage();
             stage.initModality(Modality.APPLICATION_MODAL);
