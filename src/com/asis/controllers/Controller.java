@@ -198,7 +198,6 @@ public class Controller {
             stage.setOnCloseRequest(event -> StageManager.getInstance().closeStage(stage));
 
         } catch (IOException e) {
-            e.printStackTrace();
             AsisUtils.errorDialogWindow(e);
         }
     }

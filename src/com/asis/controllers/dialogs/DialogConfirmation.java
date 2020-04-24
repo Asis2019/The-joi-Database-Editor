@@ -56,7 +56,6 @@ public class DialogConfirmation {
             stage.setTitle(title);
             stage.showAndWait();
         } catch (IOException e) {
-            e.printStackTrace();
             AsisUtils.errorDialogWindow(e);
         }
 

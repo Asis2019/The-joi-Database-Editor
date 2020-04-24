@@ -34,6 +34,7 @@ public class AsisUtils {
     }
 
     public static void errorDialogWindow(Exception e) {
+        e.printStackTrace();
         Alerts.messageDialog("Error", "Oh no an error! Send it to Asis so he can feel bad.\n"+e.getMessage());
     }
 
@@ -61,7 +62,6 @@ public class AsisUtils {
             String text = bufferedReader.lines().collect(Collectors.joining(System.lineSeparator()));
             return new JSONObject(text);
         } catch (JSONException e) {
-            e.printStackTrace();
             errorDialogWindow(e);
         }
         return null;
@@ -105,7 +105,6 @@ public class AsisUtils {
             Files.delete(folder.toPath());
             return true;
         } catch (IOException e) {
-            e.printStackTrace();
             AsisUtils.errorDialogWindow(e);
         }
 

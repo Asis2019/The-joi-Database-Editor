@@ -94,7 +94,6 @@ public class TranslationEditor {
             try {
                 JOIPackageManager.getInstance().getJOIPackage(i);
             } catch (IOException e) {
-                e.printStackTrace();
                 AsisUtils.errorDialogWindow(e);
             }
         });
@@ -159,7 +158,6 @@ public class TranslationEditor {
             initTable();
             loadData();
         } catch (IOException e) {
-            e.printStackTrace();
             AsisUtils.errorDialogWindow(e);
         }
     }
