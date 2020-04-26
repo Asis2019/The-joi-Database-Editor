@@ -23,12 +23,9 @@ public abstract class TabController {
         node.setStyle(String.format("outline-color: %s;fill-color: %s;", outlineColor,fillColor));
     }
 
-    <T extends JOIEntity> Scene getScene(T entity) {
-        for(Scene scene: Controller.getInstance().getJoiPackage().getJoi().getSceneArrayList()) {
-            if(scene.containsEntity(entity)) {
-                return scene;
-            }
-        }
+    <T extends JOIEntity<?>> Scene getScene(T entity) {
+        for(Scene scene: Controller.getInstance().getJoiPackage().getJoi().getSceneArrayList())
+            if (scene.containsEntity(entity)) return scene;
         return null;
     }
 

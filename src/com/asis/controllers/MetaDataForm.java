@@ -60,7 +60,9 @@ public class MetaDataForm {
         if(title != null && !title.isEmpty()) preparedTitle = title.toLowerCase().replaceAll(" ","_");
 
         joiIdTextField.clear();
-        joiIdTextField.setText(preparedCreator+"_"+preparedTitle);
+
+        if(preparedCreator.equals("") && preparedTitle.equals("")) joiIdTextField.setText(null);
+        else joiIdTextField.setText(preparedCreator+"_"+preparedTitle);
     }
 
     public void initialize() {

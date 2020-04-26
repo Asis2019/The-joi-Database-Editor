@@ -11,7 +11,7 @@ import java.util.Arrays;
 
 public class MetaData implements Cloneable, JOIEntity<JSONObject>, JSONString {
     private File joiIcon;
-    private String preparations, name, joiId, versionAdded, displayedFetishes, creator;
+    private String preparations="", name="", joiId="", versionAdded="", displayedFetishes="", creator="";
     private ArrayList<String> fetishList = new ArrayList<>();
     private ArrayList<String> characterList = new ArrayList<>();
     private ArrayList<String> equipmentList = new ArrayList<>();
@@ -57,7 +57,7 @@ public class MetaData implements Cloneable, JOIEntity<JSONObject>, JSONString {
     public JSONObject toJSON() {
         JSONObject innerObject = new JSONObject();
         addStringToJsonWithDefault(innerObject, getName(), getJoiId(),"joiId");
-        addStringToJsonWithDefault(innerObject, "No preparations needed.", getPreparations(),"preparations");
+        addStringToJsonWithDefault(innerObject, "", getPreparations(),"preparations");
         addStringToJsonWithDefault(innerObject, "", getName(),"name");
         addStringToJsonWithDefault(innerObject, "", getVersionAdded(),"versionAdded");
         addStringToJsonWithDefault(innerObject, "", getDisplayedFetishes(),"displayedFetishes");
@@ -98,29 +98,20 @@ public class MetaData implements Cloneable, JOIEntity<JSONObject>, JSONString {
     }
 
     @Override
-    public boolean equals(Object object) {
-        if (this == object) return true;
-        if (!(object instanceof MetaData)) return false;
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (!(o instanceof MetaData)) return false;
 
-        MetaData metaData = (MetaData) object;
+        MetaData metaData = (MetaData) o;
 
-        if (getPreparations() != null ? !getPreparations().equals(metaData.getPreparations()) : metaData.getPreparations() != null)
-            return false;
-
-        if (getName() != null ? !getName().equals(metaData.getName()) : metaData.getName() != null) return false;
-
-        if (getJoiId() != null ? !getJoiId().equals(metaData.getJoiId()) : metaData.getJoiId() != null) return false;
-
-        if (getVersionAdded() != null ? !getVersionAdded().equals(metaData.getVersionAdded()) : metaData.getVersionAdded() != null)
-            return false;
-
-        if (getDisplayedFetishes() != null ? !getDisplayedFetishes().equals(metaData.getDisplayedFetishes()) : metaData.getDisplayedFetishes() != null)
-            return false;
-
+        if (!getPreparations().equals(metaData.getPreparations())) return false;
+        if (!getName().equals(metaData.getName())) return false;
+        if (!getJoiId().equals(metaData.getJoiId())) return false;
+        if (!getVersionAdded().equals(metaData.getVersionAdded())) return false;
+        if (!getDisplayedFetishes().equals(metaData.getDisplayedFetishes())) return false;
+        if (!getCreator().equals(metaData.getCreator())) return false;
         if (!getFetishList().equals(metaData.getFetishList())) return false;
-
         if (!getCharacterList().equals(metaData.getCharacterList())) return false;
-
         return getEquipmentList().equals(metaData.getEquipmentList());
     }
 
@@ -132,9 +123,7 @@ public class MetaData implements Cloneable, JOIEntity<JSONObject>, JSONString {
     }
 
     private static <T> void addListToJsonObject(JSONObject object, String key, ArrayList<T> list) {
-        for (int i = 0; i < list.size(); i++) {
-            object.put(key + i, list.get(i));
-        }
+        for (int i = 0; i < list.size(); i++) object.put(key + i, list.get(i));
     }
 
     private static void populateListFromCategory(JSONObject jsonObject, ArrayList<String> listToPopulate, String categoryKey) {

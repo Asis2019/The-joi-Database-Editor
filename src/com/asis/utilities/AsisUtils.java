@@ -126,9 +126,7 @@ public class AsisUtils {
 
     public static ArrayList<Integer> convertJSONArrayToList(JSONArray jsonArray) {
         ArrayList<Integer> list = new ArrayList<>();
-        for(int i=0; i<jsonArray.length(); i++) {
-            list.add(jsonArray.getInt(i));
-        }
+        for(int i=0; i<jsonArray.length(); i++) list.add(jsonArray.getInt(i));
         return list;
     }
 

@@ -19,6 +19,7 @@ import org.json.JSONArray;
 
 import java.io.File;
 import java.io.IOException;
+import java.nio.file.FileAlreadyExistsException;
 
 import static com.asis.controllers.dialogs.DialogUnsavedChanges.*;
 import static com.asis.utilities.AsisUtils.getLanguageCodeForName;
@@ -107,6 +108,8 @@ public class DialogNewProject {
 
         } catch (IllegalArgumentException e) {
             DialogMessage.messageDialog("Error", e.getMessage());
+        } catch (FileAlreadyExistsException e) {
+            //User canceled the creation of new joi.
         }
     }
 
