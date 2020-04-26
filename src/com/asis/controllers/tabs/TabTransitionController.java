@@ -1,6 +1,6 @@
 package com.asis.controllers.tabs;
 
-import com.asis.joi.model.components.Transition;
+import com.asis.joi.model.entites.Transition;
 import com.asis.utilities.AsisUtils;
 import javafx.animation.KeyFrame;
 import javafx.animation.KeyValue;

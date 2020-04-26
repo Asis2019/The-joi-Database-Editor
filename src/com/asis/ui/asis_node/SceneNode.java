@@ -1,6 +1,6 @@
 package com.asis.ui.asis_node;
 
-import com.asis.joi.model.components.Scene;
+import com.asis.joi.model.entites.Scene;
 import javafx.beans.property.ReadOnlyBooleanWrapper;
 import javafx.beans.value.ObservableValue;
 import javafx.geometry.Bounds;

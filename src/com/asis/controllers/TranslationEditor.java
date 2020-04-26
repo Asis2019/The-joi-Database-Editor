@@ -3,8 +3,8 @@ package com.asis.controllers;
 import com.asis.controllers.dialogs.DialogRequestLanguage;
 import com.asis.joi.JOIPackageManager;
 import com.asis.joi.model.JOIPackage;
-import com.asis.joi.model.components.Line;
-import com.asis.joi.model.components.Scene;
+import com.asis.joi.model.entites.Line;
+import com.asis.joi.model.entites.Scene;
 import com.asis.utilities.Alerts;
 import com.asis.utilities.AsisUtils;
 import com.asis.utilities.Config;
@@ -138,18 +138,18 @@ public class TranslationEditor {
         try {
             ArrayList<String> languages = new ArrayList<>();
             Object data = Config.get("LANGUAGES");
-            if(data instanceof JSONArray) {
-                for(int i=0; i<((JSONArray) data).length(); i++) {
+            if (data instanceof JSONArray) {
+                for (int i = 0; i < ((JSONArray) data).length(); i++) {
                     String languageCode = ((JSONArray) data).getJSONObject(i).getString("file_code");
-                    if(!JOIPackageManager.getInstance().getJoiPackageLanguages().contains(languageCode))
+                    if (!JOIPackageManager.getInstance().getJoiPackageLanguages().contains(languageCode))
                         languages.add(languageCode);
                 }
             }
 
             String newLanguage = DialogRequestLanguage.requestLanguage(languages);
-            if(newLanguage == null) return;
+            if (newLanguage == null) return;
 
-            JOIPackage joiPackage = JOIPackageManager.getInstance().cloneJOIPackage(Controller.getInstance().getJoiPackage());
+            JOIPackage joiPackage = Controller.getInstance().getJoiPackage().clone();
             joiPackage.setPackageLanguageCode(newLanguage);
 
             JOIPackageManager.getInstance().addJOIPackage(joiPackage);
@@ -157,7 +157,7 @@ public class TranslationEditor {
             //Add to table
             initTable();
             loadData();
-        } catch (IOException e) {
+        } catch (CloneNotSupportedException e) {
             AsisUtils.errorDialogWindow(e);
         }
     }

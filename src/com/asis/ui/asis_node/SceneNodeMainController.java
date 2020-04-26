@@ -2,9 +2,9 @@ package com.asis.ui.asis_node;
 
 import com.asis.controllers.Controller;
 import com.asis.joi.model.JOIPackage;
-import com.asis.joi.model.components.GotoScene;
-import com.asis.joi.model.components.Scene;
-import com.asis.joi.model.components.dialog.DialogOption;
+import com.asis.joi.model.entites.GotoScene;
+import com.asis.joi.model.entites.Scene;
+import com.asis.joi.model.entites.dialog.DialogOption;
 import javafx.beans.property.DoubleProperty;
 import javafx.beans.property.SimpleDoubleProperty;
 import javafx.geometry.Bounds;

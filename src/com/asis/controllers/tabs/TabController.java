@@ -1,9 +1,9 @@
 package com.asis.controllers.tabs;
 
 import com.asis.controllers.Controller;
-import com.asis.joi.model.components.FirstLevelEffect;
-import com.asis.joi.model.components.Line;
-import com.asis.joi.model.components.Scene;
+import com.asis.joi.model.entites.JOIEntity;
+import com.asis.joi.model.entites.Line;
+import com.asis.joi.model.entites.Scene;
 import javafx.scene.Node;
 import javafx.scene.control.CheckBox;
 import javafx.scene.control.TextField;
@@ -23,9 +23,9 @@ public abstract class TabController {
         node.setStyle(String.format("outline-color: %s;fill-color: %s;", outlineColor,fillColor));
     }
 
-    <T extends FirstLevelEffect> Scene getScene(T effect) {
+    <T extends JOIEntity> Scene getScene(T entity) {
         for(Scene scene: Controller.getInstance().getJoiPackage().getJoi().getSceneArrayList()) {
-            if(scene.hasFirstLevelEffect(effect)) {
+            if(scene.containsEntity(entity)) {
                 return scene;
             }
         }

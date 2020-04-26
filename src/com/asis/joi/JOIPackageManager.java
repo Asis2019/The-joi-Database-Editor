@@ -78,30 +78,6 @@ public class JOIPackageManager {
         }
     }
 
-    public JOIPackage cloneJOIPackage(JOIPackage joiPackage) throws IOException {
-        //Functions by saving and loading from a temp directory
-        //Will be changed to deep memory cloning once model is improved
-        File temporaryDirectory = new File(getJoiPackageDirectory() + "/tmp");
-        if (temporaryDirectory.isDirectory()) AsisUtils.deleteFolder(temporaryDirectory);
-        if (temporaryDirectory.mkdir()) {
-
-            joiPackage.exportPackageAsFiles(temporaryDirectory);
-
-            JOIPackage clonedPackage = new JOIPackage();
-            clonedPackage.setPackageLanguageCode(joiPackage.getPackageLanguageCode());
-            clonedPackage.setJoi(importJoiFromDirectory(joiPackage.getPackageLanguageCode(), temporaryDirectory));
-            clonedPackage.setMetaData(importMetaDataFromDirectory(joiPackage.getPackageLanguageCode(), temporaryDirectory));
-
-            deleteFolder(temporaryDirectory);
-
-            return clonedPackage;
-        }
-
-        deleteFolder(temporaryDirectory);
-
-        return null;
-    }
-
     public void addJOIPackage(JOIPackage joiPackage) {
         getJoiPackages().add(joiPackage);
         if(!getJoiPackageLanguages().contains(joiPackage.getPackageLanguageCode()))
@@ -153,28 +129,19 @@ public class JOIPackageManager {
     }
 
     private JOI importJoiFromDirectory(String languageCode) throws IOException {
-        return importJoiFromDirectory(languageCode, getJoiPackageDirectory());
-    }
-
-    private MetaData importMetaDataFromDirectory(String languageCode) throws IOException {
-        return importMetaDataFromDirectory(languageCode, getJoiPackageDirectory());
-    }
-
-    private JOI importJoiFromDirectory(String languageCode, File joiPackageDirectory) throws IOException {
         //Initiate loading for joi
-        JOI joi = new JOI();
         File joiFile = new File(joiPackageDirectory, String.format("joi_text_%s.json", languageCode));
 
         JSONObject jsonObject = AsisUtils.readJsonFromFile(joiFile);
-        if (jsonObject != null)
-            joi.setDataFromJson(jsonObject, joiPackageDirectory);
-        else
+        if (jsonObject != null) {
+            return JOI.createEntity(jsonObject);
+        } else
             AsisUtils.errorDialogWindow(new NullPointerException(String.format("Null value was received when reading joi from joi_text_%s.json", languageCode)));
 
-        return joi;
+        return null;
     }
 
-    private MetaData importMetaDataFromDirectory(String languageCode, File joiPackageDirectory) throws IOException {
+    private MetaData importMetaDataFromDirectory(String languageCode) throws IOException {
         //Initiate loading for metaData
         MetaData metaData = new MetaData();
         File metaDataFile = new File(joiPackageDirectory, String.format("info_%s.json", languageCode));
@@ -190,7 +157,6 @@ public class JOIPackageManager {
                 metaData.setDataFromJson(jsonObject.getJSONArray("JOI METADATA").getJSONObject(0), joiPackageDirectory);
             else
                 AsisUtils.errorDialogWindow(new NullPointerException(String.format("Null value was received when reading metadata from info_%s.json", languageCode)));
-
         }
 
         return metaData;

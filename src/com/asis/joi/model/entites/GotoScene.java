@@ -1,16 +1,13 @@
-package com.asis.joi.model.components;
+package com.asis.joi.model.entites;
 
-import com.asis.joi.model.JOISystemInterface;
 import com.asis.utilities.AsisUtils;
-import org.json.JSONArray;
 import org.json.JSONObject;
+import org.json.JSONString;
 
-import java.io.File;
 import java.util.ArrayList;
 
-public class GotoScene implements JOISystemInterface {
+public class GotoScene implements JSONString, JOIEntity<JSONObject>, Cloneable {
     private String jsonKeyName = "gotoScene";
-
     private ArrayList<Integer> gotoSceneArrayList = new ArrayList<>();
 
     public void addValue(int gotoId) {
@@ -25,36 +22,47 @@ public class GotoScene implements JOISystemInterface {
     }
 
     private void updateJsonKeyName() {
-        if(getGotoSceneArrayList().size() > 1) {
-            setJsonKeyName("gotoSceneInRange");
-        } else {
-            setJsonKeyName("gotoScene");
-        }
+        if(getGotoSceneArrayList().size() > 1) setJsonKeyName("gotoSceneInRange");
+        else setJsonKeyName("gotoScene");
     }
 
     public Object getJsonValue() {
-        if(getJsonKeyName().equals("gotoScene")) {
-            return getGotoSceneArrayList().get(0);
-        } else {
-            return getGotoSceneArrayList().toArray();
+        if(getJsonKeyName().equals("gotoScene")) return getGotoSceneArrayList().get(0);
+        else return getGotoSceneArrayList().toArray();
+    }
+
+    public static GotoScene createEntity(JSONObject jsonObject) {
+        GotoScene gotoScene = new GotoScene();
+
+        if(jsonObject.has("array")) {
+            for (Integer number : AsisUtils.convertJSONArrayToList(jsonObject.getJSONArray("array"))) {
+                gotoScene.addValue(number);
+            }
         }
+
+        return gotoScene;
     }
 
     @Override
-    public void setDataFromJson(JSONObject jsonObject, File importDirectory) {
-    }
-
-    public void setDataFromJson(JSONArray jsonArray) {
-        for(Integer number: AsisUtils.convertJSONArrayToList(jsonArray)) {
-            addValue(number);
-        }
-    }
-
-    @Override
-    public String toString() {
+    public JSONObject toJSON() {
         JSONObject object = new JSONObject();
         object.put(getJsonKeyName(), getJsonValue());
-        return object.toString(4);
+        return object;
+    }
+
+    @Override
+    public String toJSONString() {
+        return toJSON().toString(4);
+    }
+
+    @Override
+    public GotoScene clone() throws CloneNotSupportedException {
+        GotoScene gotoScene = (GotoScene) super.clone();
+
+        gotoScene.setJsonKeyName(getJsonKeyName());
+        gotoScene.setGotoSceneArrayList(new ArrayList<>(getGotoSceneArrayList()));
+
+        return gotoScene;
     }
 
     @Override
@@ -72,7 +80,7 @@ public class GotoScene implements JOISystemInterface {
     public ArrayList<Integer> getGotoSceneArrayList() {
         return gotoSceneArrayList;
     }
-    public void setGotoSceneArrayList(ArrayList<Integer> gotoSceneArrayList) {
+    private void setGotoSceneArrayList(ArrayList<Integer> gotoSceneArrayList) {
         this.gotoSceneArrayList = gotoSceneArrayList;
     }
 

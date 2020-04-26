@@ -1,14 +1,14 @@
-package com.asis.joi.model.components;
+package com.asis.joi.model.entites;
 
-import com.asis.joi.model.JOISystemInterface;
+import com.asis.joi.JOIPackageManager;
 import org.json.JSONArray;
 import org.json.JSONObject;
+import org.json.JSONString;
 
 import java.io.File;
-import java.util.Iterator;
 
-public class Line implements JOISystemInterface {
-    private String fillColor, outlineColor, text="";
+public class Line implements JSONString, JOIEntity<JSONArray>, Cloneable {
+    private String fillColor="#ffffff", outlineColor="#000000", text="";
     private File lineImage;
     private int lineNumber;
 
@@ -17,19 +17,47 @@ public class Line implements JOISystemInterface {
     private Double changeBeatPitch;
     private Integer changeBeatSpeed;
 
-    public Line() {
-        this("#ffffff", "#000000");
-    }
-    public Line(int lineNumber) {
-        this();
-        setLineNumber(lineNumber);
-    }
-    public Line(String fillColor, String outlineColor) {
-        setFillColor(fillColor);
-        setOutlineColor(outlineColor);
+    public static Line createEntity(JSONObject jsonObject) {
+        Line line = new Line();
+
+        for (String key : jsonObject.keySet()) {
+            switch (key) {
+                //id is the same as line number or X in "lineX". Only used in the editor as a pass through, does not get exported
+                case "id":
+                    line.setLineNumber(jsonObject.getInt("id"));
+                    break;
+                case "fillColor":
+                    line.setFillColor(jsonObject.getString("fillColor"));
+                    break;
+                case "outlineColor":
+                    line.setOutlineColor(jsonObject.getString("outlineColor"));
+                    break;
+                case "text":
+                    line.setText(jsonObject.getString("text"));
+                    break;
+                case "lineImage":
+                    line.setLineImage(new File(JOIPackageManager.getInstance().getJoiPackageDirectory().getPath() + File.separator + jsonObject.getString("lineImage")));
+                    break;
+                case "startBeat":
+                    line.setStartBeat(jsonObject.getBoolean("startBeat"));
+                    break;
+                case "stopBeat":
+                    line.setStopBeat(jsonObject.getBoolean("stopBeat"));
+                    break;
+                case "changeBeatPitch":
+                    line.setChangeBeatPitch(jsonObject.getDouble("changeBeatPitch"));
+                    break;
+                case "changeBeatSpeed":
+                    line.setChangeBeatSpeed(jsonObject.getInt("changeBeatSpeed"));
+                    break;
+            }
+        }
+
+        return line;
     }
 
-    public JSONArray getLineAsJson() {
+    @Override
+    public JSONArray toJSON() {
         JSONObject object = new JSONObject();
         object.put("fillColor", getFillColor());
         object.put("outlineColor", getOutlineColor());
@@ -45,45 +73,25 @@ public class Line implements JOISystemInterface {
     }
 
     @Override
-    public void setDataFromJson(JSONObject jsonObject, File importDirectory) {
-        final Iterator<String> keys = jsonObject.keys();
-        while (keys.hasNext()) {
-            setValueAccordingToKey(jsonObject, keys.next(), importDirectory);
-        }
-    }
-
-    private void setValueAccordingToKey(JSONObject jsonObject, String key, File importDirectory) {
-        switch (key) {
-            case "fillColor":
-                setFillColor(jsonObject.getString("fillColor"));
-                break;
-            case "outlineColor":
-                setOutlineColor(jsonObject.getString("outlineColor"));
-                break;
-            case "text":
-                setText(jsonObject.getString("text"));
-                break;
-            case "lineImage":
-                setLineImage(new File(importDirectory.getPath()+"/"+jsonObject.getString("lineImage")));
-                break;
-            case "startBeat":
-                setStartBeat(jsonObject.getBoolean("startBeat"));
-                break;
-            case "stopBeat":
-                setStopBeat(jsonObject.getBoolean("stopBeat"));
-                break;
-            case "changeBeatPitch":
-                setChangeBeatPitch(jsonObject.getDouble("changeBeatPitch"));
-                break;
-            case "changeBeatSpeed":
-                setChangeBeatSpeed(jsonObject.getInt("changeBeatSpeed"));
-                break;
-        }
+    public String toJSONString() {
+        return toJSON().toString(4);
     }
 
     @Override
-    public String toString() {
-        return getLineAsJson().toString(4);
+    public Line clone() throws CloneNotSupportedException {
+        Line line = (Line) super.clone();
+
+        line.setChangeBeatPitch(getChangeBeatPitch());
+        line.setChangeBeatSpeed(getChangeBeatSpeed());
+        line.setStartBeat(getStartBeat());
+        line.setStopBeat(getStopBeat());
+        line.setFillColor(getFillColor());
+        line.setOutlineColor(getOutlineColor());
+        line.setText(getText());
+        line.setLineImage(getLineImage());
+        line.setLineNumber(getLineNumber());
+
+        return line;
     }
 
     @Override

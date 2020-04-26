@@ -9,20 +9,12 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Iterator;
 
-public class MetaData implements JOISystemInterface{
+public class MetaData implements JOISystemInterface, Cloneable {
     private File joiIcon;
     private String preparations, name, joiId, versionAdded, displayedFetishes, creator;
     private ArrayList<String> fetishList = new ArrayList<>();
     private ArrayList<String> characterList = new ArrayList<>();
     private ArrayList<String> equipmentList = new ArrayList<>();
-
-    public MetaData() {
-
-    }
-    public MetaData(MetaData metaData) {
-        JSONObject object = metaData.getMetaDataAsJson().getJSONArray("JOI METADATA").getJSONObject(0);
-        setDataFromJson(object, JOIPackageManager.getInstance().getJoiPackageDirectory());
-    }
 
     public JSONObject getMetaDataAsJson() {
         JSONObject innerObject = new JSONObject();
@@ -88,6 +80,16 @@ public class MetaData implements JOISystemInterface{
     }
 
     @Override
+    public MetaData clone() throws CloneNotSupportedException {
+        MetaData metaData = (MetaData) super.clone();
+
+        JSONObject object = getMetaDataAsJson().getJSONArray("JOI METADATA").getJSONObject(0);
+        metaData.setDataFromJson(object, JOIPackageManager.getInstance().getJoiPackageDirectory());
+
+        return metaData;
+    }
+
+    @Override
     public String toString() {
         return getMetaDataAsJson().toString(4);
     }
@@ -129,7 +131,7 @@ public class MetaData implements JOISystemInterface{
         }
     }
 
-    private static void addListToJsonObject(JSONObject object, String key, ArrayList list) {
+    private static <T> void addListToJsonObject(JSONObject object, String key, ArrayList<T> list) {
         for (int i = 0; i < list.size(); i++) {
             object.put(key + i, list.get(i));
         }

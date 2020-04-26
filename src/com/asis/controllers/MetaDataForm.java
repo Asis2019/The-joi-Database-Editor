@@ -18,7 +18,7 @@ import java.io.File;
 
 public class MetaDataForm {
     private File iconFile = null;
-    private ImageView imageView = new ImageView();
+    private final ImageView imageView = new ImageView();
     private JOIPackage joiPackage;
 
     @FXML private VBox mainVBox, iconControllerBox;
@@ -94,9 +94,7 @@ public class MetaDataForm {
             //Image file to memory
             setIconFile(file);
 
-            if(getImageView() != null) {
-                mainVBox.getChildren().remove(getImageView());
-            }
+            mainVBox.getChildren().remove(getImageView());
 
             Image image = new Image(file.toURI().toString());
             getImageView().setImage(image);

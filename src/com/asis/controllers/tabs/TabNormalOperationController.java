@@ -1,6 +1,6 @@
 package com.asis.controllers.tabs;
 
-import com.asis.joi.model.components.Scene;
+import com.asis.joi.model.entites.Scene;
 import com.asis.ui.ImageViewPane;
 import com.asis.utilities.AsisUtils;
 import javafx.application.Platform;
@@ -23,7 +23,7 @@ public class TabNormalOperationController extends TabController {
     private int totalLines = 1;
     private int onLine = 1;
 
-    private ImageViewPane viewPane = new ImageViewPane();
+    private final ImageViewPane viewPane = new ImageViewPane();
     private Scene scene;
 
     @FXML private TextArea textTextField, mainTextArea;
@@ -201,7 +201,7 @@ public class TabNormalOperationController extends TabController {
     private void setLineVariables() {
         initializeText();
 
-        JSONObject textObject = getScene().getLine(onLine-1).getLineAsJson().getJSONObject(0);
+        JSONObject textObject = getScene().getLine(onLine-1).toJSON().getJSONObject(0);
 
         if (textObject != null) { textObjectElseIf(textObject); }
 
@@ -231,9 +231,7 @@ public class TabNormalOperationController extends TabController {
 
     public void setVisibleImage() {
         //Remove image if any is present
-        if(viewPane != null) {
-            stackPane.getChildren().remove(viewPane);
-        }
+        if(viewPane != null) stackPane.getChildren().remove(viewPane);
 
         File workingFile = getImageFile();
 

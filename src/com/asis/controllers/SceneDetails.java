@@ -2,10 +2,10 @@ package com.asis.controllers;
 
 import com.asis.controllers.dialogs.DialogConfirmation;
 import com.asis.controllers.tabs.*;
-import com.asis.joi.model.components.Scene;
-import com.asis.joi.model.components.Timer;
-import com.asis.joi.model.components.Transition;
-import com.asis.joi.model.components.dialog.Dialog;
+import com.asis.joi.model.entites.Scene;
+import com.asis.joi.model.entites.Timer;
+import com.asis.joi.model.entites.Transition;
+import com.asis.joi.model.entites.dialog.Dialog;
 import com.asis.utilities.Alerts;
 import com.asis.utilities.AsisUtils;
 import com.asis.utilities.StageManager;

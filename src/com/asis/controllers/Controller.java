@@ -6,8 +6,8 @@ import com.asis.controllers.dialogs.DialogSceneTitle;
 import com.asis.joi.JOIPackageManager;
 import com.asis.joi.model.JOIPackage;
 import com.asis.joi.model.MetaData;
-import com.asis.joi.model.components.GotoScene;
-import com.asis.joi.model.components.dialog.DialogOption;
+import com.asis.joi.model.entites.GotoScene;
+import com.asis.joi.model.entites.dialog.DialogOption;
 import com.asis.ui.asis_node.AsisConnectionButton;
 import com.asis.ui.asis_node.SceneNode;
 import com.asis.ui.asis_node.SceneNodeMainController;
@@ -279,13 +279,13 @@ public class Controller {
             //The icons are set to null, because when a joi is saved it exports and icon
             //This icon will not be present in the joi stored in memory causing the results
             //to be inaccurate.
-            MetaData memoryData = new MetaData(getJoiPackage().getMetaData());
+            MetaData memoryData = getJoiPackage().getMetaData().clone();
             memoryData.setJoiIcon(null);
-            MetaData fileData = new MetaData(originalPackage.getMetaData());
+            MetaData fileData = originalPackage.getMetaData().clone();
             fileData.setJoiIcon(null);
 
             return !getJoiPackage().getJoi().equals(originalPackage.getJoi()) || !memoryData.equals(fileData);
-        } catch (RuntimeException | IOException e) {
+        } catch (RuntimeException | IOException | CloneNotSupportedException e) {
             return true;
         }
     }
@@ -450,12 +450,12 @@ public class Controller {
                 resetJoiPackage(newJoiPackage);
 
                 //Create scene nodes
-                for (com.asis.joi.model.components.Scene scene : getJoiPackage().getJoi().getSceneArrayList()) {
+                for (com.asis.joi.model.entites.Scene scene : getJoiPackage().getJoi().getSceneArrayList()) {
                     addScene(scene.getLayoutXPosition(), scene.getLayoutYPosition(), scene.getSceneTitle(), scene.getSceneId(), true);
                 }
 
                 //Create connections
-                for (com.asis.joi.model.components.Scene scene : getJoiPackage().getJoi().getSceneArrayList()) {
+                for (com.asis.joi.model.entites.Scene scene : getJoiPackage().getJoi().getSceneArrayList()) {
                     final AsisConnectionButton output = getSceneNodeWithId(getSceneNodes(), scene.getSceneId()).getOutputButtons().get(0);
                     createConnections(scene.getGotoScene(), output);
 
@@ -465,6 +465,7 @@ public class Controller {
                 //Loading completed successfully
                 return true;
             } catch (RuntimeException e) {
+                e.printStackTrace();
                 Alerts.messageDialog("LOADING FAILED", "The editor was unable to load this joi for the following reason:\n" + e.getMessage(), 600, 200);
                 return false;
             }
@@ -474,7 +475,7 @@ public class Controller {
         return false;
     }
 
-    private void createConnectionsForDialogOutputs(com.asis.joi.model.components.Scene scene) {
+    private void createConnectionsForDialogOutputs(com.asis.joi.model.entites.Scene scene) {
         if (scene.getDialog() != null && !scene.getDialog().getOptionArrayList().isEmpty()) {
             for (DialogOption dialogOption : scene.getDialog().getOptionArrayList()) {
                 AsisConnectionButton output = getSceneNodeWithId(sceneNodes, scene.getSceneId()).createNewOutputConnectionPoint("Option " + dialogOption.getOptionNumber(), "dialog_option_" + (dialogOption.getOptionNumber() + 1));
@@ -505,7 +506,10 @@ public class Controller {
     }
 
     public SceneNode getSceneNodeWithId(ArrayList<SceneNode> sceneList, int sceneId) {
+        //System.out.println("Checking for scene with id "+sceneId);
         for (SceneNode scene : sceneList) {
+            //System.out.println("Current scene id: "+scene.getSceneId());
+
             if (scene.getSceneId() == sceneId) {
                 return scene;
             }

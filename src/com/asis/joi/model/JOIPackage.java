@@ -1,6 +1,6 @@
 package com.asis.joi.model;
 
-import com.asis.joi.model.components.Scene;
+import com.asis.joi.model.entites.Scene;
 import com.asis.utilities.Alerts;
 import com.asis.utilities.AsisUtils;
 
@@ -11,7 +11,7 @@ import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.nio.file.StandardCopyOption;
 
-public class JOIPackage {
+public class JOIPackage implements Cloneable {
     private String packageLanguageCode;
     private JOI joi;
     private MetaData metaData;
@@ -23,7 +23,7 @@ public class JOIPackage {
         try {
             //Export json files to export directory
             AsisUtils.writeJsonToFile(getMetaData().getMetaDataAsJson(), String.format("info_%s.json", getPackageLanguageCode()), exportDirectory);
-            AsisUtils.writeJsonToFile(getJoi().getJOIAsJson(), String.format("joi_text_%s.json", getPackageLanguageCode()), exportDirectory);
+            AsisUtils.writeStringToFile(getJoi().toJSONString(), String.format("joi_text_%s.json", getPackageLanguageCode()), exportDirectory);
 
             //Copy joi images to export directory
             for (Scene scene : getJoi().getSceneArrayList()) {
@@ -62,6 +62,17 @@ public class JOIPackage {
             AsisUtils.errorDialogWindow(e);
             return false;
         }
+    }
+
+    @Override
+    public JOIPackage clone() throws CloneNotSupportedException {
+        JOIPackage joiPackage = (JOIPackage) super.clone();
+
+        joiPackage.setPackageLanguageCode(getPackageLanguageCode());
+        joiPackage.setJoi(getJoi()==null?null:getJoi().clone());
+        joiPackage.setMetaData(getMetaData()==null?null:getMetaData().clone());
+
+        return joiPackage;
     }
 
     //Getters and Setters

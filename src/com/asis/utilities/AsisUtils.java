@@ -56,6 +56,12 @@ public class AsisUtils {
         }
     }
 
+    public static void writeStringToFile(String string, String fileName, File saveLocation) throws IOException {
+        try (BufferedWriter bufferedWriter = new BufferedWriter(new OutputStreamWriter(new FileOutputStream(saveLocation.toPath() + File.separator + fileName), StandardCharsets.UTF_8))) {
+            bufferedWriter.write(string);
+        }
+    }
+
     public static JSONObject readJsonFromFile(File file) throws IOException {
         try {
             BufferedReader bufferedReader = Files.newBufferedReader(file.toPath(), StandardCharsets.UTF_8);

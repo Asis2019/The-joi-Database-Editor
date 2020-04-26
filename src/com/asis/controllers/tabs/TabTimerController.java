@@ -1,6 +1,6 @@
 package com.asis.controllers.tabs;
 
-import com.asis.joi.model.components.Timer;
+import com.asis.joi.model.entites.Timer;
 import com.asis.ui.AsisCenteredArc;
 import com.asis.ui.ImageViewPane;
 import com.asis.utilities.AsisUtils;
@@ -171,17 +171,8 @@ public class TabTimerController extends TabController {
         });
 
         //Timer text color
-        timerTextColorPicker.valueProperty().addListener((observableValue, color, t1) -> {
-            //outlineColor = removeLastTwoLetters("#" + colorToHex(t1));
-            //setNodeColorStyle(timerTextArea, fillColor, outlineColor);
-            setTimerTextColors();
-        });
-
-        timerTextOutlineColorPicker.valueProperty().addListener((observableValue, color, t1) -> {
-            //fillColor = removeLastTwoLetters("#" + colorToHex(t1));
-            //setNodeColorStyle(timerTextArea, fillColor, outlineColor);
-            setTimerTextColors();
-        });
+        timerTextColorPicker.valueProperty().addListener((observableValue, color, t1) -> setTimerTextColors());
+        timerTextOutlineColorPicker.valueProperty().addListener((observableValue, color, t1) -> setTimerTextColors());
     }
 
     private void setTimerTextColors(String... optionalColorOverride) {
@@ -255,7 +246,7 @@ public class TabTimerController extends TabController {
         TreeItem<String> root = new TreeItem<>("Timer");
         getObjectTree().setRoot(root);
 
-        JSONObject timerObject = getTimer().getTimerAsJson().getJSONObject(0);
+        JSONObject timerObject = getTimer().toJSON().getJSONObject(0);
 
         if (timerObject != null && !timerObject.isEmpty()) {
             for (int i = 0; i < timerObject.names().length(); i++) {
@@ -351,7 +342,7 @@ public class TabTimerController extends TabController {
         timerTextArea.setText("");
 
         if (getTimer().getLine(onSecond) != null) {
-            JSONObject textObject = getTimer().getLine(onSecond).getLineAsJson().getJSONObject(0);
+            JSONObject textObject = getTimer().getLine(onSecond).toJSON().getJSONObject(0);
             setFieldsIfNeeded(textObject);
 
             beatConfiguration(textObject);
