@@ -35,6 +35,19 @@ public class JOIPackageManager {
         getJoiPackages().clear();
     }
 
+    public boolean changesHaveOccurred() {
+        try {
+            for(JOIPackage currentJoiPackage: getJoiPackages()) {
+                final JOIPackage originalPackage = JOIPackageManager.getInstance().getJOIPackage(currentJoiPackage.getPackageLanguageCode(), false);
+                if(!currentJoiPackage.equals(originalPackage)) return true;
+            }
+            return false;
+        } catch (RuntimeException | IOException e) {
+            e.printStackTrace();
+            return true;
+        }
+    }
+
     private void loadJoiPackageLanguages() {
         Object data = Config.get("LANGUAGES");
         if (data instanceof JSONArray) {
@@ -105,13 +118,13 @@ public class JOIPackageManager {
         return getJOIPackage(languageCode);
     }
 
-    public JOIPackage getJOIPackage(String languageCode) throws IOException {
+    public JOIPackage getJOIPackage(String languageCode, boolean... addOverride) throws IOException {
         JOIPackage joiPackage = new JOIPackage();
         joiPackage.setPackageLanguageCode(languageCode);
         joiPackage.setJoi(importJoiFromDirectory(languageCode));
         joiPackage.setMetaData(importMetaDataFromDirectory(languageCode));
 
-        addJOIPackage(joiPackage);
+        if(addOverride.length <= 0) addJOIPackage(joiPackage);
 
         return joiPackage;
     }
@@ -154,7 +167,7 @@ public class JOIPackageManager {
             //Tell metadata to load variables from json
             JSONObject jsonObject = AsisUtils.readJsonFromFile(metaDataFile);
             if (jsonObject != null)
-                metaData.setDataFromJson(jsonObject.getJSONArray("JOI METADATA").getJSONObject(0), joiPackageDirectory);
+                metaData.setDataFromJson(jsonObject.getJSONArray("JOI METADATA").getJSONObject(0));
             else
                 AsisUtils.errorDialogWindow(new NullPointerException(String.format("Null value was received when reading metadata from info_%s.json", languageCode)));
         }

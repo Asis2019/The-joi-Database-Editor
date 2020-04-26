@@ -1,8 +1,8 @@
 package com.asis.controllers.dialogs;
 
+import com.asis.Main;
 import com.asis.controllers.Controller;
 import com.asis.joi.JOIPackageManager;
-import com.asis.utilities.Alerts;
 import com.asis.utilities.AsisUtils;
 import com.asis.utilities.Config;
 import javafx.fxml.FXML;
@@ -20,6 +20,7 @@ import org.json.JSONArray;
 import java.io.File;
 import java.io.IOException;
 
+import static com.asis.controllers.dialogs.DialogUnsavedChanges.*;
 import static com.asis.utilities.AsisUtils.getLanguageCodeForName;
 
 
@@ -82,17 +83,17 @@ public class DialogNewProject {
 
     public void actionButtonFinish() {
         try {
-            if (!isFirstLoad() && Controller.getInstance().changesHaveOccurred()) {
-                int choice = new Alerts().unsavedChangesDialog("New Project", "You have unsaved work, are you sure you want to continue?");
+            if (!isFirstLoad() && JOIPackageManager.getInstance().changesHaveOccurred()) {
+                int choice = DialogUnsavedChanges.unsavedChangesDialog("New Project", "You have unsaved work, are you sure you want to continue?");
                 switch (choice) {
-                    case 0:
+                    case CHOICE_CANCEL:
                         return;
 
-                    case 1:
+                    case CHOICE_DO_NOT_SAVE:
                         Controller.getInstance().processNewProject(getProjectPath(), projectNameTextField.getText().trim(), getLanguageCodeForName(getLanguagesDropDown().getValue()));
                         break;
 
-                    case 2:
+                    case CHOICE_SAVE:
                         Controller.getInstance().actionSaveProject();
                         Controller.getInstance().processNewProject(getProjectPath(), projectNameTextField.getText().trim(), getLanguageCodeForName(getLanguagesDropDown().getValue()));
                         break;
@@ -105,13 +106,13 @@ public class DialogNewProject {
             stage.close();
 
         } catch (IllegalArgumentException e) {
-            Alerts.messageDialog("Error", e.getMessage());
+            DialogMessage.messageDialog("Error", e.getMessage());
         }
     }
 
     public static void newProjectWindow(boolean firstLoadCheck) {
         try {
-            FXMLLoader fxmlLoader = new FXMLLoader(Alerts.class.getResource("/resources/fxml/dialog_new_project.fxml"));
+            FXMLLoader fxmlLoader = new FXMLLoader(Main.class.getResource("/resources/fxml/dialog_new_project.fxml"));
             Parent root = fxmlLoader.load();
 
             DialogNewProject dialogNewProject = fxmlLoader.getController();
@@ -119,7 +120,7 @@ public class DialogNewProject {
 
             Stage stage = new Stage();
             stage.initModality(Modality.APPLICATION_MODAL);
-            stage.getIcons().add(new Image(Alerts.class.getResourceAsStream("/resources/images/icon.png")));
+            stage.getIcons().add(new Image(Main.class.getResourceAsStream("/resources/images/icon.png")));
             stage.setTitle("New Project");
             stage.setScene(new Scene(root, 600, 400));
             stage.setOnCloseRequest(windowEvent -> {

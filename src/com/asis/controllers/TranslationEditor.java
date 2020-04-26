@@ -1,11 +1,11 @@
 package com.asis.controllers;
 
+import com.asis.controllers.dialogs.DialogMessage;
 import com.asis.controllers.dialogs.DialogRequestLanguage;
 import com.asis.joi.JOIPackageManager;
 import com.asis.joi.model.JOIPackage;
 import com.asis.joi.model.entites.Line;
 import com.asis.joi.model.entites.Scene;
-import com.asis.utilities.Alerts;
 import com.asis.utilities.AsisUtils;
 import com.asis.utilities.Config;
 import javafx.beans.property.ReadOnlyObjectWrapper;
@@ -76,7 +76,7 @@ public class TranslationEditor {
             if(tableRow.getRowData().size()-1 >= dataIndex) {
                 tableRow.getRowData().get(dataIndex).setText(e.getNewValue());
             } else {
-                Alerts.messageDialog("Error", "The field was unable to update, because the line/scene data structure is missing in the joi_text file." +
+                DialogMessage.messageDialog("Error", "The field was unable to update, because the line/scene data structure is missing in the joi_text file." +
                         " Please make sure all joi_text files have the same structure before attempting to translate.\n");
                 e.consume();
             }

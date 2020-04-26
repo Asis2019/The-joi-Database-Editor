@@ -1,7 +1,7 @@
 package com.asis.joi.model;
 
+import com.asis.controllers.dialogs.DialogMessage;
 import com.asis.joi.model.entites.Scene;
-import com.asis.utilities.Alerts;
 import com.asis.utilities.AsisUtils;
 
 import java.io.File;
@@ -19,10 +19,10 @@ public class JOIPackage implements Cloneable {
     public JOIPackage() {
     }
 
-    public boolean exportPackageAsFiles(File exportDirectory) {
+    public void exportPackageAsFiles(File exportDirectory) {
         try {
             //Export json files to export directory
-            AsisUtils.writeJsonToFile(getMetaData().getMetaDataAsJson(), String.format("info_%s.json", getPackageLanguageCode()), exportDirectory);
+            AsisUtils.writeStringToFile(getMetaData().toJSONString(), String.format("info_%s.json", getPackageLanguageCode()), exportDirectory);
             AsisUtils.writeStringToFile(getJoi().toJSONString(), String.format("joi_text_%s.json", getPackageLanguageCode()), exportDirectory);
 
             //Copy joi images to export directory
@@ -32,7 +32,7 @@ public class JOIPackage implements Cloneable {
                     if(imageFile.exists()) {
                         Files.copy(imageFile.toPath(), exportDirectory.toPath().resolve(imageFile.getName()), StandardCopyOption.REPLACE_EXISTING);
                     } else {
-                        Alerts.messageDialog("WARNING",
+                        DialogMessage.messageDialog("WARNING",
                                 String.format("Scene image: %s could not be found at %s and will be skipped.",
                                     scene.getSceneImage().getName(),
                                     scene.getSceneImage().getAbsolutePath()),
@@ -57,10 +57,8 @@ public class JOIPackage implements Cloneable {
             }
 
             //Export completed successfully
-            return true;
         } catch (Exception e) {
             AsisUtils.errorDialogWindow(e);
-            return false;
         }
     }
 
@@ -73,6 +71,19 @@ public class JOIPackage implements Cloneable {
         joiPackage.setMetaData(getMetaData()==null?null:getMetaData().clone());
 
         return joiPackage;
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (!(o instanceof JOIPackage)) return false;
+
+        JOIPackage that = (JOIPackage) o;
+
+        if (getPackageLanguageCode() != null ? !getPackageLanguageCode().equals(that.getPackageLanguageCode()) : that.getPackageLanguageCode() != null)
+            return false;
+        if (getJoi() != null ? !getJoi().equals(that.getJoi()) : that.getJoi() != null) return false;
+        return getMetaData() != null ? getMetaData().equals(that.getMetaData()) : that.getMetaData() == null;
     }
 
     //Getters and Setters

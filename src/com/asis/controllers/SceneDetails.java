@@ -1,12 +1,12 @@
 package com.asis.controllers;
 
 import com.asis.controllers.dialogs.DialogConfirmation;
+import com.asis.controllers.dialogs.DialogMessage;
 import com.asis.controllers.tabs.*;
 import com.asis.joi.model.entites.Scene;
 import com.asis.joi.model.entites.Timer;
 import com.asis.joi.model.entites.Transition;
 import com.asis.joi.model.entites.dialog.Dialog;
-import com.asis.utilities.Alerts;
 import com.asis.utilities.AsisUtils;
 import com.asis.utilities.StageManager;
 import javafx.application.Platform;
@@ -142,7 +142,7 @@ public class SceneDetails {
 
         switch(toCloseTab.getText()) {
             case "Normal Operation":
-                Alerts.messageDialog("Error", "Normal operations tab can't be closed.");
+                DialogMessage.messageDialog("Error", "Normal operations tab can't be closed.");
                 break;
 
             case "Timer":

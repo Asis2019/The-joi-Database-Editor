@@ -1,6 +1,7 @@
 package com.asis.utilities;
 
 import com.asis.controllers.Controller;
+import com.asis.controllers.dialogs.DialogMessage;
 import com.asis.joi.JOIPackageManager;
 import javafx.scene.paint.Color;
 import javafx.stage.FileChooser;
@@ -35,7 +36,7 @@ public class AsisUtils {
 
     public static void errorDialogWindow(Exception e) {
         e.printStackTrace();
-        Alerts.messageDialog("Error", "Oh no an error! Send it to Asis so he can feel bad.\n"+e.getMessage());
+        DialogMessage.messageDialog("Error", "Oh no an error! Send it to Asis so he can feel bad.\n"+e.getMessage());
     }
 
     public static double clamp(double val, double min, double max) {
@@ -48,12 +49,6 @@ public class AsisUtils {
         String oldFilePath = fileToRename.getPath();
         String newPath = oldFilePath.replace(oldFileName, newName);
         return fileToRename.renameTo(new File(newPath));
-    }
-
-    public static void writeJsonToFile(JSONObject jsonObject, String fileName, File saveLocation) throws IOException {
-        try (BufferedWriter bufferedWriter = new BufferedWriter(new OutputStreamWriter(new FileOutputStream(saveLocation.toPath() + File.separator + fileName), StandardCharsets.UTF_8))) {
-            bufferedWriter.write(jsonObject.toString(4));
-        }
     }
 
     public static void writeStringToFile(String string, String fileName, File saveLocation) throws IOException {
@@ -100,9 +95,7 @@ public class AsisUtils {
                 if(f.isDirectory()) {
                     deleteFolder(f);
                 } else {
-                    if(!f.delete()) {
-                        System.out.println("Failed to delete file: "+f.getPath());
-                    }
+                    if(!f.delete()) System.out.println("Failed to delete file: " + f.getPath());
                 }
             }
         }
@@ -124,9 +117,7 @@ public class AsisUtils {
             InputStream inputStream = Controller.class.getResourceAsStream(fileLocation);
 
             BufferedReader reader = new BufferedReader(new InputStreamReader(inputStream));
-            while ((message = reader.readLine()) != null) {
-                stringBuilder.append(message).append("\n");
-            }
+            while ((message = reader.readLine()) != null) stringBuilder.append(message).append("\n");
             return stringBuilder.toString();
         } catch (IOException e) {
             return "An error occurred while getting text file \n"+e.getMessage();

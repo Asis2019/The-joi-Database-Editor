@@ -1,7 +1,6 @@
 package com.asis.controllers.dialogs;
 
 import com.asis.Main;
-import com.asis.utilities.Alerts;
 import com.asis.utilities.AsisUtils;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
@@ -33,7 +32,7 @@ public class DialogSceneTitle {
         try {
             Stage stage = new Stage();
 
-            FXMLLoader fxmlLoader = new FXMLLoader(Alerts.class.getResource("/resources/fxml/dialog_set_scene_title.fxml"));
+            FXMLLoader fxmlLoader = new FXMLLoader(Main.class.getResource("/resources/fxml/dialog_set_scene_title.fxml"));
             Parent root = fxmlLoader.load();
 
             DialogSceneTitle controller = fxmlLoader.getController();

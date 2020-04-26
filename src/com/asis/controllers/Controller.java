@@ -1,17 +1,13 @@
 package com.asis.controllers;
 
-import com.asis.controllers.dialogs.DialogConfirmation;
-import com.asis.controllers.dialogs.DialogNewProject;
-import com.asis.controllers.dialogs.DialogSceneTitle;
+import com.asis.controllers.dialogs.*;
 import com.asis.joi.JOIPackageManager;
 import com.asis.joi.model.JOIPackage;
-import com.asis.joi.model.MetaData;
 import com.asis.joi.model.entites.GotoScene;
 import com.asis.joi.model.entites.dialog.DialogOption;
 import com.asis.ui.asis_node.AsisConnectionButton;
 import com.asis.ui.asis_node.SceneNode;
 import com.asis.ui.asis_node.SceneNodeMainController;
-import com.asis.utilities.Alerts;
 import com.asis.utilities.AsisUtils;
 import com.asis.utilities.Draggable;
 import com.asis.utilities.StageManager;
@@ -33,6 +29,8 @@ import javafx.stage.Stage;
 import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
+
+import static com.asis.controllers.dialogs.DialogUnsavedChanges.*;
 
 public class Controller {
     private SceneNode selectedScene;
@@ -272,33 +270,15 @@ public class Controller {
         }
     }
 
-    public boolean changesHaveOccurred() {
-        try {
-            final JOIPackage originalPackage = JOIPackageManager.getInstance().getJOIPackage(getJoiPackage().getPackageLanguageCode());
-
-            //The icons are set to null, because when a joi is saved it exports and icon
-            //This icon will not be present in the joi stored in memory causing the results
-            //to be inaccurate.
-            MetaData memoryData = getJoiPackage().getMetaData().clone();
-            memoryData.setJoiIcon(null);
-            MetaData fileData = originalPackage.getMetaData().clone();
-            fileData.setJoiIcon(null);
-
-            return !getJoiPackage().getJoi().equals(originalPackage.getJoi()) || !memoryData.equals(fileData);
-        } catch (RuntimeException | IOException | CloneNotSupportedException e) {
-            return true;
-        }
-    }
-
     public void actionExit() {
         //Check if dialog is needed
-        if (changesHaveOccurred()) {
-            int choice = new Alerts().unsavedChangesDialog("Warning", "You have unsaved work, are you sure you want to quit?");
+        if (JOIPackageManager.getInstance().changesHaveOccurred()) {
+            int choice = DialogUnsavedChanges.unsavedChangesDialog("Warning", "You have unsaved work, are you sure you want to quit?");
             switch (choice) {
-                case 0:
+                case CHOICE_CANCEL:
                     return;
 
-                case 2:
+                case CHOICE_DO_NOT_SAVE:
                     actionSaveProject();
                     break;
             }
@@ -412,13 +392,13 @@ public class Controller {
     }
 
     public boolean actionLoadProject() {
-        if (changesHaveOccurred()) {
-            int choice = new Alerts().unsavedChangesDialog("Load Project", "You have unsaved work, are you sure you want to continue?");
+        if (JOIPackageManager.getInstance().changesHaveOccurred()) {
+            int choice = DialogUnsavedChanges.unsavedChangesDialog("Load Project", "You have unsaved work, are you sure you want to continue?");
             switch (choice) {
-                case 0:
+                case CHOICE_CANCEL:
                     return false;
 
-                case 2:
+                case CHOICE_SAVE:
                     actionSaveProject();
                     break;
             }
@@ -466,7 +446,7 @@ public class Controller {
                 return true;
             } catch (RuntimeException e) {
                 e.printStackTrace();
-                Alerts.messageDialog("LOADING FAILED", "The editor was unable to load this joi for the following reason:\n" + e.getMessage(), 600, 200);
+                DialogMessage.messageDialog("LOADING FAILED", "The editor was unable to load this joi for the following reason:\n" + e.getMessage(), 600, 200);
                 return false;
             }
         }
@@ -548,22 +528,22 @@ public class Controller {
 
     public void actionGettingStarted() {
         String message = AsisUtils.getStringFromFile("/resources/text_files/getting_started.txt");
-        Alerts.messageDialog("Getting Started", message, 720, 720);
+        DialogMessage.messageDialog("Getting Started", message, 720, 720);
     }
 
     public void actionProjectDetailsHelp() {
         String message = AsisUtils.getStringFromFile("/resources/text_files/project_details.txt");
-        Alerts.messageDialog("Getting Started", message, 720, 720);
+        DialogMessage.messageDialog("Getting Started", message, 720, 720);
     }
 
     public void actionAbout() {
         String message = AsisUtils.getStringFromFile("/resources/text_files/about.txt");
-        Alerts.messageDialog("About", message, 500, 250);
+        DialogMessage.messageDialog("About", message, 500, 250);
     }
 
     public void actionSceneEditor() {
         String message = AsisUtils.getStringFromFile("/resources/text_files/scene_editor.txt");
-        Alerts.messageDialog("Scene Editor", message, 720, 720);
+        DialogMessage.messageDialog("Scene Editor", message, 720, 720);
     }
 
     public void actionAddSceneButton() {

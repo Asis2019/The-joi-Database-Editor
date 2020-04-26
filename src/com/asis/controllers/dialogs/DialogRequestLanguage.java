@@ -1,7 +1,6 @@
 package com.asis.controllers.dialogs;
 
 import com.asis.Main;
-import com.asis.utilities.Alerts;
 import com.asis.utilities.AsisUtils;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
@@ -38,7 +37,7 @@ public class DialogRequestLanguage {
 
     public static String requestLanguage(ArrayList<String> languages) {
         try {
-            FXMLLoader fxmlLoader = new FXMLLoader(Alerts.class.getResource("/resources/fxml/dialog_request_working_language.fxml"));
+            FXMLLoader fxmlLoader = new FXMLLoader(Main.class.getResource("/resources/fxml/dialog_request_working_language.fxml"));
             Parent root = fxmlLoader.load();
 
             DialogRequestLanguage dialogRequestLanguage = fxmlLoader.getController();

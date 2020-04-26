@@ -1,7 +1,6 @@
 package com.asis.controllers.dialogs;
 
 import com.asis.Main;
-import com.asis.utilities.Alerts;
 import com.asis.utilities.AsisUtils;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
@@ -40,7 +39,7 @@ public class DialogConfirmation {
         try {
             Stage stage = new Stage();
 
-            FXMLLoader fxmlLoader = new FXMLLoader(Alerts.class.getResource("/resources/fxml/dialog_confirmation.fxml"));
+            FXMLLoader fxmlLoader = new FXMLLoader(Main.class.getResource("/resources/fxml/dialog_confirmation.fxml"));
             Parent root = fxmlLoader.load();
 
             DialogConfirmation controller = fxmlLoader.getController();
