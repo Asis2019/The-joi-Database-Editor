@@ -327,9 +327,8 @@ public class Controller {
                 }
             }*/
 
-
-            sceneNode.setLayoutX(xPosition);
-            sceneNode.setLayoutY(yPosition);
+            sceneNode.setTranslateX(xPosition);
+            sceneNode.setTranslateY(yPosition);
             if (!suppressJSONUpdating) {
                 getJoiPackage().getJoi().getScene(sceneId).setLayoutXPosition(xPosition);
                 getJoiPackage().getJoi().getScene(sceneId).setLayoutYPosition(yPosition);
@@ -339,8 +338,8 @@ public class Controller {
             double lowestXPixelShown = -1 * bounds.getMinX();
             double lowestYPixelShown = -1 * bounds.getMinY();
 
-            sceneNode.setLayoutX(lowestXPixelShown + menuEventX);
-            sceneNode.setLayoutY(lowestYPixelShown + menuEventY);
+            sceneNode.setTranslateX(lowestXPixelShown + menuEventX);
+            sceneNode.setTranslateY(lowestYPixelShown + menuEventY);
             addSceneContextMenu = false;
 
             if (!suppressJSONUpdating) {

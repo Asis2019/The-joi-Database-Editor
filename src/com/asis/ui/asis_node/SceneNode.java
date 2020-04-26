@@ -3,7 +3,6 @@ package com.asis.ui.asis_node;
 import com.asis.joi.model.entites.Scene;
 import javafx.beans.property.ReadOnlyBooleanWrapper;
 import javafx.beans.value.ObservableValue;
-import javafx.geometry.Bounds;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
 import javafx.scene.control.Label;
@@ -45,14 +44,8 @@ public class SceneNode extends BorderPane {
         setCenter(titleLabel);
 
 
-        translateXProperty().addListener((observableValue, number, t1) -> {
-            Bounds borderBounds = getBoundsInParent();
-            scene.setLayoutXPosition(borderBounds.getMinX());
-        });
-        translateYProperty().addListener((observableValue, number, t1) -> {
-            Bounds borderBounds = getBoundsInParent();
-            scene.setLayoutYPosition(borderBounds.getMinY());
-        });
+        translateXProperty().addListener((observableValue, number, t1) -> scene.setLayoutXPosition(t1.doubleValue()));
+        translateYProperty().addListener((observableValue, number, t1) -> scene.setLayoutYPosition(t1.doubleValue()));
         focusedProperty().addListener((ObservableValue<? extends Boolean> observable, Boolean oldValue, Boolean newValue) -> focusState(newValue));
 
         initializeVBoxes();

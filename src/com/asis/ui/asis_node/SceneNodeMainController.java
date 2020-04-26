@@ -190,7 +190,6 @@ public class SceneNodeMainController {
     }
 
     void mouseMoved(MouseEvent mouseEvent) {
-        //TODO save this so that it doesn't need to be calculated every time
         Controller controller = Controller.getInstance();
         final double menuBarOffset = controller.mainMenuBar.getHeight() + controller.toolBar.getHeight();
 
