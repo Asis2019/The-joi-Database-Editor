@@ -24,6 +24,9 @@ public class JOIPackageManager {
     private static final JOIPackageManager joiPackageManager = new JOIPackageManager();
 
     private JOIPackageManager() {
+        if (!getJoiPackageDirectory().exists()) {
+            System.out.println(getJoiPackageDirectory().mkdir());
+        }
     }
 
     public static JOIPackageManager getInstance() {

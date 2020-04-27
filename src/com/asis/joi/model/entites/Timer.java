@@ -48,13 +48,12 @@ public class Timer implements JSONString, JOIEntity<JSONArray>, Cloneable {
         if (jsonObject.has("timerTextOutlineColor")) timer.setTimerTextOutlineColor(jsonObject.getString("timerTextOutlineColor"));
 
         //set lines
-        for(int i=0; i<jsonObject.names().length(); i++) {
-            String workingKey = jsonObject.names().getString(i);
-            if(workingKey.matches("line.*")) {
-                int lineSecond = Integer.parseInt(workingKey.replaceAll("[^0-9]", ""));
+        for(String key: jsonObject.keySet()) {
+            if(key.matches("line.*")) {
+                int lineSecond = Integer.parseInt(key.replaceAll("[^0-9]", ""));
 
                 JSONObject lineObject = jsonObject.getJSONArray("line" + lineSecond).getJSONObject(0);
-                lineObject.put("id", i);
+                lineObject.put("id", lineSecond);
 
                 timer.getLineArrayList().add(Line.createEntity(lineObject));
             }

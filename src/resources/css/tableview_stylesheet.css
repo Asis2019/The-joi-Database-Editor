@@ -25,6 +25,11 @@
     -fx-padding: 4;
 }
 
+.first-column.table-cell {
+    -fx-font-style: italic;
+    -fx-alignment: center-left;
+}
+
 .table-view .table-cell:selected, .table-view .table-row-cell:selected {
     -fx-background-color: rgb(75, 110, 175);
     -fx-padding: 4;
@@ -46,7 +51,7 @@
 }
 
 /* The increment and decrement button CSS class of scrollbar */
-.table-view .increment-button ,.table-view .decrement-button {
+.table-view .increment-button, .table-view .decrement-button {
     -fx-background-color: transparent;
     -fx-background-radius: 0em;
     -fx-padding: 0;
@@ -56,7 +61,7 @@
 
 /* The main scrollbar **track** CSS class  */
 .table-view .scroll-bar:horizontal .track,
-.table-view .scroll-bar:vertical .track{
+.table-view .scroll-bar:vertical .track {
     -fx-background-color: rgb(60, 63, 65);
     -fx-border-color: transparent;
 
