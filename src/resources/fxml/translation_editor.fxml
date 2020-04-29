@@ -1,32 +1,46 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
+<?import javafx.geometry.Insets?>
 <?import javafx.scene.control.*?>
 <?import javafx.scene.layout.*?>
+<?import javafx.scene.text.Font?>
 <?import java.net.URL?>
 <BorderPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="400.0" prefWidth="600.0" xmlns="http://javafx.com/javafx/10.0.2-internal" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.asis.controllers.TranslationEditor">
    <center>
-      <TableView fx:id="tableView" prefHeight="200.0" prefWidth="200.0" BorderPane.alignment="CENTER">
-        <columns>
-        </columns>
-      </TableView>
+       <TabPane prefHeight="200.0" prefWidth="200.0" tabClosingPolicy="UNAVAILABLE" BorderPane.alignment="CENTER">
+           <Tab text="JOI">
+               <TableView fx:id="tableViewJoi" prefHeight="200.0" prefWidth="200.0" BorderPane.alignment="CENTER">
+                   <columns>
+                   </columns>
+               </TableView>
+           </Tab>
+           <Tab text="MetaData">
+               <Label text="To translate the metaData details (Same as Project Details or the info_en.json file), please translate the joi first, then switch the working project language to the newly translated language. From there, open the Project Details panel and replace the content with your new translated content." textFill="WHITE" wrapText="true">
+               <font>
+                  <Font size="14.0" />
+               </font>
+               <padding>
+                  <Insets bottom="8.0" left="8.0" right="8.0" top="8.0" />
+               </padding></Label>
+           </Tab>
+       </TabPane>
    </center>
    <top>
-      <ToolBar prefHeight="40.0" prefWidth="200.0" BorderPane.alignment="CENTER">
-        <items>
-          <Button mnemonicParsing="false" onAction="#actionAddLanguage" text="Add Language" />
-        </items>
-      </ToolBar>
+       <ToolBar prefHeight="40.0" prefWidth="200.0" BorderPane.alignment="CENTER">
+           <Button mnemonicParsing="false" onAction="#actionAddLanguage" text="Add Language" />
+       </ToolBar>
    </top>
    <bottom>
-      <ToolBar prefHeight="40.0" prefWidth="200.0" BorderPane.alignment="CENTER">
-        <items>
-            <Pane HBox.hgrow="ALWAYS" />
-          <Button mnemonicParsing="false" onAction="#actionClose" text="Close" />
-        </items>
-      </ToolBar>
+       <ToolBar prefHeight="40.0" prefWidth="200.0" BorderPane.alignment="CENTER">
+           <Pane HBox.hgrow="ALWAYS" />
+           <Button mnemonicParsing="false" onAction="#actionClose" text="Close" />
+       </ToolBar>
    </bottom>
    <stylesheets>
       <URL value="@../css/main_stylesheet.css" />
       <URL value="@../css/tableview_stylesheet.css" />
+      <URL value="@../css/tabed_pane_stylesheet.css" />
    </stylesheets>
+   <left>
+   </left>
 </BorderPane>

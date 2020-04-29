@@ -30,38 +30,39 @@ import java.util.Comparator;
 public class TranslationEditor {
 
     @FXML
-    private TableView<TableRow> tableView;
+    private TableView<TableRow<JOIEntity<?>>> tableViewJoi;
 
     public void initialize() {
-        initTable();
-        loadData();
+        initJoiTable();
+        loadJoiTableData();
     }
 
-    private void initTable() {
-        tableView.getColumns().clear();
-        tableView.getItems().clear();
-        tableView.getSelectionModel().setCellSelectionEnabled(true);
+    //Setup joi table
+    private void initJoiTable() {
+        tableViewJoi.getColumns().clear();
+        tableViewJoi.getItems().clear();
+        tableViewJoi.getSelectionModel().setCellSelectionEnabled(true);
 
-        initColumns();
+        initJoiColumns();
 
-        tableView.setEditable(true);
+        tableViewJoi.setEditable(true);
     }
 
-    private void initColumns() {
+    private void initJoiColumns() {
         //Add line location column
-        TableColumn<TableRow, String> lineLocationColumn = new TableColumn<>("Location");
+        TableColumn<TableRow<JOIEntity<?>>, String> lineLocationColumn = new TableColumn<>("Location");
         lineLocationColumn.setSortable(false);
         lineLocationColumn.setPrefWidth(200d);
-        lineLocationColumn.setCellValueFactory(param -> new ReadOnlyObjectWrapper<>(getTextFromEntity(param.getValue().getRowData().get(0))));
+        lineLocationColumn.setCellValueFactory(param -> new ReadOnlyObjectWrapper<>(getTextFromEntity(param.getValue().getData(0))));
         lineLocationColumn.getStyleClass().add("first-column");
-        tableView.getColumns().add(lineLocationColumn);
+        tableViewJoi.getColumns().add(lineLocationColumn);
 
         //Add language columns
         ObservableList<String> joiPackageLanguages = JOIPackageManager.getInstance().getJoiPackageLanguages();
         for (int i = 1; i <= joiPackageLanguages.size(); i++) {
             String languageCode = joiPackageLanguages.get(i-1);
 
-            TableColumn<TableRow, String> columnLineText = new TableColumn<>(AsisUtils.getLanguageNameForCode(languageCode));
+            TableColumn<TableRow<JOIEntity<?>>, String> columnLineText = new TableColumn<>(AsisUtils.getLanguageNameForCode(languageCode));
             columnLineText.setSortable(false);
             columnLineText.setPrefWidth(300d);
 
@@ -69,7 +70,7 @@ public class TranslationEditor {
             columnLineText.setCellValueFactory(param -> {
                 ReadOnlyObjectWrapper<String> readOnlyObjectWrapper;
                 if(param.getValue().getRowData().size()-1 >= finalI) {
-                    readOnlyObjectWrapper = new ReadOnlyObjectWrapper<>(getTextFromEntity(param.getValue().getRowData().get(finalI)));
+                    readOnlyObjectWrapper = new ReadOnlyObjectWrapper<>(getTextFromEntity(param.getValue().getData(finalI)));
                 } else {
                     readOnlyObjectWrapper = new ReadOnlyObjectWrapper<>();
                 }
@@ -77,15 +78,15 @@ public class TranslationEditor {
                 return readOnlyObjectWrapper;
             });
 
-            editableColumns(columnLineText, i);
+            editableJoiColumn(columnLineText, i);
         }
     }
 
-    private void editableColumns(TableColumn<TableRow, String> tableColumn, final int dataIndex) {
+    private void editableJoiColumn(TableColumn<TableRow<JOIEntity<?>>, String> tableColumn, final int dataIndex) {
         tableColumn.setCellFactory(TextFieldTableCell.forTableColumn());
 
         tableColumn.setOnEditCommit(e-> {
-            TableRow tableRow = e.getTableView().getItems().get(e.getTablePosition().getRow());
+            TableRow<JOIEntity<?>> tableRow = e.getTableView().getItems().get(e.getTablePosition().getRow());
             if(tableRow.getRowData().size()-1 >= dataIndex) {
                 JOIEntity<?> entity = tableRow.getRowData().get(dataIndex);
                 if(entity instanceof Line) ((Line) entity).setText(e.getNewValue());
@@ -98,11 +99,11 @@ public class TranslationEditor {
             }
         });
 
-        tableView.getColumns().add(tableColumn);
+        tableViewJoi.getColumns().add(tableColumn);
     }
 
-    private void loadData() {
-        ObservableList<TableRow> itemsList = FXCollections.observableArrayList();
+    private void loadJoiTableData() {
+        ObservableList<TableRow<JOIEntity<?>>> itemsList = FXCollections.observableArrayList();
 
         ArrayList<String> unloadedLanguages = new ArrayList<>(JOIPackageManager.getInstance().getJoiPackageLanguages());
         JOIPackageManager.getInstance().getJoiPackages().forEach(i -> unloadedLanguages.remove(i.getPackageLanguageCode()));
@@ -121,11 +122,10 @@ public class TranslationEditor {
 
             int rowIndex = 0;
             for (Scene scene : joiPackage.getJoi().getSceneArrayList()) {
-
                 //Add normal text
                 for(Line line: scene.getLineArrayList()) {
                     if(i == 1)
-                        addLineToRow(itemsList, 0, rowIndex, scene.getSceneTitle() + " - Line " + line.getLineNumber());
+                        addLineToRow(itemsList, rowIndex, scene.getSceneTitle() + " - Line " + line.getLineNumber());
                     addLineToRow(itemsList, i, rowIndex, line);
                     rowIndex++;
                 }
@@ -134,7 +134,7 @@ public class TranslationEditor {
                 if (scene.getTimer() != null) {
                     for(Line line: scene.getTimer().getLineArrayList()) {
                         if(i == 1)
-                            addLineToRow(itemsList, 0, rowIndex, scene.getSceneTitle() + " - Timer - Line " + line.getLineNumber());
+                            addLineToRow(itemsList, rowIndex, scene.getSceneTitle() + " - Timer - Line " + line.getLineNumber());
                         addLineToRow(itemsList, i, rowIndex, line);
                         rowIndex++;
                     }
@@ -144,7 +144,7 @@ public class TranslationEditor {
                 if(scene.getDialog() != null) {
                     for(DialogOption dialogOption: scene.getDialog().getOptionArrayList()) {
                         if(i == 1)
-                            addLineToRow(itemsList, 0, rowIndex, scene.getSceneTitle() + " - Dialog - Option " + dialogOption.getOptionNumber());
+                            addLineToRow(itemsList, rowIndex, scene.getSceneTitle() + " - Dialog - Option " + dialogOption.getOptionNumber());
                         addLineToRow(itemsList, i, rowIndex, dialogOption);
                         rowIndex++;
                     }
@@ -154,14 +154,14 @@ public class TranslationEditor {
                 if(scene.getTransition() != null && scene.getTransition().getTransitionText() != null) {
                     Transition transition = scene.getTransition();
                     if(i == 1)
-                        addLineToRow(itemsList, 0, rowIndex, scene.getSceneTitle() + " - Transition");
+                        addLineToRow(itemsList, rowIndex, scene.getSceneTitle() + " - Transition");
                     addLineToRow(itemsList, i, rowIndex, transition);
                     rowIndex++;
                 }
             }
         }
 
-        tableView.setItems(itemsList);
+        tableViewJoi.setItems(itemsList);
     }
 
     private String getTextFromEntity(JOIEntity<?> entity) {
@@ -171,17 +171,18 @@ public class TranslationEditor {
         else return null;
     }
 
-    private <T extends JOIEntity<?>> void addLineToRow(ObservableList<TableRow> itemsList, int i, int rowIndex, String string) {
-        addLineToRow(itemsList, i, rowIndex, Line.createEntity(new JSONObject("{\"text\":\""+ string + "\"}")));
+    private void addLineToRow(ObservableList<TableRow<JOIEntity<?>>> itemsList, int rowIndex, String string) {
+        addLineToRow(itemsList, 0, rowIndex, Line.createEntity(new JSONObject("{\"text\":\""+ string + "\"}")));
     }
 
-    private <T extends JOIEntity<?>> void addLineToRow(ObservableList<TableRow> itemsList, int i, int rowIndex, T entity) {
-        TableRow tableRow;
+    private <T extends JOIEntity<?>> void addLineToRow(ObservableList<TableRow<JOIEntity<?>>> itemsList, int i, int rowIndex, T entity) {
+        TableRow<JOIEntity<?>> tableRow;
         if(itemsList.size()-1 >= rowIndex) {
             tableRow = itemsList.get(rowIndex);
             tableRow.getRowData().add(i, entity);
         } else {
-            tableRow = new TableRow();tableRow.getRowData().add(i, entity);
+            tableRow = new TableRow<>();
+            tableRow.getRowData().add(i, entity);
             itemsList.add(tableRow);
         }
     }
@@ -207,23 +208,26 @@ public class TranslationEditor {
             JOIPackageManager.getInstance().addJOIPackage(joiPackage);
 
             //Add to table
-            initTable();
-            loadData();
+            initialize();
         } catch (CloneNotSupportedException e) {
             AsisUtils.errorDialogWindow(e);
         }
     }
 
     public void actionClose() {
-        Stage stage = (Stage) tableView.getScene().getWindow();
+        Stage stage = (Stage) tableViewJoi.getScene().getWindow();
         stage.fireEvent(new WindowEvent(stage, WindowEvent.WINDOW_CLOSE_REQUEST));
     }
 
-    private static class TableRow {
-        ObservableList<JOIEntity<?>> rowData = FXCollections.observableArrayList();
+    private static class TableRow<T> {
+        ObservableList<T> rowData = FXCollections.observableArrayList();
 
-        public ObservableList<JOIEntity<?>> getRowData() {
+        public ObservableList<T> getRowData() {
             return rowData;
+        }
+
+        public T getData(int index) {
+            return getRowData().get(index);
         }
     }
 }

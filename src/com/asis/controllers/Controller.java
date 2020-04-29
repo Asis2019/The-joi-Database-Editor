@@ -241,11 +241,8 @@ public class Controller {
 
         sceneNode.setOnMouseClicked(mouseEvent -> {
             //User double clicked
-            if (mouseEvent.getButton().equals(MouseButton.PRIMARY)) {
-                if (mouseEvent.getClickCount() == 2) {
-                    openSceneDetails(sceneNode);
-                }
-            }
+            if (mouseEvent.getButton().equals(MouseButton.PRIMARY))
+                if (mouseEvent.getClickCount() == 2) openSceneDetails(sceneNode);
         });
     }
 

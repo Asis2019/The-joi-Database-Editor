@@ -69,8 +69,7 @@ public class MetaData implements Cloneable, JOIEntity<JSONObject>, JSONString {
 
         JSONArray array = new JSONArray();
         array.put(innerObject);
-        JSONObject finalObject = new JSONObject();
-        return finalObject.put("JOI METADATA", array);
+        return new JSONObject().put("JOI METADATA", array);
     }
 
     @Override
