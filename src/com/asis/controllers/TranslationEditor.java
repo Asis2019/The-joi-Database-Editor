@@ -153,7 +153,7 @@ public class TranslationEditor {
 
     private int addDataToCell(ObservableList<TableRow<JOIEntity<?>>> itemsList, int columnIndex, int rowIndex, String cellData, JOIEntity<?> entity) {
         if(columnIndex == 1)
-            addLineToRow(itemsList, rowIndex, cellData);
+            addLineToRow(itemsList, 0, rowIndex, cellData);
         addLineToRow(itemsList, columnIndex, rowIndex, entity);
         rowIndex++;
         return rowIndex;
@@ -166,18 +166,19 @@ public class TranslationEditor {
         else return null;
     }
 
-    private void addLineToRow(ObservableList<TableRow<JOIEntity<?>>> itemsList, int rowIndex, String string) {
-        addLineToRow(itemsList, 0, rowIndex, Line.createEntity(new JSONObject("{\"text\":\""+ string + "\"}")));
-    }
+    private <T> void addLineToRow(ObservableList<TableRow<JOIEntity<?>>> itemsList, int columnIndex, int rowIndex, T entity) {
+        JOIEntity<?> insertionEntity;
+        if(entity instanceof JOIEntity<?>) insertionEntity = (JOIEntity<?>) entity;
+        else if(entity instanceof String) insertionEntity = Line.createEntity(new JSONObject("{\"text\":\""+ entity + "\"}"));
+        else throw new IllegalArgumentException("Cell data value must be a String or and object that implements JOIEntity");
 
-    private <T extends JOIEntity<?>> void addLineToRow(ObservableList<TableRow<JOIEntity<?>>> itemsList, int i, int rowIndex, T entity) {
         TableRow<JOIEntity<?>> tableRow;
         if(itemsList.size()-1 >= rowIndex) {
             tableRow = itemsList.get(rowIndex);
-            tableRow.getRowData().add(i, entity);
+            tableRow.getRowData().add(columnIndex, insertionEntity);
         } else {
             tableRow = new TableRow<>();
-            tableRow.getRowData().add(i, entity);
+            tableRow.getRowData().add(columnIndex, insertionEntity);
             itemsList.add(tableRow);
         }
     }
@@ -186,12 +187,12 @@ public class TranslationEditor {
         try {
             ArrayList<String> languages = new ArrayList<>();
             Object data = Config.get("LANGUAGES");
-            if (data instanceof JSONArray) {
-                for (int i = 0; i < ((JSONArray) data).length(); i++) {
-                    String languageCode = ((JSONArray) data).getJSONObject(i).getString("file_code");
-                    if (!JOIPackageManager.getInstance().getJoiPackageLanguages().contains(languageCode))
-                        languages.add(languageCode);
-                }
+            if (!(data instanceof JSONArray)) return;
+
+            for (int i = 0; i < ((JSONArray) data).length(); i++) {
+                String languageCode = ((JSONArray) data).getJSONObject(i).getString("file_code");
+                if (!JOIPackageManager.getInstance().getJoiPackageLanguages().contains(languageCode))
+                    languages.add(languageCode);
             }
 
             String newLanguage = DialogRequestLanguage.requestLanguage(languages);

@@ -72,15 +72,11 @@ public class SceneDetails {
             //This is done so that if a scene image is added in one tab, it is synced with the others
             switch (newTab.getText()) {
                 case "Normal Operation":
-                    if(getTabNormalOperationController() != null) {
-                        getTabNormalOperationController().setVisibleImage();
-                    }
+                    if(getTabNormalOperationController() != null) getTabNormalOperationController().setVisibleImage();
                     break;
 
                 case "Timer":
-                    if(getTabTimerController() != null) {
-                        getTabTimerController().setVisibleImage();
-                    }
+                    if(getTabTimerController() != null) getTabTimerController().setVisibleImage();
                     break;
             }
         });

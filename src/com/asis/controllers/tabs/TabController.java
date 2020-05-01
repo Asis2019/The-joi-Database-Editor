@@ -4,11 +4,16 @@ import com.asis.controllers.Controller;
 import com.asis.joi.model.entites.JOIEntity;
 import com.asis.joi.model.entites.Line;
 import com.asis.joi.model.entites.Scene;
+import com.asis.ui.ImageViewPane;
 import javafx.scene.Node;
 import javafx.scene.control.CheckBox;
 import javafx.scene.control.TextField;
+import javafx.scene.image.Image;
+import javafx.scene.image.ImageView;
+import javafx.scene.layout.StackPane;
 import org.json.JSONObject;
 
+import java.io.File;
 import java.util.Optional;
 
 public abstract class TabController {
@@ -17,6 +22,19 @@ public abstract class TabController {
 
     TabController(String tabTitle) {
         setTabTitle(tabTitle);
+    }
+
+    void setVisibleImage(StackPane stackPane, ImageViewPane viewPane, File workingFile) {
+        //Remove image if any is present
+        stackPane.getChildren().remove(viewPane);
+
+        //Make image visible
+        Image image = new Image(workingFile.toURI().toString());
+        ImageView sceneImageView = new ImageView();
+        sceneImageView.setImage(image);
+        sceneImageView.setPreserveRatio(true);
+        viewPane.setImageView(sceneImageView);
+        stackPane.getChildren().add(0, viewPane);
     }
 
     void setNodeColorStyle(Node node, String fillColor, String outlineColor) {

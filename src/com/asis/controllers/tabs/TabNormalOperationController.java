@@ -1,13 +1,12 @@
 package com.asis.controllers.tabs;
 
+import com.asis.joi.model.entites.Line;
 import com.asis.joi.model.entites.Scene;
 import com.asis.ui.ImageViewPane;
 import com.asis.utilities.AsisUtils;
 import javafx.application.Platform;
 import javafx.fxml.FXML;
 import javafx.scene.control.*;
-import javafx.scene.image.Image;
-import javafx.scene.image.ImageView;
 import javafx.scene.layout.StackPane;
 import javafx.scene.layout.VBox;
 import javafx.scene.paint.Color;
@@ -149,11 +148,8 @@ public class TabNormalOperationController extends TabController {
     }
 
     public void actionPreviousLine() {
-        if(onLine <= 1) {
-            onLine = 1;
-        } else {
-            onLine--;
-        }
+        if(onLine <= 1) onLine = 1;
+        else onLine--;
 
         if(onLine <= 1) {
             previousLineButton.setDisable(true);
@@ -168,10 +164,7 @@ public class TabNormalOperationController extends TabController {
     }
 
     public void actionNextLine() {
-        if(onLine == totalLines) {
-            totalLines++;
-        }
-
+        if(onLine == totalLines) totalLines++;
         onLine++;
 
         setLineVariables();
@@ -202,8 +195,7 @@ public class TabNormalOperationController extends TabController {
         initializeText();
 
         JSONObject textObject = getScene().getLine(onLine-1).toJSON().getJSONObject(0);
-
-        if (textObject != null) { textObjectElseIf(textObject); }
+        textObjectElseIf();
 
         beatProperties(textObject, checkBoxStopBeat, "stopBeat");
         beatProperties(textObject, checkBoxStartBeat, "startBeat");
@@ -212,36 +204,16 @@ public class TabNormalOperationController extends TabController {
         changeBeatSpeed(textObject, textFieldBeatSpeed, "changeBeatSpeed");
     }
 
-    private void textObjectElseIf(JSONObject textObject) {
-        if (textObject.has("fillColor")) {
-            textColorPicker.setValue(Color.web(textObject.getString("fillColor")));
-        }
+    private void textObjectElseIf() {
+        Line workingLine = getScene().getLine(onLine-1);
+        if (workingLine.getFillColor() != null)
+            textColorPicker.setValue(Color.web(workingLine.getFillColor()));
 
-        if (textObject.has("outlineColor")) {
-            textOutlineColorPicker.setValue(Color.web(textObject.getString("outlineColor")));
-        }
+        if (workingLine.getOutlineColor() != null)
+            textOutlineColorPicker.setValue(Color.web(workingLine.getOutlineColor()));
 
-        if (textObject.has("text")) {
-            String text = textObject.getString("text").replaceAll("#", "\n");
-            mainTextArea.setText(text);
-        }
-
-        checkBoxStartBeat.setSelected(textObject.has("startBeat"));
-    }
-
-    public void setVisibleImage() {
-        //Remove image if any is present
-        if(viewPane != null) stackPane.getChildren().remove(viewPane);
-
-        File workingFile = getImageFile();
-
-        //Make image visible
-        Image image = new Image(workingFile.toURI().toString());
-        ImageView sceneImageView = new ImageView();
-        sceneImageView.setImage(image);
-        sceneImageView.setPreserveRatio(true);
-        viewPane.setImageView(sceneImageView);
-        stackPane.getChildren().add(0, viewPane);
+        mainTextArea.setText(workingLine.getText().replaceAll("#", "\n"));
+        if(workingLine.getStartBeat() != null) checkBoxStartBeat.setSelected(workingLine.getStartBeat());
     }
 
     private File getImageFile() {
@@ -276,6 +248,10 @@ public class TabNormalOperationController extends TabController {
             getScene().getLine(onLine-1).setFillColor(fillColor);
             getScene().getLine(onLine-1).setOutlineColor(outlineColor);
         }
+    }
+
+    public void setVisibleImage() {
+        super.setVisibleImage(stackPane, viewPane, getImageFile());
     }
 
     //Getters and setters

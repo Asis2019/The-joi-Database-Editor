@@ -1,5 +1,6 @@
 package com.asis.controllers.tabs;
 
+import com.asis.joi.model.entites.Line;
 import com.asis.joi.model.entites.Timer;
 import com.asis.ui.AsisCenteredArc;
 import com.asis.ui.ImageViewPane;
@@ -7,8 +8,6 @@ import com.asis.utilities.AsisUtils;
 import javafx.application.Platform;
 import javafx.fxml.FXML;
 import javafx.scene.control.*;
-import javafx.scene.image.Image;
-import javafx.scene.image.ImageView;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.StackPane;
 import javafx.scene.layout.VBox;
@@ -281,10 +280,8 @@ public class TabTimerController extends TabController {
         File file = AsisUtils.imageFileChooser();
 
         if (file != null) {
-            //Add image to json object
             if (getScene(getTimer()) != null) {
                 getScene(getTimer()).setSceneImage(file);
-
                 setVisibleImage();
             }
         }
@@ -299,21 +296,6 @@ public class TabTimerController extends TabController {
 
             setVisibleImage();
         }
-    }
-
-    public void setVisibleImage() {
-        //Remove image if any is present
-        if (viewPane != null) timerStackPane.getChildren().remove(viewPane);
-
-        File workingFile = getImageFile();
-
-        //Make image visible
-        Image image = new Image(workingFile.toURI().toString());
-        ImageView sceneImageView = new ImageView();
-        sceneImageView.setImage(image);
-        sceneImageView.setPreserveRatio(true);
-        viewPane.setImageView(sceneImageView);
-        timerStackPane.getChildren().add(0, viewPane);
     }
 
     private File getImageFile() {
@@ -342,28 +324,24 @@ public class TabTimerController extends TabController {
         timerTextArea.setText("");
 
         if (getTimer().getLine(onSecond) != null) {
-            JSONObject textObject = getTimer().getLine(onSecond).toJSON().getJSONObject(0);
-            setFieldsIfNeeded(textObject);
+            setFieldsIfNeeded();
 
+            JSONObject textObject = getTimer().getLine(onSecond).toJSON().getJSONObject(0);
             beatConfiguration(textObject);
         }
 
         setLockTextAreaFunctionality(false);
     }
 
-    private void setFieldsIfNeeded(JSONObject textObject) {
-        if (textObject.has("fillColor")) {
-            textColorPicker.setValue(Color.web(textObject.getString("fillColor")));
-        }
+    private void setFieldsIfNeeded() {
+        Line workingLine = getTimer().getLine(onSecond);
+        if (workingLine.getFillColor() != null)
+            textColorPicker.setValue(Color.web(workingLine.getFillColor()));
 
-        if (textObject.has("outlineColor")) {
-            textOutlineColorPicker.setValue(Color.web(textObject.getString("outlineColor")));
-        }
+        if (workingLine.getOutlineColor() != null)
+            textOutlineColorPicker.setValue(Color.web(workingLine.getOutlineColor()));
 
-        if (textObject.has("text")) {
-            String text = textObject.getString("text").replaceAll("#", "\n");
-            timerTextArea.setText(text);
-        }
+        timerTextArea.setText(workingLine.getText().replaceAll("#", "\n"));
     }
 
     private void beatConfiguration(JSONObject textObject) {
@@ -404,6 +382,10 @@ public class TabTimerController extends TabController {
             setTimerTextColors();
         }
         updateObjectTree();
+    }
+
+    public void setVisibleImage() {
+        super.setVisibleImage(timerStackPane, viewPane, getImageFile());
     }
 
     //Getters and setters
