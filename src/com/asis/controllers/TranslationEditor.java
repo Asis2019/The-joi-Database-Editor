@@ -62,7 +62,7 @@ public class TranslationEditor {
         for (int i = 1; i <= joiPackageLanguages.size(); i++) {
             String languageCode = joiPackageLanguages.get(i-1);
 
-            TableColumn<TableRow<JOIEntity<?>>, String> columnLineText = new TableColumn<>(AsisUtils.getLanguageNameForCode(languageCode));
+            TableColumn<TableRow<JOIEntity<?>>, String> columnLineText = new TableColumn<>(AsisUtils.getLanguageValueForAlternateKey(languageCode, "file_code"));
             columnLineText.setSortable(false);
             columnLineText.setPrefWidth(300d);
 
@@ -117,51 +117,46 @@ public class TranslationEditor {
 
         ArrayList<JOIPackage> joiPackages = JOIPackageManager.getInstance().getJoiPackages();
         joiPackages.sort(Comparator.comparing(JOIPackage::getPackageLanguageCode));
-        for (int i = 1; i <= joiPackages.size(); i++) {
-            JOIPackage joiPackage = joiPackages.get(i-1);
+        for (int columnIndex = 1; columnIndex <= joiPackages.size(); columnIndex++) {
+            JOIPackage joiPackage = joiPackages.get(columnIndex-1);
 
             int rowIndex = 0;
             for (Scene scene : joiPackage.getJoi().getSceneArrayList()) {
                 //Add normal text
                 for(Line line: scene.getLineArrayList()) {
-                    if(i == 1)
-                        addLineToRow(itemsList, rowIndex, scene.getSceneTitle() + " - Line " + line.getLineNumber());
-                    addLineToRow(itemsList, i, rowIndex, line);
-                    rowIndex++;
+                    rowIndex = addDataToCell(itemsList, columnIndex, rowIndex, scene.getSceneTitle() + " - Line " + line.getLineNumber(), line);
                 }
 
                 //Add text from timers options
                 if (scene.getTimer() != null) {
                     for(Line line: scene.getTimer().getLineArrayList()) {
-                        if(i == 1)
-                            addLineToRow(itemsList, rowIndex, scene.getSceneTitle() + " - Timer - Line " + line.getLineNumber());
-                        addLineToRow(itemsList, i, rowIndex, line);
-                        rowIndex++;
+                        rowIndex = addDataToCell(itemsList, columnIndex, rowIndex, scene.getSceneTitle() + " - Timer - Line " + line.getLineNumber(), line);
                     }
                 }
 
                 //Add text from dialog options
                 if(scene.getDialog() != null) {
                     for(DialogOption dialogOption: scene.getDialog().getOptionArrayList()) {
-                        if(i == 1)
-                            addLineToRow(itemsList, rowIndex, scene.getSceneTitle() + " - Dialog - Option " + dialogOption.getOptionNumber());
-                        addLineToRow(itemsList, i, rowIndex, dialogOption);
-                        rowIndex++;
+                        rowIndex = addDataToCell(itemsList, columnIndex, rowIndex, scene.getSceneTitle() + " - Dialog - Option " + dialogOption.getOptionNumber(), dialogOption);
                     }
                 }
 
                 //Add text from transitions
                 if(scene.getTransition() != null && scene.getTransition().getTransitionText() != null) {
-                    Transition transition = scene.getTransition();
-                    if(i == 1)
-                        addLineToRow(itemsList, rowIndex, scene.getSceneTitle() + " - Transition");
-                    addLineToRow(itemsList, i, rowIndex, transition);
-                    rowIndex++;
+                    rowIndex = addDataToCell(itemsList, columnIndex, rowIndex, scene.getSceneTitle() + " - Transition", scene.getTransition());
                 }
             }
         }
 
         tableViewJoi.setItems(itemsList);
+    }
+
+    private int addDataToCell(ObservableList<TableRow<JOIEntity<?>>> itemsList, int columnIndex, int rowIndex, String cellData, JOIEntity<?> entity) {
+        if(columnIndex == 1)
+            addLineToRow(itemsList, rowIndex, cellData);
+        addLineToRow(itemsList, columnIndex, rowIndex, entity);
+        rowIndex++;
+        return rowIndex;
     }
 
     private String getTextFromEntity(JOIEntity<?> entity) {

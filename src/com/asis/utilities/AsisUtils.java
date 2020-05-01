@@ -130,28 +130,19 @@ public class AsisUtils {
         return list;
     }
 
-    public static String getLanguageCodeForName(String name) {
+    public static String getLanguageValueForAlternateKey(String value, String key) {
         Object data = Config.get("LANGUAGES");
         if(data instanceof JSONArray) {
             for(int i=0; i<((JSONArray) data).length(); i++) {
-                if(((JSONArray) data).getJSONObject(i).getString("menu_name").equals(name)) {
-                    return ((JSONArray) data).getJSONObject(i).getString("file_code");
-                }
-            }
-        }
-        throw new IllegalArgumentException(String.format("The language code for %s could not be found in settings.json\nPlease make sure to select a valid option from the dropdown.", name));
-    }
+                String other = "menu_name";
+                if(other.equals(key)) other = "file_code";
 
-    public static String getLanguageNameForCode(String name) {
-        Object data = Config.get("LANGUAGES");
-        if(data instanceof JSONArray) {
-            for(int i=0; i<((JSONArray) data).length(); i++) {
-                if(((JSONArray) data).getJSONObject(i).getString("file_code").equals(name)) {
-                    return ((JSONArray) data).getJSONObject(i).getString("menu_name");
+                if(((JSONArray) data).getJSONObject(i).getString(key).equals(value)) {
+                    return ((JSONArray) data).getJSONObject(i).getString(other);
                 }
             }
         }
-        throw new IllegalArgumentException(String.format("The language code for %s could not be found in settings.json\nPlease make sure to select a valid option from the dropdown.", name));
+        throw new IllegalArgumentException(String.format("The language code for %s could not be found in settings.json\nPlease make sure to select a valid option from the dropdown.", value));
     }
 
     public static File imageFileChooser() {

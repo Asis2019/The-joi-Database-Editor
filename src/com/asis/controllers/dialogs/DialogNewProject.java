@@ -22,7 +22,7 @@ import java.io.IOException;
 import java.nio.file.FileAlreadyExistsException;
 
 import static com.asis.controllers.dialogs.DialogUnsavedChanges.*;
-import static com.asis.utilities.AsisUtils.getLanguageCodeForName;
+import static com.asis.utilities.AsisUtils.getLanguageValueForAlternateKey;
 
 
 public class DialogNewProject {
@@ -91,16 +91,16 @@ public class DialogNewProject {
                         return;
 
                     case CHOICE_DO_NOT_SAVE:
-                        Controller.getInstance().processNewProject(getProjectPath(), projectNameTextField.getText().trim(), getLanguageCodeForName(getLanguagesDropDown().getValue()));
+                        Controller.getInstance().processNewProject(getProjectPath(), projectNameTextField.getText().trim(), getLanguageValueForAlternateKey(getLanguagesDropDown().getValue(), "menu_name"));
                         break;
 
                     case CHOICE_SAVE:
                         Controller.getInstance().actionSaveProject();
-                        Controller.getInstance().processNewProject(getProjectPath(), projectNameTextField.getText().trim(), getLanguageCodeForName(getLanguagesDropDown().getValue()));
+                        Controller.getInstance().processNewProject(getProjectPath(), projectNameTextField.getText().trim(), getLanguageValueForAlternateKey(getLanguagesDropDown().getValue(), "menu_name"));
                         break;
                 }
             } else {
-                Controller.getInstance().processNewProject(getProjectPath(), projectNameTextField.getText().trim(), getLanguageCodeForName(getLanguagesDropDown().getValue()));
+                Controller.getInstance().processNewProject(getProjectPath(), projectNameTextField.getText().trim(), getLanguageValueForAlternateKey(getLanguagesDropDown().getValue(), "menu_name"));
             }
 
             Stage stage = (Stage) projectNameTextField.getScene().getWindow();

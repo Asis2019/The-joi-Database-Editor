@@ -486,15 +486,7 @@ public class Controller {
     }
 
     public SceneNode getSceneNodeWithId(ArrayList<SceneNode> sceneList, int sceneId) {
-        //System.out.println("Checking for scene with id "+sceneId);
-        for (SceneNode scene : sceneList) {
-            //System.out.println("Current scene id: "+scene.getSceneId());
-
-            if (scene.getSceneId() == sceneId) {
-                return scene;
-            }
-        }
-
+        for (SceneNode scene : sceneList) if (scene.getSceneId() == sceneId) return scene;
         return null;
     }
 

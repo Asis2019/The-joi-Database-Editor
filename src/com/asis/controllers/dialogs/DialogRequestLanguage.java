@@ -24,13 +24,13 @@ public class DialogRequestLanguage {
 
 
     public void populateDropdown() {
-        for(String s: languages) languagesDropDown.getItems().add(AsisUtils.getLanguageNameForCode(s));
+        for(String s: languages) languagesDropDown.getItems().add(AsisUtils.getLanguageValueForAlternateKey(s, "file_code"));
 
         languagesDropDown.getSelectionModel().select(0);
     }
 
     public void actionContinue() {
-        selectedLanguageCode = AsisUtils.getLanguageCodeForName(languagesDropDown.getValue());
+        selectedLanguageCode = AsisUtils.getLanguageValueForAlternateKey(languagesDropDown.getValue(), "menu_name");
         Stage stage = (Stage) languagesDropDown.getScene().getWindow();
         stage.close();
     }
