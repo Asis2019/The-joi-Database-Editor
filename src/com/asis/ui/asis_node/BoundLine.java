@@ -49,18 +49,12 @@ public class BoundLine extends CubicCurve {
         endYProperty().bind(getEndPointConnectionObject().centerYProperty());
     }
 
-    public void unbindStart() {
-        startXProperty().unbind();
-        startYProperty().unbind();
-    }
-
     public void unbindEnd() {
         endXProperty().unbind();
         endYProperty().unbind();
     }
 
     public void setStartPointConnectionObject(AsisConnectionButton startPointConnectionObject) {
-        //setUserData(startPointConnectionObject);
         this.startPointConnectionObject = startPointConnectionObject;
         bindStart();
     }

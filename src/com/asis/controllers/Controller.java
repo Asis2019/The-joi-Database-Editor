@@ -344,7 +344,6 @@ public class Controller {
         getAnchorPane().getChildren().add(sceneNode);
 
         getSceneNodes().add(sceneNode);
-        sceneNode.refreshConnectionCenters();
     }
 
     private void removeScene(SceneNode sceneNode) {

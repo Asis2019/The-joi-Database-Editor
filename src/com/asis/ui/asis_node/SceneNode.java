@@ -109,18 +109,11 @@ public class SceneNode extends BorderPane {
         //Add button to list
         outputConnections.add(connection);
 
-        connection.setConnectionId(connectionId);
+        connection.setId(connectionId);
 
         outputContainer.getChildren().add(hBox);
 
         return connection;
-    }
-
-    public void refreshConnectionCenters() {
-        inputConnection.calcCenter();
-        for (AsisConnectionButton connectionButton : getOutputButtons()) {
-            connectionButton.calcCenter();
-        }
     }
 
     public void removeOutputConnection() {
