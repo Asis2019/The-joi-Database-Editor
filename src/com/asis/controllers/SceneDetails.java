@@ -47,19 +47,17 @@ public class SceneDetails {
             createNewTab(tabNormalOperationController, "/resources/fxml/tab_normal_operation.fxml");
 
             //add timer tab to sceneDetails
-            if (getScene().getTimer() != null) {
+            if (getScene().getTimer() != null)
                 addTimerTab(getScene().getTimer());
-            }
 
             //add dialog tab to sceneDetails
-            if (getScene().getDialog() != null) {
+            if (getScene().getDialog() != null)
                 addDialogTab(getScene().getDialog());
-            }
 
             //add transition tab to sceneDetails
-            if (getScene().getTransition() != null) {
+            if (getScene().getTransition() != null)
                 addTransitionTab(getScene().getTransition());
-            }
+
         } catch (IOException e) {
             AsisUtils.errorDialogWindow(e);
         }

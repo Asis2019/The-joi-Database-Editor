@@ -14,7 +14,6 @@ public class Scene implements JSONString, JOIEntity<JSONObject>, Cloneable {
     private int sceneId;
     private double layoutXPosition, layoutYPosition;
     private String sceneTitle;
-    private boolean noFade = false;
     private File sceneImage;
     private Timer timer;
     private Dialog dialog;
@@ -121,7 +120,7 @@ public class Scene implements JSONString, JOIEntity<JSONObject>, Cloneable {
                     }
                     break;
                 case "noFade":
-                    scene.setNoFade(jsonObject.getBoolean("noFade"));
+                    scene.setTransition(null);
                     break;
                 case "transition":
                     scene.setTransition(Transition.createEntity(jsonObject.getJSONArray("transition").getJSONObject(0)));
@@ -172,15 +171,18 @@ public class Scene implements JSONString, JOIEntity<JSONObject>, Cloneable {
         sceneObject.put("layoutXPosition", getLayoutXPosition());
         sceneObject.put("layoutYPosition", getLayoutYPosition());
 
-        if (isNoFade()) sceneObject.put("noFade", true);
         if (goodEndProperty().getValue()) sceneObject.put("joiEnd", true);
         if (badEndProperty().getValue()) sceneObject.put("badJoiEnd", true);
         if (getSceneImage() != null) sceneObject.put("sceneImage", getSceneImage().getName());
         if (getTimer() != null) sceneObject.put("timer", getTimer().toJSON());
         if (getDialog() != null) sceneObject.put("dialogChoice", getDialog().toJSON());
-        if (getTransition() != null) sceneObject.put("transition", getTransition().toJSON());
         if (getCustomDialogueBox() != null) sceneObject.put("customDialogueBox", getCustomDialogueBox().toJSON());
         if (getGotoScene() != null) sceneObject.put(getGotoScene().getJsonKeyName(), getGotoScene().getJsonValue());
+        if (getTransition() != null) {
+            sceneObject.put("transition", getTransition().toJSON());
+        } else {
+            sceneObject.put("noFade", true);
+        }
 
         for (int i = 0; i < getLineArrayList().size(); i++)
             sceneObject.put("line" + i, getLineArrayList().get(i).toJSON());
@@ -198,7 +200,6 @@ public class Scene implements JSONString, JOIEntity<JSONObject>, Cloneable {
 
         scene.setBadEnd(isBadEnd());
         scene.setGoodEnd(isGoodEnd());
-        scene.setNoFade(isNoFade());
         scene.setLayoutXPosition(getLayoutXPosition());
         scene.setLayoutYPosition(getLayoutYPosition());
         scene.setSceneId(getSceneId());
@@ -229,7 +230,6 @@ public class Scene implements JSONString, JOIEntity<JSONObject>, Cloneable {
         if (getSceneId() != scene.getSceneId()) return false;
         if (Double.compare(scene.getLayoutXPosition(), getLayoutXPosition()) != 0) return false;
         if (Double.compare(scene.getLayoutYPosition(), getLayoutYPosition()) != 0) return false;
-        if (isNoFade() != scene.isNoFade()) return false;
         if (getSceneTitle() != null ? !getSceneTitle().equals(scene.getSceneTitle()) : scene.getSceneTitle() != null)
             return false;
         if (getSceneImage() != null ? !getSceneImage().equals(scene.getSceneImage()) : scene.getSceneImage() != null)
@@ -280,14 +280,6 @@ public class Scene implements JSONString, JOIEntity<JSONObject>, Cloneable {
         this.sceneTitle = sceneTitle;
     }
 
-    public boolean isNoFade() {
-        return noFade;
-    }
-
-    public void setNoFade(boolean noFade) {
-        this.noFade = noFade;
-    }
-
     public File getSceneImage() {
         return sceneImage;
     }
@@ -317,8 +309,6 @@ public class Scene implements JSONString, JOIEntity<JSONObject>, Cloneable {
     }
 
     public void setTransition(Transition transition) {
-        setNoFade(transition == null);
-
         this.transition = transition;
     }
 
