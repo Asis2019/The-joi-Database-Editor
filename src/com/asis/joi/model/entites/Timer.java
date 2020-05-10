@@ -1,5 +1,6 @@
 package com.asis.joi.model.entites;
 
+import com.asis.joi.model.JOIEntity;
 import org.json.JSONArray;
 import org.json.JSONObject;
 import org.json.JSONString;
@@ -60,6 +61,10 @@ public class Timer implements JSONString, JOIEntity<JSONArray>, Cloneable {
         }
 
         return timer;
+    }
+
+    public double getDuration() {
+        return getLineArrayList().stream().mapToDouble(Line::getDuration).sum() + getTotalTime();
     }
 
     @Override

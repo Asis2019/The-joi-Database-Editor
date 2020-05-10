@@ -1,6 +1,7 @@
 package com.asis.joi.model.entites;
 
 import com.asis.joi.JOIPackageManager;
+import com.asis.joi.model.JOIEntity;
 import com.asis.joi.model.entites.dialog.Dialog;
 import javafx.beans.property.ReadOnlyBooleanWrapper;
 import org.json.JSONArray;
@@ -160,6 +161,16 @@ public class Scene implements JSONString, JOIEntity<JSONObject>, Cloneable {
         }
 
         return scene;
+    }
+
+    public double getDuration() {
+        double totalTime = getLineArrayList().stream().mapToDouble(Line::getDuration).sum();
+
+        if(getTransition() != null) totalTime += getTransition().getDuration();
+        if(getDialog() != null) totalTime += getDialog().getDuration();
+        if(getTimer() != null) totalTime += getTimer().getDuration();
+
+        return totalTime;
     }
 
     @Override

@@ -1,5 +1,6 @@
 package com.asis.joi.model.entites;
 
+import com.asis.joi.model.JOIEntity;
 import com.asis.utilities.AsisUtils;
 import org.json.JSONObject;
 import org.json.JSONString;

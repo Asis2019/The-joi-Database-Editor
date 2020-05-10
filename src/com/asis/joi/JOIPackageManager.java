@@ -66,6 +66,7 @@ public class JOIPackageManager {
 
     public void exportJOIPackageAsFiles(File destination) {
         for(JOIPackage joiPackage: getJoiPackages()) {
+            joiPackage.getMetaData().setEstimatedDuration(joiPackage.getJoi().getDuration());
             joiPackage.exportPackageAsFiles(destination);
         }
     }

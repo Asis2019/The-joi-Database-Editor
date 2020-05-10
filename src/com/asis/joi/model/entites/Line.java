@@ -1,6 +1,7 @@
 package com.asis.joi.model.entites;
 
 import com.asis.joi.JOIPackageManager;
+import com.asis.joi.model.JOIEntity;
 import org.json.JSONArray;
 import org.json.JSONObject;
 import org.json.JSONString;
@@ -54,6 +55,10 @@ public class Line implements JSONString, JOIEntity<JSONArray>, Cloneable {
         }
 
         return line;
+    }
+
+    public double getDuration() {
+        return getText().length() / 15d;
     }
 
     @Override

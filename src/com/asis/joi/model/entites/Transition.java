@@ -1,5 +1,6 @@
 package com.asis.joi.model.entites;
 
+import com.asis.joi.model.JOIEntity;
 import com.asis.utilities.AsisUtils;
 import org.json.JSONArray;
 import org.json.JSONObject;
@@ -42,6 +43,10 @@ public class Transition implements JSONString, JOIEntity<JSONArray>, Cloneable {
     private static double convertSecondsToGameTime(double timeInSeconds) {
         final double fadeSpeed = 1 / (timeInSeconds * 60);
         return AsisUtils.clamp(fadeSpeed, 0.0000000001, 5);
+    }
+
+    public double getDuration() {
+        return waitTime + fadeSpeed;
     }
 
     @Override

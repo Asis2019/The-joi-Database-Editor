@@ -1,4 +1,4 @@
-package com.asis.joi.model.entites;
+package com.asis.joi.model;
 
 public interface JOIEntity<T> {
     T toJSON();

@@ -207,7 +207,6 @@ public class TabTimerController extends TabController {
                 double pitch = Double.parseDouble(t1);
                 getTimer().getLine(onSecond).setChangeBeatPitch(pitch);
             } catch (NumberFormatException e) {
-                System.out.println("User put bad value into beat pitch");
                 if (t1.isEmpty()) {
                     getTimer().getLine(onSecond).setChangeBeatPitch(null);
                     textFieldBeatPitch.clear();
@@ -227,7 +226,6 @@ public class TabTimerController extends TabController {
                 int speed = Integer.parseInt(t1);
                 getTimer().getLine(onSecond).setChangeBeatSpeed(speed);
             } catch (NumberFormatException e) {
-                System.out.println("User put bad value into beat speed");
                 if (t1.isEmpty()) {
                     getTimer().getLine(onSecond).setChangeBeatSpeed(null);
                     textFieldBeatSpeed.clear();

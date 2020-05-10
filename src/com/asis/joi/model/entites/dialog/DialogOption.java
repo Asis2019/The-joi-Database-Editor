@@ -1,7 +1,7 @@
 package com.asis.joi.model.entites.dialog;
 
+import com.asis.joi.model.JOIEntity;
 import com.asis.joi.model.entites.GotoScene;
-import com.asis.joi.model.entites.JOIEntity;
 import org.json.JSONArray;
 import org.json.JSONObject;
 import org.json.JSONString;
@@ -37,6 +37,10 @@ public class DialogOption implements JSONString, JOIEntity<JSONArray>, Cloneable
         }
 
         return dialogOption;
+    }
+
+    public double getDuration() {
+        return getOptionText().length() / 15d;
     }
 
     @Override

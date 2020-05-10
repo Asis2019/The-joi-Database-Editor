@@ -1,6 +1,5 @@
 package com.asis.joi.model;
 
-import com.asis.joi.model.entites.JOIEntity;
 import com.asis.joi.model.entites.Scene;
 import org.json.JSONArray;
 import org.json.JSONObject;
@@ -54,6 +53,10 @@ public class JOI implements JSONString, JOIEntity<JSONObject>, Cloneable {
         }
 
         return joi;
+    }
+
+    public double getDuration() {
+        return getSceneArrayList().stream().mapToDouble(Scene::getDuration).sum();
     }
 
     @Override

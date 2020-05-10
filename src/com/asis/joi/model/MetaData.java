@@ -1,6 +1,5 @@
 package com.asis.joi.model;
 
-import com.asis.joi.model.entites.JOIEntity;
 import org.json.JSONArray;
 import org.json.JSONObject;
 import org.json.JSONString;
@@ -12,6 +11,7 @@ import java.util.Arrays;
 public class MetaData implements Cloneable, JOIEntity<JSONObject>, JSONString {
     private File joiIcon;
     private String preparations="", name="", joiId="", versionAdded="", displayedFetishes="", creator="";
+    private double estimatedDuration = 0;
     private ArrayList<String> fetishList = new ArrayList<>();
     private ArrayList<String> characterList = new ArrayList<>();
     private ArrayList<String> equipmentList = new ArrayList<>();
@@ -62,6 +62,8 @@ public class MetaData implements Cloneable, JOIEntity<JSONObject>, JSONString {
         addStringToJsonWithDefault(innerObject, "", getVersionAdded(),"versionAdded");
         addStringToJsonWithDefault(innerObject, "", getDisplayedFetishes(),"displayedFetishes");
         addStringToJsonWithDefault(innerObject, "", getCreator(),"creator");
+
+        innerObject.put("estimatedDuration", getEstimatedDuration());
 
         addListToJsonObject(innerObject, "fetish", getFetishList());
         addListToJsonObject(innerObject, "character", getCharacterList());
@@ -206,5 +208,12 @@ public class MetaData implements Cloneable, JOIEntity<JSONObject>, JSONString {
     }
     public void setCreator(String creator) {
         this.creator = creator;
+    }
+
+    public double getEstimatedDuration() {
+        return estimatedDuration;
+    }
+    public void setEstimatedDuration(double estimatedDuration) {
+        this.estimatedDuration = estimatedDuration;
     }
 }

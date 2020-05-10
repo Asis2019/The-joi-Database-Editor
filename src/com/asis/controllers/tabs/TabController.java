@@ -1,7 +1,7 @@
 package com.asis.controllers.tabs;
 
 import com.asis.controllers.Controller;
-import com.asis.joi.model.entites.JOIEntity;
+import com.asis.joi.model.JOIEntity;
 import com.asis.joi.model.entites.Line;
 import com.asis.joi.model.entites.Scene;
 import com.asis.ui.ImageViewPane;
