@@ -1,52 +1,24 @@
-package com.asis.joi;
+package com.asis.joi.model;
 
-import com.asis.controllers.Controller;
+import com.asis.joi.model.entites.JOIEntity;
 import org.json.JSONArray;
 import org.json.JSONObject;
+import org.json.JSONString;
 
 import java.io.File;
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.Iterator;
 
-public class MetaData implements JOISystemInterface{
+public class MetaData implements Cloneable, JOIEntity<JSONObject>, JSONString {
     private File joiIcon;
-    private String preparations, name, joiId, versionAdded, displayedFetishes, creator;
+    private String preparations="", name="", joiId="", versionAdded="", displayedFetishes="", creator="";
     private ArrayList<String> fetishList = new ArrayList<>();
     private ArrayList<String> characterList = new ArrayList<>();
     private ArrayList<String> equipmentList = new ArrayList<>();
 
-    public MetaData() {
-
-    }
-    public MetaData(MetaData metaData) {
-        JSONObject object = metaData.getMetaDataAsJson().getJSONArray("JOI METADATA").getJSONObject(0);
-        setDataFromJson(object, Controller.getInstance().getJoiPackage().getPackageDirectory());
-    }
-
-    public JSONObject getMetaDataAsJson() {
-        JSONObject innerObject = new JSONObject();
-        addStringToJsonWithDefault(innerObject, getName(), getJoiId(),"joiId");
-        addStringToJsonWithDefault(innerObject, "No preparations needed.", getPreparations(),"preparations");
-        addStringToJsonWithDefault(innerObject, "", getName(),"name");
-        addStringToJsonWithDefault(innerObject, "", getVersionAdded(),"versionAdded");
-        addStringToJsonWithDefault(innerObject, "", getDisplayedFetishes(),"displayedFetishes");
-        addStringToJsonWithDefault(innerObject, "", getCreator(),"creator");
-
-        addListToJsonObject(innerObject, "fetish", getFetishList());
-        addListToJsonObject(innerObject, "character", getCharacterList());
-        addListToJsonObject(innerObject, "toy", getEquipmentList());
-
-        JSONArray array = new JSONArray();
-        array.put(innerObject);
-        JSONObject finalObject = new JSONObject();
-        return finalObject.put("JOI METADATA", array);
-    }
-
-    @Override
-    public void setDataFromJson(JSONObject jsonObject, File importDirectory) {
+    public void setDataFromJson(JSONObject jsonObject) {
         //Set single normal fields
-        setData(jsonObject.keys(), jsonObject);
+        for (String key: jsonObject.keySet()) setValueAccordingToKey(jsonObject, key);
 
         //set fetishList
         populateListFromCategory(jsonObject, getFetishList(), "fetish");
@@ -56,12 +28,6 @@ public class MetaData implements JOISystemInterface{
 
         //set equipmentList
         populateListFromCategory(jsonObject, getEquipmentList(), "toy");
-    }
-
-    private void setData(Iterator<String> keys, JSONObject object) {
-        while (keys.hasNext()) {
-            setValueAccordingToKey(object, keys.next());
-        }
     }
 
     private void setValueAccordingToKey(JSONObject jsonObject, String key) {
@@ -88,37 +54,63 @@ public class MetaData implements JOISystemInterface{
     }
 
     @Override
-    public String toString() {
-        return getMetaDataAsJson().toString(4);
+    public JSONObject toJSON() {
+        JSONObject innerObject = new JSONObject();
+        addStringToJsonWithDefault(innerObject, getName(), getJoiId(),"joiId");
+        addStringToJsonWithDefault(innerObject, "", getPreparations(),"preparations");
+        addStringToJsonWithDefault(innerObject, "", getName(),"name");
+        addStringToJsonWithDefault(innerObject, "", getVersionAdded(),"versionAdded");
+        addStringToJsonWithDefault(innerObject, "", getDisplayedFetishes(),"displayedFetishes");
+        addStringToJsonWithDefault(innerObject, "", getCreator(),"creator");
+
+        addListToJsonObject(innerObject, "fetish", getFetishList());
+        addListToJsonObject(innerObject, "character", getCharacterList());
+        addListToJsonObject(innerObject, "toy", getEquipmentList());
+
+        JSONArray array = new JSONArray();
+        array.put(innerObject);
+        return new JSONObject().put("JOI METADATA", array);
     }
 
     @Override
-    public boolean equals(Object object) {
-        if (this == object) return true;
-        if (!(object instanceof MetaData)) return false;
+    public MetaData clone() throws CloneNotSupportedException {
+        MetaData metaData = (MetaData) super.clone();
 
-        MetaData metaData = (MetaData) object;
+        metaData.setJoiIcon(getJoiIcon());
+        metaData.setPreparations(getPreparations());
+        metaData.setName(getName());
+        metaData.setJoiId(getJoiId());
+        metaData.setVersionAdded(getVersionAdded());
+        metaData.setDisplayedFetishes(getDisplayedFetishes());
+        metaData.setCreator(getCreator());
 
-        if (getJoiIcon() != null ? !getJoiIcon().equals(metaData.getJoiIcon()) : metaData.getJoiIcon() != null)
-            return false;
+        metaData.setFetishList(new ArrayList<>(getFetishList()));
+        metaData.setCharacterList(new ArrayList<>(getCharacterList()));
+        metaData.setEquipmentList(new ArrayList<>(getEquipmentList()));
 
-        if (getPreparations() != null ? !getPreparations().equals(metaData.getPreparations()) : metaData.getPreparations() != null)
-            return false;
+        return metaData;
+    }
 
-        if (getName() != null ? !getName().equals(metaData.getName()) : metaData.getName() != null) return false;
+    @Override
+    public String toJSONString() {
+        return toJSON().toString(4);
+    }
 
-        if (getJoiId() != null ? !getJoiId().equals(metaData.getJoiId()) : metaData.getJoiId() != null) return false;
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (!(o instanceof MetaData)) return false;
 
-        if (getVersionAdded() != null ? !getVersionAdded().equals(metaData.getVersionAdded()) : metaData.getVersionAdded() != null)
-            return false;
+        MetaData metaData = (MetaData) o;
 
-        if (getDisplayedFetishes() != null ? !getDisplayedFetishes().equals(metaData.getDisplayedFetishes()) : metaData.getDisplayedFetishes() != null)
-            return false;
-
+        if (!getPreparations().equals(metaData.getPreparations())) return false;
+        if (!getName().equals(metaData.getName())) return false;
+        if (!getJoiId().equals(metaData.getJoiId())) return false;
+        if (!getVersionAdded().equals(metaData.getVersionAdded())) return false;
+        if (!getDisplayedFetishes().equals(metaData.getDisplayedFetishes())) return false;
+        if (!getCreator().equals(metaData.getCreator())) return false;
         if (!getFetishList().equals(metaData.getFetishList())) return false;
-
         if (!getCharacterList().equals(metaData.getCharacterList())) return false;
-
         return getEquipmentList().equals(metaData.getEquipmentList());
     }
 
@@ -129,10 +121,8 @@ public class MetaData implements JOISystemInterface{
         }
     }
 
-    private static void addListToJsonObject(JSONObject object, String key, ArrayList list) {
-        for (int i = 0; i < list.size(); i++) {
-            object.put(key + i, list.get(i));
-        }
+    private static <T> void addListToJsonObject(JSONObject object, String key, ArrayList<T> list) {
+        for (int i = 0; i < list.size(); i++) object.put(key + i, list.get(i));
     }
 
     private static void populateListFromCategory(JSONObject jsonObject, ArrayList<String> listToPopulate, String categoryKey) {
@@ -186,21 +176,21 @@ public class MetaData implements JOISystemInterface{
     public ArrayList<String> getFetishList() {
         return fetishList;
     }
-    public void setFetishList(ArrayList<String> fetishList) {
+    private void setFetishList(ArrayList<String> fetishList) {
         this.fetishList = fetishList;
     }
 
     public ArrayList<String> getCharacterList() {
         return characterList;
     }
-    public void setCharacterList(ArrayList<String> characterList) {
+    private void setCharacterList(ArrayList<String> characterList) {
         this.characterList = characterList;
     }
 
     public ArrayList<String> getEquipmentList() {
         return equipmentList;
     }
-    public void setEquipmentList(ArrayList<String> equipmentList) {
+    private void setEquipmentList(ArrayList<String> equipmentList) {
         this.equipmentList = equipmentList;
     }
 

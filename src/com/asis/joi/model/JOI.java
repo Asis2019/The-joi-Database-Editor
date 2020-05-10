@@ -1,13 +1,14 @@
-package com.asis.joi;
+package com.asis.joi.model;
 
-import com.asis.joi.components.Scene;
+import com.asis.joi.model.entites.JOIEntity;
+import com.asis.joi.model.entites.Scene;
 import org.json.JSONArray;
 import org.json.JSONObject;
+import org.json.JSONString;
 
-import java.io.File;
 import java.util.ArrayList;
 
-public class JOI implements JOISystemInterface {
+public class JOI implements JSONString, JOIEntity<JSONObject>, Cloneable {
     private int sceneIdCounter = 0;
     private ArrayList<Scene> sceneArrayList = new ArrayList<>();
 
@@ -16,56 +17,69 @@ public class JOI implements JOISystemInterface {
         int sceneId = optional.length > 0 ? optional[0] : getSceneIdCounter();
 
         //Change the counter to the highest id
-        if(sceneId > getSceneIdCounter()) {
-            setSceneIdCounter(sceneId);
-        }
+        if(sceneId > getSceneIdCounter()) setSceneIdCounter(sceneId);
 
         //Add new scene
         getSceneArrayList().add(new Scene(sceneId));
 
         //Increment counter
         setSceneIdCounter(getSceneIdCounter()+1);
+
+        System.out.println(getSceneIdCounter());
     }
+
     public boolean removeScene(int sceneId) {
         return getSceneArrayList().remove(getScene(sceneId));
     }
 
-    public JSONObject getJOIAsJson() {
-        //Set values
-        JSONArray joiArray = new JSONArray();
-        for(Scene scene: getSceneArrayList()) {
-            joiArray.put(scene.getSceneAsJson());
+    public Scene getScene(int sceneId) {
+        for(Scene scene: getSceneArrayList()) if (scene.getSceneId() == sceneId) return scene;
+        return null;
+    }
+
+    public static JOI createEntity(JSONObject jsonObject) {
+        JOI joi = new JOI();
+
+        JSONArray array = jsonObject.getJSONArray("JOI");
+        for (int i = 0; i < array.length(); i++) {
+            if (array.getJSONObject(i).has("sceneId")) {
+                Scene scene = Scene.createEntity(array.getJSONObject(i));
+                joi.getSceneArrayList().add(scene);
+                if(array.getJSONObject(i).getInt("sceneId") >= joi.getSceneIdCounter()) {
+                    joi.setSceneIdCounter(array.getJSONObject(i).getInt("sceneId")+1);
+                }
+            } else {
+                throw new RuntimeException("Scene id was not present for one or more of the scenes.");
+            }
         }
+
+        return joi;
+    }
+
+    @Override
+    public JSONObject toJSON() {
+        JSONArray joiArray = new JSONArray();
+        for(Scene scene: getSceneArrayList()) joiArray.put(scene.toJSON());
 
         JSONObject finalWrapper = new JSONObject();
         return finalWrapper.put("JOI", joiArray);
     }
 
-    public Scene getScene(int sceneId) {
-        for(Scene scene: getSceneArrayList()) {
-            if (scene.getSceneId() == sceneId) {
-                return scene;
-            }
-        }
-        return null;
+    @Override
+    public String toJSONString() {
+        return toJSON().toString(4);
     }
 
     @Override
-    public void setDataFromJson(JSONObject jsonObject, File importDirectory) {
-        JSONArray array = jsonObject.getJSONArray("JOI");
-        for (int i = 0; i < array.length(); i++) {
-            if (array.getJSONObject(i).has("sceneId")) {
-                addNewScene(array.getJSONObject(i).getInt("sceneId"));
-                getSceneArrayList().get(i).setDataFromJson(array.getJSONObject(i), importDirectory);
-            } else {
-                throw new RuntimeException("Scene id was not present for one or more of the scenes.");
-            }
-        }
-    }
+    public JOI clone() throws CloneNotSupportedException {
+        JOI joi = (JOI) super.clone();
 
-    @Override
-    public String toString() {
-        return getJOIAsJson().toString(4);
+        ArrayList<Scene> clonedArray = new ArrayList<>();
+        for (Scene scene: getSceneArrayList()) clonedArray.add(scene.clone());
+        joi.setSceneArrayList(clonedArray);
+        joi.setSceneIdCounter(getSceneIdCounter());
+
+        return joi;
     }
 
     @Override
@@ -83,7 +97,7 @@ public class JOI implements JOISystemInterface {
     public ArrayList<Scene> getSceneArrayList() {
         return sceneArrayList;
     }
-    public void setSceneArrayList(ArrayList<Scene> sceneArrayList) {
+    private void setSceneArrayList(ArrayList<Scene> sceneArrayList) {
         this.sceneArrayList = sceneArrayList;
     }
 
@@ -93,4 +107,5 @@ public class JOI implements JOISystemInterface {
     private void setSceneIdCounter(int sceneIdCounter) {
         this.sceneIdCounter = sceneIdCounter;
     }
+
 }

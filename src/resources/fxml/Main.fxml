@@ -1,9 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
 <?import javafx.scene.control.*?>
-<?import javafx.scene.layout.AnchorPane?>
-<?import javafx.scene.layout.BorderPane?>
-<?import javafx.scene.layout.VBox?>
+<?import javafx.scene.layout.*?>
 <?import java.net.URL?>
 <BorderPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="400.0" prefWidth="600.0" xmlns="http://javafx.com/javafx/10.0.2-internal" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.asis.controllers.Controller">
     <top>
@@ -34,21 +32,21 @@
                     </menus>
                 </MenuBar>
                 <ToolBar fx:id="toolBar" prefHeight="40.0" prefWidth="200.0">
-                    <items>
-                        <Button mnemonicParsing="false" onAction="#actionAddSceneButton" text="Add new scene" />
-                        <Button layoutX="10.0" layoutY="11.0" mnemonicParsing="false" onAction="#actionOpenMetadata" text="Project Details" />
-                    </items>
+                    <Button mnemonicParsing="false" onAction="#actionAddSceneButton" text="Add new scene"/>
+                    <Button layoutX="10.0" layoutY="11.0" mnemonicParsing="false" onAction="#actionOpenMetadata"
+                            text="Project Details"/>
+                    <Pane HBox.hgrow="ALWAYS"/>
+                    <Button layoutX="10.0" layoutY="11.0" mnemonicParsing="false"
+                            onAction="#actionOpenTranslationEditor" text="Translation Editor"/>
                 </ToolBar>
             </children>
         </VBox>
     </top>
     <center>
         <ScrollPane fx:id="scrollPane" hbarPolicy="NEVER" pannable="true" styleClass="edge-to-edge" vbarPolicy="NEVER">
-            <content>
-                <AnchorPane id="anchorPane" fx:id="anchorPane" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="8000.0" prefWidth="8000.0">
-               <children>
-               </children></AnchorPane>
-            </content>
+            <AnchorPane id="anchorPane" fx:id="anchorPane" maxHeight="-Infinity" maxWidth="-Infinity"
+                        minHeight="-Infinity" minWidth="-Infinity" prefHeight="8000.0" prefWidth="8000.0">
+            </AnchorPane>
         </ScrollPane>
     </center>
     <stylesheets>

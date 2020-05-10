@@ -14,25 +14,16 @@ public class AsisConnectionButton extends Button {
     public static final String GOOD_END_COLOR = "#6392c7ff";
     public static final String RANDOM_OUT_COLOR = "#c7c763ff";
 
-    private ReadOnlyDoubleWrapper centerX = new ReadOnlyDoubleWrapper();
-    private ReadOnlyDoubleWrapper centerY = new ReadOnlyDoubleWrapper();
+    private final ReadOnlyDoubleWrapper centerX = new ReadOnlyDoubleWrapper();
+    private final ReadOnlyDoubleWrapper centerY = new ReadOnlyDoubleWrapper();
 
-    private Pane parentPane;
-
-    //The connections id
-    private String id = null;
-
-    //What scene there a part of
-    private final int parentSceneId;
-
-    //The line object connected
+    private final Pane parentPane;
     private BoundLine boundLine;
 
-    //The connection type
-    private final boolean connectionType; //false is output true is input
-
-    //Option number
+    private final int parentSceneId;
     private int optionNumber;
+
+    private final boolean connectionType; //false is output true is input
 
     private static final String outputConnectorStyle =
             "-fx-background-color: " + DEFAULT_COLOR + ", transparent, transparent;" +
@@ -86,14 +77,6 @@ public class AsisConnectionButton extends Button {
         Bounds bounds = parentPane.sceneToLocal(localToScene(getBoundsInLocal()));
         centerX.set(bounds.getMinX() + bounds.getWidth() / 2);
         centerY.set(bounds.getMinY() + bounds.getHeight() / 2);
-    }
-
-    void setConnectionId(String id) {
-        this.id = id;
-    }
-
-    public String getConnectionId() {
-        return this.id;
     }
 
     public int getParentSceneId() {

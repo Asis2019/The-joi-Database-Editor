@@ -1,19 +1,51 @@
-package com.asis.joi.components;
+package com.asis.joi.model.entites;
 
-import com.asis.joi.JOISystemInterface;
 import com.asis.utilities.AsisUtils;
 import org.json.JSONArray;
 import org.json.JSONObject;
+import org.json.JSONString;
 
-import java.io.File;
-import java.util.Iterator;
-
-public class Transition implements JOISystemInterface, FirstLevelEffect {
+public class Transition implements JSONString, JOIEntity<JSONArray>, Cloneable {
     private String fadeColor, transitionTextColor="#ffffff", transitionTextOutlineColor="#000000", transitionText;
     private int waitTime = 0;
     private double fadeSpeed = 1; //stored as seconds
 
-    public JSONArray getTransitionAsJson() {
+    public static Transition createEntity(JSONObject jsonObject) {
+        Transition transition = new Transition();
+
+        for (String key: jsonObject.keySet()) {
+            switch (key) {
+                case "fadeColor":
+                    transition.setFadeColor(jsonObject.getString("fadeColor"));
+                    break;
+                case "transitionTextColor":
+                    transition.setTransitionTextColor(jsonObject.getString("transitionTextColor"));
+                    break;
+                case "transitionTextOutlineColor":
+                    transition.setTransitionTextOutlineColor(jsonObject.getString("transitionTextOutlineColor"));
+                    break;
+                case "transitionText":
+                    transition.setTransitionText(jsonObject.getString("transitionText"));
+                    break;
+                case "waitTime":
+                    transition.setWaitTime(jsonObject.getInt("waitTime"));
+                    break;
+                case "fadeSpeed":
+                    transition.setFadeSpeed(convertSecondsToGameTime(jsonObject.getDouble("fadeSpeed")));
+                    break;
+            }
+        }
+
+        return transition;
+    }
+
+    private static double convertSecondsToGameTime(double timeInSeconds) {
+        final double fadeSpeed = 1 / (timeInSeconds * 60);
+        return AsisUtils.clamp(fadeSpeed, 0.0000000001, 5);
+    }
+
+    @Override
+    public JSONArray toJSON() {
         JSONObject data = new JSONObject();
         if(getFadeColor() != null) data.put("fadeColor", getFadeColor());
         if(getTransitionTextColor() != null) data.put("transitionTextColor", getTransitionTextColor());
@@ -26,48 +58,23 @@ public class Transition implements JOISystemInterface, FirstLevelEffect {
         return transitionArray.put(data);
     }
 
-    private static double convertSecondsToGameTime(double timeInSeconds) {
-        final double fadeSpeed = 1 / (timeInSeconds * 60);
-        return AsisUtils.clamp(fadeSpeed, 0.0000000001, 5);
+    @Override
+    public String toJSONString() {
+        return toJSON().toString(4);
     }
 
     @Override
-    public void setDataFromJson(JSONObject jsonObject, File importDirectory) {
-        setData(jsonObject.keys(), jsonObject);
-    }
+    public Transition clone() throws CloneNotSupportedException {
+        Transition transition = (Transition) super.clone();
 
-    private void setData(Iterator<String> keys, JSONObject object) {
-        while (keys.hasNext()) {
-            setValueAccordingToKey(object, keys.next());
-        }
-    }
+        transition.setFadeColor(getFadeColor());
+        transition.setFadeSpeed(getFadeSpeed());
+        transition.setTransitionText(getTransitionText());
+        transition.setTransitionTextColor(getTransitionTextColor());
+        transition.setTransitionTextOutlineColor(getTransitionTextOutlineColor());
+        transition.setWaitTime(getWaitTime());
 
-    private void setValueAccordingToKey(JSONObject jsonObject, String key) {
-        switch (key) {
-            case "fadeColor":
-                setFadeColor(jsonObject.getString("fadeColor"));
-                break;
-            case "transitionTextColor":
-                setTransitionTextColor(jsonObject.getString("transitionTextColor"));
-                break;
-            case "transitionTextOutlineColor":
-                setTransitionTextOutlineColor(jsonObject.getString("transitionTextOutlineColor"));
-                break;
-            case "transitionText":
-                setTransitionText(jsonObject.getString("transitionText"));
-                break;
-            case "waitTime":
-                setWaitTime(jsonObject.getInt("waitTime"));
-                break;
-            case "fadeSpeed":
-                setFadeSpeed(convertSecondsToGameTime(jsonObject.getDouble("fadeSpeed")));
-                break;
-        }
-    }
-
-    @Override
-    public String toString() {
-        return getTransitionAsJson().toString(4);
+        return transition;
     }
 
     @Override

@@ -19,23 +19,7 @@ import javafx.scene.layout.Region;
 
 public class ImageViewPane extends Region {
 
-    private ObjectProperty<ImageView> imageViewProperty = new SimpleObjectProperty();
-
-    public ObjectProperty<ImageView> imageViewProperty() {
-        return imageViewProperty;
-    }
-
-    public ImageView getImageView() {
-        return imageViewProperty.get();
-    }
-
-    public void setImageView(ImageView imageView) {
-        this.imageViewProperty.set(imageView);
-    }
-
-    public ImageViewPane() {
-        this(new ImageView());
-    }
+    private final ObjectProperty<ImageView> imageViewProperty = new SimpleObjectProperty<>();
 
     @Override
     protected void layoutChildren() {
@@ -46,6 +30,10 @@ public class ImageViewPane extends Region {
             layoutInArea(imageView, 0, 0, getWidth(), getHeight(), 0, HPos.CENTER, VPos.CENTER);
         }
         super.layoutChildren();
+    }
+
+    public ImageViewPane() {
+        this(new ImageView());
     }
 
     public ImageViewPane(ImageView imageView) {
@@ -59,4 +47,18 @@ public class ImageViewPane extends Region {
         });
         this.imageViewProperty.set(imageView);
     }
+
+
+    public ObjectProperty<ImageView> imageViewProperty() {
+        return imageViewProperty;
+    }
+
+    public ImageView getImageView() {
+        return imageViewProperty.get();
+    }
+
+    public void setImageView(ImageView imageView) {
+        this.imageViewProperty.set(imageView);
+    }
+
 }

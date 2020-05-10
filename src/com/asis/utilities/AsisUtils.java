@@ -1,9 +1,10 @@
 package com.asis.utilities;
 
 import com.asis.controllers.Controller;
-import javafx.scene.Node;
-import javafx.scene.Parent;
+import com.asis.controllers.dialogs.DialogMessage;
+import com.asis.joi.JOIPackageManager;
 import javafx.scene.paint.Color;
+import javafx.stage.FileChooser;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -34,26 +35,8 @@ public class AsisUtils {
     }
 
     public static void errorDialogWindow(Exception e) {
-        Alerts.messageDialog("Error", "Oh no an error! Send it to Asis so he can feel bad.\n"+e.getMessage());
-    }
-
-    public static ArrayList<Node> getAllNodes(Parent root) {
-        ArrayList<Node> nodes = new ArrayList<>();
-        addAllDescendants(root, nodes);
-        return nodes;
-    }
-
-    private static void addAllDescendants(Parent parent, ArrayList<Node> nodes) {
-        for (Node node : parent.getChildrenUnmodifiable()) {
-            nodes.add(node);
-            if (node instanceof Parent)
-                addAllDescendants((Parent)node, nodes);
-        }
-    }
-
-    public static String getFileExtension(File file) {
-        String fileName = file.getName();
-        return fileName.substring(fileName.lastIndexOf(".") + 1, file.getName().length());
+        e.printStackTrace();
+        DialogMessage.messageDialog("Error", "Oh no an error! Send it to Asis so he can feel bad.\n"+e.getMessage());
     }
 
     public static double clamp(double val, double min, double max) {
@@ -68,9 +51,9 @@ public class AsisUtils {
         return fileToRename.renameTo(new File(newPath));
     }
 
-    public static void writeJsonToFile(JSONObject jsonObject, String fileName, File saveLocation) throws IOException {
+    public static void writeStringToFile(String string, String fileName, File saveLocation) throws IOException {
         try (BufferedWriter bufferedWriter = new BufferedWriter(new OutputStreamWriter(new FileOutputStream(saveLocation.toPath() + File.separator + fileName), StandardCharsets.UTF_8))) {
-            bufferedWriter.write(jsonObject.toString(4));
+            bufferedWriter.write(string);
         }
     }
 
@@ -112,9 +95,7 @@ public class AsisUtils {
                 if(f.isDirectory()) {
                     deleteFolder(f);
                 } else {
-                    if(!f.delete()) {
-                        System.out.println("Failed to delete file: "+f.getPath());
-                    }
+                    if(!f.delete()) System.out.println("Failed to delete file: " + f.getPath());
                 }
             }
         }
@@ -136,9 +117,7 @@ public class AsisUtils {
             InputStream inputStream = Controller.class.getResourceAsStream(fileLocation);
 
             BufferedReader reader = new BufferedReader(new InputStreamReader(inputStream));
-            while ((message = reader.readLine()) != null) {
-                stringBuilder.append(message).append("\n");
-            }
+            while ((message = reader.readLine()) != null) stringBuilder.append(message).append("\n");
             return stringBuilder.toString();
         } catch (IOException e) {
             return "An error occurred while getting text file \n"+e.getMessage();
@@ -147,9 +126,32 @@ public class AsisUtils {
 
     public static ArrayList<Integer> convertJSONArrayToList(JSONArray jsonArray) {
         ArrayList<Integer> list = new ArrayList<>();
-        for(int i=0; i<jsonArray.length(); i++) {
-            list.add(jsonArray.getInt(i));
-        }
+        for(int i=0; i<jsonArray.length(); i++) list.add(jsonArray.getInt(i));
         return list;
+    }
+
+    public static String getLanguageValueForAlternateKey(String value, String key) {
+        Object data = Config.get("LANGUAGES");
+        if(data instanceof JSONArray) {
+            for(int i=0; i<((JSONArray) data).length(); i++) {
+                String other = "menu_name";
+                if(other.equals(key)) other = "file_code";
+
+                if(((JSONArray) data).getJSONObject(i).getString(key).equals(value)) {
+                    return ((JSONArray) data).getJSONObject(i).getString(other);
+                }
+            }
+        }
+        throw new IllegalArgumentException(String.format("The language code for %s could not be found in settings.json\nPlease make sure to select a valid option from the dropdown.", value));
+    }
+
+    public static File imageFileChooser() {
+        FileChooser fileChooser = new FileChooser();
+        fileChooser.setInitialDirectory(JOIPackageManager.getInstance().getJoiPackageDirectory());
+        fileChooser.getExtensionFilters().addAll(new FileChooser.ExtensionFilter("png", "*.png"));
+        fileChooser.getExtensionFilters().addAll(new FileChooser.ExtensionFilter("jpg", "*.jpg"));
+        fileChooser.getExtensionFilters().addAll(new FileChooser.ExtensionFilter("jpeg", "*.jpeg"));
+
+        return fileChooser.showOpenDialog(null);
     }
 }

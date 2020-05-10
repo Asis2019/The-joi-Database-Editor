@@ -115,4 +115,8 @@ public class AsisCenteredArc {
     public boolean isHideProgress() {
         return hideProgress;
     }
+
+    public void setLabelColor(String color, String outlineColor, int outlineWidth) {
+        progressLabel.setStyle(String.format("timer-outline-color: %s;timer-fill-color: %s;timer-stroke-width: %s;", outlineColor,color,outlineWidth));
+    }
 }

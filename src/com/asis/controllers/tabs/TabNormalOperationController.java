@@ -1,17 +1,15 @@
 package com.asis.controllers.tabs;
 
-import com.asis.controllers.Controller;
-import com.asis.joi.components.Scene;
+import com.asis.joi.model.entites.Line;
+import com.asis.joi.model.entites.Scene;
 import com.asis.ui.ImageViewPane;
+import com.asis.utilities.AsisUtils;
 import javafx.application.Platform;
 import javafx.fxml.FXML;
 import javafx.scene.control.*;
-import javafx.scene.image.Image;
-import javafx.scene.image.ImageView;
 import javafx.scene.layout.StackPane;
 import javafx.scene.layout.VBox;
 import javafx.scene.paint.Color;
-import javafx.stage.FileChooser;
 import org.json.JSONObject;
 
 import java.io.File;
@@ -24,7 +22,7 @@ public class TabNormalOperationController extends TabController {
     private int totalLines = 1;
     private int onLine = 1;
 
-    private ImageViewPane viewPane = new ImageViewPane();
+    private final ImageViewPane viewPane = new ImageViewPane();
     private Scene scene;
 
     @FXML private TextArea textTextField, mainTextArea;
@@ -128,13 +126,7 @@ public class TabNormalOperationController extends TabController {
     }
 
     public void actionAddImage() {
-        FileChooser fileChooser = new FileChooser();
-        fileChooser.setInitialDirectory(Controller.getInstance().getJoiPackage().getPackageDirectory());
-        fileChooser.getExtensionFilters().addAll(new FileChooser.ExtensionFilter("png", "*.png"));
-        fileChooser.getExtensionFilters().addAll(new FileChooser.ExtensionFilter("jpg", "*.jpg"));
-        fileChooser.getExtensionFilters().addAll(new FileChooser.ExtensionFilter("jpeg", "*.jpeg"));
-
-        File file = fileChooser.showOpenDialog(null);
+        File file = AsisUtils.imageFileChooser();
 
         if(file != null) {
             //Add image to json object
@@ -145,13 +137,7 @@ public class TabNormalOperationController extends TabController {
     }
 
     public void actionAddLineImage() {
-        FileChooser fileChooser = new FileChooser();
-        fileChooser.setInitialDirectory(Controller.getInstance().getJoiPackage().getPackageDirectory());
-        fileChooser.getExtensionFilters().addAll(new FileChooser.ExtensionFilter("png", "*.png"));
-        fileChooser.getExtensionFilters().addAll(new FileChooser.ExtensionFilter("jpg", "*.jpg"));
-        fileChooser.getExtensionFilters().addAll(new FileChooser.ExtensionFilter("jpeg", "*.jpeg"));
-
-        File file = fileChooser.showOpenDialog(null);
+        File file = AsisUtils.imageFileChooser();
 
         if(file != null) {
             //Add image to json object
@@ -162,11 +148,8 @@ public class TabNormalOperationController extends TabController {
     }
 
     public void actionPreviousLine() {
-        if(onLine <= 1) {
-            onLine = 1;
-        } else {
-            onLine--;
-        }
+        if(onLine <= 1) onLine = 1;
+        else onLine--;
 
         if(onLine <= 1) {
             previousLineButton.setDisable(true);
@@ -181,10 +164,7 @@ public class TabNormalOperationController extends TabController {
     }
 
     public void actionNextLine() {
-        if(onLine == totalLines) {
-            totalLines++;
-        }
-
+        if(onLine == totalLines) totalLines++;
         onLine++;
 
         setLineVariables();
@@ -214,9 +194,8 @@ public class TabNormalOperationController extends TabController {
     private void setLineVariables() {
         initializeText();
 
-        JSONObject textObject = getScene().getLine(onLine-1).getLineAsJson().getJSONObject(0);
-
-        if (textObject != null) { textObjectElseIf(textObject); }
+        JSONObject textObject = getScene().getLine(onLine-1).toJSON().getJSONObject(0);
+        textObjectElseIf();
 
         beatProperties(textObject, checkBoxStopBeat, "stopBeat");
         beatProperties(textObject, checkBoxStartBeat, "startBeat");
@@ -225,42 +204,16 @@ public class TabNormalOperationController extends TabController {
         changeBeatSpeed(textObject, textFieldBeatSpeed, "changeBeatSpeed");
     }
 
-    private void textObjectElseIf(JSONObject textObject) {
-        if (textObject.has("fillColor")) {
-            textColorPicker.setValue(Color.web(textObject.getString("fillColor")));
-        }
+    private void textObjectElseIf() {
+        Line workingLine = getScene().getLine(onLine-1);
+        if (workingLine.getFillColor() != null)
+            textColorPicker.setValue(Color.web(workingLine.getFillColor()));
 
-        if (textObject.has("outlineColor")) {
-            textOutlineColorPicker.setValue(Color.web(textObject.getString("outlineColor")));
-        }
+        if (workingLine.getOutlineColor() != null)
+            textOutlineColorPicker.setValue(Color.web(workingLine.getOutlineColor()));
 
-        if (textObject.has("text")) {
-            String text = textObject.getString("text").replaceAll("#", "\n");
-            mainTextArea.setText(text);
-        }
-
-        if (textObject.has("startBeat")) {
-            checkBoxStartBeat.setSelected(true);
-        } else {
-            checkBoxStartBeat.setSelected(false);
-        }
-    }
-
-    public void setVisibleImage() {
-        //Remove image if any is present
-        if(viewPane != null) {
-            stackPane.getChildren().remove(viewPane);
-        }
-
-        File workingFile = getImageFile();
-
-        //Make image visible
-        Image image = new Image(workingFile.toURI().toString());
-        ImageView sceneImageView = new ImageView();
-        sceneImageView.setImage(image);
-        sceneImageView.setPreserveRatio(true);
-        viewPane.setImageView(sceneImageView);
-        stackPane.getChildren().add(0, viewPane);
+        mainTextArea.setText(workingLine.getText().replaceAll("#", "\n"));
+        if(workingLine.getStartBeat() != null) checkBoxStartBeat.setSelected(workingLine.getStartBeat());
     }
 
     private File getImageFile() {
@@ -295,6 +248,10 @@ public class TabNormalOperationController extends TabController {
             getScene().getLine(onLine-1).setFillColor(fillColor);
             getScene().getLine(onLine-1).setOutlineColor(outlineColor);
         }
+    }
+
+    public void setVisibleImage() {
+        super.setVisibleImage(stackPane, viewPane, getImageFile());
     }
 
     //Getters and setters

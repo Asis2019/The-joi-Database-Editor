@@ -1,107 +1,167 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
+<?import javafx.geometry.*?>
 <?import javafx.scene.control.*?>
 <?import javafx.scene.Cursor?>
 <?import javafx.scene.image.Image?>
 <?import javafx.scene.image.ImageView?>
 <?import javafx.scene.layout.*?>
 <?import javafx.scene.paint.Color?>
-<BorderPane prefWidth="1000.0" stylesheets="@../../resources/css/scene_details_stylesheet.css" xmlns="http://javafx.com/javafx/10.0.2-internal" xmlns:fx="http://javafx.com/fxml/1">
-<center>
-    <SplitPane id="darkThemeBackground" dividerPositions="0.835" styleClass="edge-to-edge">
-       <items>
-           <AnchorPane>
-              <children>
-                  <BorderPane fx:id="mainContentPane" prefHeight="500.0" prefWidth="780.0" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
-                      <center>
-                          <StackPane fx:id="timerStackPane" BorderPane.alignment="CENTER">
-                             <children>
-                                 <VBox id="iconControllerBox" fx:id="timerIconControllerBox" alignment="CENTER" fillWidth="false" maxHeight="-Infinity" maxWidth="-Infinity" onMouseClicked="#actionAddImage" prefHeight="150.0" prefWidth="150.0">
-                                     <cursor>
-                                         <Cursor fx:constant="HAND" />
-                                     </cursor>
+<BorderPane prefHeight="720.0" prefWidth="1000.0" stylesheets="@../../resources/css/scene_details_stylesheet.css"
+            xmlns="http://javafx.com/javafx/10.0.2-internal" xmlns:fx="http://javafx.com/fxml/1">
+    <center>
+        <SplitPane id="darkThemeBackground" dividerPositions="0.835" styleClass="edge-to-edge">
+            <items>
+                <AnchorPane>
+                    <children>
+                        <BorderPane fx:id="mainContentPane" prefHeight="500.0" prefWidth="780.0"
+                                    AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0"
+                                    AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
+                            <center>
+                                <StackPane fx:id="timerStackPane" BorderPane.alignment="CENTER">
                                     <children>
-                                        <ImageView id="iconImageView" fx:id="iconView" fitHeight="48.0" fitWidth="48.0" pickOnBounds="true" preserveRatio="true">
-                                           <image>
-                                               <Image url="@../images/add_icon_ic.png" />
-                                           </image>
-                                        </ImageView>
-                                        <Label text="Add Scene Image" textFill="#bbbbbb" />
+                                        <VBox id="iconControllerBox" fx:id="timerIconControllerBox" alignment="CENTER"
+                                              fillWidth="false" maxHeight="-Infinity" maxWidth="-Infinity"
+                                              onMouseClicked="#actionAddImage" prefHeight="150.0" prefWidth="150.0">
+                                            <cursor>
+                                                <Cursor fx:constant="HAND"/>
+                                            </cursor>
+                                            <children>
+                                                <ImageView id="iconImageView" fx:id="iconView" fitHeight="48.0"
+                                                           fitWidth="48.0" pickOnBounds="true" preserveRatio="true">
+                                                    <image>
+                                                        <Image url="@../images/add_icon_ic.png"/>
+                                                    </image>
+                                                </ImageView>
+                                                <Label text="Add Scene Image" textFill="#bbbbbb"/>
+                                            </children>
+                                        </VBox>
                                     </children>
-                                 </VBox>
-                             </children>
-                          </StackPane>
-                      </center>
-                      <top>
-                </top>
-                  </BorderPane>
-                  <TextArea id="mainTextArea" fx:id="timerTextArea" layoutX="50.0" layoutY="275.0" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="150.0" prefWidth="500.0" stylesheets="@../../resources/css/text_area_sytlesheet.css" wrapText="true" AnchorPane.bottomAnchor="40.0" AnchorPane.leftAnchor="80.0" AnchorPane.rightAnchor="80.0" />
-                  <HBox fx:id="container" AnchorPane.leftAnchor="0.0" AnchorPane.topAnchor="0.0" />
-              </children>
-           </AnchorPane>
-           <VBox minHeight="0.0" minWidth="0.0" stylesheets="@../../resources/css/titled_pane_stylesheet.css">
-              <children>
-                  <TitledPane animated="false" layoutX="10.0" layoutY="218.0" text="Timer Properties" wrapText="true">
-                     <content>
-                         <VBox spacing="5.0">
-                            <children>
-                                <TextField fx:id="totalTimerField" promptText="Total Time" />
-                              <CheckBox fx:id="checkBoxHideTime" mnemonicParsing="false" text="Hide Time" />
-                              <CheckBox fx:id="checkBoxHideTimer" layoutX="20.0" layoutY="50.0" mnemonicParsing="false" text="Hide Timer" />
-                            </children>
-                         </VBox>
-                     </content>
-                  </TitledPane>
-                  <TitledPane animated="false" layoutX="10.0" layoutY="10.0" text="Current Second Properties" wrapText="true">
-                     <content>
-                        <VBox spacing="5.0">
-                           <children>
-                              <TextArea fx:id="textTextArea" prefHeight="59.0" promptText="Text for current second" wrapText="true" />
-                              <Button mnemonicParsing="false" onAction="#actionAddLineImage" text="Line Image" />
-                              <Label text="Text Color:" />
-                              <ColorPicker fx:id="textColorPicker" promptText="Text Color" />
-                              <Label text="Text Outline Color:" />
-                              <ColorPicker fx:id="textOutlineColorPicker" promptText="Text Outline Color">
-                                 <value>
-                                    <Color />
-                                 </value>
-                              </ColorPicker>
-                           </children>
-                        </VBox>
-                     </content>
-                  </TitledPane>
-                  <TitledPane animated="false" expanded="false" text="Current Second Beats" wrapText="true">
-                     <content>
-                        <VBox spacing="5.0">
-                           <children>
-                              <CheckBox fx:id="checkBoxStartBeat" mnemonicParsing="false" onAction="#actionStartBeat" text="Start Beats" />
-                              <CheckBox fx:id="checkBoxStopBeat" layoutX="20.0" layoutY="42.0" mnemonicParsing="false" onAction="#actionStopBeat" text="Stop Beats" />
-                              <TextField fx:id="textFieldBeatSpeed" promptText="Beat Speed" />
-                              <TextField fx:id="textFieldBeatPitch" layoutX="20.0" layoutY="42.0" promptText="Beat Pitch" />
-                           </children>
-                        </VBox>
-                     </content>
-                  </TitledPane>
-                  <TitledPane animated="false" layoutX="10.0" layoutY="326.0" text="Timer JSON" wrapText="true">
-                     <content>
-                        <VBox>
-                           <children>
-                              <TreeView fx:id="objectTree" editable="true" prefHeight="200.0" prefWidth="200.0" />
-                           </children>
-                        </VBox>
-                     </content>
-                  </TitledPane>
-              </children>
-           </VBox>
-       </items>
-    </SplitPane>
-</center>
-   <top>
-       <ToolBar prefHeight="40.0" prefWidth="200.0" BorderPane.alignment="CENTER">
-          <items>
-              <TextField fx:id="goToSecondsTextField" promptText="Go to second" />
-            <Label id="warning-label" fx:id="warningLabel" text="WARNING! Selected second is greater than the total lines." visible="false" />
-          </items>
-       </ToolBar>
-   </top>
+                                </StackPane>
+                            </center>
+                            <top>
+                            </top>
+                        </BorderPane>
+                        <TextArea id="mainTextArea" fx:id="timerTextArea" layoutX="50.0" layoutY="275.0"
+                                  maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity"
+                                  prefHeight="150.0" prefWidth="500.0"
+                                  stylesheets="@../../resources/css/text_area_sytlesheet.css" wrapText="true"
+                                  AnchorPane.bottomAnchor="40.0" AnchorPane.leftAnchor="80.0"
+                                  AnchorPane.rightAnchor="80.0"/>
+                        <HBox fx:id="container" AnchorPane.leftAnchor="0.0" AnchorPane.topAnchor="0.0"/>
+                    </children>
+                </AnchorPane>
+                <VBox minHeight="0.0" minWidth="0.0" stylesheets="@../../resources/css/titled_pane_stylesheet.css">
+                    <children>
+                        <TitledPane animated="false" layoutX="10.0" layoutY="218.0" text="Timer Properties"
+                                    wrapText="true">
+                            <content>
+                                <ScrollPane fitToHeight="true" fitToWidth="true" hbarPolicy="NEVER">
+                                    <VBox spacing="5.0">
+                                        <TextField fx:id="totalTimerField" promptText="Total Time"/>
+                                        <CheckBox fx:id="checkBoxHideTime" mnemonicParsing="false" text="Hide Time"/>
+                                        <CheckBox fx:id="checkBoxHideTimer" layoutX="20.0" layoutY="50.0"
+                                                  mnemonicParsing="false" text="Hide Timer"/>
+                                        <CheckBox onAction="#actionToggleTimerTextColorPickers"
+                                                  text="Enable timer colors"/>
+                                        <VBox fx:id="timerTextColorContainer" disable="true">
+                                            <Label text="Text Color:"/>
+                                            <ColorPicker fx:id="timerTextColorPicker" minHeight="-Infinity"
+                                                         promptText="Text Color"/>
+                                            <Label text="Text Outline Color:"/>
+                                            <ColorPicker fx:id="timerTextOutlineColorPicker" minHeight="-Infinity"
+                                                         promptText="Text Outline Color"/>
+                                            <VBox.margin>
+                                                <Insets left="8.0"/>
+                                            </VBox.margin>
+                                        </VBox>
+                                    </VBox>
+                                    <padding>
+                                        <Insets bottom="5.0" left="5.0" right="5.0" top="5.0"/>
+                                    </padding>
+                                </ScrollPane>
+                            </content>
+                        </TitledPane>
+                        <TitledPane animated="false" layoutX="10.0" layoutY="10.0" text="Current Second Properties"
+                                    wrapText="true">
+                            <content>
+
+                                <ScrollPane fitToHeight="true" fitToWidth="true" hbarPolicy="NEVER">
+                                    <VBox spacing="5.0">
+                                        <children>
+                                            <TextArea fx:id="textTextArea" prefHeight="59.0"
+                                                      promptText="Text for current second" wrapText="true"/>
+                                            <Button mnemonicParsing="false" onAction="#actionAddLineImage"
+                                                    text="Line Image"/>
+                                            <Label text="Text Color:"/>
+                                            <ColorPicker fx:id="textColorPicker" minHeight="-Infinity"
+                                                         promptText="Text Color"/>
+                                            <Label text="Text Outline Color:"/>
+                                            <ColorPicker fx:id="textOutlineColorPicker" minHeight="-Infinity"
+                                                         promptText="Text Outline Color">
+                                                <value>
+                                                    <Color/>
+                                                </value>
+                                            </ColorPicker>
+                                        </children>
+                                    </VBox>
+
+                                    <padding>
+                                        <Insets bottom="5.0" left="5.0" right="5.0" top="5.0"/>
+                                    </padding>
+                                </ScrollPane>
+                            </content>
+                        </TitledPane>
+                        <TitledPane animated="false" expanded="false" text="Current Second Beats" wrapText="true">
+                            <content>
+                                <ScrollPane fitToHeight="true" fitToWidth="true" hbarPolicy="NEVER">
+                                    <VBox spacing="5.0">
+                                        <children>
+                                            <CheckBox fx:id="checkBoxStartBeat" mnemonicParsing="false"
+                                                      onAction="#actionStartBeat" text="Start Beats"/>
+                                            <CheckBox fx:id="checkBoxStopBeat" layoutX="20.0" layoutY="42.0"
+                                                      mnemonicParsing="false" onAction="#actionStopBeat"
+                                                      text="Stop Beats"/>
+                                            <TextField fx:id="textFieldBeatSpeed" promptText="Beat Speed"/>
+                                            <TextField fx:id="textFieldBeatPitch" layoutX="20.0" layoutY="42.0"
+                                                       promptText="Beat Pitch"/>
+                                        </children>
+                                    </VBox>
+
+                                    <padding>
+                                        <Insets bottom="5.0" left="5.0" right="5.0" top="5.0"/>
+                                    </padding>
+                                </ScrollPane>
+                            </content>
+                        </TitledPane>
+                        <TitledPane animated="false" layoutX="10.0" layoutY="326.0" text="Timer JSON" wrapText="true">
+                            <content>
+                                <ScrollPane fitToHeight="true" fitToWidth="true" hbarPolicy="NEVER">
+                                    <VBox>
+                                        <children>
+                                            <TreeView fx:id="objectTree" editable="true" prefHeight="200.0"
+                                                      prefWidth="200.0"/>
+                                        </children>
+                                    </VBox>
+
+                                    <padding>
+                                        <Insets bottom="5.0" left="5.0" right="5.0" top="5.0"/>
+                                    </padding>
+                                </ScrollPane>
+                            </content>
+                        </TitledPane>
+                    </children>
+                </VBox>
+            </items>
+        </SplitPane>
+    </center>
+    <top>
+        <ToolBar prefHeight="40.0" prefWidth="200.0" BorderPane.alignment="CENTER">
+            <items>
+                <TextField fx:id="goToSecondsTextField" promptText="Go to second"/>
+                <Label id="warning-label" fx:id="warningLabel"
+                       text="WARNING! Selected second is greater than the total lines." visible="false"/>
+            </items>
+        </ToolBar>
+    </top>
 </BorderPane>

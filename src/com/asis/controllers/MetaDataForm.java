@@ -1,7 +1,8 @@
 package com.asis.controllers;
 
-import com.asis.joi.JOIPackage;
-import com.asis.joi.MetaData;
+import com.asis.joi.JOIPackageManager;
+import com.asis.joi.model.JOIPackage;
+import com.asis.joi.model.MetaData;
 import javafx.fxml.FXML;
 import javafx.scene.Cursor;
 import javafx.scene.control.TextArea;
@@ -17,7 +18,7 @@ import java.io.File;
 
 public class MetaDataForm {
     private File iconFile = null;
-    private ImageView imageView = new ImageView();
+    private final ImageView imageView = new ImageView();
     private JOIPackage joiPackage;
 
     @FXML private VBox mainVBox, iconControllerBox;
@@ -59,7 +60,9 @@ public class MetaDataForm {
         if(title != null && !title.isEmpty()) preparedTitle = title.toLowerCase().replaceAll(" ","_");
 
         joiIdTextField.clear();
-        joiIdTextField.setText(preparedCreator+"_"+preparedTitle);
+
+        if(preparedCreator.equals("") && preparedTitle.equals("")) joiIdTextField.setText(null);
+        else joiIdTextField.setText(preparedCreator+"_"+preparedTitle);
     }
 
     public void initialize() {
@@ -85,7 +88,7 @@ public class MetaDataForm {
     public void addIcon() {
         FileChooser fileChooser = new FileChooser();
         fileChooser.setTitle("Add Icon");
-        fileChooser.setInitialDirectory(getJoiPackage().getPackageDirectory());
+        fileChooser.setInitialDirectory(JOIPackageManager.getInstance().getJoiPackageDirectory());
         fileChooser.getExtensionFilters().add(new FileChooser.ExtensionFilter("png", "*.png"));
         File file = fileChooser.showOpenDialog(new Stage());
 
@@ -93,9 +96,7 @@ public class MetaDataForm {
             //Image file to memory
             setIconFile(file);
 
-            if(getImageView() != null) {
-                mainVBox.getChildren().remove(getImageView());
-            }
+            mainVBox.getChildren().remove(getImageView());
 
             Image image = new Image(file.toURI().toString());
             getImageView().setImage(image);
@@ -153,8 +154,5 @@ public class MetaDataForm {
 
     private ImageView getImageView() {
         return imageView;
-    }
-    private void setImageView(ImageView imageView) {
-        this.imageView = imageView;
     }
 }

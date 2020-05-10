@@ -1,14 +1,19 @@
 package com.asis.controllers.tabs;
 
 import com.asis.controllers.Controller;
-import com.asis.joi.components.FirstLevelEffect;
-import com.asis.joi.components.Line;
-import com.asis.joi.components.Scene;
+import com.asis.joi.model.entites.JOIEntity;
+import com.asis.joi.model.entites.Line;
+import com.asis.joi.model.entites.Scene;
+import com.asis.ui.ImageViewPane;
 import javafx.scene.Node;
 import javafx.scene.control.CheckBox;
 import javafx.scene.control.TextField;
+import javafx.scene.image.Image;
+import javafx.scene.image.ImageView;
+import javafx.scene.layout.StackPane;
 import org.json.JSONObject;
 
+import java.io.File;
 import java.util.Optional;
 
 public abstract class TabController {
@@ -19,25 +24,31 @@ public abstract class TabController {
         setTabTitle(tabTitle);
     }
 
+    void setVisibleImage(StackPane stackPane, ImageViewPane viewPane, File workingFile) {
+        //Remove image if any is present
+        stackPane.getChildren().remove(viewPane);
+
+        //Make image visible
+        Image image = new Image(workingFile.toURI().toString());
+        ImageView sceneImageView = new ImageView();
+        sceneImageView.setImage(image);
+        sceneImageView.setPreserveRatio(true);
+        viewPane.setImageView(sceneImageView);
+        stackPane.getChildren().add(0, viewPane);
+    }
+
     void setNodeColorStyle(Node node, String fillColor, String outlineColor) {
         node.setStyle(String.format("outline-color: %s;fill-color: %s;", outlineColor,fillColor));
     }
 
-    <T extends FirstLevelEffect> Scene getScene(T effect) {
-        for(Scene scene: Controller.getInstance().getJoiPackage().getJoi().getSceneArrayList()) {
-            if(scene.hasFirstLevelEffect(effect)) {
-                return scene;
-            }
-        }
+    <T extends JOIEntity<?>> Scene getScene(T entity) {
+        for(Scene scene: Controller.getInstance().getJoiPackage().getJoi().getSceneArrayList())
+            if (scene.containsEntity(entity)) return scene;
         return null;
     }
 
     static void beatProperties(JSONObject textObject, CheckBox checkBox, String key) {
-        if (textObject != null && textObject.has(key)) {
-            checkBox.setSelected(true);
-        } else {
-            checkBox.setSelected(false);
-        }
+        checkBox.setSelected(textObject != null && textObject.has(key));
     }
 
     static void setLineStartCheckBoxState(Line line, CheckBox checkBox) {

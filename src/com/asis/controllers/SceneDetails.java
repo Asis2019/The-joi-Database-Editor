@@ -1,11 +1,12 @@
 package com.asis.controllers;
 
+import com.asis.controllers.dialogs.DialogConfirmation;
+import com.asis.controllers.dialogs.DialogMessage;
 import com.asis.controllers.tabs.*;
-import com.asis.joi.components.Scene;
-import com.asis.joi.components.Timer;
-import com.asis.joi.components.Transition;
-import com.asis.joi.components.dialog.Dialog;
-import com.asis.utilities.Alerts;
+import com.asis.joi.model.entites.Scene;
+import com.asis.joi.model.entites.Timer;
+import com.asis.joi.model.entites.Transition;
+import com.asis.joi.model.entites.dialog.Dialog;
 import com.asis.utilities.AsisUtils;
 import com.asis.utilities.StageManager;
 import javafx.application.Platform;
@@ -17,7 +18,6 @@ import javafx.scene.control.MenuItem;
 import javafx.scene.control.Tab;
 import javafx.scene.control.TabPane;
 import javafx.scene.layout.BorderPane;
-import javafx.stage.FileChooser;
 import javafx.stage.Stage;
 
 import java.io.File;
@@ -47,19 +47,17 @@ public class SceneDetails {
             createNewTab(tabNormalOperationController, "/resources/fxml/tab_normal_operation.fxml");
 
             //add timer tab to sceneDetails
-            if (getScene().getTimer() != null) {
+            if (getScene().getTimer() != null)
                 addTimerTab(getScene().getTimer());
-            }
 
             //add dialog tab to sceneDetails
-            if (getScene().getDialog() != null) {
+            if (getScene().getDialog() != null)
                 addDialogTab(getScene().getDialog());
-            }
 
             //add transition tab to sceneDetails
-            if (getScene().getTransition() != null) {
+            if (getScene().getTransition() != null)
                 addTransitionTab(getScene().getTransition());
-            }
+
         } catch (IOException e) {
             AsisUtils.errorDialogWindow(e);
         }
@@ -72,15 +70,11 @@ public class SceneDetails {
             //This is done so that if a scene image is added in one tab, it is synced with the others
             switch (newTab.getText()) {
                 case "Normal Operation":
-                    if(getTabNormalOperationController() != null) {
-                        getTabNormalOperationController().setVisibleImage();
-                    }
+                    if(getTabNormalOperationController() != null) getTabNormalOperationController().setVisibleImage();
                     break;
 
                 case "Timer":
-                    if(getTabTimerController() != null) {
-                        getTabTimerController().setVisibleImage();
-                    }
+                    if(getTabTimerController() != null) getTabTimerController().setVisibleImage();
                     break;
             }
         });
@@ -142,12 +136,12 @@ public class SceneDetails {
 
         switch(toCloseTab.getText()) {
             case "Normal Operation":
-                Alerts.messageDialog("Error", "Normal operations tab can't be closed.");
+                DialogMessage.messageDialog("Error", "Normal operations tab can't be closed.");
                 break;
 
             case "Timer":
                 if(!getTabTimerController().getTimer().equals(new Timer())) {
-                    if (!new Alerts().confirmationDialog("Delete Timer", "Are you sure you want to remove the timer?")) {
+                    if (!DialogConfirmation.show("Delete Timer", "Are you sure you want to remove the timer?")) {
                         event.consume();
                         return;
                     }
@@ -157,7 +151,7 @@ public class SceneDetails {
 
             case "Transition":
                 if(!getTabTransitionController().getTransition().equals(new Transition())) {
-                    if (!new Alerts().confirmationDialog("Delete Transition", "Are you sure you want to remove the transition?")) {
+                    if (!DialogConfirmation.show("Delete Transition", "Are you sure you want to remove the transition?")) {
                         event.consume();
                         return;
                     }
@@ -167,7 +161,7 @@ public class SceneDetails {
 
             case "Dialog":
                 if(!getTabDialogOptionController().getDialog().equals(new Dialog())) {
-                    if (!new Alerts().confirmationDialog("Delete Dialogs", "Are you sure you want to remove dialogs?")) {
+                    if (!DialogConfirmation.show("Delete Dialogs", "Are you sure you want to remove dialogs?")) {
                         event.consume();
                         return;
                     }
@@ -205,13 +199,7 @@ public class SceneDetails {
     }
 
     @FXML private void actionChangeSceneImage() {
-        FileChooser fileChooser = new FileChooser();
-        fileChooser.setInitialDirectory(Controller.getInstance().getJoiPackage().getPackageDirectory());
-        fileChooser.getExtensionFilters().addAll(new FileChooser.ExtensionFilter("png", "*.png"));
-        fileChooser.getExtensionFilters().addAll(new FileChooser.ExtensionFilter("jpg", "*.jpg"));
-        fileChooser.getExtensionFilters().addAll(new FileChooser.ExtensionFilter("jpeg", "*.jpeg"));
-
-        File file = fileChooser.showOpenDialog(null);
+        File file = AsisUtils.imageFileChooser();
 
         if(file != null) {
             //Add image to json object
@@ -259,9 +247,6 @@ public class SceneDetails {
 
     private TabPane getEffectTabs() {
         return effectTabs;
-    }
-    private void setEffectTabs(TabPane effectTabs) {
-        this.effectTabs = effectTabs;
     }
 
     private TabNormalOperationController getTabNormalOperationController() {

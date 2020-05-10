@@ -1,10 +1,10 @@
 package com.asis.ui.asis_node;
 
 import com.asis.controllers.Controller;
-import com.asis.joi.JOIPackage;
-import com.asis.joi.components.GotoScene;
-import com.asis.joi.components.Scene;
-import com.asis.joi.components.dialog.DialogOption;
+import com.asis.joi.model.JOIPackage;
+import com.asis.joi.model.entites.GotoScene;
+import com.asis.joi.model.entites.Scene;
+import com.asis.joi.model.entites.dialog.DialogOption;
 import javafx.beans.property.DoubleProperty;
 import javafx.beans.property.SimpleDoubleProperty;
 import javafx.geometry.Bounds;
@@ -126,7 +126,7 @@ public class SceneNodeMainController {
     private void removeConnectionFromStory(AsisConnectionButton outputConnection, AsisConnectionButton inputConnection, BoundLine boundLine) {
         final Scene scene = getJoiPackage().getJoi().getScene(outputConnection.getParentSceneId());
 
-        if(outputConnection.getConnectionId().contains("dialog_option")) {
+        if(outputConnection.getId().contains("dialog_option")) {
             //Remove from inner dialog location
             if (getTotalLinesConnectedToOutput(outputConnection) > 1) {
                 getLineList().remove(boundLine);
@@ -170,7 +170,7 @@ public class SceneNodeMainController {
         final Scene scene = getJoiPackage().getJoi().getScene(outputConnection.getParentSceneId());
 
         //Process where to add the jump to
-        if(outputConnection.getConnectionId().contains("dialog_option")) {
+        if(outputConnection.getId().contains("dialog_option")) {
             final DialogOption dialogOption = scene.getDialog().getOptionArrayList().get(outputConnection.getOptionNumber());
 
             if(getTotalLinesConnectedToOutput(outputConnection) > 1)

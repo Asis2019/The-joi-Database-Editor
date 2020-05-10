@@ -1,20 +1,49 @@
-package com.asis.joi.components;
+package com.asis.joi.model.entites;
 
-import com.asis.joi.JOISystemInterface;
+import com.asis.joi.JOIPackageManager;
 import org.json.JSONObject;
+import org.json.JSONString;
 
 import java.io.File;
-import java.util.Iterator;
 
-public class CustomDialogueBox implements JOISystemInterface, FirstLevelEffect {
+public class CustomDialogueBox implements JSONString, JOIEntity<JSONObject>, Cloneable {
     private File image;
-    private double yScale=1, xScale=1, yPositionOffset=0, xPositionOffset=0, yTextPositionOffset=0, xTextPositionOffset=0;
+    private double yScale = 1, xScale = 1, yPositionOffset = 0, xPositionOffset = 0, yTextPositionOffset = 0, xTextPositionOffset = 0;
 
-    public CustomDialogueBox(File image) {
-        setImage(image);
+    public static CustomDialogueBox createEntity(JSONObject jsonObject) {
+        CustomDialogueBox customDialogueBox = new CustomDialogueBox();
+
+        for (String key : jsonObject.keySet()) {
+            switch (key) {
+                case "image":
+                    customDialogueBox.setImage(new File(JOIPackageManager.getInstance().getJoiPackageDirectory().getPath() + File.separator + jsonObject.getString("image")));
+                    break;
+                case "yScale":
+                    customDialogueBox.setYScale(jsonObject.getDouble("yScale"));
+                    break;
+                case "xScale":
+                    customDialogueBox.setXScale(jsonObject.getDouble("xScale"));
+                    break;
+                case "yPositionOffset":
+                    customDialogueBox.setYPositionOffset(jsonObject.getDouble("yPositionOffset"));
+                    break;
+                case "xPositionOffset":
+                    customDialogueBox.setXPositionOffset(jsonObject.getDouble("xPositionOffset"));
+                    break;
+                case "yTextPositionOffset":
+                    customDialogueBox.setYTextPositionOffset(jsonObject.getDouble("yTextPositionOffset"));
+                    break;
+                case "xTextPositionOffset":
+                    customDialogueBox.setXTextPositionOffset(jsonObject.getDouble("xTextPositionOffset"));
+                    break;
+            }
+        }
+
+        return customDialogueBox;
     }
 
-    public JSONObject getCustomDialogueBoxAsJson() {
+    @Override
+    public JSONObject toJSON() {
         JSONObject object = new JSONObject();
 
         object.put("image", getImage().getName());
@@ -29,37 +58,23 @@ public class CustomDialogueBox implements JOISystemInterface, FirstLevelEffect {
     }
 
     @Override
-    public void setDataFromJson(JSONObject jsonObject, File importDirectory) {
-        Iterator<String> keys = jsonObject.keys();
-        while (keys.hasNext()) {
-            setValueAccordingToKey(jsonObject, keys.next(), importDirectory);
-        }
+    public String toJSONString() {
+        return toJSON().toString(4);
     }
 
-    private void setValueAccordingToKey(JSONObject object, String key, File importDirectory) {
-        switch (key) {
-            case "image":
-                setImage(new File(importDirectory.getPath()+File.separator+object.getString("image")));
-                break;
-            case "yScale":
-                setYScale(object.getDouble("yScale"));
-                break;
-            case "xScale":
-                setXScale(object.getDouble("xScale"));
-                break;
-            case "yPositionOffset":
-                setYPositionOffset(object.getDouble("yPositionOffset"));
-                break;
-            case "xPositionOffset":
-                setXPositionOffset(object.getDouble("xPositionOffset"));
-                break;
-            case "yTextPositionOffset":
-                setYTextPositionOffset(object.getDouble("yTextPositionOffset"));
-                break;
-            case "xTextPositionOffset":
-                setXTextPositionOffset(object.getDouble("xTextPositionOffset"));
-                break;
-        }
+    @Override
+    public CustomDialogueBox clone() throws CloneNotSupportedException {
+        CustomDialogueBox customDialogueBox = (CustomDialogueBox) super.clone();
+
+        customDialogueBox.setImage(new File(getImage().toURI()));
+        customDialogueBox.setXPositionOffset(getXPositionOffset());
+        customDialogueBox.setYPositionOffset(getYPositionOffset());
+        customDialogueBox.setXTextPositionOffset(getXTextPositionOffset());
+        customDialogueBox.setYTextPositionOffset(getYTextPositionOffset());
+        customDialogueBox.setXScale(getXScale());
+        customDialogueBox.setYScale(getYScale());
+
+        return customDialogueBox;
     }
 
     @Override
@@ -81,6 +96,7 @@ public class CustomDialogueBox implements JOISystemInterface, FirstLevelEffect {
     public File getImage() {
         return image;
     }
+
     public void setImage(File image) {
         this.image = image;
     }
@@ -88,6 +104,7 @@ public class CustomDialogueBox implements JOISystemInterface, FirstLevelEffect {
     public double getYScale() {
         return yScale;
     }
+
     public void setYScale(double yScale) {
         this.yScale = yScale;
     }
@@ -95,6 +112,7 @@ public class CustomDialogueBox implements JOISystemInterface, FirstLevelEffect {
     public double getXScale() {
         return xScale;
     }
+
     public void setXScale(double xScale) {
         this.xScale = xScale;
     }
@@ -102,6 +120,7 @@ public class CustomDialogueBox implements JOISystemInterface, FirstLevelEffect {
     public double getYPositionOffset() {
         return yPositionOffset;
     }
+
     public void setYPositionOffset(double yPositionOffset) {
         this.yPositionOffset = yPositionOffset;
     }
@@ -109,6 +128,7 @@ public class CustomDialogueBox implements JOISystemInterface, FirstLevelEffect {
     public double getXPositionOffset() {
         return xPositionOffset;
     }
+
     public void setXPositionOffset(double xPositionOffset) {
         this.xPositionOffset = xPositionOffset;
     }
@@ -116,6 +136,7 @@ public class CustomDialogueBox implements JOISystemInterface, FirstLevelEffect {
     public double getYTextPositionOffset() {
         return yTextPositionOffset;
     }
+
     public void setYTextPositionOffset(double yTextPositionOffset) {
         this.yTextPositionOffset = yTextPositionOffset;
     }
@@ -123,6 +144,7 @@ public class CustomDialogueBox implements JOISystemInterface, FirstLevelEffect {
     public double getXTextPositionOffset() {
         return xTextPositionOffset;
     }
+
     public void setXTextPositionOffset(double xTextPositionOffset) {
         this.xTextPositionOffset = xTextPositionOffset;
     }
