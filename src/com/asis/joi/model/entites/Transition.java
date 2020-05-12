@@ -46,7 +46,7 @@ public class Transition implements JSONString, JOIEntity<JSONArray>, Cloneable {
     }
 
     public double getDuration() {
-        return waitTime + fadeSpeed;
+        return waitTime + (fadeSpeed*2);
     }
 
     @Override

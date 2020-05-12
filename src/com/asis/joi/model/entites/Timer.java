@@ -64,7 +64,7 @@ public class Timer implements JSONString, JOIEntity<JSONArray>, Cloneable {
     }
 
     public double getDuration() {
-        return getLineArrayList().stream().mapToDouble(Line::getDuration).sum() + getTotalTime();
+        return getTotalTime();
     }
 
     @Override

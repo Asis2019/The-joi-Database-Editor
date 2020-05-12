@@ -23,9 +23,9 @@ import javafx.stage.WindowEvent;
 import org.json.JSONArray;
 import org.json.JSONObject;
 
-import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Comparator;
+import java.util.Set;
 
 public class TranslationEditor {
 
@@ -58,10 +58,9 @@ public class TranslationEditor {
         tableViewJoi.getColumns().add(lineLocationColumn);
 
         //Add language columns
-        ObservableList<String> joiPackageLanguages = JOIPackageManager.getInstance().getJoiPackageLanguages();
-        for (int i = 1; i <= joiPackageLanguages.size(); i++) {
-            String languageCode = joiPackageLanguages.get(i-1);
-
+        int i = 1;
+        Set<String> joiPackageLanguages = JOIPackageManager.getInstance().getJoiPackageLanguages();
+        for (String languageCode : joiPackageLanguages) {
             TableColumn<TableRow<JOIEntity<?>>, String> columnLineText = new TableColumn<>(AsisUtils.getLanguageValueForAlternateKey(languageCode, "file_code"));
             columnLineText.setSortable(false);
             columnLineText.setPrefWidth(300d);
@@ -69,7 +68,7 @@ public class TranslationEditor {
             final int finalI = i;
             columnLineText.setCellValueFactory(param -> {
                 ReadOnlyObjectWrapper<String> readOnlyObjectWrapper;
-                if(param.getValue().getRowData().size()-1 >= finalI) {
+                if (param.getValue().getRowData().size() - 1 >= finalI) {
                     readOnlyObjectWrapper = new ReadOnlyObjectWrapper<>(getTextFromEntity(param.getValue().getData(finalI)));
                 } else {
                     readOnlyObjectWrapper = new ReadOnlyObjectWrapper<>();
@@ -79,6 +78,7 @@ public class TranslationEditor {
             });
 
             editableJoiColumn(columnLineText, i);
+            i++;
         }
     }
 
@@ -104,16 +104,6 @@ public class TranslationEditor {
 
     private void loadJoiTableData() {
         ObservableList<TableRow<JOIEntity<?>>> itemsList = FXCollections.observableArrayList();
-
-        ArrayList<String> unloadedLanguages = new ArrayList<>(JOIPackageManager.getInstance().getJoiPackageLanguages());
-        JOIPackageManager.getInstance().getJoiPackages().forEach(i -> unloadedLanguages.remove(i.getPackageLanguageCode()));
-        unloadedLanguages.forEach(i -> {
-            try {
-                JOIPackageManager.getInstance().getJOIPackage(i);
-            } catch (IOException e) {
-                AsisUtils.errorDialogWindow(e);
-            }
-        });
 
         ArrayList<JOIPackage> joiPackages = JOIPackageManager.getInstance().getJoiPackages();
         joiPackages.sort(Comparator.comparing(JOIPackage::getPackageLanguageCode));

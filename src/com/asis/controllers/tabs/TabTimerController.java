@@ -302,16 +302,12 @@ public class TabTimerController extends TabController {
 
         //Scene image code
         if (getScene(getTimer()) != null && getScene(getTimer()).getSceneImage() != null) {
-            //Set image file
             workingFile = getScene(getTimer()).getSceneImage();
-
-            //Remove add image button
             timerStackPane.getChildren().remove(timerIconControllerBox);
         }
 
         //Line image code
         if (getTimer().getLine(onSecond) != null && getTimer().getLine(onSecond).getLineImage() != null) {
-            //Set image file
             workingFile = getTimer().getLine(onSecond).getLineImage();
         }
         return workingFile;

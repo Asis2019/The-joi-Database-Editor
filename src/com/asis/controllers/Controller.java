@@ -362,7 +362,7 @@ public class Controller {
         File newProjectDirectory = new File(newProjectFile.getPath() + File.separator + newProjectName);
         if (newProjectDirectory.exists()) {
             if(Objects.requireNonNull(newProjectDirectory.list()).length != 0) {
-                DialogMessage.messageDialog("WARNING", String.format("The project path: %s is not empty.\nPlease select a diffrent path or empty the current one.",
+                DialogMessage.messageDialog("WARNING", String.format("The project path: %s is not empty.\nPlease select a different path or empty the current one.",
                         newProjectDirectory.getAbsolutePath()), 600, 200);
                 throw new FileAlreadyExistsException("CANCEL");
             }
@@ -418,7 +418,6 @@ public class Controller {
 
         if (file != null) {
             //Set project directory to current
-            JOIPackageManager.getInstance().clear();
             JOIPackageManager.getInstance().setJoiPackageDirectory(file);
             JOIPackage newJoiPackage = JOIPackageManager.getInstance().getJOIPackage();
             if (newJoiPackage == null) return false;

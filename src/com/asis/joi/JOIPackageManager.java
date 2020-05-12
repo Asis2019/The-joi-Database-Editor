@@ -6,27 +6,26 @@ import com.asis.joi.model.JOIPackage;
 import com.asis.joi.model.MetaData;
 import com.asis.utilities.AsisUtils;
 import com.asis.utilities.Config;
-import javafx.collections.FXCollections;
-import javafx.collections.ObservableList;
 import org.json.JSONArray;
 import org.json.JSONObject;
 
 import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Collections;
+import java.util.HashSet;
+import java.util.Set;
 
 import static com.asis.utilities.AsisUtils.deleteFolder;
 
 public class JOIPackageManager {
     private File joiPackageDirectory = new File("defaultWorkspace");
-    private final ObservableList<String> joiPackageLanguages = FXCollections.observableArrayList();
+    private final Set<String> joiPackageLanguages = new HashSet<>();
     private final ArrayList<JOIPackage> joiPackages = new ArrayList<>();
     private static final JOIPackageManager joiPackageManager = new JOIPackageManager();
 
     private JOIPackageManager() {
-        if (!getJoiPackageDirectory().exists()) {
-            System.out.println(getJoiPackageDirectory().mkdir());
-        }
+        if (!getJoiPackageDirectory().exists()) System.out.println(getJoiPackageDirectory().mkdir());
     }
 
     public static JOIPackageManager getInstance() {
@@ -41,7 +40,7 @@ public class JOIPackageManager {
     public boolean changesHaveOccurred() {
         try {
             for(JOIPackage currentJoiPackage: getJoiPackages()) {
-                final JOIPackage originalPackage = JOIPackageManager.getInstance().getJOIPackage(currentJoiPackage.getPackageLanguageCode(), false);
+                final JOIPackage originalPackage = loadJoiPackage(currentJoiPackage.getPackageLanguageCode());
                 if(!currentJoiPackage.equals(originalPackage)) return true;
             }
             return false;
@@ -52,6 +51,8 @@ public class JOIPackageManager {
     }
 
     private void loadJoiPackageLanguages() {
+        getJoiPackageLanguages().clear();
+
         Object data = Config.get("LANGUAGES");
         if (data instanceof JSONArray) {
             JSONArray jsonArray = ((JSONArray) data);
@@ -62,6 +63,21 @@ public class JOIPackageManager {
                 if (file.exists()) getJoiPackageLanguages().add(languageCode);
             }
         }
+    }
+
+    private void loadJoiPackages() throws IOException {
+        loadJoiPackageLanguages();
+
+        getJoiPackages().clear();
+        for (String languageCode : getJoiPackageLanguages()) addJOIPackage(loadJoiPackage(languageCode));
+    }
+
+    private JOIPackage loadJoiPackage(String languageCode) throws IOException {
+        JOIPackage joiPackage = new JOIPackage();
+        joiPackage.setPackageLanguageCode(languageCode);
+        joiPackage.setJoi(importJoiFromDirectory(languageCode));
+        joiPackage.setMetaData(importMetaDataFromDirectory(languageCode));
+        return joiPackage;
     }
 
     public void exportJOIPackageAsFiles(File destination) {
@@ -97,40 +113,30 @@ public class JOIPackageManager {
 
     public void addJOIPackage(JOIPackage joiPackage) {
         getJoiPackages().add(joiPackage);
-        if(!getJoiPackageLanguages().contains(joiPackage.getPackageLanguageCode()))
-            getJoiPackageLanguages().add(joiPackage.getPackageLanguageCode());
+        getJoiPackageLanguages().add(joiPackage.getPackageLanguageCode());
     }
 
     public JOIPackage getJOIPackage() throws IOException {
-        String languageCode;
-        if (getJoiPackageLanguages().size() > 1) {
-            ArrayList<String> languages = new ArrayList<>();
-            Object data = Config.get("LANGUAGES");
-            if(data instanceof JSONArray) {
-                for(int i=0; i<((JSONArray) data).length(); i++) {
-                    String languageKey = ((JSONArray) data).getJSONObject(i).getString("file_code");
-                    if(JOIPackageManager.getInstance().getJoiPackageLanguages().contains(languageKey))
-                        languages.add(languageKey);
-                }
-            }
+        loadJoiPackages();
 
+        String languageCode;
+        if(getJoiPackageLanguages().size() != 1) {
+            ArrayList<String> languages = new ArrayList<>(getJoiPackageLanguages());
+            Collections.sort(languages);
             languageCode = DialogRequestLanguage.requestLanguage(languages);
-            if(languageCode == null) return null;
+            if (languageCode == null) return null;
+        } else {
+            languageCode = getJoiPackageLanguages().iterator().next();
         }
-        else languageCode = getJoiPackageLanguages().get(0);
 
         return getJOIPackage(languageCode);
     }
 
-    public JOIPackage getJOIPackage(String languageCode, boolean... addOverride) throws IOException {
-        JOIPackage joiPackage = new JOIPackage();
-        joiPackage.setPackageLanguageCode(languageCode);
-        joiPackage.setJoi(importJoiFromDirectory(languageCode));
-        joiPackage.setMetaData(importMetaDataFromDirectory(languageCode));
+    public JOIPackage getJOIPackage(String languageCode) {
+        for (JOIPackage joiPackage : getJoiPackages())
+            if (joiPackage.getPackageLanguageCode().equals(languageCode)) return joiPackage;
 
-        if(addOverride.length <= 0) addJOIPackage(joiPackage);
-
-        return joiPackage;
+        return null;
     }
 
     public JOIPackage getNewJOIPackage(String languageCode) {
@@ -139,7 +145,6 @@ public class JOIPackageManager {
         joiPackage.setJoi(new JOI());
         joiPackage.setMetaData(new MetaData());
 
-        //Add new joi package to packages list
         addJOIPackage(joiPackage);
 
         return joiPackage;
@@ -189,11 +194,9 @@ public class JOIPackageManager {
         if(!joiPackageDirectory.exists())
             //noinspection ResultOfMethodCallIgnored
             joiPackageDirectory.mkdir();
-
-        loadJoiPackageLanguages();
     }
 
-    public ObservableList<String> getJoiPackageLanguages() {
+    public Set<String> getJoiPackageLanguages() {
         return joiPackageLanguages;
     }
 

@@ -58,7 +58,9 @@ public class Line implements JSONString, JOIEntity<JSONArray>, Cloneable {
     }
 
     public double getDuration() {
-        return getText().length() / 15d;
+        //15d is the characters read in one second
+        //2 is an average delay before next line shows
+        return getText().length() / 15d + 2;
     }
 
     @Override
