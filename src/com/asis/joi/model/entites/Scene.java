@@ -1,6 +1,5 @@
 package com.asis.joi.model.entites;
 
-import com.asis.joi.JOIPackageManager;
 import com.asis.joi.model.JOIEntity;
 import com.asis.joi.model.entites.dialog.Dialog;
 import com.asis.utilities.AsisUtils;
@@ -9,7 +8,6 @@ import org.json.JSONArray;
 import org.json.JSONObject;
 import org.json.JSONString;
 
-import java.io.File;
 import java.util.ArrayList;
 import java.util.NoSuchElementException;
 
@@ -17,7 +15,6 @@ public class Scene implements JSONString, JOIEntity<JSONObject>, Cloneable {
     private int sceneId;
     private double layoutXPosition, layoutYPosition;
     private String sceneTitle;
-    private File sceneImage;
 
     private final ReadOnlyBooleanWrapper badEnd = new ReadOnlyBooleanWrapper();
     private final ReadOnlyBooleanWrapper goodEnd = new ReadOnlyBooleanWrapper();
@@ -75,6 +72,7 @@ public class Scene implements JSONString, JOIEntity<JSONObject>, Cloneable {
         return false;
     }
 
+    @SuppressWarnings({"unchecked"})
     public <T extends SceneComponent<?>> T getComponent(Class<T> componentName) throws NoSuchElementException {
         for (SceneComponent<?> sceneComponent : getSceneComponents())
             if (sceneComponent.getClass() == componentName) return (T) sceneComponent;
@@ -108,11 +106,10 @@ public class Scene implements JSONString, JOIEntity<JSONObject>, Cloneable {
                     scene.setBadEnd(true);
                     break;
                 case "sceneImage":
-                    if (jsonObject.get("sceneImage") instanceof JSONObject) {
-                        scene.setSceneImage(new File(JOIPackageManager.getInstance().getJoiPackageDirectory().getPath() + File.separator + jsonObject.getJSONObject("sceneImage").getString("name")));
-                    } else {
-                        scene.setSceneImage(new File(JOIPackageManager.getInstance().getJoiPackageDirectory().getPath() + File.separator + jsonObject.getString("sceneImage")));
-                    }
+                    if (jsonObject.get("sceneImage") instanceof JSONObject)
+                        scene.addComponent(SceneImage.createEntity(jsonObject.getJSONObject("sceneImage")));
+                    else
+                        scene.addComponent(SceneImage.createEntity(jsonObject.getString("sceneImage")));
                     break;
                 case "noFade":
                     scene.removeComponent(Transition.class);
@@ -173,13 +170,16 @@ public class Scene implements JSONString, JOIEntity<JSONObject>, Cloneable {
 
         if (goodEndProperty().getValue()) sceneObject.put("joiEnd", true);
         if (badEndProperty().getValue()) sceneObject.put("badJoiEnd", true);
-        if (getSceneImage() != null) sceneObject.put("sceneImage", getSceneImage().getName());
 
         //Add any and all components to the json object
         for(SceneComponent<?> component: getSceneComponents()) {
-            if(component.jsonKeyName() != null)
+            if(component.jsonKeyName() != null && component.toJSON() != null)
                 sceneObject.put(component.jsonKeyName(), component.toJSON());
         }
+
+        //Put base SceneImage name into sceneObject if toJSON is null
+        if(hasComponent(SceneImage.class) && getComponent(SceneImage.class).toJSON() == null)
+            sceneObject.put(getComponent(SceneImage.class).jsonKeyName(), getComponent(SceneImage.class).getImage().getName());
 
         //If no transition component exists, put noFade
         if(!hasComponent(Transition.class)) sceneObject.put("noFade", true);
@@ -206,8 +206,6 @@ public class Scene implements JSONString, JOIEntity<JSONObject>, Cloneable {
         scene.setSceneId(getSceneId());
         scene.setSceneTitle(getSceneTitle());
 
-        scene.setSceneImage(getSceneImage());
-
         for (SceneComponent<?> sceneComponent: getSceneComponents())
             scene.addComponent((SceneComponent<?>) sceneComponent.clone());
 
@@ -230,8 +228,6 @@ public class Scene implements JSONString, JOIEntity<JSONObject>, Cloneable {
         if (Double.compare(scene.getLayoutXPosition(), getLayoutXPosition()) != 0) return false;
         if (Double.compare(scene.getLayoutYPosition(), getLayoutYPosition()) != 0) return false;
         if (getSceneTitle() != null ? !getSceneTitle().equals(scene.getSceneTitle()) : scene.getSceneTitle() != null)
-            return false;
-        if (getSceneImage() != null ? !getSceneImage().equals(scene.getSceneImage()) : scene.getSceneImage() != null)
             return false;
         if (!getSceneComponents().equals(scene.getSceneComponents())) return false;
         if (isBadEnd() != scene.isBadEnd()) return false;
@@ -269,14 +265,6 @@ public class Scene implements JSONString, JOIEntity<JSONObject>, Cloneable {
 
     public void setSceneTitle(String sceneTitle) {
         this.sceneTitle = sceneTitle;
-    }
-
-    public File getSceneImage() {
-        return sceneImage;
-    }
-
-    public void setSceneImage(File sceneImage) {
-        this.sceneImage = sceneImage;
     }
 
     public boolean isBadEnd() {

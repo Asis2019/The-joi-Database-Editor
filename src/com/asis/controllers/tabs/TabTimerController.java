@@ -1,6 +1,7 @@
 package com.asis.controllers.tabs;
 
 import com.asis.joi.model.entites.Line;
+import com.asis.joi.model.entites.SceneImage;
 import com.asis.joi.model.entites.Timer;
 import com.asis.ui.AsisCenteredArc;
 import com.asis.ui.ImageViewPane;
@@ -279,7 +280,9 @@ public class TabTimerController extends TabController {
 
         if (file != null) {
             if (getScene(getTimer()) != null) {
-                getScene(getTimer()).setSceneImage(file);
+                SceneImage image = new SceneImage();
+                image.setImage(file);
+                getScene(getTimer()).addComponent(image);
                 setVisibleImage();
             }
         }
@@ -301,8 +304,9 @@ public class TabTimerController extends TabController {
         File workingFile = new File("");
 
         //Scene image code
-        if (getScene(getTimer()) != null && getScene(getTimer()).getSceneImage() != null) {
-            workingFile = getScene(getTimer()).getSceneImage();
+        if (getScene(getTimer()) != null && getScene(getTimer()).hasComponent(SceneImage.class) &&
+                getScene(getTimer()).getComponent(SceneImage.class).getImage() != null) {
+            workingFile = getScene(getTimer()).getComponent(SceneImage.class).getImage();
             timerStackPane.getChildren().remove(timerIconControllerBox);
         }
 

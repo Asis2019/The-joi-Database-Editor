@@ -3,6 +3,7 @@ package com.asis.controllers.tabs;
 import com.asis.joi.model.entites.Line;
 import com.asis.joi.model.entites.LineGroup;
 import com.asis.joi.model.entites.Scene;
+import com.asis.joi.model.entites.SceneImage;
 import com.asis.ui.ImageViewPane;
 import com.asis.utilities.AsisUtils;
 import javafx.application.Platform;
@@ -131,7 +132,9 @@ public class TabNormalOperationController extends TabController {
 
         if(file != null) {
             //Add image to json object
-            getScene().setSceneImage(file);
+            SceneImage image = new SceneImage();
+            image.setImage(file);
+            getScene().addComponent(image);
 
             setVisibleImage();
         }
@@ -222,11 +225,11 @@ public class TabNormalOperationController extends TabController {
         File workingFile = new File("");
 
         //Scene image code
-        if(getScene().getSceneImage() != null) {
+        if(getScene().hasComponent(SceneImage.class) && getScene().getComponent(SceneImage.class).getImage() != null) {
             //check if file exists
-            if(getScene().getSceneImage().exists()) {
+            if(getScene().getComponent(SceneImage.class).getImage().exists()) {
                 //Set image file
-                workingFile = getScene().getSceneImage();
+                workingFile = getScene().getComponent(SceneImage.class).getImage();
 
                 //Remove add image button
                 stackPane.getChildren().remove(iconControllerBox);

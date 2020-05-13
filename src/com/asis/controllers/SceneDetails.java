@@ -4,6 +4,7 @@ import com.asis.controllers.dialogs.DialogConfirmation;
 import com.asis.controllers.dialogs.DialogMessage;
 import com.asis.controllers.tabs.*;
 import com.asis.joi.model.entites.Scene;
+import com.asis.joi.model.entites.SceneImage;
 import com.asis.joi.model.entites.Timer;
 import com.asis.joi.model.entites.Transition;
 import com.asis.joi.model.entites.dialog.Dialog;
@@ -203,7 +204,10 @@ public class SceneDetails {
 
         if(file != null) {
             //Add image to json object
-            getScene().setSceneImage(file);
+            if(getScene().hasComponent(SceneImage.class)) getScene().removeComponent(SceneImage.class);
+            SceneImage sceneImage = new SceneImage();
+            sceneImage.setImage(file);
+            getScene().addComponent(sceneImage);
 
             //setVisibleImage();
             if(getTabNormalOperationController() != null) {
