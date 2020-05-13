@@ -43,7 +43,6 @@ public class SceneNode extends BorderPane {
         setFocusTraversable(true);
         setCenter(titleLabel);
 
-
         translateXProperty().addListener((observableValue, number, t1) -> scene.setLayoutXPosition(t1.doubleValue()));
         translateYProperty().addListener((observableValue, number, t1) -> scene.setLayoutYPosition(t1.doubleValue()));
         focusedProperty().addListener((ObservableValue<? extends Boolean> observable, Boolean oldValue, Boolean newValue) -> focusState(newValue));

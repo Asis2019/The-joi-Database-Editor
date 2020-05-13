@@ -1,15 +1,15 @@
 package com.asis.joi.model.entites;
 
+
 import com.asis.joi.JOIPackageManager;
-import com.asis.joi.model.JOIEntity;
 import org.json.JSONArray;
 import org.json.JSONObject;
 import org.json.JSONString;
 
 import java.io.File;
 
-public class Line implements JSONString, JOIEntity<JSONArray>, Cloneable {
-    private String fillColor="#ffffff", outlineColor="#000000", text="";
+public class Line implements JSONString, SceneComponent<JSONArray> {
+    private String fillColor = "#ffffff", outlineColor = "#000000", text = "";
     private File lineImage;
     private int lineNumber;
 
@@ -17,6 +17,11 @@ public class Line implements JSONString, JOIEntity<JSONArray>, Cloneable {
     private Boolean startBeat, stopBeat;
     private Double changeBeatPitch;
     private Integer changeBeatSpeed;
+
+    public static Line createEntity(JSONObject jsonObject, int lineNumber) {
+        jsonObject.put("id", lineNumber);
+        return createEntity(jsonObject);
+    }
 
     public static Line createEntity(JSONObject jsonObject) {
         Line line = new Line();
@@ -64,17 +69,22 @@ public class Line implements JSONString, JOIEntity<JSONArray>, Cloneable {
     }
 
     @Override
+    public String jsonKeyName() {
+        return "line" + getLineNumber();
+    }
+
+    @Override
     public JSONArray toJSON() {
         JSONObject object = new JSONObject();
         object.put("fillColor", getFillColor());
         object.put("outlineColor", getOutlineColor());
         object.put("text", getText());
 
-        if(getLineImage() != null) object.put("lineImage", getLineImage().getName());
-        if(getStartBeat() != null) object.put("startBeat", getStartBeat());
-        if(getStopBeat() != null) object.put("stopBeat", getStopBeat());
-        if(getChangeBeatPitch() != null) object.put("changeBeatPitch", getChangeBeatPitch());
-        if(getChangeBeatSpeed() != null) object.put("changeBeatSpeed", getChangeBeatSpeed());
+        if (getLineImage() != null) object.put("lineImage", getLineImage().getName());
+        if (getStartBeat() != null) object.put("startBeat", getStartBeat());
+        if (getStopBeat() != null) object.put("stopBeat", getStopBeat());
+        if (getChangeBeatPitch() != null) object.put("changeBeatPitch", getChangeBeatPitch());
+        if (getChangeBeatSpeed() != null) object.put("changeBeatSpeed", getChangeBeatSpeed());
 
         return new JSONArray().put(object);
     }
@@ -127,6 +137,7 @@ public class Line implements JSONString, JOIEntity<JSONArray>, Cloneable {
     public String getFillColor() {
         return fillColor;
     }
+
     public void setFillColor(String fillColor) {
         this.fillColor = fillColor;
     }
@@ -134,6 +145,7 @@ public class Line implements JSONString, JOIEntity<JSONArray>, Cloneable {
     public String getOutlineColor() {
         return outlineColor;
     }
+
     public void setOutlineColor(String outlineColor) {
         this.outlineColor = outlineColor;
     }
@@ -141,6 +153,7 @@ public class Line implements JSONString, JOIEntity<JSONArray>, Cloneable {
     public String getText() {
         return text;
     }
+
     public void setText(String text) {
         this.text = text;
     }
@@ -148,6 +161,7 @@ public class Line implements JSONString, JOIEntity<JSONArray>, Cloneable {
     public File getLineImage() {
         return lineImage;
     }
+
     public void setLineImage(File lineImage) {
         this.lineImage = lineImage;
     }
@@ -155,6 +169,7 @@ public class Line implements JSONString, JOIEntity<JSONArray>, Cloneable {
     public int getLineNumber() {
         return lineNumber;
     }
+
     public void setLineNumber(int lineNumber) {
         this.lineNumber = lineNumber;
     }
@@ -162,6 +177,7 @@ public class Line implements JSONString, JOIEntity<JSONArray>, Cloneable {
     public Boolean getStartBeat() {
         return startBeat;
     }
+
     public void setStartBeat(Boolean startBeat) {
         this.startBeat = startBeat;
     }
@@ -169,6 +185,7 @@ public class Line implements JSONString, JOIEntity<JSONArray>, Cloneable {
     public Boolean getStopBeat() {
         return stopBeat;
     }
+
     public void setStopBeat(Boolean stopBeat) {
         this.stopBeat = stopBeat;
     }
@@ -176,6 +193,7 @@ public class Line implements JSONString, JOIEntity<JSONArray>, Cloneable {
     public Double getChangeBeatPitch() {
         return changeBeatPitch;
     }
+
     public void setChangeBeatPitch(Double changeBeatPitch) {
         this.changeBeatPitch = changeBeatPitch;
     }
@@ -183,6 +201,7 @@ public class Line implements JSONString, JOIEntity<JSONArray>, Cloneable {
     public Integer getChangeBeatSpeed() {
         return changeBeatSpeed;
     }
+
     public void setChangeBeatSpeed(Integer changeBeatSpeed) {
         this.changeBeatSpeed = changeBeatSpeed;
     }

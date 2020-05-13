@@ -1,12 +1,11 @@
 package com.asis.joi.model.entites;
 
-import com.asis.joi.model.JOIEntity;
 import com.asis.utilities.AsisUtils;
 import org.json.JSONArray;
 import org.json.JSONObject;
 import org.json.JSONString;
 
-public class Transition implements JSONString, JOIEntity<JSONArray>, Cloneable {
+public class Transition implements JSONString, SceneComponent<JSONArray> {
     private String fadeColor, transitionTextColor="#ffffff", transitionTextOutlineColor="#000000", transitionText;
     private int waitTime = 0;
     private double fadeSpeed = 1; //stored as seconds
@@ -47,6 +46,11 @@ public class Transition implements JSONString, JOIEntity<JSONArray>, Cloneable {
 
     public double getDuration() {
         return waitTime + (fadeSpeed*2);
+    }
+
+    @Override
+    public String jsonKeyName() {
+        return "transition";
     }
 
     @Override

@@ -4,6 +4,7 @@ import com.asis.controllers.dialogs.*;
 import com.asis.joi.JOIPackageManager;
 import com.asis.joi.model.JOIPackage;
 import com.asis.joi.model.entites.GotoScene;
+import com.asis.joi.model.entites.dialog.Dialog;
 import com.asis.joi.model.entites.dialog.DialogOption;
 import com.asis.ui.asis_node.AsisConnectionButton;
 import com.asis.ui.asis_node.SceneNode;
@@ -435,7 +436,7 @@ public class Controller {
                 //Create connections
                 for (com.asis.joi.model.entites.Scene scene : getJoiPackage().getJoi().getSceneArrayList()) {
                     final AsisConnectionButton output = getSceneNodeWithId(getSceneNodes(), scene.getSceneId()).getOutputButtons().get(0);
-                    createConnections(scene.getGotoScene(), output);
+                    if(scene.hasComponent(GotoScene.class)) createConnections(scene.getComponent(GotoScene.class), output);
 
                     createConnectionsForDialogOutputs(scene);
                 }
@@ -454,8 +455,8 @@ public class Controller {
     }
 
     private void createConnectionsForDialogOutputs(com.asis.joi.model.entites.Scene scene) {
-        if (scene.getDialog() != null && !scene.getDialog().getOptionArrayList().isEmpty()) {
-            for (DialogOption dialogOption : scene.getDialog().getOptionArrayList()) {
+        if (scene.hasComponent(Dialog.class) && !scene.getComponent(Dialog.class).getOptionArrayList().isEmpty()) {
+            for (DialogOption dialogOption : scene.getComponent(Dialog.class).getOptionArrayList()) {
                 AsisConnectionButton output = getSceneNodeWithId(sceneNodes, scene.getSceneId()).createNewOutputConnectionPoint("Option " + dialogOption.getOptionNumber(), "dialog_option_" + (dialogOption.getOptionNumber() + 1));
                 output.setOptionNumber(dialogOption.getOptionNumber());
 

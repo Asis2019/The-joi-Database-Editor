@@ -3,6 +3,7 @@ package com.asis.joi.model.entites;
 import com.asis.joi.JOIPackageManager;
 import com.asis.joi.model.JOIEntity;
 import com.asis.joi.model.entites.dialog.Dialog;
+import com.asis.utilities.AsisUtils;
 import javafx.beans.property.ReadOnlyBooleanWrapper;
 import org.json.JSONArray;
 import org.json.JSONObject;
@@ -10,21 +11,18 @@ import org.json.JSONString;
 
 import java.io.File;
 import java.util.ArrayList;
+import java.util.NoSuchElementException;
 
 public class Scene implements JSONString, JOIEntity<JSONObject>, Cloneable {
     private int sceneId;
     private double layoutXPosition, layoutYPosition;
     private String sceneTitle;
     private File sceneImage;
-    private Timer timer;
-    private Dialog dialog;
-    private CustomDialogueBox customDialogueBox;
-    private Transition transition = new Transition();
-    private GotoScene gotoScene;
-    private ArrayList<Line> lineArrayList = new ArrayList<>();
 
     private final ReadOnlyBooleanWrapper badEnd = new ReadOnlyBooleanWrapper();
     private final ReadOnlyBooleanWrapper goodEnd = new ReadOnlyBooleanWrapper();
+
+    private final ArrayList<SceneComponent<?>> sceneComponents = new ArrayList<>();
 
     public Scene() {
         this(0, 0, 10, "Scene 1");
@@ -39,53 +37,49 @@ public class Scene implements JSONString, JOIEntity<JSONObject>, Cloneable {
         setLayoutXPosition(layoutXPosition);
         setLayoutYPosition(layoutYPosition);
         setSceneTitle(sceneTitle);
+        addComponent(new Transition());
+        addComponent(new LineGroup());
     }
 
-    public void addNewLine(int lineNumber) {
-        JSONObject lineObject = new JSONObject();
-        lineObject.put("id", lineNumber);
-
-        getLineArrayList().add(Line.createEntity(lineObject));
-    }
-    public void removeLine(final int lineNumber) {
-        for (Line line : getLineArrayList()) {
-            if (line.getLineNumber() > lineNumber) {
-                line.setLineNumber(line.getLineNumber() - 1);
-            }
-        }
-
-        getLineArrayList().remove(getLine(lineNumber));
+    public void addComponent(SceneComponent<?> sceneComponent) {
+        getSceneComponents().add(sceneComponent);
     }
 
-    public Line getLine(int lineNumber) {
-        for (Line line : getLineArrayList()) {
-            if (line.getLineNumber() == lineNumber) {
-                return line;
-            }
-        }
-        return null;
+    public <T extends SceneComponent<?>> void removeComponent(Class<T> componentClass) {
+        getSceneComponents().remove(getComponent(componentClass));
     }
 
     /**
-     * Checks if scene has the entity passed in. Returns true if the passed entity is the same as the entity stored in the scene.
+     * Checks if scene has the component passed in. Returns true if the passed component exists in the components list.
      *
-     * @param entity - the joi entity to check for
+     * @param component - the scene component to check for
      * @return boolean
      */
-    public boolean containsEntity(JOIEntity<?> entity) {
-        if (entity instanceof Timer) {
-            if (getTimer() != null) return getTimer().equals(entity);
-        }
-
-        if (entity instanceof Dialog) {
-            if (getDialog() != null) return getDialog().equals(entity);
-        }
-
-        if (entity instanceof Transition) {
-            if (getTransition() != null) return getTransition().equals(entity);
-        }
+    public boolean hasComponent(Class<?> component) {
+        for (SceneComponent<?> sceneComponent : getSceneComponents())
+            if (sceneComponent.getClass() == component) return true;
 
         return false;
+    }
+
+    /**
+     * Checks if the scene contains the exact component passed in
+     *
+     * @param component - the scene component to check for
+     * @return boolean
+     */
+    public boolean containsComponent(SceneComponent<?> component) {
+        for (SceneComponent<?> sceneComponent : getSceneComponents())
+            if (sceneComponent == component) return true;
+
+        return false;
+    }
+
+    public <T extends SceneComponent<?>> T getComponent(Class<T> componentName) throws NoSuchElementException {
+        for (SceneComponent<?> sceneComponent : getSceneComponents())
+            if (sceneComponent.getClass() == componentName) return (T) sceneComponent;
+
+        throw new NoSuchElementException();
     }
 
     public static Scene createEntity(JSONObject jsonObject) {
@@ -121,31 +115,32 @@ public class Scene implements JSONString, JOIEntity<JSONObject>, Cloneable {
                     }
                     break;
                 case "noFade":
-                    scene.setTransition(null);
+                    scene.removeComponent(Transition.class);
                     break;
                 case "transition":
-                    scene.setTransition(Transition.createEntity(jsonObject.getJSONArray("transition").getJSONObject(0)));
+                    scene.removeComponent(Transition.class);
+                    scene.addComponent(Transition.createEntity(jsonObject.getJSONArray("transition").getJSONObject(0)));
                     break;
                 case "timer":
-                    scene.setTimer(Timer.createEntity(jsonObject.getJSONArray("timer").getJSONObject(0)));
+                    scene.addComponent(Timer.createEntity(jsonObject.getJSONArray("timer").getJSONObject(0)));
                     break;
                 case "customDialogueBox":
-                    scene.setCustomDialogueBox(CustomDialogueBox.createEntity(jsonObject.getJSONObject("customDialogueBox")));
+                    scene.addComponent(CustomDialogueBox.createEntity(jsonObject.getJSONObject("customDialogueBox")));
                     break;
                 case "dialogChoice":
-                    scene.setDialog(Dialog.createEntity(jsonObject.getJSONArray("dialogChoice").getJSONObject(0)));
+                    scene.addComponent(Dialog.createEntity(jsonObject.getJSONArray("dialogChoice").getJSONObject(0)));
                     break;
                 case "gotoScene":
                     JSONObject gotoObject = new JSONObject();
                     gotoObject.put("array", new JSONArray(new int[]{jsonObject.getInt("gotoScene")}));
 
-                    scene.setGotoScene(GotoScene.createEntity(gotoObject));
+                    scene.addComponent(GotoScene.createEntity(gotoObject));
                     break;
                 case "gotoSceneInRange":
                     JSONObject gotoRObject = new JSONObject();
                     gotoRObject.put("array", jsonObject.getJSONArray("gotoSceneInRange"));
 
-                    scene.setGotoScene(GotoScene.createEntity(gotoRObject));
+                    scene.addComponent(GotoScene.createEntity(gotoRObject));
                     break;
             }
         }
@@ -153,10 +148,8 @@ public class Scene implements JSONString, JOIEntity<JSONObject>, Cloneable {
         //set lines
         int i = 0;
         while (jsonObject.has("line" + i)) {
-            JSONObject lineObject = jsonObject.getJSONArray("line" + i).getJSONObject(0);
-            lineObject.put("id", i);
-
-            scene.getLineArrayList().add(Line.createEntity(lineObject));
+            LineGroup lineGroup = scene.getComponent(LineGroup.class);
+            lineGroup.getLineArrayList().add(Line.createEntity(jsonObject.getJSONArray("line" + i).getJSONObject(0), i));
             i++;
         }
 
@@ -164,12 +157,8 @@ public class Scene implements JSONString, JOIEntity<JSONObject>, Cloneable {
     }
 
     public double getDuration() {
-        double totalTime = getLineArrayList().stream().mapToDouble(Line::getDuration).sum();
-
-        if(getTransition() != null) totalTime += getTransition().getDuration();
-        if(getDialog() != null) totalTime += getDialog().getDuration();
-        if(getTimer() != null) totalTime += getTimer().getDuration();
-
+        double totalTime = 0;
+        for(SceneComponent<?> sceneComponent: getSceneComponents()) totalTime+=sceneComponent.getDuration();
         return totalTime;
     }
 
@@ -185,18 +174,23 @@ public class Scene implements JSONString, JOIEntity<JSONObject>, Cloneable {
         if (goodEndProperty().getValue()) sceneObject.put("joiEnd", true);
         if (badEndProperty().getValue()) sceneObject.put("badJoiEnd", true);
         if (getSceneImage() != null) sceneObject.put("sceneImage", getSceneImage().getName());
-        if (getTimer() != null) sceneObject.put("timer", getTimer().toJSON());
-        if (getDialog() != null) sceneObject.put("dialogChoice", getDialog().toJSON());
-        if (getCustomDialogueBox() != null) sceneObject.put("customDialogueBox", getCustomDialogueBox().toJSON());
-        if (getGotoScene() != null) sceneObject.put(getGotoScene().getJsonKeyName(), getGotoScene().getJsonValue());
-        if (getTransition() != null) {
-            sceneObject.put("transition", getTransition().toJSON());
-        } else {
-            sceneObject.put("noFade", true);
+
+        //Add any and all components to the json object
+        for(SceneComponent<?> component: getSceneComponents()) {
+            if(component.jsonKeyName() != null)
+                sceneObject.put(component.jsonKeyName(), component.toJSON());
         }
 
-        for (int i = 0; i < getLineArrayList().size(); i++)
-            sceneObject.put("line" + i, getLineArrayList().get(i).toJSON());
+        //If no transition component exists, put noFade
+        if(!hasComponent(Transition.class)) sceneObject.put("noFade", true);
+
+        //Merge lineGroup object into sceneObject
+        if(getComponent(LineGroup.class).getLineArrayList().size() > 0)
+            sceneObject = AsisUtils.mergeObject(sceneObject, getComponent(LineGroup.class).toJSON());
+
+        //Merge GotoScene object into sceneObject
+        if(hasComponent(GotoScene.class))
+            sceneObject = AsisUtils.mergeObject(sceneObject, getComponent(GotoScene.class).toJSON());
 
         return sceneObject;
     }
@@ -205,10 +199,6 @@ public class Scene implements JSONString, JOIEntity<JSONObject>, Cloneable {
     public Scene clone() throws CloneNotSupportedException {
         Scene scene = (Scene) super.clone();
 
-        ArrayList<Line> clonedArray = new ArrayList<>();
-        for (Line line: getLineArrayList()) clonedArray.add(line.clone());
-        scene.setLineArrayList(clonedArray);
-
         scene.setBadEnd(isBadEnd());
         scene.setGoodEnd(isGoodEnd());
         scene.setLayoutXPosition(getLayoutXPosition());
@@ -216,12 +206,10 @@ public class Scene implements JSONString, JOIEntity<JSONObject>, Cloneable {
         scene.setSceneId(getSceneId());
         scene.setSceneTitle(getSceneTitle());
 
-        scene.setCustomDialogueBox(getCustomDialogueBox()==null?null:getCustomDialogueBox().clone());
-        scene.setGotoScene(getGotoScene()==null?null:getGotoScene().clone());
-        scene.setDialog(getDialog()==null?null:getDialog().clone());
-        scene.setTimer(getTimer()==null?null:getTimer().clone());
-        scene.setTransition(getTransition()==null?null:getTransition().clone());
         scene.setSceneImage(getSceneImage());
+
+        for (SceneComponent<?> sceneComponent: getSceneComponents())
+            scene.addComponent((SceneComponent<?>) sceneComponent.clone());
 
         return scene;
     }
@@ -245,15 +233,7 @@ public class Scene implements JSONString, JOIEntity<JSONObject>, Cloneable {
             return false;
         if (getSceneImage() != null ? !getSceneImage().equals(scene.getSceneImage()) : scene.getSceneImage() != null)
             return false;
-        if (getTimer() != null ? !getTimer().equals(scene.getTimer()) : scene.getTimer() != null) return false;
-        if (getDialog() != null ? !getDialog().equals(scene.getDialog()) : scene.getDialog() != null) return false;
-        if (getCustomDialogueBox() != null ? !getCustomDialogueBox().equals(scene.getCustomDialogueBox()) : scene.getCustomDialogueBox() != null)
-            return false;
-        if (getTransition() != null ? !getTransition().equals(scene.getTransition()) : scene.getTransition() != null)
-            return false;
-        if (getGotoScene() != null ? !getGotoScene().equals(scene.getGotoScene()) : scene.getGotoScene() != null)
-            return false;
-        if (!getLineArrayList().equals(scene.getLineArrayList())) return false;
+        if (!getSceneComponents().equals(scene.getSceneComponents())) return false;
         if (isBadEnd() != scene.isBadEnd()) return false;
         return isGoodEnd() == scene.isGoodEnd();
     }
@@ -299,45 +279,6 @@ public class Scene implements JSONString, JOIEntity<JSONObject>, Cloneable {
         this.sceneImage = sceneImage;
     }
 
-    public Timer getTimer() {
-        return timer;
-    }
-
-    public void setTimer(Timer timer) {
-        this.timer = timer;
-    }
-
-    public Dialog getDialog() {
-        return dialog;
-    }
-
-    public void setDialog(Dialog dialog) {
-        this.dialog = dialog;
-    }
-
-    public Transition getTransition() {
-        return transition;
-    }
-
-    public void setTransition(Transition transition) {
-        this.transition = transition;
-    }
-
-    public ArrayList<Line> getLineArrayList() {
-        return lineArrayList;
-    }
-    private void setLineArrayList(ArrayList<Line> lineArrayList) {
-        this.lineArrayList = lineArrayList;
-    }
-
-    public GotoScene getGotoScene() {
-        return gotoScene;
-    }
-
-    public void setGotoScene(GotoScene gotoScene) {
-        this.gotoScene = gotoScene;
-    }
-
     public boolean isBadEnd() {
         return badEnd.get();
     }
@@ -362,11 +303,7 @@ public class Scene implements JSONString, JOIEntity<JSONObject>, Cloneable {
         this.goodEnd.set(goodEnd);
     }
 
-    public CustomDialogueBox getCustomDialogueBox() {
-        return customDialogueBox;
-    }
-
-    public void setCustomDialogueBox(CustomDialogueBox customDialogueBox) {
-        this.customDialogueBox = customDialogueBox;
+    public ArrayList<SceneComponent<?>> getSceneComponents() {
+        return sceneComponents;
     }
 }

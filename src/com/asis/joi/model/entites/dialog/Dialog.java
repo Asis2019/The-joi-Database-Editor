@@ -1,13 +1,13 @@
 package com.asis.joi.model.entites.dialog;
 
-import com.asis.joi.model.JOIEntity;
+import com.asis.joi.model.entites.SceneComponent;
 import org.json.JSONArray;
 import org.json.JSONObject;
 import org.json.JSONString;
 
 import java.util.ArrayList;
 
-public class Dialog implements JSONString, JOIEntity<JSONArray>, Cloneable {
+public class Dialog implements JSONString, SceneComponent<JSONArray> {
     private ArrayList<DialogOption> optionArrayList = new ArrayList<>();
 
     public void addDialogOption() {
@@ -40,11 +40,16 @@ public class Dialog implements JSONString, JOIEntity<JSONArray>, Cloneable {
     }
 
     @Override
+    public String jsonKeyName() {
+        return "dialogChoice";
+    }
+
+    @Override
     public JSONArray toJSON() {
         JSONObject object = new JSONObject();
 
         for(DialogOption dialogOption: getOptionArrayList())
-            object.put("option" + dialogOption.getOptionNumber(), dialogOption.toJSON());
+            object.put(dialogOption.jsonKeyName(), dialogOption.toJSON());
 
         JSONArray arrayOfOptions = new JSONArray();
         return arrayOfOptions.put(object);

@@ -4,6 +4,7 @@ import com.asis.controllers.Controller;
 import com.asis.joi.model.JOIPackage;
 import com.asis.joi.model.entites.GotoScene;
 import com.asis.joi.model.entites.Scene;
+import com.asis.joi.model.entites.dialog.Dialog;
 import com.asis.joi.model.entites.dialog.DialogOption;
 import javafx.beans.property.DoubleProperty;
 import javafx.beans.property.SimpleDoubleProperty;
@@ -130,7 +131,7 @@ public class SceneNodeMainController {
             //Remove from inner dialog location
             if (getTotalLinesConnectedToOutput(outputConnection) > 1) {
                 getLineList().remove(boundLine);
-                scene.getDialog().getOptionArrayList().get(outputConnection.getOptionNumber()).getGotoScene().removeValue(outputConnection.getOptionNumber());
+                scene.getComponent(Dialog.class).getOptionArrayList().get(outputConnection.getOptionNumber()).getGotoScene().removeValue(outputConnection.getOptionNumber());
                 outputConnection.setBoundLine(null);
 
                 //Check if after removing there are still multiple lines
@@ -142,14 +143,14 @@ public class SceneNodeMainController {
                 outputConnection.setButtonColor(AsisConnectionButton.DEFAULT_COLOR);
             } else {
                 getLineList().remove(boundLine);
-                scene.getDialog().getOptionArrayList().get(outputConnection.getOptionNumber()).setGotoScene(null);
+                scene.getComponent(Dialog.class).getOptionArrayList().get(outputConnection.getOptionNumber()).setGotoScene(null);
                 outputConnection.setBoundLine(null);
             }
         } else {
             //Remove from upper scene location
             if (getTotalLinesConnectedToOutput(outputConnection) > 1) {
                 getLineList().remove(boundLine);
-                scene.getGotoScene().removeValue(inputConnection.getParentSceneId());
+                scene.getComponent(GotoScene.class).removeValue(inputConnection.getParentSceneId());
                 outputConnection.setBoundLine(null);
 
                 //Check if after removing there are still multiple lines
@@ -161,7 +162,7 @@ public class SceneNodeMainController {
             } else {
                 getLineList().remove(boundLine);
                 outputConnection.setBoundLine(null);
-                scene.setGotoScene(null);
+                scene.removeComponent(GotoScene.class);
             }
         }
     }
@@ -171,7 +172,7 @@ public class SceneNodeMainController {
 
         //Process where to add the jump to
         if(outputConnection.getId().contains("dialog_option")) {
-            final DialogOption dialogOption = scene.getDialog().getOptionArrayList().get(outputConnection.getOptionNumber());
+            final DialogOption dialogOption = scene.getComponent(Dialog.class).getOptionArrayList().get(outputConnection.getOptionNumber());
 
             if(getTotalLinesConnectedToOutput(outputConnection) > 1)
                 outputConnection.setButtonColor(AsisConnectionButton.RANDOM_OUT_COLOR);
@@ -183,9 +184,9 @@ public class SceneNodeMainController {
             if(getTotalLinesConnectedToOutput(outputConnection) > 1)
                 outputConnection.setButtonColor(AsisConnectionButton.RANDOM_OUT_COLOR);
             else
-                scene.setGotoScene(new GotoScene());
+                scene.addComponent(new GotoScene());
 
-            scene.getGotoScene().addValue(inputConnection.getParentSceneId());
+            scene.getComponent(GotoScene.class).addValue(inputConnection.getParentSceneId());
         }
     }
 

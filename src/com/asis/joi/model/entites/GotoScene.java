@@ -1,13 +1,12 @@
 package com.asis.joi.model.entites;
 
-import com.asis.joi.model.JOIEntity;
 import com.asis.utilities.AsisUtils;
 import org.json.JSONObject;
 import org.json.JSONString;
 
 import java.util.ArrayList;
 
-public class GotoScene implements JSONString, JOIEntity<JSONObject>, Cloneable {
+public class GotoScene implements JSONString, SceneComponent<JSONObject> {
     private String jsonKeyName = "gotoScene";
     private ArrayList<Integer> gotoSceneArrayList = new ArrayList<>();
 
@@ -42,6 +41,16 @@ public class GotoScene implements JSONString, JOIEntity<JSONObject>, Cloneable {
         }
 
         return gotoScene;
+    }
+
+    @Override
+    public double getDuration() {
+        return 0;
+    }
+
+    @Override
+    public String jsonKeyName() {
+        return null;
     }
 
     @Override

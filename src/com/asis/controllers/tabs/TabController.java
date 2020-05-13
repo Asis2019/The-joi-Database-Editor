@@ -1,9 +1,9 @@
 package com.asis.controllers.tabs;
 
 import com.asis.controllers.Controller;
-import com.asis.joi.model.JOIEntity;
 import com.asis.joi.model.entites.Line;
 import com.asis.joi.model.entites.Scene;
+import com.asis.joi.model.entites.SceneComponent;
 import com.asis.ui.ImageViewPane;
 import javafx.scene.Node;
 import javafx.scene.control.CheckBox;
@@ -41,9 +41,9 @@ public abstract class TabController {
         node.setStyle(String.format("outline-color: %s;fill-color: %s;", outlineColor,fillColor));
     }
 
-    <T extends JOIEntity<?>> Scene getScene(T entity) {
+    <T extends SceneComponent<?>> Scene getScene(T component) {
         for(Scene scene: Controller.getInstance().getJoiPackage().getJoi().getSceneArrayList())
-            if (scene.containsEntity(entity)) return scene;
+            if (scene.containsComponent(component)) return scene;
         return null;
     }
 

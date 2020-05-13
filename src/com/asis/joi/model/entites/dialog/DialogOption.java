@@ -1,12 +1,12 @@
 package com.asis.joi.model.entites.dialog;
 
-import com.asis.joi.model.JOIEntity;
 import com.asis.joi.model.entites.GotoScene;
+import com.asis.joi.model.entites.SceneComponent;
 import org.json.JSONArray;
 import org.json.JSONObject;
 import org.json.JSONString;
 
-public class DialogOption implements JSONString, JOIEntity<JSONArray>, Cloneable {
+public class DialogOption implements JSONString, SceneComponent<JSONArray> {
     private int optionNumber = 0;
     private String optionText = "";
     private GotoScene gotoScene;
@@ -41,6 +41,11 @@ public class DialogOption implements JSONString, JOIEntity<JSONArray>, Cloneable
 
     public double getDuration() {
         return getOptionText().length() / 15d;
+    }
+
+    @Override
+    public String jsonKeyName() {
+        return "option"+getOptionNumber();
     }
 
     @Override

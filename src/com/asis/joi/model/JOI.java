@@ -23,8 +23,6 @@ public class JOI implements JSONString, JOIEntity<JSONObject>, Cloneable {
 
         //Increment counter
         setSceneIdCounter(getSceneIdCounter()+1);
-
-        System.out.println(getSceneIdCounter());
     }
 
     public boolean removeScene(int sceneId) {

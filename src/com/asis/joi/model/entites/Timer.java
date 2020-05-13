@@ -1,34 +1,16 @@
 package com.asis.joi.model.entites;
 
-import com.asis.joi.model.JOIEntity;
+import com.asis.utilities.AsisUtils;
 import org.json.JSONArray;
 import org.json.JSONObject;
 import org.json.JSONString;
 
-import java.util.ArrayList;
-
-public class Timer implements JSONString, JOIEntity<JSONArray>, Cloneable {
+public class Timer implements JSONString, SceneComponent<JSONArray> {
 
     private int totalTime;
-    private ArrayList<Line> lineArrayList = new ArrayList<>();
+    private LineGroup lineGroup = new LineGroup();
     private boolean timerHidden=false, timeHidden=false;
     private String timerTextColor, timerTextOutlineColor;
-
-    public void addNewLine(int lineNumber) {
-        JSONObject lineObject = new JSONObject();
-        lineObject.put("id", lineNumber);
-
-        getLineArrayList().add(Line.createEntity(lineObject));
-    }
-    public void removeLine(int lineNumber) {
-        getLineArrayList().remove(getLine(lineNumber));
-    }
-
-    public Line getLine(int lineNumber) {
-        for(Line line: getLineArrayList())
-            if (line.getLineNumber() == lineNumber) return line;
-        return null;
-    }
 
     public static Timer createEntity(JSONObject jsonObject) {
         Timer timer = new Timer();
@@ -52,11 +34,7 @@ public class Timer implements JSONString, JOIEntity<JSONArray>, Cloneable {
         for(String key: jsonObject.keySet()) {
             if(key.matches("line.*")) {
                 int lineSecond = Integer.parseInt(key.replaceAll("[^0-9]", ""));
-
-                JSONObject lineObject = jsonObject.getJSONArray("line" + lineSecond).getJSONObject(0);
-                lineObject.put("id", lineSecond);
-
-                timer.getLineArrayList().add(Line.createEntity(lineObject));
+                timer.getLineGroup().getLineArrayList().add(Line.createEntity(jsonObject.getJSONArray("line" + lineSecond).getJSONObject(0), lineSecond));
             }
         }
 
@@ -65,6 +43,11 @@ public class Timer implements JSONString, JOIEntity<JSONArray>, Cloneable {
 
     public double getDuration() {
         return getTotalTime();
+    }
+
+    @Override
+    public String jsonKeyName() {
+        return "timer";
     }
 
     @Override
@@ -79,9 +62,8 @@ public class Timer implements JSONString, JOIEntity<JSONArray>, Cloneable {
             timerObject.put("timerTextOutlineColor", getTimerTextOutlineColor());
         }
 
-        for(Line line: getLineArrayList()) {
-            timerObject.put("line"+line.getLineNumber(), line.toJSON());
-        }
+        if(getLineGroup().getLineArrayList().size() > 0)
+            timerObject = AsisUtils.mergeObject(timerObject, getLineGroup().toJSON());
 
         JSONArray wrapper = new JSONArray();
         return wrapper.put(timerObject);
@@ -96,10 +78,7 @@ public class Timer implements JSONString, JOIEntity<JSONArray>, Cloneable {
     public Timer clone() throws CloneNotSupportedException {
         Timer timer = (Timer) super.clone();
 
-        ArrayList<Line> clonedArray = new ArrayList<>();
-        for (Line line: getLineArrayList()) clonedArray.add(line.clone());
-        timer.setLineArrayList(clonedArray);
-
+        timer.setLineGroup(getLineGroup().clone());
         timer.setTimerTextOutlineColor(getTimerTextOutlineColor());
         timer.setTimerTextColor(getTimerTextColor());
         timer.setTimeHidden(isTimeHidden());
@@ -119,19 +98,18 @@ public class Timer implements JSONString, JOIEntity<JSONArray>, Cloneable {
         if (getTotalTime() != timer.getTotalTime()) return false;
         if (isTimerHidden() != timer.isTimerHidden()) return false;
         if (isTimeHidden() != timer.isTimeHidden()) return false;
-        if (getLineArrayList() != null ? !getLineArrayList().equals(timer.getLineArrayList()) : timer.getLineArrayList() != null)
-            return false;
+        if (!getLineGroup().equals(timer.getLineGroup())) return false;
         if (getTimerTextColor() != null ? !getTimerTextColor().equals(timer.getTimerTextColor()) : timer.getTimerTextColor() != null)
             return false;
         return getTimerTextOutlineColor() != null ? getTimerTextOutlineColor().equals(timer.getTimerTextOutlineColor()) : timer.getTimerTextOutlineColor() == null;
     }
 
     //Getters and Setters
-    public ArrayList<Line> getLineArrayList() {
-        return lineArrayList;
+    public LineGroup getLineGroup() {
+        return lineGroup;
     }
-    private void setLineArrayList(ArrayList<Line> lineArrayList) {
-        this.lineArrayList = lineArrayList;
+    private void setLineGroup(LineGroup lineGroup) {
+        this.lineGroup = lineGroup;
     }
 
     public int getTotalTime() {

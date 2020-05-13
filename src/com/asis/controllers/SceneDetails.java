@@ -47,16 +47,16 @@ public class SceneDetails {
             createNewTab(tabNormalOperationController, "/resources/fxml/tab_normal_operation.fxml");
 
             //add timer tab to sceneDetails
-            if (getScene().getTimer() != null)
-                addTimerTab(getScene().getTimer());
+            if (getScene().hasComponent(Timer.class))
+                addTimerTab(getScene().getComponent(Timer.class));
 
             //add dialog tab to sceneDetails
-            if (getScene().getDialog() != null)
-                addDialogTab(getScene().getDialog());
+            if (getScene().hasComponent(Dialog.class))
+                addDialogTab(getScene().getComponent(Dialog.class));
 
             //add transition tab to sceneDetails
-            if (getScene().getTransition() != null)
-                addTransitionTab(getScene().getTransition());
+            if (getScene().hasComponent(Transition.class))
+                addTransitionTab(getScene().getComponent(Transition.class));
 
         } catch (IOException e) {
             AsisUtils.errorDialogWindow(e);
@@ -176,21 +176,21 @@ public class SceneDetails {
     private void closeTransition() {
         menuItemAddTransition.setDisable(false);
         setTabTransitionController(null);
-        getScene().setTransition(null);
+        getScene().removeComponent(Transition.class);
     }
 
     private void closeDialog() {
         menuItemAddDialog.setDisable(false);
         Controller.getInstance().getSceneNodeWithId(Controller.getInstance().getSceneNodes(), getScene().getSceneId()).removeAllOutputConnection();
         setTabDialogOptionController(null);
-        getScene().setDialog(null);
+        getScene().removeComponent(Dialog.class);
     }
 
     private void closeTimer() {
         menuItemAddTimer.setDisable(false);
 
         setTabTimerController(null);
-        getScene().setTimer(null);
+        getScene().removeComponent(Timer.class);
     }
 
     @FXML private void actionClose() {
@@ -218,21 +218,21 @@ public class SceneDetails {
 
     @FXML private void menuItemAddTimer() {
         Timer timer = new Timer();
-        getScene().setTimer(timer);
+        getScene().addComponent(timer);
 
         addTimerTab(timer);
     }
 
     @FXML private void menuItemAddTransition() {
         Transition transition = new Transition();
-        getScene().setTransition(transition);
+        getScene().addComponent(transition);
 
         addTransitionTab(transition);
     }
 
     @FXML private void menuItemAddDialog() {
         Dialog dialog = new Dialog();
-        getScene().setDialog(dialog);
+        getScene().addComponent(dialog);
 
         addDialogTab(dialog);
     }

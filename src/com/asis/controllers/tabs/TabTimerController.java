@@ -68,15 +68,15 @@ public class TabTimerController extends TabController {
                     final String formattedText = newValue.replaceAll("\\n", "#");
 
                     if (!newValue.isEmpty()) {
-                        if (getTimer().getLine(onSecond) == null) {
-                            getTimer().addNewLine(onSecond);
+                        if (getTimer().getLineGroup().getLine(onSecond) == null) {
+                            getTimer().getLineGroup().addNewLine(onSecond);
                         }
 
-                        getTimer().getLine(onSecond).setText(formattedText);
-                        getTimer().getLine(onSecond).setFillColor(fillColor);
-                        getTimer().getLine(onSecond).setOutlineColor(outlineColor);
+                        getTimer().getLineGroup().getLine(onSecond).setText(formattedText);
+                        getTimer().getLineGroup().getLine(onSecond).setFillColor(fillColor);
+                        getTimer().getLineGroup().getLine(onSecond).setOutlineColor(outlineColor);
                     } else {
-                        getTimer().removeLine(onSecond);
+                        getTimer().getLineGroup().removeLine(onSecond);
                     }
 
                     updateObjectTree();
@@ -158,14 +158,14 @@ public class TabTimerController extends TabController {
         textOutlineColorPicker.valueProperty().addListener((observableValue, color, t1) -> {
             outlineColor = removeLastTwoLetters("#" + colorToHex(t1));
             setNodeColorStyle(timerTextArea, fillColor, outlineColor);
-            if (getTimer().getLine(onSecond) != null) getTimer().getLine(onSecond).setOutlineColor(outlineColor);
+            if (getTimer().getLineGroup().getLine(onSecond) != null) getTimer().getLineGroup().getLine(onSecond).setOutlineColor(outlineColor);
             updateObjectTree();
         });
 
         textColorPicker.valueProperty().addListener((observableValue, color, t1) -> {
             fillColor = removeLastTwoLetters("#" + colorToHex(t1));
             setNodeColorStyle(timerTextArea, fillColor, outlineColor);
-            if (getTimer().getLine(onSecond) != null) getTimer().getLine(onSecond).setFillColor(fillColor);
+            if (getTimer().getLineGroup().getLine(onSecond) != null) getTimer().getLineGroup().getLine(onSecond).setFillColor(fillColor);
             updateObjectTree();
         });
 
@@ -205,10 +205,10 @@ public class TabTimerController extends TabController {
             //Process beat pitch
             try {
                 double pitch = Double.parseDouble(t1);
-                getTimer().getLine(onSecond).setChangeBeatPitch(pitch);
+                getTimer().getLineGroup().getLine(onSecond).setChangeBeatPitch(pitch);
             } catch (NumberFormatException e) {
                 if (t1.isEmpty()) {
-                    getTimer().getLine(onSecond).setChangeBeatPitch(null);
+                    getTimer().getLineGroup().getLine(onSecond).setChangeBeatPitch(null);
                     textFieldBeatPitch.clear();
                     updateObjectTree();
                     return;
@@ -224,10 +224,10 @@ public class TabTimerController extends TabController {
             //Process beat speed
             try {
                 int speed = Integer.parseInt(t1);
-                getTimer().getLine(onSecond).setChangeBeatSpeed(speed);
+                getTimer().getLineGroup().getLine(onSecond).setChangeBeatSpeed(speed);
             } catch (NumberFormatException e) {
                 if (t1.isEmpty()) {
-                    getTimer().getLine(onSecond).setChangeBeatSpeed(null);
+                    getTimer().getLineGroup().getLine(onSecond).setChangeBeatSpeed(null);
                     textFieldBeatSpeed.clear();
                     updateObjectTree();
                     return;
@@ -288,9 +288,9 @@ public class TabTimerController extends TabController {
     public void actionAddLineImage() {
         File file = AsisUtils.imageFileChooser();
 
-        if (file != null && getTimer().getLine(onSecond) != null) {
+        if (file != null && getTimer().getLineGroup().getLine(onSecond) != null) {
             //Add image to json object
-            getTimer().getLine(onSecond).setLineImage(file);
+            getTimer().getLineGroup().getLine(onSecond).setLineImage(file);
 
             setVisibleImage();
         }
@@ -307,8 +307,8 @@ public class TabTimerController extends TabController {
         }
 
         //Line image code
-        if (getTimer().getLine(onSecond) != null && getTimer().getLine(onSecond).getLineImage() != null) {
-            workingFile = getTimer().getLine(onSecond).getLineImage();
+        if (getTimer().getLineGroup().getLine(onSecond) != null && getTimer().getLineGroup().getLine(onSecond).getLineImage() != null) {
+            workingFile = getTimer().getLineGroup().getLine(onSecond).getLineImage();
         }
         return workingFile;
     }
@@ -317,10 +317,10 @@ public class TabTimerController extends TabController {
         setLockTextAreaFunctionality(true);
         timerTextArea.setText("");
 
-        if (getTimer().getLine(onSecond) != null) {
+        if (getTimer().getLineGroup().getLine(onSecond) != null) {
             setFieldsIfNeeded();
 
-            JSONObject textObject = getTimer().getLine(onSecond).toJSON().getJSONObject(0);
+            JSONObject textObject = getTimer().getLineGroup().getLine(onSecond).toJSON().getJSONObject(0);
             beatConfiguration(textObject);
         }
 
@@ -328,7 +328,7 @@ public class TabTimerController extends TabController {
     }
 
     private void setFieldsIfNeeded() {
-        Line workingLine = getTimer().getLine(onSecond);
+        Line workingLine = getTimer().getLineGroup().getLine(onSecond);
         if (workingLine.getFillColor() != null)
             textColorPicker.setValue(Color.web(workingLine.getFillColor()));
 
@@ -357,12 +357,12 @@ public class TabTimerController extends TabController {
     }
 
     public void actionStartBeat() {
-        setLineStartCheckBoxState(getTimer().getLine(onSecond), checkBoxStartBeat);
+        setLineStartCheckBoxState(getTimer().getLineGroup().getLine(onSecond), checkBoxStartBeat);
         updateObjectTree();
     }
 
     public void actionStopBeat() {
-        setLineStopCheckBoxState(getTimer().getLine(onSecond), checkBoxStopBeat);
+        setLineStopCheckBoxState(getTimer().getLineGroup().getLine(onSecond), checkBoxStopBeat);
         updateObjectTree();
     }
 

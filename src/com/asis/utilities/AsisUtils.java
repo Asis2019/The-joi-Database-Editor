@@ -36,7 +36,7 @@ public class AsisUtils {
 
     public static void errorDialogWindow(Exception e) {
         e.printStackTrace();
-        DialogMessage.messageDialog("Error", "Oh no an error! Send it to Asis so he can feel bad.\n"+e.getMessage());
+        DialogMessage.messageDialog("Error", "Oh no an error! Send it to Asis so he can feel bad.\n" + e.getMessage());
     }
 
     public static double clamp(double val, double min, double max) {
@@ -66,7 +66,7 @@ public class AsisUtils {
             errorDialogWindow(e);
         }
         return null;
-}
+    }
 
     public static void writeDirectoryToZip(File dataDirectory, File zipFile) throws IOException {
         byte[] buffer = new byte[1024];
@@ -90,12 +90,12 @@ public class AsisUtils {
 
     public static boolean deleteFolder(File folder) {
         File[] files = folder.listFiles();
-        if(files != null) {
-            for(File f: files) {
-                if(f.isDirectory()) {
+        if (files != null) {
+            for (File f : files) {
+                if (f.isDirectory()) {
                     deleteFolder(f);
                 } else {
-                    if(!f.delete()) System.out.println("Failed to delete file: " + f.getPath());
+                    if (!f.delete()) System.out.println("Failed to delete file: " + f.getPath());
                 }
             }
         }
@@ -120,24 +120,24 @@ public class AsisUtils {
             while ((message = reader.readLine()) != null) stringBuilder.append(message).append("\n");
             return stringBuilder.toString();
         } catch (IOException e) {
-            return "An error occurred while getting text file \n"+e.getMessage();
+            return "An error occurred while getting text file \n" + e.getMessage();
         }
     }
 
     public static ArrayList<Integer> convertJSONArrayToList(JSONArray jsonArray) {
         ArrayList<Integer> list = new ArrayList<>();
-        for(int i=0; i<jsonArray.length(); i++) list.add(jsonArray.getInt(i));
+        for (int i = 0; i < jsonArray.length(); i++) list.add(jsonArray.getInt(i));
         return list;
     }
 
     public static String getLanguageValueForAlternateKey(String value, String key) {
         Object data = Config.get("LANGUAGES");
-        if(data instanceof JSONArray) {
-            for(int i=0; i<((JSONArray) data).length(); i++) {
+        if (data instanceof JSONArray) {
+            for (int i = 0; i < ((JSONArray) data).length(); i++) {
                 String other = "menu_name";
-                if(other.equals(key)) other = "file_code";
+                if (other.equals(key)) other = "file_code";
 
-                if(((JSONArray) data).getJSONObject(i).getString(key).equals(value)) {
+                if (((JSONArray) data).getJSONObject(i).getString(key).equals(value)) {
                     return ((JSONArray) data).getJSONObject(i).getString(other);
                 }
             }
@@ -153,5 +153,19 @@ public class AsisUtils {
         fileChooser.getExtensionFilters().addAll(new FileChooser.ExtensionFilter("jpeg", "*.jpeg"));
 
         return fileChooser.showOpenDialog(null);
+    }
+
+    /**
+     * Adds the data from the second json object into the first.
+     * @param jsonObject1 - JSONObject to merge data into
+     * @param jsonObject2 - JSONObject with data to merge
+     * @return JSONObject
+     */
+    public static JSONObject mergeObject(JSONObject jsonObject1, JSONObject jsonObject2) {
+        JSONObject merged = new JSONObject(jsonObject1, JSONObject.getNames(jsonObject1));
+        for (String key : JSONObject.getNames(jsonObject2)) {
+            merged.put(key, jsonObject2.get(key));
+        }
+        return merged;
     }
 }

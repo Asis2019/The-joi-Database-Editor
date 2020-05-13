@@ -67,8 +67,6 @@ public class TabDialogOptionController extends TabController {
             textField.setId("optionTextField");
             textField.setAlignment(Pos.CENTER);
             textField.getStylesheets().add(getClass().getResource("/resources/css/text_field_stylesheet.css").toString());
-
-            System.out.println(totalOptions);
             textField.textProperty().addListener((observableValue, s, t1) -> textFieldTyped(textField, totalOptions));
 
             Image image = new Image(getClass().getResource("/resources/images/dialog_option_button.png").toString());

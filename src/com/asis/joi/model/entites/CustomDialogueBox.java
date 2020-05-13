@@ -1,13 +1,12 @@
 package com.asis.joi.model.entites;
 
 import com.asis.joi.JOIPackageManager;
-import com.asis.joi.model.JOIEntity;
 import org.json.JSONObject;
 import org.json.JSONString;
 
 import java.io.File;
 
-public class CustomDialogueBox implements JSONString, JOIEntity<JSONObject>, Cloneable {
+public class CustomDialogueBox implements JSONString, SceneComponent<JSONObject> {
     private File image;
     private double yScale = 1, xScale = 1, yPositionOffset = 0, xPositionOffset = 0, yTextPositionOffset = 0, xTextPositionOffset = 0;
 
@@ -44,6 +43,11 @@ public class CustomDialogueBox implements JSONString, JOIEntity<JSONObject>, Clo
     }
 
     @Override
+    public String jsonKeyName() {
+        return "customDialogueBox";
+    }
+
+    @Override
     public JSONObject toJSON() {
         JSONObject object = new JSONObject();
 
@@ -56,6 +60,11 @@ public class CustomDialogueBox implements JSONString, JOIEntity<JSONObject>, Clo
         object.put("xTextPositionOffset", getXTextPositionOffset());
 
         return object;
+    }
+
+    @Override
+    public double getDuration() {
+        return 0;
     }
 
     @Override

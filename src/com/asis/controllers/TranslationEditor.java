@@ -3,11 +3,9 @@ package com.asis.controllers;
 import com.asis.controllers.dialogs.DialogMessage;
 import com.asis.controllers.dialogs.DialogRequestLanguage;
 import com.asis.joi.JOIPackageManager;
-import com.asis.joi.model.JOIEntity;
 import com.asis.joi.model.JOIPackage;
-import com.asis.joi.model.entites.Line;
-import com.asis.joi.model.entites.Scene;
-import com.asis.joi.model.entites.Transition;
+import com.asis.joi.model.entites.*;
+import com.asis.joi.model.entites.dialog.Dialog;
 import com.asis.joi.model.entites.dialog.DialogOption;
 import com.asis.utilities.AsisUtils;
 import com.asis.utilities.Config;
@@ -30,7 +28,7 @@ import java.util.Set;
 public class TranslationEditor {
 
     @FXML
-    private TableView<TableRow<JOIEntity<?>>> tableViewJoi;
+    private TableView<TableRow<SceneComponent<?>>> tableViewJoi;
 
     public void initialize() {
         initJoiTable();
@@ -50,7 +48,7 @@ public class TranslationEditor {
 
     private void initJoiColumns() {
         //Add line location column
-        TableColumn<TableRow<JOIEntity<?>>, String> lineLocationColumn = new TableColumn<>("Location");
+        TableColumn<TableRow<SceneComponent<?>>, String> lineLocationColumn = new TableColumn<>("Location");
         lineLocationColumn.setSortable(false);
         lineLocationColumn.setPrefWidth(200d);
         lineLocationColumn.setCellValueFactory(param -> new ReadOnlyObjectWrapper<>(getTextFromEntity(param.getValue().getData(0))));
@@ -61,7 +59,7 @@ public class TranslationEditor {
         int i = 1;
         Set<String> joiPackageLanguages = JOIPackageManager.getInstance().getJoiPackageLanguages();
         for (String languageCode : joiPackageLanguages) {
-            TableColumn<TableRow<JOIEntity<?>>, String> columnLineText = new TableColumn<>(AsisUtils.getLanguageValueForAlternateKey(languageCode, "file_code"));
+            TableColumn<TableRow<SceneComponent<?>>, String> columnLineText = new TableColumn<>(AsisUtils.getLanguageValueForAlternateKey(languageCode, "file_code"));
             columnLineText.setSortable(false);
             columnLineText.setPrefWidth(300d);
 
@@ -82,13 +80,13 @@ public class TranslationEditor {
         }
     }
 
-    private void editableJoiColumn(TableColumn<TableRow<JOIEntity<?>>, String> tableColumn, final int dataIndex) {
+    private void editableJoiColumn(TableColumn<TableRow<SceneComponent<?>>, String> tableColumn, final int dataIndex) {
         tableColumn.setCellFactory(TextFieldTableCell.forTableColumn());
 
         tableColumn.setOnEditCommit(e-> {
-            TableRow<JOIEntity<?>> tableRow = e.getTableView().getItems().get(e.getTablePosition().getRow());
+            TableRow<SceneComponent<?>> tableRow = e.getTableView().getItems().get(e.getTablePosition().getRow());
             if(tableRow.getRowData().size()-1 >= dataIndex) {
-                JOIEntity<?> entity = tableRow.getRowData().get(dataIndex);
+                SceneComponent<?> entity = tableRow.getRowData().get(dataIndex);
                 if(entity instanceof Line) ((Line) entity).setText(e.getNewValue());
                 else if (entity instanceof DialogOption) ((DialogOption) entity).setOptionText(e.getNewValue());
                 else if (entity instanceof Transition) ((Transition) entity).setTransitionText(e.getNewValue());
@@ -103,7 +101,7 @@ public class TranslationEditor {
     }
 
     private void loadJoiTableData() {
-        ObservableList<TableRow<JOIEntity<?>>> itemsList = FXCollections.observableArrayList();
+        ObservableList<TableRow<SceneComponent<?>>> itemsList = FXCollections.observableArrayList();
 
         ArrayList<JOIPackage> joiPackages = JOIPackageManager.getInstance().getJoiPackages();
         joiPackages.sort(Comparator.comparing(JOIPackage::getPackageLanguageCode));
@@ -113,27 +111,27 @@ public class TranslationEditor {
             int rowIndex = 0;
             for (Scene scene : joiPackage.getJoi().getSceneArrayList()) {
                 //Add normal text
-                for(Line line: scene.getLineArrayList()) {
+                for(Line line: scene.getComponent(LineGroup.class).getLineArrayList()) {
                     rowIndex = addDataToCell(itemsList, columnIndex, rowIndex, scene.getSceneTitle() + " - Line " + line.getLineNumber(), line);
                 }
 
                 //Add text from timers options
-                if (scene.getTimer() != null) {
-                    for(Line line: scene.getTimer().getLineArrayList()) {
+                if (scene.hasComponent(Timer.class)) {
+                    for(Line line: scene.getComponent(Timer.class).getLineGroup().getLineArrayList()) {
                         rowIndex = addDataToCell(itemsList, columnIndex, rowIndex, scene.getSceneTitle() + " - Timer - Line " + line.getLineNumber(), line);
                     }
                 }
 
                 //Add text from dialog options
-                if(scene.getDialog() != null) {
-                    for(DialogOption dialogOption: scene.getDialog().getOptionArrayList()) {
+                if(scene.hasComponent(Dialog.class)) {
+                    for(DialogOption dialogOption: scene.getComponent(Dialog.class).getOptionArrayList()) {
                         rowIndex = addDataToCell(itemsList, columnIndex, rowIndex, scene.getSceneTitle() + " - Dialog - Option " + dialogOption.getOptionNumber(), dialogOption);
                     }
                 }
 
                 //Add text from transitions
-                if(scene.getTransition() != null && scene.getTransition().getTransitionText() != null) {
-                    rowIndex = addDataToCell(itemsList, columnIndex, rowIndex, scene.getSceneTitle() + " - Transition", scene.getTransition());
+                if(scene.hasComponent(Transition.class) && scene.getComponent(Transition.class).getTransitionText() != null) {
+                    rowIndex = addDataToCell(itemsList, columnIndex, rowIndex, scene.getSceneTitle() + " - Transition", scene.getComponent(Transition.class));
                 }
             }
         }
@@ -141,7 +139,7 @@ public class TranslationEditor {
         tableViewJoi.setItems(itemsList);
     }
 
-    private int addDataToCell(ObservableList<TableRow<JOIEntity<?>>> itemsList, int columnIndex, int rowIndex, String cellData, JOIEntity<?> entity) {
+    private int addDataToCell(ObservableList<TableRow<SceneComponent<?>>> itemsList, int columnIndex, int rowIndex, String cellData, SceneComponent<?> entity) {
         if(columnIndex == 1)
             addLineToRow(itemsList, 0, rowIndex, cellData);
         addLineToRow(itemsList, columnIndex, rowIndex, entity);
@@ -149,20 +147,20 @@ public class TranslationEditor {
         return rowIndex;
     }
 
-    private String getTextFromEntity(JOIEntity<?> entity) {
+    private String getTextFromEntity(SceneComponent<?> entity) {
         if(entity instanceof Line) return ((Line) entity).getText();
         else if (entity instanceof DialogOption) return ((DialogOption) entity).getOptionText();
         else if (entity instanceof Transition) return ((Transition) entity).getTransitionText();
         else return null;
     }
 
-    private <T> void addLineToRow(ObservableList<TableRow<JOIEntity<?>>> itemsList, int columnIndex, int rowIndex, T entity) {
-        JOIEntity<?> insertionEntity;
-        if(entity instanceof JOIEntity<?>) insertionEntity = (JOIEntity<?>) entity;
+    private <T> void addLineToRow(ObservableList<TableRow<SceneComponent<?>>> itemsList, int columnIndex, int rowIndex, T entity) {
+        SceneComponent<?> insertionEntity;
+        if(entity instanceof SceneComponent<?>) insertionEntity = (SceneComponent<?>) entity;
         else if(entity instanceof String) insertionEntity = Line.createEntity(new JSONObject("{\"text\":\""+ entity + "\"}"));
-        else throw new IllegalArgumentException("Cell data value must be a String or and object that implements JOIEntity");
+        else throw new IllegalArgumentException("Cell data value must be a String or and object that implements SceneComponent");
 
-        TableRow<JOIEntity<?>> tableRow;
+        TableRow<SceneComponent<?>> tableRow;
         if(itemsList.size()-1 >= rowIndex) {
             tableRow = itemsList.get(rowIndex);
             tableRow.getRowData().add(columnIndex, insertionEntity);
