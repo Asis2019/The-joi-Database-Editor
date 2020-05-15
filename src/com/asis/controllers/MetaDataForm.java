@@ -25,6 +25,15 @@ public class MetaDataForm {
     @FXML private TextField titleTextField, preparationsTextField, displayedFetishesTextField, joiIdTextField, gameVersionTextField, creatorTextField;
     @FXML private TextArea fetishesTextArea, equipmentTextArea, charactersTextArea;
 
+    public void initialize() {
+        getImageView().setFitHeight(300);
+        getImageView().setFitWidth(300);
+        getImageView().setCursor(Cursor.HAND);
+        getImageView().setOnMouseClicked(mouseEvent -> addIcon());
+
+        setIdUpdatingListeners();
+    }
+
     void inflateJOIPackageObject(JOIPackage joiPackage) {
         setJoiPackage(joiPackage);
 
@@ -63,15 +72,6 @@ public class MetaDataForm {
 
         if(preparedCreator.equals("") && preparedTitle.equals("")) joiIdTextField.setText(null);
         else joiIdTextField.setText(preparedCreator+"_"+preparedTitle);
-    }
-
-    public void initialize() {
-        getImageView().setFitHeight(300);
-        getImageView().setFitWidth(300);
-        getImageView().setCursor(Cursor.HAND);
-        getImageView().setOnMouseClicked(mouseEvent -> addIcon());
-
-        setIdUpdatingListeners();
     }
 
     private void setIdUpdatingListeners() {

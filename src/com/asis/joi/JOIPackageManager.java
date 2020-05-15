@@ -45,7 +45,6 @@ public class JOIPackageManager {
             }
             return false;
         } catch (RuntimeException | IOException e) {
-            e.printStackTrace();
             return true;
         }
     }
@@ -143,7 +142,10 @@ public class JOIPackageManager {
         JOIPackage joiPackage = new JOIPackage();
         joiPackage.setPackageLanguageCode(languageCode);
         joiPackage.setJoi(new JOI());
-        joiPackage.setMetaData(new MetaData());
+
+        MetaData metaData = new MetaData();
+        metaData.setName(getJoiPackageDirectory().getName());
+        joiPackage.setMetaData(metaData);
 
         addJOIPackage(joiPackage);
 

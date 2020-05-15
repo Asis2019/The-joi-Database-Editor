@@ -17,9 +17,6 @@ public class JOIPackage implements Cloneable {
     private JOI joi;
     private MetaData metaData;
 
-    public JOIPackage() {
-    }
-
     public void exportPackageAsFiles(File exportDirectory) {
         try {
             //Export json files to export directory

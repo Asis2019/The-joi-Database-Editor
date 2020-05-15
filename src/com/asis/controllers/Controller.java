@@ -31,6 +31,7 @@ import java.io.File;
 import java.io.IOException;
 import java.nio.file.FileAlreadyExistsException;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Objects;
 
 import static com.asis.controllers.dialogs.DialogUnsavedChanges.*;
@@ -362,7 +363,9 @@ public class Controller {
     public void processNewProject(File newProjectFile, String newProjectName, String defaultProjectLanguageCode) throws FileAlreadyExistsException {
         File newProjectDirectory = new File(newProjectFile.getPath() + File.separator + newProjectName);
         if (newProjectDirectory.exists()) {
-            if(Objects.requireNonNull(newProjectDirectory.list()).length != 0) {
+            boolean notEmpty = Arrays.stream(Objects.requireNonNull(newProjectDirectory.list())).anyMatch(fileName -> fileName.contains("joi_text_") || fileName.contains("info_"));
+
+            if(notEmpty) {
                 DialogMessage.messageDialog("WARNING", String.format("The project path: %s is not empty.\nPlease select a different path or empty the current one.",
                         newProjectDirectory.getAbsolutePath()), 600, 200);
                 throw new FileAlreadyExistsException("CANCEL");
