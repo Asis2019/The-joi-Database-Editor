@@ -26,6 +26,7 @@ import javafx.scene.layout.AnchorPane;
 import javafx.stage.DirectoryChooser;
 import javafx.stage.FileChooser;
 import javafx.stage.Stage;
+import javafx.stage.WindowEvent;
 
 import java.io.File;
 import java.io.IOException;
@@ -34,7 +35,8 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Objects;
 
-import static com.asis.controllers.dialogs.DialogUnsavedChanges.*;
+import static com.asis.controllers.dialogs.DialogUnsavedChanges.CHOICE_CANCEL;
+import static com.asis.controllers.dialogs.DialogUnsavedChanges.CHOICE_SAVE;
 
 public class Controller {
     private SceneNode selectedScene;
@@ -272,20 +274,8 @@ public class Controller {
     }
 
     public void actionExit() {
-        //Check if dialog is needed
-        if (JOIPackageManager.getInstance().changesHaveOccurred()) {
-            int choice = DialogUnsavedChanges.unsavedChangesDialog("Warning", "You have unsaved work, are you sure you want to quit?");
-            switch (choice) {
-                case CHOICE_CANCEL:
-                    return;
-
-                case CHOICE_DO_NOT_SAVE:
-                    actionSaveProject();
-                    break;
-            }
-        }
-
-        quiteProgram();
+        Stage stage = (Stage) getAnchorPane().getScene().getWindow();
+        stage.fireEvent(new WindowEvent(stage, WindowEvent.WINDOW_CLOSE_REQUEST));
     }
 
     public void quiteProgram() {
