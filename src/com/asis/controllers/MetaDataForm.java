@@ -22,7 +22,8 @@ public class MetaDataForm {
     private JOIPackage joiPackage;
 
     @FXML private VBox mainVBox, iconControllerBox;
-    @FXML private TextField titleTextField, preparationsTextField, displayedFetishesTextField, joiIdTextField, gameVersionTextField, creatorTextField;
+    @FXML private TextField titleTextField, preparationsTextField, displayedFetishesTextField,
+            joiIdTextField, gameVersionTextField, creatorTextField, estimatedDurationField;
     @FXML private TextArea fetishesTextArea, equipmentTextArea, charactersTextArea;
 
     public void initialize() {
@@ -35,6 +36,7 @@ public class MetaDataForm {
     }
 
     void inflateJOIPackageObject(JOIPackage joiPackage) {
+        joiPackage.getMetaData().setEstimatedDuration(joiPackage.getJoi().getDuration());
         setJoiPackage(joiPackage);
 
         //Image
@@ -60,6 +62,7 @@ public class MetaDataForm {
         fetishesTextArea.setText(String.join(",", metaData.getFetishList()));
         charactersTextArea.setText(String.join(",", metaData.getCharacterList()));
         equipmentTextArea.setText(String.join(",", metaData.getEquipmentList()));
+        estimatedDurationField.setText(String.format( "%.0f seconds",metaData.getEstimatedDuration()));
     }
 
     private void updateJoiField(final String creator, final String title) {
