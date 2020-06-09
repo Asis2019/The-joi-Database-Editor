@@ -411,13 +411,13 @@ public class Controller {
         File file = directoryChooser.showDialog(null);
 
         if (file != null) {
-            //Set project directory to current
-            JOIPackageManager.getInstance().setJoiPackageDirectory(file);
-            JOIPackage newJoiPackage = JOIPackageManager.getInstance().getJOIPackage();
-            if (newJoiPackage == null) return false;
-
-            //Load joi
             try {
+                //Set project directory to current
+                JOIPackageManager.getInstance().setJoiPackageDirectory(file);
+                JOIPackage newJoiPackage = JOIPackageManager.getInstance().getJOIPackage();
+                if (newJoiPackage == null) return false;
+
+                //Load joi
                 //Reset old variables
                 resetJoiPackage(newJoiPackage);
 
