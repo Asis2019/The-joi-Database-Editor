@@ -1,5 +1,6 @@
 package com.asis.utilities;
 
+import com.asis.ui.asis_node.SceneNode;
 import javafx.event.EventHandler;
 import javafx.scene.Node;
 import javafx.scene.input.MouseEvent;
@@ -16,15 +17,7 @@ import java.util.List;
  */
 public class Draggable {
     public enum Event {
-        None, DragStart, Drag, DragEnd
-    }
-
-    /**
-     * Marker for an entity that has draggable nature.
-     * @author phill
-     */
-    public interface Interface {
-        Draggable.Nature getDraggableNature();
+        DragStart, Drag, DragEnd
     }
 
     public interface Listener {
@@ -47,7 +40,6 @@ public class Draggable {
 
         private boolean dragging = false;
 
-        private final boolean enabled = true;
         private final Node eventNode;
         private final List<Node> dragNodes = new ArrayList<>();
         private final List<Listener> dragListeners = new ArrayList<>();
@@ -62,33 +54,14 @@ public class Draggable {
             this.eventNode.addEventHandler(MouseEvent.ANY, this);
         }
 
-        public final boolean addDraggedNode(final Node node) {
-            if (!this.dragNodes.contains(node)) {
-                return this.dragNodes.add(node);
-            }
-            return false;
-        }
-
         public final boolean addListener(final Listener listener) {
             return this.dragListeners.add(listener);
-        }
-
-        public final void detatch() {
-            this.eventNode.removeEventFilter(MouseEvent.ANY, this);
-        }
-
-        public final List<Node> getDragNodes() {
-            return new ArrayList<>(this.dragNodes);
-        }
-
-        public final Node getEventNode() {
-            return this.eventNode;
         }
 
         @Override
         public final void handle(final MouseEvent event) {
             if (MouseEvent.MOUSE_PRESSED == event.getEventType()) {
-                if (this.enabled && this.eventNode.contains(event.getX(), event.getY())) {
+                if (this.eventNode.contains(event.getX(), event.getY())) {
                     this.lastMouseX = event.getSceneX();
                     this.lastMouseY = event.getSceneY();
                     event.consume();
@@ -105,10 +78,17 @@ public class Draggable {
                     final double deltaY = event.getSceneY() - this.lastMouseY;
 
                     for (final Node dragNode : this.dragNodes) {
-                        final double initialTranslateX = dragNode.getTranslateX();
-                        final double initialTranslateY = dragNode.getTranslateY();
-                        dragNode.setTranslateX(initialTranslateX + deltaX);
-                        dragNode.setTranslateY(initialTranslateY + deltaY);
+                        if(dragNode instanceof SceneNode) {
+                            SceneNode draggingScene = (SceneNode) dragNode;
+
+                            final double initialTranslateX = draggingScene.innerX;
+                            final double initialTranslateY = draggingScene.innerY;
+                            draggingScene.positionInGrid(initialTranslateX+deltaX, initialTranslateY+deltaY);
+                            //final double initialTranslateX = dragNode.getTranslateX();
+                            //final double initialTranslateY = dragNode.getTranslateY();
+                            //dragNode.setTranslateX(initialTranslateX + deltaX);
+                            //dragNode.setTranslateY(initialTranslateY + deltaY);
+                        }
                     }
 
                     this.lastMouseX = event.getSceneX();
@@ -129,24 +109,6 @@ public class Draggable {
                 }
             }
 
-        }
-
-        public final boolean removeDraggedNode(final Node node) {
-            return this.dragNodes.remove(node);
-        }
-
-        public final boolean removeListener(final Listener listener) {
-            return this.dragListeners.remove(listener);
-        }
-
-        /**
-         * When the initial mousePressed is missing we can supply the first coordinates programmatically.
-         * @param lastMouseX
-         * @param lastMouseY
-         */
-        public final void setLastMouse(final double lastMouseX, final double lastMouseY) {
-            this.lastMouseX = lastMouseX;
-            this.lastMouseY = lastMouseY;
         }
     }
 }

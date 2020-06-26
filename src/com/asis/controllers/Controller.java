@@ -21,6 +21,7 @@ import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.scene.control.*;
 import javafx.scene.image.Image;
+import javafx.scene.image.ImageView;
 import javafx.scene.input.MouseButton;
 import javafx.scene.layout.AnchorPane;
 import javafx.stage.DirectoryChooser;
@@ -44,6 +45,7 @@ public class Controller {
     private double menuEventY;
     private Boolean addSceneContextMenu = false;
     private static Controller instance = null;
+    private boolean snapToGrid = false;
 
     private JOIPackage joiPackage;
     private final ArrayList<SceneNode> sceneNodes = new ArrayList<>();
@@ -62,12 +64,16 @@ public class Controller {
     public MenuBar mainMenuBar;
     @FXML
     public ToolBar toolBar;
+    @FXML
+    private Button gridToggle;
 
     public void initialize() {
         instance = this;
 
         setupMainContextMenu();
         setupSceneNodeContextMenu();
+
+        gridToggle.setTooltip(new Tooltip("Snap to grid"));
     }
 
     public static Controller getInstance() {
@@ -311,8 +317,7 @@ public class Controller {
         //Set and save position
         if (!addSceneContextMenu) {
             //TODO issue 5 make new scenes via button adjacent
-            sceneNode.setTranslateX(xPosition);
-            sceneNode.setTranslateY(yPosition);
+            sceneNode.positionInGrid(xPosition, yPosition);
             if (!suppressJSONUpdating) {
                 getJoiPackage().getJoi().getScene(sceneId).setLayoutXPosition(xPosition);
                 getJoiPackage().getJoi().getScene(sceneId).setLayoutYPosition(yPosition);
@@ -322,8 +327,7 @@ public class Controller {
             double lowestXPixelShown = -1 * bounds.getMinX();
             double lowestYPixelShown = -1 * bounds.getMinY();
 
-            sceneNode.setTranslateX(lowestXPixelShown + menuEventX);
-            sceneNode.setTranslateY(lowestYPixelShown + menuEventY);
+            sceneNode.positionInGrid(lowestXPixelShown + menuEventX, lowestYPixelShown + menuEventY);
             addSceneContextMenu = false;
 
             if (!suppressJSONUpdating) {
@@ -534,6 +538,19 @@ public class Controller {
         addScene(false);
     }
 
+    public void actionToggleGrid() {
+        snapToGrid = !snapToGrid;
+        ImageView imageView;
+        if(snapToGrid) {
+            imageView = new ImageView(new Image(getClass().getResourceAsStream("/resources/images/ic_grid_on.png")));
+        } else {
+            imageView = new ImageView(new Image(getClass().getResourceAsStream("/resources/images/ic_grid_off.png")));
+        }
+        imageView.setFitHeight(20);
+        imageView.setFitWidth(20);
+        gridToggle.setGraphic(imageView);
+    }
+
     //Getters and setters
     private AnchorPane getAnchorPane() {
         return anchorPane;
@@ -549,5 +566,9 @@ public class Controller {
 
     public void setJoiPackage(JOIPackage joiPackage) {
         this.joiPackage = joiPackage;
+    }
+
+    public boolean isSnapToGrid() {
+        return snapToGrid;
     }
 }

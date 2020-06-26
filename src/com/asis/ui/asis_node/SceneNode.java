@@ -1,5 +1,6 @@
 package com.asis.ui.asis_node;
 
+import com.asis.controllers.Controller;
 import com.asis.joi.model.entites.Scene;
 import javafx.beans.property.ReadOnlyBooleanWrapper;
 import javafx.beans.value.ObservableValue;
@@ -15,21 +16,22 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class SceneNode extends BorderPane {
-    private Scene scene;
+    private final Scene scene;
     private SceneNodeMainController sceneNodeMainController;
     private VBox outputContainer = new VBox();
     private VBox inputContainer = new VBox();
     private Label titleLabel = new Label("Title");
-    private int sceneId;
     private List<AsisConnectionButton> outputConnections = new ArrayList<>();
     private AsisConnectionButton inputConnection;
 
-    private ReadOnlyBooleanWrapper isBadEnd = new ReadOnlyBooleanWrapper();
-    private ReadOnlyBooleanWrapper isGoodEnd = new ReadOnlyBooleanWrapper();
+    private final ReadOnlyBooleanWrapper isBadEnd = new ReadOnlyBooleanWrapper();
+    private final ReadOnlyBooleanWrapper isGoodEnd = new ReadOnlyBooleanWrapper();
+
+    public double innerX, innerY;
 
     public SceneNode(int width, int height, int sceneId, SceneNodeMainController sceneNodeMainController, Scene scene) {
         this.scene = scene;
-        this.sceneId = sceneId;
+        this.scene.setSceneId(sceneId);
         this.sceneNodeMainController = sceneNodeMainController;
 
         titleLabel.setStyle(
@@ -85,7 +87,7 @@ public class SceneNode extends BorderPane {
     }
 
     private void createNewInputConnectionPoint() {
-        inputConnection = new AsisConnectionButton(sceneNodeMainController.getPane(), true, sceneId);
+        inputConnection = new AsisConnectionButton(sceneNodeMainController.getPane(), true, getSceneId());
         attachHandlers(inputConnection);
 
         //Add button to lookup list
@@ -95,7 +97,7 @@ public class SceneNode extends BorderPane {
     }
 
     public AsisConnectionButton createNewOutputConnectionPoint(String labelText, String connectionId) {
-        AsisConnectionButton connection = new AsisConnectionButton(sceneNodeMainController.getPane(), false, sceneId);
+        AsisConnectionButton connection = new AsisConnectionButton(sceneNodeMainController.getPane(), false, getSceneId());
         attachHandlers(connection);
 
         Label connectionLabel = new Label(labelText);
@@ -176,9 +178,27 @@ public class SceneNode extends BorderPane {
         isBadEndProperty().bindBidirectional(scene.badEndProperty());
     }
 
+    public void positionInGrid(double x, double y) {
+        if(Controller.getInstance().isSnapToGrid()) {
+            setTranslateX(round(x));
+            setTranslateY(round(y));
+        } else {
+            setTranslateX(x);
+            setTranslateY(y);
+        }
+
+        innerX = x;
+        innerY = y;
+    }
+
+    private static double round(double v) {
+        final int multiple = 10;
+        return multiple * (Math.round(v / multiple));
+    }
+
     //Getters and setters
     public int getSceneId() {
-        return sceneId;
+        return this.scene.getSceneId();
     }
 
     public String getTitle() {
