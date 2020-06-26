@@ -42,7 +42,7 @@
                            promptText="Displayed Fetishes"/>
                 <TextField fx:id="creatorTextField" promptText="Creator"/>
                 <TextField fx:id="gameVersionTextField" layoutX="18.0" layoutY="306.0"
-                           promptText="Game Version (e.g 0.0.3.1)"/>
+                           promptText="Game Version (e.g 0.0.3.2)"/>
                 <TextField fx:id="joiIdTextField" disable="true" editable="false" promptText="Joi Id"/>
 
                 <HBox>

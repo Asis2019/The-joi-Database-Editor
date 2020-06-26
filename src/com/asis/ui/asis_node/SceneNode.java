@@ -192,7 +192,7 @@ public class SceneNode extends BorderPane {
     }
 
     private static double round(double v) {
-        final int multiple = 10;
+        final int multiple = 20;
         return multiple * (Math.round(v / multiple));
     }
 

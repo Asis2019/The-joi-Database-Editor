@@ -84,10 +84,6 @@ public class Draggable {
                             final double initialTranslateX = draggingScene.innerX;
                             final double initialTranslateY = draggingScene.innerY;
                             draggingScene.positionInGrid(initialTranslateX+deltaX, initialTranslateY+deltaY);
-                            //final double initialTranslateX = dragNode.getTranslateX();
-                            //final double initialTranslateY = dragNode.getTranslateY();
-                            //dragNode.setTranslateX(initialTranslateX + deltaX);
-                            //dragNode.setTranslateY(initialTranslateY + deltaY);
                         }
                     }
 
