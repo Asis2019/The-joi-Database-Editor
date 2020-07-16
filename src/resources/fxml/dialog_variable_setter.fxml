@@ -1,0 +1,69 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.geometry.*?>
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+<?import java.net.URL?>
+<BorderPane id="darkThemeBackground" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" xmlns="http://javafx.com/javafx/10.0.2-internal" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.asis.controllers.dialogs.DialogVariableSetter">
+    <center>
+        <VBox fillWidth="false" spacing="8.0" BorderPane.alignment="CENTER">
+            <children>
+                <HBox alignment="CENTER_LEFT" spacing="8.0">
+                    <children>
+                        <Label text="Node Title:" textFill="WHITE">
+                            <padding>
+                                <Insets right="39.0" />
+                            </padding>
+                        </Label>
+                        <TextField fx:id="variableSetterTitle" />
+                    </children>
+                </HBox>
+                <HBox alignment="CENTER_LEFT" spacing="8.0">
+                    <children>
+                        <Label text="Variable Name:" textFill="WHITE">
+                            <padding>
+                                <Insets right="16.0" />
+                            </padding>
+                        </Label>
+                        <TextField fx:id="variableNameField" />
+                    </children>
+                </HBox>
+                <HBox alignment="CENTER_LEFT" spacing="8.0">
+                    <children>
+                        <Label text="Variable Value:" textFill="WHITE">
+                            <padding>
+                                <Insets right="18.0" />
+                            </padding>
+                        </Label>
+                        <TextField fx:id="variableValueField" />
+                    </children>
+                </HBox>
+                <HBox alignment="CENTER_LEFT" spacing="8.0">
+                    <children>
+                        <Label text="Is Persistent:" textFill="WHITE">
+                            <padding>
+                                <Insets right="30.0" />
+                            </padding>
+                        </Label>
+                        <CheckBox fx:id="variablePersistentBox" mnemonicParsing="false" />
+                    </children>
+                </HBox>
+            </children>
+            <padding>
+                <Insets bottom="16.0" left="16.0" right="16.0" top="16.0" />
+            </padding>
+        </VBox>
+    </center>
+    <stylesheets>
+        <URL value="@../css/scene_details_stylesheet.css" />
+        <URL value="@../css/text_field_stylesheet.css" />
+    </stylesheets>
+    <bottom>
+        <ToolBar prefHeight="40.0" prefWidth="200.0" BorderPane.alignment="CENTER">
+            <items>
+                <Pane HBox.hgrow="ALWAYS" />
+                <Button defaultButton="true" layoutX="10.0" layoutY="11.0" mnemonicParsing="false" onAction="#actionSave" prefWidth="100.0" text="Save" />
+            </items>
+        </ToolBar>
+    </bottom>
+</BorderPane>

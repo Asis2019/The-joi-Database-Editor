@@ -1,9 +1,9 @@
 package com.asis.controllers.tabs;
 
-import com.asis.joi.model.entites.Line;
-import com.asis.joi.model.entites.LineGroup;
-import com.asis.joi.model.entites.Scene;
-import com.asis.joi.model.entites.SceneImage;
+import com.asis.joi.model.entities.Line;
+import com.asis.joi.model.entities.LineGroup;
+import com.asis.joi.model.entities.Scene;
+import com.asis.joi.model.entities.SceneImage;
 import com.asis.ui.ImageViewPane;
 import com.asis.utilities.AsisUtils;
 import javafx.application.Platform;
@@ -234,7 +234,7 @@ public class TabNormalOperationController extends TabController {
                 //Remove add image button
                 stackPane.getChildren().remove(iconControllerBox);
             } else {
-                System.out.println("Scene titled: "+scene.getSceneTitle()+", contains and invalid scene image.");
+                System.out.println("Scene titled: "+scene.getComponentTitle()+", contains and invalid scene image.");
             }
         }
 

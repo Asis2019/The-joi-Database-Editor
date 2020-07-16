@@ -3,11 +3,11 @@ package com.asis.controllers;
 import com.asis.controllers.dialogs.DialogConfirmation;
 import com.asis.controllers.dialogs.DialogMessage;
 import com.asis.controllers.tabs.*;
-import com.asis.joi.model.entites.Scene;
-import com.asis.joi.model.entites.SceneImage;
-import com.asis.joi.model.entites.Timer;
-import com.asis.joi.model.entites.Transition;
-import com.asis.joi.model.entites.dialog.Dialog;
+import com.asis.joi.model.entities.Scene;
+import com.asis.joi.model.entities.SceneImage;
+import com.asis.joi.model.entities.Timer;
+import com.asis.joi.model.entities.Transition;
+import com.asis.joi.model.entities.dialog.Dialog;
 import com.asis.utilities.AsisUtils;
 import com.asis.utilities.StageManager;
 import javafx.application.Platform;
@@ -182,7 +182,7 @@ public class SceneDetails {
 
     private void closeDialog() {
         menuItemAddDialog.setDisable(false);
-        Controller.getInstance().getSceneNodeWithId(Controller.getInstance().getSceneNodes(), getScene().getSceneId()).removeAllOutputConnection();
+        Controller.getInstance().getJOIComponentNodeWithId(Controller.getInstance().getJoiComponentNodes(), getScene().getComponentId()).removeAllOutputConnection();
         setTabDialogOptionController(null);
         getScene().removeComponent(Dialog.class);
     }

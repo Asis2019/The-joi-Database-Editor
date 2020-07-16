@@ -1,21 +1,15 @@
-package com.asis.joi.model.entites;
+package com.asis.joi.model.entities;
 
-import com.asis.joi.model.JOIEntity;
-import com.asis.joi.model.entites.dialog.Dialog;
+import com.asis.joi.model.entities.dialog.Dialog;
 import com.asis.utilities.AsisUtils;
 import javafx.beans.property.ReadOnlyBooleanWrapper;
 import org.json.JSONArray;
 import org.json.JSONObject;
-import org.json.JSONString;
 
 import java.util.ArrayList;
 import java.util.NoSuchElementException;
 
-public class Scene implements JSONString, JOIEntity<JSONObject>, Cloneable {
-    private int sceneId;
-    private double layoutXPosition, layoutYPosition;
-    private String sceneTitle;
-
+public class Scene extends JOIComponent {
     private final ReadOnlyBooleanWrapper badEnd = new ReadOnlyBooleanWrapper();
     private final ReadOnlyBooleanWrapper goodEnd = new ReadOnlyBooleanWrapper();
 
@@ -30,10 +24,10 @@ public class Scene implements JSONString, JOIEntity<JSONObject>, Cloneable {
     }
 
     public Scene(int sceneId, int layoutXPosition, int layoutYPosition, String sceneTitle) {
-        setSceneId(sceneId);
+        super(sceneId);
         setLayoutXPosition(layoutXPosition);
         setLayoutYPosition(layoutYPosition);
-        setSceneTitle(sceneTitle);
+        setComponentTitle(sceneTitle);
         addComponent(new Transition());
         addComponent(new LineGroup());
     }
@@ -88,10 +82,10 @@ public class Scene implements JSONString, JOIEntity<JSONObject>, Cloneable {
         for (String key : jsonObject.keySet()) {
             switch (key) {
                 case "sceneId":
-                    scene.setSceneId(jsonObject.getInt("sceneId"));
+                    scene.setComponentId(jsonObject.getInt("sceneId"));
                     break;
                 case "sceneTitle":
-                    scene.setSceneTitle(jsonObject.getString("sceneTitle"));
+                    scene.setComponentTitle(jsonObject.getString("sceneTitle"));
                     break;
                 case "layoutXPosition":
                     scene.setLayoutXPosition(jsonObject.getDouble("layoutXPosition"));
@@ -161,13 +155,7 @@ public class Scene implements JSONString, JOIEntity<JSONObject>, Cloneable {
 
     @Override
     public JSONObject toJSON() {
-        JSONObject sceneObject = new JSONObject();
-
-        sceneObject.put("sceneId", getSceneId());
-        sceneObject.put("sceneTitle", getSceneTitle());
-        sceneObject.put("layoutXPosition", getLayoutXPosition());
-        sceneObject.put("layoutYPosition", getLayoutYPosition());
-
+        JSONObject sceneObject = super.toJSON();
         if (goodEndProperty().getValue()) sceneObject.put("joiEnd", true);
         if (badEndProperty().getValue()) sceneObject.put("badJoiEnd", true);
 
@@ -203,8 +191,6 @@ public class Scene implements JSONString, JOIEntity<JSONObject>, Cloneable {
         scene.setGoodEnd(isGoodEnd());
         scene.setLayoutXPosition(getLayoutXPosition());
         scene.setLayoutYPosition(getLayoutYPosition());
-        scene.setSceneId(getSceneId());
-        scene.setSceneTitle(getSceneTitle());
 
         for (SceneComponent<?> sceneComponent: getSceneComponents())
             scene.addComponent((SceneComponent<?>) sceneComponent.clone());
@@ -224,49 +210,12 @@ public class Scene implements JSONString, JOIEntity<JSONObject>, Cloneable {
 
         Scene scene = (Scene) object;
 
-        if (getSceneId() != scene.getSceneId()) return false;
-        if (Double.compare(scene.getLayoutXPosition(), getLayoutXPosition()) != 0) return false;
-        if (Double.compare(scene.getLayoutYPosition(), getLayoutYPosition()) != 0) return false;
-        if (getSceneTitle() != null ? !getSceneTitle().equals(scene.getSceneTitle()) : scene.getSceneTitle() != null)
-            return false;
         if (!getSceneComponents().equals(scene.getSceneComponents())) return false;
         if (isBadEnd() != scene.isBadEnd()) return false;
         return isGoodEnd() == scene.isGoodEnd();
     }
 
     //Getters and Setters
-    public int getSceneId() {
-        return sceneId;
-    }
-
-    public void setSceneId(int sceneId) {
-        this.sceneId = sceneId;
-    }
-
-    public double getLayoutXPosition() {
-        return layoutXPosition;
-    }
-
-    public void setLayoutXPosition(double layoutXPosition) {
-        this.layoutXPosition = layoutXPosition;
-    }
-
-    public double getLayoutYPosition() {
-        return layoutYPosition;
-    }
-
-    public void setLayoutYPosition(double layoutYPosition) {
-        this.layoutYPosition = layoutYPosition;
-    }
-
-    public String getSceneTitle() {
-        return sceneTitle;
-    }
-
-    public void setSceneTitle(String sceneTitle) {
-        this.sceneTitle = sceneTitle;
-    }
-
     public boolean isBadEnd() {
         return badEnd.get();
     }

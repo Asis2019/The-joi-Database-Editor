@@ -1,6 +1,6 @@
 package com.asis.utilities;
 
-import com.asis.ui.asis_node.SceneNode;
+import com.asis.ui.asis_node.JOIComponentNode;
 import javafx.event.EventHandler;
 import javafx.scene.Node;
 import javafx.scene.input.MouseEvent;
@@ -78,8 +78,8 @@ public class Draggable {
                     final double deltaY = event.getSceneY() - this.lastMouseY;
 
                     for (final Node dragNode : this.dragNodes) {
-                        if(dragNode instanceof SceneNode) {
-                            SceneNode draggingScene = (SceneNode) dragNode;
+                        if(dragNode instanceof JOIComponentNode) {
+                            JOIComponentNode draggingScene = (JOIComponentNode) dragNode;
 
                             final double initialTranslateX = draggingScene.innerX;
                             final double initialTranslateY = draggingScene.innerY;

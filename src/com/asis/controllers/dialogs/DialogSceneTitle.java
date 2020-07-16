@@ -29,6 +29,8 @@ public class DialogSceneTitle {
     }
 
     public static String addNewSceneDialog(String defaultTitle) {
+        sceneTitle = null;
+
         try {
             Stage stage = new Stage();
 

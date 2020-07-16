@@ -1,15 +1,33 @@
 package com.asis.joi.model;
 
-import com.asis.joi.model.entites.Scene;
+import com.asis.joi.model.entities.JOIComponent;
+import com.asis.joi.model.entities.Scene;
+import com.asis.joi.model.entities.VariableSetter;
 import org.json.JSONArray;
 import org.json.JSONObject;
 import org.json.JSONString;
 
 import java.util.ArrayList;
 
-public class JOI implements JSONString, JOIEntity<JSONObject>, Cloneable {
+public class JOI implements JSONString, Cloneable {
     private int sceneIdCounter = 0;
-    private ArrayList<Scene> sceneArrayList = new ArrayList<>();
+    //private ArrayList<Scene> sceneArrayList = new ArrayList<>();
+    //private ArrayList<VariableSetter> variableSetterArrayList = new ArrayList<>();
+    private final ArrayList<JOIComponent> joiComponents = new ArrayList<>();
+
+    public void addNewVariableSetter(Integer... optional) {
+        //Check if an id was passed
+        int sceneId = optional.length > 0 ? optional[0] : getSceneIdCounter();
+
+        //Change the counter to the highest id
+        if(sceneId > getSceneIdCounter()) setSceneIdCounter(sceneId);
+
+        //Add new scene
+        getJoiComponents().add(new VariableSetter(sceneId));
+
+        //Increment counter
+        setSceneIdCounter(getSceneIdCounter()+1);
+    }
 
     public void addNewScene(Integer... optional) {
         //Check if an id was passed
@@ -19,18 +37,33 @@ public class JOI implements JSONString, JOIEntity<JSONObject>, Cloneable {
         if(sceneId > getSceneIdCounter()) setSceneIdCounter(sceneId);
 
         //Add new scene
-        getSceneArrayList().add(new Scene(sceneId));
+        getJoiComponents().add(new Scene(sceneId));
 
         //Increment counter
         setSceneIdCounter(getSceneIdCounter()+1);
     }
 
+    /*@Deprecated
     public boolean removeScene(int sceneId) {
         return getSceneArrayList().remove(getScene(sceneId));
+    }*/
+
+    public boolean removeComponent(int sceneId) {
+        return getJoiComponents().remove(getComponent(sceneId));
     }
 
+    public JOIComponent getComponent(int componentId) {
+        for (JOIComponent component : getJoiComponents()) {
+            if (component.getComponentId() == componentId) return component;
+        }
+
+        return null;
+    }
+
+    @Deprecated
     public Scene getScene(int sceneId) {
-        for(Scene scene: getSceneArrayList()) if (scene.getSceneId() == sceneId) return scene;
+        JOIComponent component = getComponent(sceneId);
+        if(component instanceof Scene) return (Scene) component;
         return null;
     }
 
@@ -40,11 +73,16 @@ public class JOI implements JSONString, JOIEntity<JSONObject>, Cloneable {
         JSONArray array = jsonObject.getJSONArray("JOI");
         for (int i = 0; i < array.length(); i++) {
             if (array.getJSONObject(i).has("sceneId")) {
-                Scene scene = Scene.createEntity(array.getJSONObject(i));
-                joi.getSceneArrayList().add(scene);
-                if(array.getJSONObject(i).getInt("sceneId") >= joi.getSceneIdCounter()) {
-                    joi.setSceneIdCounter(array.getJSONObject(i).getInt("sceneId")+1);
+                if(array.getJSONObject(i).has("componentType") && array.getJSONObject(i).getString("componentType").equals("VariableSetter")) {
+                    VariableSetter setter = VariableSetter.createEntity(array.getJSONObject(i));
+                    joi.getJoiComponents().add(setter);
+                } else {
+                    Scene scene = Scene.createEntity(array.getJSONObject(i));
+                    joi.getJoiComponents().add(scene);
                 }
+
+                if (array.getJSONObject(i).getInt("sceneId") >= joi.getSceneIdCounter())
+                    joi.setSceneIdCounter(array.getJSONObject(i).getInt("sceneId") + 1);
             } else {
                 throw new RuntimeException("Scene id was not present for one or more of the scenes.");
             }
@@ -54,13 +92,23 @@ public class JOI implements JSONString, JOIEntity<JSONObject>, Cloneable {
     }
 
     public double getDuration() {
-        return getSceneArrayList().stream().mapToDouble(Scene::getDuration).sum();
+        //return getSceneArrayList().stream().mapToDouble(Scene::getDuration).sum();
+        double totalTime = 0;
+        for(JOIComponent joiComponent: getJoiComponents()) {
+            if(joiComponent instanceof Scene)
+                totalTime += ((Scene) joiComponent).getDuration();
+        }
+        return totalTime;
     }
 
-    @Override
     public JSONObject toJSON() {
         JSONArray joiArray = new JSONArray();
-        for(Scene scene: getSceneArrayList()) joiArray.put(scene.toJSON());
+        //for(Scene scene: getSceneArrayList()) joiArray.put(scene.toJSON());
+
+        for(JOIComponent component: getJoiComponents()) {
+            if(component.toJSON() != null)
+                joiArray.put(component.toJSON());
+        }
 
         JSONObject finalWrapper = new JSONObject();
         return finalWrapper.put("JOI", joiArray);
@@ -75,32 +123,40 @@ public class JOI implements JSONString, JOIEntity<JSONObject>, Cloneable {
     public JOI clone() throws CloneNotSupportedException {
         JOI joi = (JOI) super.clone();
 
-        ArrayList<Scene> clonedArray = new ArrayList<>();
+        /*ArrayList<Scene> clonedArray = new ArrayList<>();
         for (Scene scene: getSceneArrayList()) clonedArray.add(scene.clone());
         joi.setSceneArrayList(clonedArray);
+
+        ArrayList<VariableSetter> clonedArray2 = new ArrayList<>();
+        for (VariableSetter setter: getVariableSetterArrayList()) clonedArray2.add((VariableSetter) setter.clone());
+        joi.setVariableSetterArrayList(clonedArray2);*/
+
+        for (JOIComponent component: getJoiComponents())
+            joi.getJoiComponents().add((JOIComponent) component.clone());
+
         joi.setSceneIdCounter(getSceneIdCounter());
 
         return joi;
     }
 
     @Override
-    public boolean equals(Object object) {
-        if (this == object) return true;
-        if (!(object instanceof JOI)) return false;
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (!(o instanceof JOI)) return false;
 
-        JOI joi = (JOI) object;
+        JOI joi = (JOI) o;
 
         if (getSceneIdCounter() != joi.getSceneIdCounter()) return false;
-        return getSceneArrayList().equals(joi.getSceneArrayList());
+        return getJoiComponents().equals(joi.getJoiComponents());
     }
 
     //Getters and Setters
-    public ArrayList<Scene> getSceneArrayList() {
+    /*public ArrayList<Scene> getSceneArrayList() {
         return sceneArrayList;
     }
     private void setSceneArrayList(ArrayList<Scene> sceneArrayList) {
         this.sceneArrayList = sceneArrayList;
-    }
+    }*/
 
     public int getSceneIdCounter() {
         return sceneIdCounter;
@@ -109,4 +165,14 @@ public class JOI implements JSONString, JOIEntity<JSONObject>, Cloneable {
         this.sceneIdCounter = sceneIdCounter;
     }
 
+    /*public ArrayList<VariableSetter> getVariableSetterArrayList() {
+        return variableSetterArrayList;
+    }
+    private void setVariableSetterArrayList(ArrayList<VariableSetter> variableSetterArrayList) {
+        this.variableSetterArrayList = variableSetterArrayList;
+    }*/
+
+    public ArrayList<JOIComponent> getJoiComponents() {
+        return joiComponents;
+    }
 }

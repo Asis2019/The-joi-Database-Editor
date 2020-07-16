@@ -1,9 +1,10 @@
 package com.asis.controllers.tabs;
 
 import com.asis.controllers.Controller;
-import com.asis.joi.model.entites.Line;
-import com.asis.joi.model.entites.Scene;
-import com.asis.joi.model.entites.SceneComponent;
+import com.asis.joi.model.entities.JOIComponent;
+import com.asis.joi.model.entities.Line;
+import com.asis.joi.model.entities.Scene;
+import com.asis.joi.model.entities.SceneComponent;
 import com.asis.ui.ImageViewPane;
 import javafx.scene.Node;
 import javafx.scene.control.CheckBox;
@@ -42,8 +43,11 @@ public abstract class TabController {
     }
 
     <T extends SceneComponent<?>> Scene getScene(T component) {
-        for(Scene scene: Controller.getInstance().getJoiPackage().getJoi().getSceneArrayList())
-            if (scene.containsComponent(component)) return scene;
+        for(JOIComponent joiComponent: Controller.getInstance().getJoiPackage().getJoi().getJoiComponents()) {
+            if(joiComponent instanceof Scene) {
+                if (((Scene) joiComponent).containsComponent(component)) return ((Scene) joiComponent);
+            }
+        }
         return null;
     }
 

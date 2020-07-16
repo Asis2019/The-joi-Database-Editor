@@ -1,6 +1,6 @@
-package com.asis.joi.model.entites.dialog;
+package com.asis.joi.model.entities.dialog;
 
-import com.asis.joi.model.entites.SceneComponent;
+import com.asis.joi.model.entities.SceneComponent;
 import org.json.JSONArray;
 import org.json.JSONObject;
 import org.json.JSONString;

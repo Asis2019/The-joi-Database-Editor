@@ -1,4 +1,4 @@
-package com.asis.joi.model.entites;
+package com.asis.joi.model.entities;
 
 import org.json.JSONObject;
 import org.json.JSONString;

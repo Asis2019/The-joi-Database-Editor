@@ -8,7 +8,7 @@ import java.io.File;
 import java.util.ArrayList;
 import java.util.Arrays;
 
-public class MetaData implements Cloneable, JOIEntity<JSONObject>, JSONString {
+public class MetaData implements Cloneable, JSONString {
     private File joiIcon;
     private String preparations="", name="", joiId="", versionAdded="", displayedFetishes="", creator="";
     private double estimatedDuration = 0;
@@ -53,7 +53,6 @@ public class MetaData implements Cloneable, JOIEntity<JSONObject>, JSONString {
         }
     }
 
-    @Override
     public JSONObject toJSON() {
         JSONObject innerObject = new JSONObject();
         addStringToJsonWithDefault(innerObject, getName(), getJoiId(),"joiId");

@@ -1,8 +1,8 @@
 package com.asis.controllers.tabs;
 
-import com.asis.joi.model.entites.Line;
-import com.asis.joi.model.entites.SceneImage;
-import com.asis.joi.model.entites.Timer;
+import com.asis.joi.model.entities.Line;
+import com.asis.joi.model.entities.SceneImage;
+import com.asis.joi.model.entities.Timer;
 import com.asis.ui.AsisCenteredArc;
 import com.asis.ui.ImageViewPane;
 import com.asis.utilities.AsisUtils;

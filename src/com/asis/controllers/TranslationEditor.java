@@ -4,9 +4,9 @@ import com.asis.controllers.dialogs.DialogMessage;
 import com.asis.controllers.dialogs.DialogRequestLanguage;
 import com.asis.joi.JOIPackageManager;
 import com.asis.joi.model.JOIPackage;
-import com.asis.joi.model.entites.*;
-import com.asis.joi.model.entites.dialog.Dialog;
-import com.asis.joi.model.entites.dialog.DialogOption;
+import com.asis.joi.model.entities.*;
+import com.asis.joi.model.entities.dialog.Dialog;
+import com.asis.joi.model.entities.dialog.DialogOption;
 import com.asis.utilities.AsisUtils;
 import com.asis.utilities.Config;
 import javafx.beans.property.ReadOnlyObjectWrapper;
@@ -115,29 +115,32 @@ public class TranslationEditor {
             JOIPackage joiPackage = joiPackages.get(columnIndex - 1);
 
             rowIndex = 0;
-            for (Scene scene : joiPackage.getJoi().getSceneArrayList()) {
-                //Add normal text
-                for (Line line : scene.getComponent(LineGroup.class).getLineArrayList()) {
-                    addDataToCell(itemsList, columnIndex, scene.getSceneTitle() + " - Line " + line.getLineNumber(), line);
-                }
-
-                //Add text from timers options
-                if (scene.hasComponent(Timer.class)) {
-                    for (Line line : scene.getComponent(Timer.class).getLineGroup().getLineArrayList()) {
-                        addDataToCell(itemsList, columnIndex, scene.getSceneTitle() + " - Timer - Line " + line.getLineNumber(), line);
+            for (JOIComponent component : joiPackage.getJoi().getJoiComponents()) {
+                if(component instanceof Scene) {
+                    Scene scene = (Scene) component;
+                    //Add normal text
+                    for (Line line : scene.getComponent(LineGroup.class).getLineArrayList()) {
+                        addDataToCell(itemsList, columnIndex, scene.getComponentTitle() + " - Line " + line.getLineNumber(), line);
                     }
-                }
 
-                //Add text from dialog options
-                if (scene.hasComponent(Dialog.class)) {
-                    for (DialogOption dialogOption : scene.getComponent(Dialog.class).getOptionArrayList()) {
-                        addDataToCell(itemsList, columnIndex, scene.getSceneTitle() + " - Dialog - Option " + dialogOption.getOptionNumber(), dialogOption);
+                    //Add text from timers options
+                    if (scene.hasComponent(Timer.class)) {
+                        for (Line line : scene.getComponent(Timer.class).getLineGroup().getLineArrayList()) {
+                            addDataToCell(itemsList, columnIndex, scene.getComponentTitle() + " - Timer - Line " + line.getLineNumber(), line);
+                        }
                     }
-                }
 
-                //Add text from transitions
-                if (scene.hasComponent(Transition.class) && scene.getComponent(Transition.class).getTransitionText() != null) {
-                    addDataToCell(itemsList, columnIndex, scene.getSceneTitle() + " - Transition", scene.getComponent(Transition.class));
+                    //Add text from dialog options
+                    if (scene.hasComponent(Dialog.class)) {
+                        for (DialogOption dialogOption : scene.getComponent(Dialog.class).getOptionArrayList()) {
+                            addDataToCell(itemsList, columnIndex, scene.getComponentTitle() + " - Dialog - Option " + dialogOption.getOptionNumber(), dialogOption);
+                        }
+                    }
+
+                    //Add text from transitions
+                    if (scene.hasComponent(Transition.class) && scene.getComponent(Transition.class).getTransitionText() != null) {
+                        addDataToCell(itemsList, columnIndex, scene.getComponentTitle() + " - Transition", scene.getComponent(Transition.class));
+                    }
                 }
             }
         }

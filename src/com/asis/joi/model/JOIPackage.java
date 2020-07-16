@@ -1,8 +1,9 @@
 package com.asis.joi.model;
 
 import com.asis.controllers.dialogs.DialogMessage;
-import com.asis.joi.model.entites.Scene;
-import com.asis.joi.model.entites.SceneImage;
+import com.asis.joi.model.entities.JOIComponent;
+import com.asis.joi.model.entities.Scene;
+import com.asis.joi.model.entities.SceneImage;
 import com.asis.utilities.AsisUtils;
 
 import java.io.File;
@@ -24,18 +25,23 @@ public class JOIPackage implements Cloneable {
             AsisUtils.writeStringToFile(getJoi().toJSONString(), String.format("joi_text_%s.json", getPackageLanguageCode()), exportDirectory);
 
             //Copy joi images to export directory
-            for (Scene scene : getJoi().getSceneArrayList()) {
-                if(scene.hasComponent(SceneImage.class)) {
-                    File imageFile = getJoi().getScene(scene.getSceneId()).getComponent(SceneImage.class).getImage();
-                    if (imageFile != null) {
-                        if (imageFile.exists()) {
-                            Files.copy(imageFile.toPath(), exportDirectory.toPath().resolve(imageFile.getName()), StandardCopyOption.REPLACE_EXISTING);
-                        } else {
-                            DialogMessage.messageDialog("WARNING",
-                                    String.format("Scene image: %s could not be found at %s and will be skipped.",
-                                            scene.getComponent(SceneImage.class).getImage().getName(),
-                                            scene.getComponent(SceneImage.class).getImage().getAbsolutePath()),
-                                    480, 240);
+            for(JOIComponent component : getJoi().getJoiComponents()) {
+                if(component instanceof Scene) {
+                    Scene scene = (Scene) component;
+
+                    if (scene.hasComponent(SceneImage.class)) {
+                        //File imageFile = getJoi().getComponent(scene.getSceneId()).getComponent(SceneImage.class).getImage();
+                        File imageFile = scene.getComponent(SceneImage.class).getImage();
+                        if (imageFile != null) {
+                            if (imageFile.exists()) {
+                                Files.copy(imageFile.toPath(), exportDirectory.toPath().resolve(imageFile.getName()), StandardCopyOption.REPLACE_EXISTING);
+                            } else {
+                                DialogMessage.messageDialog("WARNING",
+                                        String.format("Scene image: %s could not be found at %s and will be skipped.",
+                                                scene.getComponent(SceneImage.class).getImage().getName(),
+                                                scene.getComponent(SceneImage.class).getImage().getAbsolutePath()),
+                                        480, 240);
+                            }
                         }
                     }
                 }

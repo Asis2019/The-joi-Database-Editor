@@ -2,10 +2,12 @@ package com.asis.ui.asis_node;
 
 import com.asis.controllers.Controller;
 import com.asis.joi.model.JOIPackage;
-import com.asis.joi.model.entites.GotoScene;
-import com.asis.joi.model.entites.Scene;
-import com.asis.joi.model.entites.dialog.Dialog;
-import com.asis.joi.model.entites.dialog.DialogOption;
+import com.asis.joi.model.entities.GotoScene;
+import com.asis.joi.model.entities.JOIComponent;
+import com.asis.joi.model.entities.Scene;
+import com.asis.joi.model.entities.VariableSetter;
+import com.asis.joi.model.entities.dialog.Dialog;
+import com.asis.joi.model.entities.dialog.DialogOption;
 import javafx.beans.property.DoubleProperty;
 import javafx.beans.property.SimpleDoubleProperty;
 import javafx.geometry.Bounds;
@@ -125,13 +127,13 @@ public class SceneNodeMainController {
     }
 
     private void removeConnectionFromStory(AsisConnectionButton outputConnection, AsisConnectionButton inputConnection, BoundLine boundLine) {
-        final Scene scene = getJoiPackage().getJoi().getScene(outputConnection.getParentSceneId());
+        final JOIComponent joiComponent = getJoiPackage().getJoi().getComponent(outputConnection.getParentSceneId());
 
         if(outputConnection.getId().contains("dialog_option")) {
             //Remove from inner dialog location
             if (getTotalLinesConnectedToOutput(outputConnection) > 1) {
                 getLineList().remove(boundLine);
-                scene.getComponent(Dialog.class).getOptionArrayList().get(outputConnection.getOptionNumber()).getGotoScene().removeValue(outputConnection.getOptionNumber());
+                ((Scene) joiComponent).getComponent(Dialog.class).getOptionArrayList().get(outputConnection.getOptionNumber()).getGotoScene().removeValue(outputConnection.getOptionNumber());
                 outputConnection.setBoundLine(null);
 
                 //Check if after removing there are still multiple lines
@@ -143,14 +145,26 @@ public class SceneNodeMainController {
                 outputConnection.setButtonColor(AsisConnectionButton.DEFAULT_COLOR);
             } else {
                 getLineList().remove(boundLine);
-                scene.getComponent(Dialog.class).getOptionArrayList().get(outputConnection.getOptionNumber()).setGotoScene(null);
+                ((Scene) joiComponent).getComponent(Dialog.class).getOptionArrayList().get(outputConnection.getOptionNumber()).setGotoScene(null);
                 outputConnection.setBoundLine(null);
             }
         } else {
+
+
             //Remove from upper scene location
             if (getTotalLinesConnectedToOutput(outputConnection) > 1) {
                 getLineList().remove(boundLine);
-                scene.getComponent(GotoScene.class).removeValue(inputConnection.getParentSceneId());
+
+                GotoScene gotoScene;
+                if(joiComponent instanceof Scene) {
+                    gotoScene = ((Scene) joiComponent).getComponent(GotoScene.class);
+                } else if(joiComponent instanceof VariableSetter) {
+                    gotoScene = ((VariableSetter) joiComponent).getGotoScene();
+                } else {
+                    return;
+                }
+                gotoScene.removeValue(inputConnection.getParentSceneId());
+
                 outputConnection.setBoundLine(null);
 
                 //Check if after removing there are still multiple lines
@@ -162,17 +176,22 @@ public class SceneNodeMainController {
             } else {
                 getLineList().remove(boundLine);
                 outputConnection.setBoundLine(null);
-                scene.removeComponent(GotoScene.class);
+
+                if(joiComponent instanceof Scene) {
+                    ((Scene) joiComponent).removeComponent(GotoScene.class);
+                } else if(joiComponent instanceof VariableSetter) {
+                    ((VariableSetter) joiComponent).setGotoScene(null);
+                }
             }
         }
     }
 
     private void addConnectionToStory(AsisConnectionButton outputConnection, AsisConnectionButton inputConnection) {
-        final Scene scene = getJoiPackage().getJoi().getScene(outputConnection.getParentSceneId());
+        final JOIComponent component = getJoiPackage().getJoi().getComponent(outputConnection.getParentSceneId());
 
         //Process where to add the jump to
         if(outputConnection.getId().contains("dialog_option")) {
-            final DialogOption dialogOption = scene.getComponent(Dialog.class).getOptionArrayList().get(outputConnection.getOptionNumber());
+            final DialogOption dialogOption = ((Scene) component).getComponent(Dialog.class).getOptionArrayList().get(outputConnection.getOptionNumber());
 
             if(getTotalLinesConnectedToOutput(outputConnection) > 1)
                 outputConnection.setButtonColor(AsisConnectionButton.RANDOM_OUT_COLOR);
@@ -183,10 +202,16 @@ public class SceneNodeMainController {
         } else {
             if(getTotalLinesConnectedToOutput(outputConnection) > 1)
                 outputConnection.setButtonColor(AsisConnectionButton.RANDOM_OUT_COLOR);
-            else
-                scene.addComponent(new GotoScene());
+            else {
+                if(component instanceof Scene) {
+                    ((Scene) component).addComponent(new GotoScene());
+                    ((Scene) component).getComponent(GotoScene.class).addValue(inputConnection.getParentSceneId());
+                } else if(component instanceof VariableSetter) {
+                    ((VariableSetter) component).setGotoScene(new GotoScene());
+                    ((VariableSetter) component).getGotoScene().addValue(inputConnection.getParentSceneId());
+                }
+            }
 
-            scene.getComponent(GotoScene.class).addValue(inputConnection.getParentSceneId());
         }
     }
 

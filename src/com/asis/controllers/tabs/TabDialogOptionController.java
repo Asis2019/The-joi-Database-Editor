@@ -1,11 +1,11 @@
 package com.asis.controllers.tabs;
 
 import com.asis.controllers.Controller;
-import com.asis.joi.model.entites.Scene;
-import com.asis.joi.model.entites.dialog.Dialog;
-import com.asis.joi.model.entites.dialog.DialogOption;
+import com.asis.joi.model.entities.Scene;
+import com.asis.joi.model.entities.dialog.Dialog;
+import com.asis.joi.model.entities.dialog.DialogOption;
 import com.asis.ui.asis_node.AsisConnectionButton;
-import com.asis.ui.asis_node.SceneNode;
+import com.asis.ui.asis_node.JOIComponentNode;
 import javafx.application.Platform;
 import javafx.fxml.FXML;
 import javafx.geometry.Pos;
@@ -81,8 +81,8 @@ public class TabDialogOptionController extends TabController {
             Scene scene = getScene(getDialog());
 
             if(scene != null) {
-                SceneNode sceneNode = Controller.getInstance().getSceneNodeWithId(Controller.getInstance().getSceneNodes(), scene.getSceneId());
-                AsisConnectionButton asisConnectionButton = sceneNode.createNewOutputConnectionPoint("Option " + totalOptions, "dialog_option_" + totalOptions);
+                JOIComponentNode componentNode = Controller.getInstance().getJOIComponentNodeWithId(Controller.getInstance().getJoiComponentNodes(), scene.getComponentId());
+                AsisConnectionButton asisConnectionButton = componentNode.createNewOutputConnectionPoint("Option " + totalOptions, "dialog_option_" + totalOptions);
                 asisConnectionButton.setOptionNumber(totalOptions);
             }
         }
@@ -96,8 +96,8 @@ public class TabDialogOptionController extends TabController {
             Scene scene = getScene(getDialog());
 
             if(scene != null) {
-                SceneNode sceneNode = Controller.getInstance().getSceneNodeWithId(Controller.getInstance().getSceneNodes(), scene.getSceneId());
-                sceneNode.removeOutputConnection();
+                JOIComponentNode componentNode = Controller.getInstance().getJOIComponentNodeWithId(Controller.getInstance().getJoiComponentNodes(), scene.getComponentId());
+                componentNode.removeOutputConnection();
             }
 
             getDialog().getOptionArrayList().remove(totalOptions-1);
