@@ -204,15 +204,16 @@ public class Scene extends JOIComponent {
     }
 
     @Override
-    public boolean equals(Object object) {
-        if (this == object) return true;
-        if (!(object instanceof Scene)) return false;
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (!(o instanceof Scene)) return false;
+        if (!super.equals(o)) return false;
 
-        Scene scene = (Scene) object;
+        Scene scene = (Scene) o;
 
-        if (!getSceneComponents().equals(scene.getSceneComponents())) return false;
         if (isBadEnd() != scene.isBadEnd()) return false;
-        return isGoodEnd() == scene.isGoodEnd();
+        if (isGoodEnd() != scene.isGoodEnd()) return false;
+        return getSceneComponents().equals(scene.getSceneComponents());
     }
 
     //Getters and Setters

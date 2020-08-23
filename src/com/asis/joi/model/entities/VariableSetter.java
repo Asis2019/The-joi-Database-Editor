@@ -3,8 +3,6 @@ package com.asis.joi.model.entities;
 import org.json.JSONArray;
 import org.json.JSONObject;
 
-import java.util.Objects;
-
 public class VariableSetter extends JOIComponent {
     private String variableName;
     private Object variableValue;
@@ -62,7 +60,6 @@ public class VariableSetter extends JOIComponent {
     @Override
     public JSONObject toJSON() {
         JSONObject object = super.toJSON();
-        object.put("sceneId", getComponentId());
         object.put("name", getVariableName());
         object.put("value", getVariableValue());
         object.put("persistent", isVariablePersistent());
@@ -79,6 +76,7 @@ public class VariableSetter extends JOIComponent {
         variableSetter.setVariableName(getVariableName());
         variableSetter.setVariablePersistent(isVariablePersistent());
         variableSetter.setVariableValue(getVariableValue());
+        //TODO might need to add gotoscene
 
         return variableSetter;
     }
@@ -87,11 +85,16 @@ public class VariableSetter extends JOIComponent {
     public boolean equals(Object o) {
         if (this == o) return true;
         if (!(o instanceof VariableSetter)) return false;
-        VariableSetter setter = (VariableSetter) o;
-        return isVariablePersistent() == setter.isVariablePersistent() &&
-                Objects.equals(getVariableName(), setter.getVariableName()) &&
-                Objects.equals(getVariableValue(), setter.getVariableValue()) &&
-                Objects.equals(getGotoScene(), setter.getGotoScene());
+        if (!super.equals(o)) return false;
+
+        VariableSetter that = (VariableSetter) o;
+
+        if (isVariablePersistent() != that.isVariablePersistent()) return false;
+        if (getVariableName() != null ? !getVariableName().equals(that.getVariableName()) : that.getVariableName() != null)
+            return false;
+        if (getVariableValue() != null ? !getVariableValue().equals(that.getVariableValue()) : that.getVariableValue() != null)
+            return false;
+        return getGotoScene() != null ? getGotoScene().equals(that.getGotoScene()) : that.getGotoScene() == null;
     }
 
     //Getters and Setters

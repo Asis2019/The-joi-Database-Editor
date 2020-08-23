@@ -1,42 +1,41 @@
 package com.asis.ui.asis_node;
 
 import com.asis.controllers.Controller;
-import com.asis.controllers.dialogs.DialogVariableSetter;
+import com.asis.controllers.dialogs.DialogCondition;
+import com.asis.joi.model.entities.Condition;
 import com.asis.joi.model.entities.JOIComponent;
-import com.asis.joi.model.entities.VariableSetter;
 import javafx.scene.control.MenuItem;
 import javafx.scene.control.SeparatorMenuItem;
 
-public class VariableSetterNode extends JOIComponentNode {
+public class ConditionNode extends JOIComponentNode {
 
-    public VariableSetterNode(int width, int height, int componentId, SceneNodeMainController sceneNodeMainController, JOIComponent component) {
+    public ConditionNode(int width, int height, int componentId, SceneNodeMainController sceneNodeMainController, JOIComponent component) {
         super(width, height, componentId, sceneNodeMainController, component);
 
-        setUserData("variableSetter");
+        setUserData("condition");
 
         createNewInputConnectionPoint();
-        createNewOutputConnectionPoint(null, "normal_output");
+        createNewOutputConnectionPoint("True", "true_output");
+        createNewOutputConnectionPoint("False", "false_output");
 
         setupContextMenu();
     }
 
     @Override
     protected void setupContextMenu() {
-        MenuItem editSceneItem = new MenuItem("Edit Variable");
+        Controller controller = Controller.getInstance();
+        MenuItem editSceneItem = new MenuItem("Edit Condition");
         SeparatorMenuItem separatorMenuItem = new SeparatorMenuItem();
         MenuItem deleteNodeItem = new MenuItem("Delete");
         contextMenu.getItems().addAll(editSceneItem, separatorMenuItem, deleteNodeItem);
 
         //Handle menu actions
         editSceneItem.setOnAction(actionEvent -> {
-            if (getJoiComponent() != null) {
-                DialogVariableSetter.openVariableSetter((VariableSetter) getJoiComponent());
-            }
+            if (getJoiComponent() != null) DialogCondition.openConditionDialog((Condition) getJoiComponent());
         });
-
         deleteNodeItem.setOnAction(actionEvent -> {
             if (getJoiComponent() != null) {
-                Controller.getInstance().removeComponentNode(this);
+                controller.removeComponentNode(this);
             }
         });
     }
@@ -45,17 +44,17 @@ public class VariableSetterNode extends JOIComponentNode {
     protected void focusState(boolean value) {
         if (value) {
             setStyle(
-                    "-fx-background-color: #5a5a5a, rgb(60, 63, 65), #5a5a5a;" +
+                    "-fx-background-color: #5a5a5a, rgb(60, 63, 65), #5a5a5a, rgb(60, 63, 65), #5a5a5a;" +
                             "-fx-background-radius: 10;" +
-                            "-fx-background-insets: 8, 8 17 8 17, 8 22 8 22;" +
+                            "-fx-background-insets: 8, 8 17 8 17, 8 22 8 22, 8 27 8 27, 8 32 8 32;" +
                             "-fx-effect: dropshadow(three-pass-box, deepskyblue, 10, 0, 0, 1);" +
                             "-fx-opacity: 1;"
             );
         } else {
             setStyle(
-                    "-fx-background-color: #5a5a5a, rgb(60, 63, 65), #5a5a5a;" +
+                    "-fx-background-color: #5a5a5a, rgb(60, 63, 65), #5a5a5a, rgb(60, 63, 65), #5a5a5a;" +
                             "-fx-background-radius: 10;" +
-                            "-fx-background-insets: 8, 8 17 8 17, 8 22 8 22;" +
+                            "-fx-background-insets: 8, 8 17 8 17, 8 22 8 22, 8 27 8 27, 8 32 8 32;" +
                             "-fx-effect: dropshadow(three-pass-box, black, 10, 0, 0, 1);" +
                             "-fx-opacity: 1;"
             );

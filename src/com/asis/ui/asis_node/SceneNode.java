@@ -1,7 +1,11 @@
 package com.asis.ui.asis_node;
 
+import com.asis.controllers.Controller;
+import com.asis.controllers.dialogs.DialogSceneTitle;
 import com.asis.joi.model.entities.Scene;
 import javafx.beans.property.ReadOnlyBooleanWrapper;
+import javafx.scene.control.MenuItem;
+import javafx.scene.control.SeparatorMenuItem;
 
 public class SceneNode extends JOIComponentNode {
     private final ReadOnlyBooleanWrapper isBadEnd = new ReadOnlyBooleanWrapper();
@@ -16,6 +20,7 @@ public class SceneNode extends JOIComponentNode {
         createNewOutputConnectionPoint("Default", "normal_output");
 
         initializeEndVariables();
+        setupContextMenu();
     }
 
     private void initializeEndVariables() {
@@ -47,6 +52,86 @@ public class SceneNode extends JOIComponentNode {
         isBadEndProperty().bindBidirectional(getJOIScene().badEndProperty());
     }
 
+    @Override
+    protected void setupContextMenu() {
+        Controller controller = Controller.getInstance();
+
+        MenuItem editSceneItem = new MenuItem("Edit Scene");
+        MenuItem editNameItem = new MenuItem("Change Name");
+        MenuItem goodEndItem = new MenuItem("Set as Good End");
+        MenuItem badEndItem = new MenuItem("Set as Bad End");
+        SeparatorMenuItem separatorMenuItem = new SeparatorMenuItem();
+        MenuItem deleteNodeItem = new MenuItem("Delete");
+        contextMenu.getItems().addAll(editSceneItem, editNameItem, goodEndItem, badEndItem, separatorMenuItem, deleteNodeItem);
+
+        //Handle menu actions
+        editSceneItem.setOnAction(actionEvent -> {
+            if (getJoiComponent() != null) {
+                controller.openSceneDetails(this);
+            }
+        });
+
+        editNameItem.setOnAction(actionEvent -> {
+            if (getJoiComponent() != null) {
+                String title = DialogSceneTitle.addNewSceneDialog(getTitle());
+                if(title == null) return;
+
+                controller.getJoiPackage().getJoi().getComponent(getComponentId()).setComponentTitle(title);
+                setTitle(title);
+            }
+        });
+
+        deleteNodeItem.setOnAction(actionEvent -> {
+            if (getJoiComponent() != null) {
+                controller.removeComponentNode(this);
+            }
+        });
+
+        goodEndItem.setOnAction(actionEvent -> {
+            if (getJoiComponent() != null) {
+                setIsGoodEnd(!isGoodEnd());
+            }
+        });
+
+        badEndItem.setOnAction(actionEvent -> {
+            if (getJoiComponent() != null) {
+                setIsBadEnd(!isBadEnd());
+            }
+        });
+
+        setOnContextMenuRequested(contextMenuEvent -> {
+            contextMenu.hide();
+            if (getComponentId() == 0) {
+                //Is the first scene
+                contextMenu.getItems().get(contextMenu.getItems().size() - 1).setDisable(true);
+                contextMenu.getItems().get(2).setDisable(true);
+                contextMenu.getItems().get(3).setDisable(true);
+            } else {
+                contextMenu.getItems().get(contextMenu.getItems().size() - 1).setDisable(false);
+
+                //Change name of ending buttons
+                if (isBadEnd()) {
+                    contextMenu.getItems().get(3).setText("Remove Ending Tag");
+                    contextMenu.getItems().get(2).setDisable(true);
+                } else {
+                    contextMenu.getItems().get(3).setText("Set as Bad End");
+                    contextMenu.getItems().get(2).setDisable(false);
+                }
+
+                if (isGoodEnd()) {
+                    contextMenu.getItems().get(2).setText("Remove Ending Tag");
+                    contextMenu.getItems().get(3).setDisable(true);
+                } else {
+                    contextMenu.getItems().get(2).setText("Set as Good End");
+                    contextMenu.getItems().get(3).setDisable(false);
+                }
+            }
+            contextMenu.show(this, contextMenuEvent.getScreenX(), contextMenuEvent.getScreenY());
+            //super.getOnContextMenuRequested().handle(contextMenuEvent);
+        });
+    }
+
+    @Override
     protected void focusState(boolean value) {
         if (value) {
             setStyle(
@@ -73,7 +158,7 @@ public class SceneNode extends JOIComponentNode {
     }
 
     public boolean isBadEnd() {
-        return isBadEnd.get();
+        return isBadEnd.getValue();
     }
 
     public ReadOnlyBooleanWrapper isBadEndProperty() {
@@ -85,7 +170,7 @@ public class SceneNode extends JOIComponentNode {
     }
 
     public boolean isGoodEnd() {
-        return isGoodEnd.get();
+        return isGoodEnd.getValue();
     }
 
     public ReadOnlyBooleanWrapper isGoodEndProperty() {

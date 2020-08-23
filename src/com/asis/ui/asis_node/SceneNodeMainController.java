@@ -2,10 +2,7 @@ package com.asis.ui.asis_node;
 
 import com.asis.controllers.Controller;
 import com.asis.joi.model.JOIPackage;
-import com.asis.joi.model.entities.GotoScene;
-import com.asis.joi.model.entities.JOIComponent;
-import com.asis.joi.model.entities.Scene;
-import com.asis.joi.model.entities.VariableSetter;
+import com.asis.joi.model.entities.*;
 import com.asis.joi.model.entities.dialog.Dialog;
 import com.asis.joi.model.entities.dialog.DialogOption;
 import javafx.beans.property.DoubleProperty;
@@ -149,9 +146,6 @@ public class SceneNodeMainController {
                 outputConnection.setBoundLine(null);
             }
         } else {
-
-
-            //Remove from upper scene location
             if (getTotalLinesConnectedToOutput(outputConnection) > 1) {
                 getLineList().remove(boundLine);
 
@@ -160,6 +154,14 @@ public class SceneNodeMainController {
                     gotoScene = ((Scene) joiComponent).getComponent(GotoScene.class);
                 } else if(joiComponent instanceof VariableSetter) {
                     gotoScene = ((VariableSetter) joiComponent).getGotoScene();
+                } else if(joiComponent instanceof Condition) {
+                    if(outputConnection.getId().equals("true_output")) {
+                        gotoScene = ((Condition) joiComponent).getGotoSceneTrue();
+                    } else if(outputConnection.getId().equals("false_output")) {
+                        gotoScene = ((Condition) joiComponent).getGotoSceneFalse();
+                    } else {
+                        throw new RuntimeException("connection id was not true or false!");
+                    }
                 } else {
                     return;
                 }
@@ -181,6 +183,12 @@ public class SceneNodeMainController {
                     ((Scene) joiComponent).removeComponent(GotoScene.class);
                 } else if(joiComponent instanceof VariableSetter) {
                     ((VariableSetter) joiComponent).setGotoScene(null);
+                } else if(joiComponent instanceof Condition) {
+                    if(outputConnection.getId().equals("true_output")) {
+                        ((Condition) joiComponent).setGotoSceneTrue(null);
+                    } else if(outputConnection.getId().equals("false_output")) {
+                        ((Condition) joiComponent).setGotoSceneFalse(null);
+                    }
                 }
             }
         }
@@ -209,6 +217,14 @@ public class SceneNodeMainController {
                 } else if(component instanceof VariableSetter) {
                     ((VariableSetter) component).setGotoScene(new GotoScene());
                     ((VariableSetter) component).getGotoScene().addValue(inputConnection.getParentSceneId());
+                } else if(component instanceof Condition) {
+                    if(outputConnection.getId().equals("true_output")) {
+                        ((Condition) component).setGotoSceneTrue(new GotoScene());
+                        ((Condition) component).getGotoSceneTrue().addValue(inputConnection.getParentSceneId());
+                    } else if(outputConnection.getId().equals("false_output")) {
+                        ((Condition) component).setGotoSceneFalse(new GotoScene());
+                        ((Condition) component).getGotoSceneFalse().addValue(inputConnection.getParentSceneId());
+                    }
                 }
             }
 
@@ -265,10 +281,10 @@ public class SceneNodeMainController {
         }
     }
 
-    public void notifySceneRemoved(SceneNode sceneNode) {
+    public void notifyComponentNodeRemoved(JOIComponentNode joiComponentNode) {
         //Check if connection is present for outputs
         ArrayList<BoundLine> consistentDataList = new ArrayList<>(getLineList());
-        for (AsisConnectionButton connection : sceneNode.getOutputButtons()) {
+        for (AsisConnectionButton connection : joiComponentNode.getOutputButtons()) {
             for (BoundLine line : consistentDataList) {
                 if (connection == line.getStartPointConnectionObject()) {
                     removeConnectionFromStory(connection, line.getEndPointConnectionObject(), line);
@@ -279,8 +295,8 @@ public class SceneNodeMainController {
 
         //Check if input has any connection
         for (BoundLine line : consistentDataList) {
-            if(sceneNode.getInputConnection() == line.getEndPointConnectionObject()) {
-                removeConnectionFromStory(line.getStartPointConnectionObject(), sceneNode.getInputConnection(), line);
+            if(joiComponentNode.getInputConnection() == line.getEndPointConnectionObject()) {
+                removeConnectionFromStory(line.getStartPointConnectionObject(), joiComponentNode.getInputConnection(), line);
                 root.getChildren().remove(line);
             }
         }

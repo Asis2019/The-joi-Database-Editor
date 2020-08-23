@@ -41,7 +41,17 @@ public abstract class JOIComponent implements JSONString, Cloneable {
     }
 
     @Override
-    public abstract boolean equals(Object o);
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (!(o instanceof JOIComponent)) return false;
+
+        JOIComponent component = (JOIComponent) o;
+
+        if (getComponentId() != component.getComponentId()) return false;
+        if (Double.compare(component.getLayoutXPosition(), getLayoutXPosition()) != 0) return false;
+        if (Double.compare(component.getLayoutYPosition(), getLayoutYPosition()) != 0) return false;
+        return getComponentTitle() != null ? getComponentTitle().equals(component.getComponentTitle()) : component.getComponentTitle() == null;
+    }
 
     //Getters and Setters
     public int getComponentId() {

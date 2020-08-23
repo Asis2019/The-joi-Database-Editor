@@ -5,6 +5,7 @@ import com.asis.joi.model.entities.JOIComponent;
 import javafx.beans.value.ObservableValue;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
+import javafx.scene.control.ContextMenu;
 import javafx.scene.control.Label;
 import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.HBox;
@@ -22,6 +23,7 @@ public abstract class JOIComponentNode extends BorderPane {
     private final Label titleLabel = new Label("Undefined");
     private List<AsisConnectionButton> outputConnections = new ArrayList<>();
     private AsisConnectionButton inputConnection;
+    protected ContextMenu contextMenu = new ContextMenu();
 
     public double innerX, innerY;
 
@@ -49,9 +51,17 @@ public abstract class JOIComponentNode extends BorderPane {
         focusState(false);
 
         titleLabel.textProperty().bindBidirectional(component.componentTitleProperty());
+
+        setOnContextMenuRequested(contextMenuEvent -> {
+            //Controller.getInstance().getScrollPane().getContextMenu().hide();
+            contextMenu.hide();
+            contextMenu.show(this, contextMenuEvent.getScreenX(), contextMenuEvent.getScreenY());
+        });
     }
 
     protected abstract void focusState(boolean value);
+
+    protected abstract void setupContextMenu();
 
     public List<AsisConnectionButton> getOutputButtons() {
         return this.outputConnections;

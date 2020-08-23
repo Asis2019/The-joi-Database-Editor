@@ -26,6 +26,8 @@ public abstract class TabController {
     }
 
     void setVisibleImage(StackPane stackPane, ImageViewPane viewPane, File workingFile) {
+        //TODO don't create a new image if the same image is already loaded
+
         //Remove image if any is present
         stackPane.getChildren().remove(viewPane);
 

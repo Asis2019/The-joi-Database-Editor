@@ -39,7 +39,7 @@ public class DialogVariableSetter {
             variableSetter.setVariablePersistent(variablePersistentBox.isSelected());
 
             Stage stage = (Stage) variableSetterTitle.getScene().getWindow();
-            stage.close();
+            StageManager.getInstance().closeStage(stage);
         } catch (NullPointerException e) {
             DialogMessage.messageDialog("Error", "Please ensure that the title, name and value are not empty.");
         }
@@ -54,8 +54,8 @@ public class DialogVariableSetter {
             finalValue = Boolean.valueOf(conversionValue);
         } else {
             try {
-                finalValue = Integer.parseInt(conversionValue);
-            } catch (NumberFormatException e) {
+                finalValue = Double.parseDouble(conversionValue);
+            } catch (NumberFormatException ignore){
                 finalValue = conversionValue;
             }
         }

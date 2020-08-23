@@ -3,6 +3,7 @@ package com.asis.controllers;
 import com.asis.controllers.dialogs.*;
 import com.asis.joi.JOIPackageManager;
 import com.asis.joi.model.JOIPackage;
+import com.asis.joi.model.entities.Condition;
 import com.asis.joi.model.entities.GotoScene;
 import com.asis.joi.model.entities.JOIComponent;
 import com.asis.joi.model.entities.VariableSetter;
@@ -40,7 +41,6 @@ import static com.asis.controllers.dialogs.DialogUnsavedChanges.CHOICE_CANCEL;
 import static com.asis.controllers.dialogs.DialogUnsavedChanges.CHOICE_SAVE;
 
 public class Controller {
-    private JOIComponentNode selectedComponent;
     private double menuEventX;
     private double menuEventY;
     private Boolean addSceneContextMenu = false;
@@ -53,7 +53,6 @@ public class Controller {
     private SceneNodeMainController sceneNodeMainController;
 
     private final ContextMenu mainContextMenu = new ContextMenu();
-    private final ContextMenu sceneNodeContextMenu = new ContextMenu();
 
     @FXML
     private AnchorPane anchorPane;
@@ -69,10 +68,7 @@ public class Controller {
 
     public void initialize() {
         instance = this;
-
         setupMainContextMenu();
-        setupSceneNodeContextMenu();
-
         gridToggle.setTooltip(new Tooltip("Snap to grid"));
     }
 
@@ -80,57 +76,12 @@ public class Controller {
         return instance;
     }
 
-    private void setupSceneNodeContextMenu() {
-        //Create items and add them to there menu
-        MenuItem editSceneItem = new MenuItem("Edit Scene");
-        MenuItem editNameItem = new MenuItem("Change Name");
-        MenuItem goodEndItem = new MenuItem("Set as Good End");
-        MenuItem badEndItem = new MenuItem("Set as Bad End");
-        SeparatorMenuItem separatorMenuItem = new SeparatorMenuItem();
-        MenuItem deleteNodeItem = new MenuItem("Delete");
-        sceneNodeContextMenu.getItems().addAll(editSceneItem, editNameItem, goodEndItem, badEndItem, separatorMenuItem, deleteNodeItem);
-
-        //Handle menu actions
-        editSceneItem.setOnAction(actionEvent -> {
-            if (selectedComponent != null) {
-                openSceneDetails((SceneNode) selectedComponent);
-            }
-        });
-
-        editNameItem.setOnAction(actionEvent -> {
-            if (selectedComponent != null) {
-                String title = DialogSceneTitle.addNewSceneDialog(selectedComponent.getTitle());
-
-                getJoiPackage().getJoi().getScene(selectedComponent.getComponentId()).setComponentTitle(title);
-                selectedComponent.setTitle(title);
-            }
-        });
-
-        deleteNodeItem.setOnAction(actionEvent -> {
-            if (selectedComponent != null) {
-                removeScene((SceneNode) selectedComponent);
-            }
-        });
-
-        goodEndItem.setOnAction(actionEvent -> {
-            if (selectedComponent != null) {
-                ((SceneNode)selectedComponent).setIsGoodEnd(!((SceneNode)selectedComponent).isGoodEnd());
-            }
-        });
-
-        badEndItem.setOnAction(actionEvent -> {
-            if (selectedComponent != null) {
-                ((SceneNode)selectedComponent).setIsBadEnd(!((SceneNode)selectedComponent).isBadEnd());
-            }
-        });
-    }
-
     private void setupMainContextMenu() {
         //Create items and add them to there menu
         MenuItem newSceneItem = new MenuItem("New Scene");
         MenuItem newVariableSetterItem = new MenuItem("New Variable");
-        mainContextMenu.getItems().addAll(newSceneItem, newVariableSetterItem);
-
+        MenuItem newConditionItem = new MenuItem("New Condition");
+        mainContextMenu.getItems().addAll(newSceneItem, newVariableSetterItem, newConditionItem);
 
         //Handle menu actions
         newSceneItem.setOnAction(event -> {
@@ -143,31 +94,28 @@ public class Controller {
             addVariableSetterNode();
         });
 
-        scrollPane.setContextMenu(mainContextMenu);
+        newConditionItem.setOnAction(actionEvent -> {
+            addSceneContextMenu = true;
+            addConditionNode();
+        });
 
-        //Used to get the coordinates for spawning the scene node and for hiding/showing the proper menu
+        scrollPane.setContextMenu(mainContextMenu);
         scrollPane.setOnContextMenuRequested(contextMenuEvent -> {
             for (Node n : anchorPane.getChildren()) {
                 if (n.getUserData() == null) continue;
 
-                if (n.getUserData().equals("sceneNode")) {
-                    Bounds boundsInScene = n.localToScene(n.getBoundsInLocal());
-
-                    if (contextMenuEvent.getSceneX() >= boundsInScene.getMinX() &&
-                            contextMenuEvent.getSceneX() <= boundsInScene.getMaxX() &&
-                            contextMenuEvent.getSceneY() >= boundsInScene.getMinY() &&
-                            contextMenuEvent.getSceneY() <= boundsInScene.getMaxY()) {
-                        mainContextMenu.hide();
-                        sceneNodeContextMenu.show(anchorPane, contextMenuEvent.getScreenX(), contextMenuEvent.getScreenY());
-                    }
+                Bounds boundsInScene = n.localToScene(n.getBoundsInLocal());
+                if (contextMenuEvent.getSceneX() >= boundsInScene.getMinX() &&
+                        contextMenuEvent.getSceneX() <= boundsInScene.getMaxX() &&
+                        contextMenuEvent.getSceneY() >= boundsInScene.getMinY() &&
+                        contextMenuEvent.getSceneY() <= boundsInScene.getMaxY()) {
+                    mainContextMenu.hide();
                 }
             }
 
             menuEventX = contextMenuEvent.getX();
             menuEventY = contextMenuEvent.getY();
         });
-
-        scrollPane.setOnMouseClicked(mouseEvent -> sceneNodeContextMenu.hide());
     }
 
     public void actionOpenMetadata() {
@@ -222,42 +170,7 @@ public class Controller {
     }
 
     private void setClickActionForNode(JOIComponentNode componentNode) {
-        componentNode.setOnContextMenuRequested(contextMenuEvent -> {
-            selectedComponent = componentNode;
-
-            //Change behaviour for first scene
-            if (componentNode.getComponentId() == 0) {
-                //Is the first scene
-                sceneNodeContextMenu.getItems().get(sceneNodeContextMenu.getItems().size() - 1).setDisable(true);
-                sceneNodeContextMenu.getItems().get(2).setDisable(true);
-                sceneNodeContextMenu.getItems().get(3).setDisable(true);
-            } else if(componentNode instanceof SceneNode) {
-                SceneNode sceneNode = (SceneNode) componentNode;
-                sceneNodeContextMenu.getItems().get(sceneNodeContextMenu.getItems().size() - 1).setDisable(false);
-
-                //Change name of ending buttons
-                if (sceneNode.isBadEndProperty().getValue()) {
-                    sceneNodeContextMenu.getItems().get(3).setText("Remove Ending Tag");
-                    sceneNodeContextMenu.getItems().get(2).setDisable(true);
-                } else {
-                    sceneNodeContextMenu.getItems().get(3).setText("Set as Bad End");
-                    sceneNodeContextMenu.getItems().get(2).setDisable(false);
-                }
-
-                if (sceneNode.isGoodEndProperty().getValue()) {
-                    sceneNodeContextMenu.getItems().get(2).setText("Remove Ending Tag");
-                    sceneNodeContextMenu.getItems().get(3).setDisable(true);
-                } else {
-                    sceneNodeContextMenu.getItems().get(2).setText("Set as Good End");
-                    sceneNodeContextMenu.getItems().get(3).setDisable(false);
-                }
-            }
-        });
-
-        componentNode.setOnMousePressed(mouseEvent -> {
-            componentNode.requestFocus();
-            sceneNodeContextMenu.hide();
-        });
+        componentNode.setOnMousePressed(mouseEvent -> componentNode.requestFocus());
 
         componentNode.setOnMouseClicked(mouseEvent -> {
             //User double clicked
@@ -267,11 +180,13 @@ public class Controller {
                         openSceneDetails((SceneNode) componentNode);
                     else if(componentNode instanceof VariableSetterNode)
                         DialogVariableSetter.openVariableSetter((VariableSetter) componentNode.getJoiComponent());
+                    else if(componentNode instanceof ConditionNode)
+                        DialogCondition.openConditionDialog((Condition) componentNode.getJoiComponent());
                 }
         });
     }
 
-    private void openSceneDetails(SceneNode sceneNode) {
+    public void openSceneDetails(SceneNode sceneNode) {
         if (StageManager.getInstance().requestStageFocus(sceneNode.getComponentId())) return;
 
         //Open new window
@@ -280,7 +195,7 @@ public class Controller {
             Parent root = fxmlLoader.load();
 
             SceneDetails sceneDetails = fxmlLoader.getController();
-            sceneDetails.initialize(getJoiPackage().getJoi().getScene(sceneNode.getComponentId()));
+            sceneDetails.initialize((com.asis.joi.model.entities.Scene) getJoiPackage().getJoi().getComponent(sceneNode.getComponentId()));
 
             Stage stage = new Stage();
             stage.getIcons().add(new Image(Controller.class.getResourceAsStream("/resources/images/icon.png")));
@@ -303,23 +218,13 @@ public class Controller {
         Platform.exit();
     }
 
-    private void addVariableSetterNode() {
-        final int componentId = getJoiPackage().getJoi().getSceneIdCounter();
-        addVariableSetterNode(0, 10, null, componentId, false);
-    }
-
-    private void addVariableSetterNode(double xPosition, double yPosition, String title, int componentId, boolean suppressJSONUpdating) {
-        if(!suppressJSONUpdating) {
-            getJoiPackage().getJoi().addNewVariableSetter(componentId);
-            getJoiPackage().getJoi().getComponent(componentId).setComponentTitle(title);
-        }
-
-        JOIComponentNode componentNode = new VariableSetterNode(300, 100, componentId, sceneNodeMainController, getJoiPackage().getJoi().getComponent(componentId));
+    private void initializeComponentNode(JOIComponentNode componentNode, double xPosition, double yPosition, String title, int componentId, boolean suppressJSONUpdating) {
         new Draggable.Nature(componentNode);
         componentNode.setTitle(title);
 
         //Set and save position
         if (!addSceneContextMenu) {
+            //TODO issue 5 make new scenes via button adjacent
             componentNode.positionInGrid(xPosition, yPosition);
 
             if(!suppressJSONUpdating) {
@@ -343,6 +248,39 @@ public class Controller {
         setClickActionForNode(componentNode);
         getAnchorPane().getChildren().add(componentNode);
         getJoiComponentNodes().add(componentNode);
+    }
+
+    private void addConditionNode() {
+        final int componentId = getJoiPackage().getJoi().getSceneIdCounter();
+        addConditionNode(0, 10, null, componentId, false);
+    }
+
+    private void addConditionNode(double xPosition, double yPosition, String title, int componentId, boolean suppressJSONUpdating) {
+        if(!suppressJSONUpdating) {
+            getJoiPackage().getJoi().addNewComponent(Condition.class, componentId);
+            getJoiPackage().getJoi().getComponent(componentId).setComponentTitle(title);
+        }
+
+        JOIComponentNode componentNode = new ConditionNode(300, 100, componentId, sceneNodeMainController, getJoiPackage().getJoi().getComponent(componentId));
+        initializeComponentNode(componentNode, xPosition, yPosition, title, componentId, suppressJSONUpdating);
+
+        /*if(!suppressJSONUpdating)
+            DialogVariableSetter.openVariableSetter((VariableSetter) componentNode.getJoiComponent());*/
+    }
+
+    private void addVariableSetterNode() {
+        final int componentId = getJoiPackage().getJoi().getSceneIdCounter();
+        addVariableSetterNode(0, 10, null, componentId, false);
+    }
+
+    private void addVariableSetterNode(double xPosition, double yPosition, String title, int componentId, boolean suppressJSONUpdating) {
+        if(!suppressJSONUpdating) {
+            getJoiPackage().getJoi().addNewComponent(VariableSetter.class, componentId);
+            getJoiPackage().getJoi().getComponent(componentId).setComponentTitle(title);
+        }
+
+        JOIComponentNode componentNode = new VariableSetterNode(300, 100, componentId, sceneNodeMainController, getJoiPackage().getJoi().getComponent(componentId));
+        initializeComponentNode(componentNode, xPosition, yPosition, title, componentId, suppressJSONUpdating);
 
         if(!suppressJSONUpdating)
             DialogVariableSetter.openVariableSetter((VariableSetter) componentNode.getJoiComponent());
@@ -366,48 +304,18 @@ public class Controller {
     private void addScene(double xPosition, double yPosition, String title, int sceneId, boolean suppressJSONUpdating) {
         //Add new scene to json if not suppressed
         if (!suppressJSONUpdating) {
-            getJoiPackage().getJoi().addNewScene(sceneId);
+            getJoiPackage().getJoi().addNewComponent(com.asis.joi.model.entities.Scene.class, sceneId);
             getJoiPackage().getJoi().getComponent(sceneId).setComponentTitle(title);
         }
 
-        SceneNode sceneNode = new SceneNode(300, 100, sceneId, sceneNodeMainController, getJoiPackage().getJoi().getScene(sceneId));
-        new Draggable.Nature(sceneNode);
-
-        sceneNode.setTitle(title);
-
-        //Set and save position
-        if (!addSceneContextMenu) {
-            //TODO issue 5 make new scenes via button adjacent
-            sceneNode.positionInGrid(xPosition, yPosition);
-            if (!suppressJSONUpdating) {
-                getJoiPackage().getJoi().getComponent(sceneId).setLayoutXPosition(xPosition);
-                getJoiPackage().getJoi().getComponent(sceneId).setLayoutYPosition(yPosition);
-            }
-        } else {
-            Bounds bounds = scrollPane.getViewportBounds();
-            double lowestXPixelShown = -1 * bounds.getMinX();
-            double lowestYPixelShown = -1 * bounds.getMinY();
-
-            sceneNode.positionInGrid(lowestXPixelShown + menuEventX, lowestYPixelShown + menuEventY);
-            addSceneContextMenu = false;
-
-            if (!suppressJSONUpdating) {
-                getJoiPackage().getJoi().getComponent(sceneId).setLayoutXPosition(lowestXPixelShown + menuEventX);
-                getJoiPackage().getJoi().getComponent(sceneId).setLayoutYPosition(lowestYPixelShown + menuEventY);
-            }
-        }
-
-        setClickActionForNode(sceneNode);
-        getAnchorPane().getChildren().add(sceneNode);
-        getJoiComponentNodes().add(sceneNode);
+        SceneNode sceneNode = new SceneNode(300, 100, sceneId, sceneNodeMainController, (com.asis.joi.model.entities.Scene) getJoiPackage().getJoi().getComponent(sceneId));
+        initializeComponentNode(sceneNode, xPosition, yPosition, title, sceneId, suppressJSONUpdating);
     }
 
-    private void removeScene(SceneNode sceneNode) {
-        getJoiPackage().getJoi().removeComponent(sceneNode.getComponentId());
-
-        sceneNodeMainController.notifySceneRemoved(sceneNode);
-
-        anchorPane.getChildren().remove(sceneNode);
+    public void removeComponentNode(JOIComponentNode joiComponentNode) {
+        getJoiPackage().getJoi().removeComponent(joiComponentNode.getComponentId());
+        sceneNodeMainController.notifyComponentNodeRemoved(joiComponentNode);
+        anchorPane.getChildren().remove(joiComponentNode);
     }
 
     public void actionNewProject() {
@@ -491,6 +399,8 @@ public class Controller {
                         addScene(component.getLayoutXPosition(), component.getLayoutYPosition(), component.getComponentTitle(), component.getComponentId(), true);
                     else if(component instanceof VariableSetter)
                         addVariableSetterNode(component.getLayoutXPosition(), component.getLayoutYPosition(), component.getComponentTitle(), component.getComponentId(), true);
+                    else if(component instanceof Condition)
+                        addConditionNode(component.getLayoutXPosition(), component.getLayoutYPosition(), component.getComponentTitle(), component.getComponentId(), true);
                 }
                 //Create connections
                 for (JOIComponent component : getJoiPackage().getJoi().getJoiComponents()) {
@@ -504,6 +414,13 @@ public class Controller {
                         VariableSetter setter = (VariableSetter) component;
                         final AsisConnectionButton output = getJOIComponentNodeWithId(getJoiComponentNodes(), component.getComponentId()).getOutputButtons().get(0);
                         createConnections(setter.getGotoScene(), output);
+                    } else if(component instanceof Condition) {
+                        Condition condition = (Condition) component;
+                        final AsisConnectionButton trueOutput = getJOIComponentNodeWithId(getJoiComponentNodes(), component.getComponentId()).getOutputButtons().get(0);
+                        final AsisConnectionButton falseOutput = getJOIComponentNodeWithId(getJoiComponentNodes(), component.getComponentId()).getOutputButtons().get(1);
+
+                        createConnections(condition.getGotoSceneTrue(), trueOutput);
+                        createConnections(condition.getGotoSceneFalse(), falseOutput);
                     }
                 }
 
@@ -621,7 +538,7 @@ public class Controller {
     }
 
     //Getters and setters
-    private AnchorPane getAnchorPane() {
+    public AnchorPane getAnchorPane() {
         return anchorPane;
     }
 
