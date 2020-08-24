@@ -36,10 +36,10 @@
                                 <Insets right="18.0" />
                             </padding>
                         </Label>
-                  <ComboBox fx:id="variableDropdown" prefWidth="150.0" GridPane.columnIndex="1" GridPane.rowIndex="1" />
-                  <ComboBox fx:id="operationDropdown" prefWidth="150.0" GridPane.columnIndex="1" GridPane.rowIndex="2" />
-                  <TextField fx:id="conditionTitle" maxWidth="150.0" GridPane.columnIndex="1" />
-                  <TextField fx:id="compareValue" maxWidth="150.0" GridPane.columnIndex="1" GridPane.rowIndex="3" />
+                  <ComboBox fx:id="variableDropdown" prefWidth="150.0" GridPane.columnIndex="1" GridPane.rowIndex="1" GridPane.halignment="RIGHT" />
+                  <ComboBox fx:id="operationDropdown" prefWidth="150.0" GridPane.columnIndex="1" GridPane.rowIndex="2" GridPane.halignment="RIGHT" />
+                  <TextField fx:id="conditionTitle" maxWidth="150.0" GridPane.columnIndex="1" GridPane.halignment="RIGHT" />
+                  <TextField fx:id="compareValue" maxWidth="150.0" GridPane.columnIndex="1" GridPane.rowIndex="3" GridPane.halignment="RIGHT" />
                </children>
                <VBox.margin>
                   <Insets />

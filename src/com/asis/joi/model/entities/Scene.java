@@ -12,6 +12,7 @@ import java.util.NoSuchElementException;
 public class Scene extends JOIComponent {
     private final ReadOnlyBooleanWrapper badEnd = new ReadOnlyBooleanWrapper();
     private final ReadOnlyBooleanWrapper goodEnd = new ReadOnlyBooleanWrapper();
+    private String ambience;
 
     private final ArrayList<SceneComponent<?>> sceneComponents = new ArrayList<>();
 
@@ -133,6 +134,8 @@ public class Scene extends JOIComponent {
 
                     scene.addComponent(GotoScene.createEntity(gotoRObject));
                     break;
+                case "ambience":
+                    scene.setAmbience(jsonObject.getString("ambience"));
             }
         }
 
@@ -149,35 +152,36 @@ public class Scene extends JOIComponent {
 
     public double getDuration() {
         double totalTime = 0;
-        for(SceneComponent<?> sceneComponent: getSceneComponents()) totalTime+=sceneComponent.getDuration();
+        for (SceneComponent<?> sceneComponent : getSceneComponents()) totalTime += sceneComponent.getDuration();
         return totalTime;
     }
 
     @Override
     public JSONObject toJSON() {
         JSONObject sceneObject = super.toJSON();
+        if (getAmbience() != null) sceneObject.put("ambience", getAmbience());
         if (goodEndProperty().getValue()) sceneObject.put("joiEnd", true);
         if (badEndProperty().getValue()) sceneObject.put("badJoiEnd", true);
 
         //Add any and all components to the json object
-        for(SceneComponent<?> component: getSceneComponents()) {
-            if(component.jsonKeyName() != null && component.toJSON() != null)
+        for (SceneComponent<?> component : getSceneComponents()) {
+            if (component.jsonKeyName() != null && component.toJSON() != null)
                 sceneObject.put(component.jsonKeyName(), component.toJSON());
         }
 
         //Put base SceneImage name into sceneObject if toJSON is null
-        if(hasComponent(SceneImage.class) && getComponent(SceneImage.class).toJSON() == null)
+        if (hasComponent(SceneImage.class) && getComponent(SceneImage.class).toJSON() == null)
             sceneObject.put(getComponent(SceneImage.class).jsonKeyName(), getComponent(SceneImage.class).getImage().getName());
 
         //If no transition component exists, put noFade
-        if(!hasComponent(Transition.class)) sceneObject.put("noFade", true);
+        if (!hasComponent(Transition.class)) sceneObject.put("noFade", true);
 
         //Merge lineGroup object into sceneObject
-        if(getComponent(LineGroup.class).getLineArrayList().size() > 0)
+        if (getComponent(LineGroup.class).getLineArrayList().size() > 0)
             sceneObject = AsisUtils.mergeObject(sceneObject, getComponent(LineGroup.class).toJSON());
 
         //Merge GotoScene object into sceneObject
-        if(hasComponent(GotoScene.class))
+        if (hasComponent(GotoScene.class))
             sceneObject = AsisUtils.mergeObject(sceneObject, getComponent(GotoScene.class).toJSON());
 
         return sceneObject;
@@ -189,10 +193,9 @@ public class Scene extends JOIComponent {
 
         scene.setBadEnd(isBadEnd());
         scene.setGoodEnd(isGoodEnd());
-        scene.setLayoutXPosition(getLayoutXPosition());
-        scene.setLayoutYPosition(getLayoutYPosition());
+        scene.setAmbience(getAmbience());
 
-        for (SceneComponent<?> sceneComponent: getSceneComponents())
+        for (SceneComponent<?> sceneComponent : getSceneComponents())
             scene.addComponent((SceneComponent<?>) sceneComponent.clone());
 
         return scene;
@@ -211,8 +214,12 @@ public class Scene extends JOIComponent {
 
         Scene scene = (Scene) o;
 
+        isBadEnd();
         if (isBadEnd() != scene.isBadEnd()) return false;
+        isGoodEnd();
         if (isGoodEnd() != scene.isGoodEnd()) return false;
+        if (getAmbience() != null ? !getAmbience().equals(scene.getAmbience()) : scene.getAmbience() != null)
+            return false;
         return getSceneComponents().equals(scene.getSceneComponents());
     }
 
@@ -243,5 +250,13 @@ public class Scene extends JOIComponent {
 
     public ArrayList<SceneComponent<?>> getSceneComponents() {
         return sceneComponents;
+    }
+
+    public String getAmbience() {
+        return ambience;
+    }
+
+    public void setAmbience(String ambience) {
+        this.ambience = ambience;
     }
 }

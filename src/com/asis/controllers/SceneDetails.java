@@ -3,6 +3,7 @@ package com.asis.controllers;
 import com.asis.controllers.dialogs.DialogConfirmation;
 import com.asis.controllers.dialogs.DialogMessage;
 import com.asis.controllers.tabs.*;
+import com.asis.joi.JOIPackageManager;
 import com.asis.joi.model.entities.Scene;
 import com.asis.joi.model.entities.SceneImage;
 import com.asis.joi.model.entities.Timer;
@@ -19,6 +20,7 @@ import javafx.scene.control.MenuItem;
 import javafx.scene.control.Tab;
 import javafx.scene.control.TabPane;
 import javafx.scene.layout.BorderPane;
+import javafx.stage.FileChooser;
 import javafx.stage.Stage;
 
 import java.io.File;
@@ -32,9 +34,12 @@ public class SceneDetails {
     private TabDialogOptionController tabDialogOptionController;
     private TabTransitionController tabTransitionController;
 
-    @FXML private TabPane effectTabs;
-    @FXML private MenuItem menuItemAddTimer, menuItemAddTransition, menuItemAddDialog;
-    @FXML private BorderPane sceneDetailBorderPane;
+    @FXML
+    private TabPane effectTabs;
+    @FXML
+    private MenuItem menuItemAddTimer, menuItemAddTransition, menuItemAddDialog;
+    @FXML
+    private BorderPane sceneDetailBorderPane;
 
     void initialize(Scene scene) {
         setScene(scene);
@@ -71,11 +76,11 @@ public class SceneDetails {
             //This is done so that if a scene image is added in one tab, it is synced with the others
             switch (newTab.getText()) {
                 case "Normal Operation":
-                    if(getTabNormalOperationController() != null) getTabNormalOperationController().setVisibleImage();
+                    if (getTabNormalOperationController() != null) getTabNormalOperationController().setVisibleImage();
                     break;
 
                 case "Timer":
-                    if(getTabTimerController() != null) getTabTimerController().setVisibleImage();
+                    if (getTabTimerController() != null) getTabTimerController().setVisibleImage();
                     break;
             }
         });
@@ -125,7 +130,7 @@ public class SceneDetails {
         newTab.setContent(root);
         newTab.setOnCloseRequest(this::handleOnTabCloseRequested);
 
-        if(indexPosition.length > 0) {
+        if (indexPosition.length > 0) {
             getEffectTabs().getTabs().add(indexPosition[0], newTab);
         } else {
             getEffectTabs().getTabs().add(newTab);
@@ -135,13 +140,13 @@ public class SceneDetails {
     private void handleOnTabCloseRequested(Event event) {
         final Tab toCloseTab = ((Tab) event.getSource());
 
-        switch(toCloseTab.getText()) {
+        switch (toCloseTab.getText()) {
             case "Normal Operation":
                 DialogMessage.messageDialog("Error", "Normal operations tab can't be closed.");
                 break;
 
             case "Timer":
-                if(!getTabTimerController().getTimer().equals(new Timer())) {
+                if (!getTabTimerController().getTimer().equals(new Timer())) {
                     if (!DialogConfirmation.show("Delete Timer", "Are you sure you want to remove the timer?")) {
                         event.consume();
                         return;
@@ -151,7 +156,7 @@ public class SceneDetails {
                 break;
 
             case "Transition":
-                if(!getTabTransitionController().getTransition().equals(new Transition())) {
+                if (!getTabTransitionController().getTransition().equals(new Transition())) {
                     if (!DialogConfirmation.show("Delete Transition", "Are you sure you want to remove the transition?")) {
                         event.consume();
                         return;
@@ -161,7 +166,7 @@ public class SceneDetails {
                 break;
 
             case "Dialog":
-                if(!getTabDialogOptionController().getDialog().equals(new Dialog())) {
+                if (!getTabDialogOptionController().getDialog().equals(new Dialog())) {
                     if (!DialogConfirmation.show("Delete Dialogs", "Are you sure you want to remove dialogs?")) {
                         event.consume();
                         return;
@@ -194,57 +199,74 @@ public class SceneDetails {
         getScene().removeComponent(Timer.class);
     }
 
-    @FXML private void actionClose() {
+    @FXML
+    private void actionClose() {
         Stage stage = (Stage) sceneDetailBorderPane.getScene().getWindow();
         StageManager.getInstance().closeStage(stage);
     }
 
-    @FXML private void actionChangeSceneImage() {
+    @FXML
+    private void actionChangeSceneImage() {
         File file = AsisUtils.imageFileChooser();
 
-        if(file != null) {
+        if (file != null) {
             //Add image to json object
-            if(getScene().hasComponent(SceneImage.class)) getScene().removeComponent(SceneImage.class);
+            if (getScene().hasComponent(SceneImage.class)) getScene().removeComponent(SceneImage.class);
             SceneImage sceneImage = new SceneImage();
             sceneImage.setImage(file);
             getScene().addComponent(sceneImage);
 
             //setVisibleImage();
-            if(getTabNormalOperationController() != null) {
+            if (getTabNormalOperationController() != null) {
                 getTabNormalOperationController().setVisibleImage();
             }
 
-            if(getTabTimerController() != null) {
+            if (getTabTimerController() != null) {
                 getTabTimerController().setVisibleImage();
             }
         }
     }
 
-    @FXML private void menuItemAddTimer() {
+    @FXML
+    private void menuItemAddTimer() {
         Timer timer = new Timer();
         getScene().addComponent(timer);
 
         addTimerTab(timer);
     }
 
-    @FXML private void menuItemAddTransition() {
+    @FXML
+    private void menuItemAddTransition() {
         Transition transition = new Transition();
         getScene().addComponent(transition);
 
         addTransitionTab(transition);
     }
 
-    @FXML private void menuItemAddDialog() {
+    @FXML
+    private void menuItemAddDialog() {
         Dialog dialog = new Dialog();
         getScene().addComponent(dialog);
 
         addDialogTab(dialog);
     }
 
+    @FXML
+    private void menuItemAmbience() {
+        FileChooser fileChooser = new FileChooser();
+        fileChooser.setInitialDirectory(JOIPackageManager.getInstance().getJoiPackageDirectory());
+        fileChooser.getExtensionFilters().addAll(new FileChooser.ExtensionFilter("ogg", "*.ogg"));
+        File file = fileChooser.showOpenDialog(null);
+
+        if (file != null) getScene().setAmbience(file.getName());
+        else getScene().setAmbience(null);
+    }
+
     //Getters and setters
     public Scene getScene() {
         return scene;
     }
+
     public void setScene(Scene scene) {
         this.scene = scene;
     }
@@ -256,6 +278,7 @@ public class SceneDetails {
     private TabNormalOperationController getTabNormalOperationController() {
         return tabNormalOperationController;
     }
+
     private void setTabNormalOperationController(TabNormalOperationController tabNormalOperationController) {
         this.tabNormalOperationController = tabNormalOperationController;
     }
@@ -263,6 +286,7 @@ public class SceneDetails {
     private TabTimerController getTabTimerController() {
         return tabTimerController;
     }
+
     private void setTabTimerController(TabTimerController tabTimerController) {
         this.tabTimerController = tabTimerController;
     }
@@ -270,6 +294,7 @@ public class SceneDetails {
     private TabDialogOptionController getTabDialogOptionController() {
         return tabDialogOptionController;
     }
+
     private void setTabDialogOptionController(TabDialogOptionController tabDialogOptionController) {
         this.tabDialogOptionController = tabDialogOptionController;
     }
@@ -277,6 +302,7 @@ public class SceneDetails {
     private TabTransitionController getTabTransitionController() {
         return tabTransitionController;
     }
+
     private void setTabTransitionController(TabTransitionController tabTransitionController) {
         this.tabTransitionController = tabTransitionController;
     }

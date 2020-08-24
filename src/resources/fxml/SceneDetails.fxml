@@ -3,7 +3,7 @@
 <?import javafx.geometry.Insets?>
 <?import javafx.scene.control.*?>
 <?import javafx.scene.layout.*?>
-<BorderPane id="darkThemeBackground" fx:id="sceneDetailBorderPane" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="720.0" prefWidth="800.0" stylesheets="@../../resources/css/scene_details_stylesheet.css" xmlns="http://javafx.com/javafx/8" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.asis.controllers.SceneDetails">
+<BorderPane id="darkThemeBackground" fx:id="sceneDetailBorderPane" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="720.0" prefWidth="800.0" stylesheets="@../../resources/css/scene_details_stylesheet.css" xmlns="http://javafx.com/javafx/11.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.asis.controllers.SceneDetails">
    <top>
        <VBox BorderPane.alignment="CENTER">
           <children>
@@ -14,16 +14,14 @@
                             <MenuItem mnemonicParsing="false" onAction="#actionClose" text="Close" />
                         </items>
                      </Menu>
-                     <Menu mnemonicParsing="false" text="Edit">
-                        <items>
-                            <MenuItem mnemonicParsing="false" onAction="#actionChangeSceneImage" text="Change Scene Image" />
-                        </items>
-                     </Menu>
                      <Menu mnemonicParsing="false" text="Scene Items">
                         <items>
                             <MenuItem fx:id="menuItemAddDialog" mnemonicParsing="false" onAction="#menuItemAddDialog" text="Add dialog options to scene" />
                             <MenuItem fx:id="menuItemAddTransition" mnemonicParsing="false" onAction="#menuItemAddTransition" text="Add transition to scene" />
                             <MenuItem fx:id="menuItemAddTimer" mnemonicParsing="false" onAction="#menuItemAddTimer" text="Add timer to scene" />
+                        <SeparatorMenuItem mnemonicParsing="false" />
+                            <MenuItem mnemonicParsing="false" onAction="#actionChangeSceneImage" text="Change Scene Image" />
+                        <MenuItem mnemonicParsing="false" onAction="#menuItemAmbience" text="Change Scene Ambience" />
                         </items>
                      </Menu>
                  </menus>
