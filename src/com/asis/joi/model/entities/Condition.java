@@ -12,7 +12,8 @@ public class Condition extends JOIComponent {
 
     private GotoScene gotoSceneTrue;
     private GotoScene gotoSceneFalse;
-    private String firstVariable, secondVariable;
+    private String variable;
+    private Object comparingValue;
     private ConditionType conditionType = ConditionType.EQUALS;
 
     public Condition(int componentId) {
@@ -39,18 +40,12 @@ public class Condition extends JOIComponent {
                 case "conditionType":
                     condition.setConditionType(ConditionType.valueOf(jsonObject.getString("conditionType")));
                     break;
-                case "variable1":
-                    condition.setFirstVariable(jsonObject.getString("variable1"));
+                case "variable":
+                    condition.setVariable(jsonObject.getString("variable"));
                     break;
-                case "variable2":
-                    condition.setSecondVariable(jsonObject.getString("variable2"));
+                case "comparingValue":
+                    condition.setComparingValue(jsonObject.get("comparingValue"));
                     break;
-                /*case "gotoSceneInRange":
-                    JSONObject gotoRangeObject = new JSONObject();
-                    //gotoRangeObject.put("array", jsonObject.getJSONArray("gotoSceneInRange"));
-
-                    //condition.setGotoScene(GotoScene.createEntity(gotoRangeObject));
-                    break;*/
                 case "gotoScene":
                     JSONArray jsonArray = jsonObject.getJSONArray("gotoScene");
                     for(int i=0; i<jsonArray.length(); i++) {
@@ -80,8 +75,8 @@ public class Condition extends JOIComponent {
         JSONObject object = super.toJSON();
         object.put("conditionType", getConditionType());
 
-        if(getFirstVariable() != null) object.put("variable1", getFirstVariable());
-        if(getSecondVariable() != null) object.put("variable2", getSecondVariable());
+        if(getVariable() != null) object.put("variable", getVariable());
+        if(getComparingValue() != null) object.put("comparingValue", getComparingValue());
 
         object.put("componentType", "Conditional");
 
@@ -109,8 +104,8 @@ public class Condition extends JOIComponent {
         Condition condition = (Condition) super.clone();
 
         condition.setConditionType(getConditionType());
-        condition.setFirstVariable(getFirstVariable());
-        condition.setSecondVariable(getSecondVariable());
+        condition.setVariable(getVariable());
+        condition.setComparingValue(getComparingValue());
 
         return condition;
     }
@@ -127,11 +122,21 @@ public class Condition extends JOIComponent {
             return false;
         if (getGotoSceneFalse() != null ? !getGotoSceneFalse().equals(condition.getGotoSceneFalse()) : condition.getGotoSceneFalse() != null)
             return false;
-        if (getFirstVariable() != null ? !getFirstVariable().equals(condition.getFirstVariable()) : condition.getFirstVariable() != null)
+        if (getVariable() != null ? !getVariable().equals(condition.getVariable()) : condition.getVariable() != null)
             return false;
-        if (getSecondVariable() != null ? !getSecondVariable().equals(condition.getSecondVariable()) : condition.getSecondVariable() != null)
+        if (getComparingValue() != null ? !getComparingValue().equals(condition.getComparingValue()) : condition.getComparingValue() != null)
             return false;
         return getConditionType() == condition.getConditionType();
+    }
+
+    @Override
+    public int hashCode() {
+        int result = getGotoSceneTrue() != null ? getGotoSceneTrue().hashCode() : 0;
+        result = 31 * result + (getGotoSceneFalse() != null ? getGotoSceneFalse().hashCode() : 0);
+        result = 31 * result + (getVariable() != null ? getVariable().hashCode() : 0);
+        result = 31 * result + (getComparingValue() != null ? getComparingValue().hashCode() : 0);
+        result = 31 * result + getConditionType().hashCode();
+        return result;
     }
 
     //Getters and Setters
@@ -149,18 +154,18 @@ public class Condition extends JOIComponent {
         this.gotoSceneFalse = gotoSceneFalse;
     }
 
-    public String getFirstVariable() {
-        return firstVariable;
+    public String getVariable() {
+        return variable;
     }
-    public void setFirstVariable(String firstVariable) {
-        this.firstVariable = firstVariable;
+    public void setVariable(String variable) {
+        this.variable = variable;
     }
 
-    public String getSecondVariable() {
-        return secondVariable;
+    public Object getComparingValue() {
+        return comparingValue;
     }
-    public void setSecondVariable(String secondVariable) {
-        this.secondVariable = secondVariable;
+    public void setComparingValue(Object comparingValue) {
+        this.comparingValue = comparingValue;
     }
 
     public ConditionType getConditionType() {

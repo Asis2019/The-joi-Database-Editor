@@ -4,7 +4,7 @@
 <?import javafx.scene.control.*?>
 <?import javafx.scene.layout.*?>
 <?import java.net.URL?>
-<BorderPane id="darkThemeBackground" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" xmlns="http://javafx.com/javafx/10.0.2-internal" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.asis.controllers.dialogs.DialogCondition">
+<BorderPane id="darkThemeBackground" minHeight="-Infinity" minWidth="-Infinity" prefWidth="400.0" xmlns="http://javafx.com/javafx/11.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.asis.controllers.dialogs.DialogCondition">
     <center>
         <VBox BorderPane.alignment="CENTER">
             <children>
@@ -21,7 +21,7 @@
               </rowConstraints>
                <children>
                   <Label text="Node Title:" textFill="WHITE" />
-                        <Label text="Variable 1" textFill="WHITE" GridPane.rowIndex="1">
+                        <Label text="Variable:" textFill="WHITE" GridPane.rowIndex="1">
                             <padding>
                                 <Insets right="18.0" />
                             </padding>
@@ -31,15 +31,15 @@
                                 <Insets right="16.0" />
                             </padding>
                         </Label>
-                        <Label text="Variable 2:" textFill="WHITE" GridPane.rowIndex="3">
+                        <Label text="Compare value:" textFill="WHITE" GridPane.rowIndex="3">
                             <padding>
                                 <Insets right="18.0" />
                             </padding>
                         </Label>
-                  <ComboBox fx:id="variable1Dropdown" prefWidth="150.0" GridPane.columnIndex="1" GridPane.rowIndex="1" />
+                  <ComboBox fx:id="variableDropdown" prefWidth="150.0" GridPane.columnIndex="1" GridPane.rowIndex="1" />
                   <ComboBox fx:id="operationDropdown" prefWidth="150.0" GridPane.columnIndex="1" GridPane.rowIndex="2" />
-                  <ComboBox fx:id="variable2Dropdown" prefWidth="150.0" GridPane.columnIndex="1" GridPane.rowIndex="3" />
-                  <TextField fx:id="conditionTitle" GridPane.columnIndex="1" />
+                  <TextField fx:id="conditionTitle" maxWidth="150.0" GridPane.columnIndex="1" />
+                  <TextField fx:id="compareValue" maxWidth="150.0" GridPane.columnIndex="1" GridPane.rowIndex="3" />
                </children>
                <VBox.margin>
                   <Insets />

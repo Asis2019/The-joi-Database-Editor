@@ -15,6 +15,8 @@ import javafx.stage.Stage;
 
 import java.io.IOException;
 
+import static com.asis.controllers.dialogs.DialogCondition.setVariableValue;
+
 public class DialogVariableSetter {
 
     @FXML
@@ -35,7 +37,7 @@ public class DialogVariableSetter {
         try {
             variableSetter.setComponentTitle(variableSetterTitle.getText().trim());
             variableSetter.setVariableName(variableNameField.getText().trim());
-            setVariableValue();
+            setVariableValue(variableValueField, variableSetter);
             variableSetter.setVariablePersistent(variablePersistentBox.isSelected());
 
             Stage stage = (Stage) variableSetterTitle.getScene().getWindow();
@@ -43,24 +45,6 @@ public class DialogVariableSetter {
         } catch (NullPointerException e) {
             DialogMessage.messageDialog("Error", "Please ensure that the title, name and value are not empty.");
         }
-    }
-
-    private void setVariableValue() {
-        //Converts string into int or bool
-        final String conversionValue = variableValueField.getText().trim();
-        Object finalValue;
-
-        if (conversionValue.equalsIgnoreCase("true") || conversionValue.equalsIgnoreCase("false")) {
-            finalValue = Boolean.valueOf(conversionValue);
-        } else {
-            try {
-                finalValue = Double.parseDouble(conversionValue);
-            } catch (NumberFormatException ignore){
-                finalValue = conversionValue;
-            }
-        }
-
-        variableSetter.setVariableValue(finalValue);
     }
 
     public void setVariableSetter(VariableSetter variableSetter) {

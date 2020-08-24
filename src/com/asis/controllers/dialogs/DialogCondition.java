@@ -23,9 +23,9 @@ public class DialogCondition {
     @FXML
     private ComboBox<Condition.ConditionType> operationDropdown;
     @FXML
-    private ComboBox<String> variable1Dropdown, variable2Dropdown;
+    private ComboBox<String> variableDropdown;
     @FXML
-    private TextField conditionTitle;
+    private TextField conditionTitle, compareValue;
     private Condition condition;
 
     public void init() {
@@ -36,27 +36,47 @@ public class DialogCondition {
 
         for(JOIComponent component: Controller.getInstance().getJoiPackage().getJoi().getJoiComponents()) {
             if(component instanceof VariableSetter) {
-                variable1Dropdown.getItems().add(((VariableSetter) component).getVariableName());
-                variable2Dropdown.getItems().add(((VariableSetter) component).getVariableName());
+                variableDropdown.getItems().add(((VariableSetter) component).getVariableName());
             }
         }
 
-        if(condition.getFirstVariable() != null) variable1Dropdown.getSelectionModel().select(condition.getFirstVariable());
-        if(condition.getSecondVariable() != null) variable2Dropdown.getSelectionModel().select(condition.getSecondVariable());
+        if(condition.getVariable() != null) variableDropdown.getSelectionModel().select(condition.getVariable());
+        compareValue.setText(String.valueOf(condition.getComparingValue()));
     }
 
     public void actionSave() {
         try {
             condition.setComponentTitle(conditionTitle.getText().trim());
             condition.setConditionType(operationDropdown.getValue());
-            condition.setFirstVariable(variable1Dropdown.getValue());
-            condition.setSecondVariable(variable2Dropdown.getValue());
+            setVariableValue(compareValue, condition);
+            condition.setVariable(variableDropdown.getValue());
 
             Stage stage = (Stage) conditionTitle.getScene().getWindow();
             StageManager.getInstance().closeStage(stage);
         } catch (NullPointerException e) {
             //DialogMessage.messageDialog("Error", "Please ensure that the title, name and value are not empty.");
         }
+    }
+
+    public static void setVariableValue(TextField textField, JOIComponent joiComponent) {
+        //Converts string into int or bool
+        final String conversionValue = textField.getText().trim();
+        Object finalValue;
+
+        if (conversionValue.equalsIgnoreCase("true") || conversionValue.equalsIgnoreCase("false")) {
+            finalValue = Boolean.valueOf(conversionValue);
+        } else {
+            try {
+                finalValue = Double.parseDouble(conversionValue);
+            } catch (NumberFormatException ignore){
+                finalValue = conversionValue;
+            }
+        }
+
+        if(joiComponent instanceof Condition)
+            ((Condition) joiComponent).setComparingValue(finalValue);
+        else if(joiComponent instanceof VariableSetter)
+            ((VariableSetter) joiComponent).setVariableValue(finalValue);
     }
 
     public static void openConditionDialog(Condition condition) {
