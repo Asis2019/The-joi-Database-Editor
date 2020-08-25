@@ -3,6 +3,7 @@ package com.asis.utilities;
 import com.asis.controllers.Controller;
 import com.asis.controllers.dialogs.DialogMessage;
 import com.asis.joi.JOIPackageManager;
+import com.asis.joi.model.entities.JOIComponent;
 import javafx.scene.paint.Color;
 import javafx.stage.FileChooser;
 import org.json.JSONArray;
@@ -26,8 +27,8 @@ public class AsisUtils {
                 + colorChanelToHex(color.getOpacity());
     }
 
-    private static String colorChanelToHex(double chanelValue) {
-        String rtn = Integer.toHexString((int) Math.min(Math.round(chanelValue * 255), 255));
+    private static String colorChanelToHex(double channelValue) {
+        String rtn = Integer.toHexString((int) Math.min(Math.round(channelValue * 255), 255));
         if (rtn.length() == 1) {
             rtn = "0" + rtn;
         }
@@ -167,5 +168,14 @@ public class AsisUtils {
             merged.put(key, jsonObject2.get(key));
         }
         return merged;
+    }
+
+    public static String getDefaultTitle(JOIComponent joiComponent, String prefix) {
+        if(joiComponent.getComponentTitle() == null) {
+            final int sceneId = Controller.getInstance().getJoiPackage().getJoi().getSceneIdCounter();
+            return prefix + " " + sceneId;
+        } else {
+            return joiComponent.getComponentTitle();
+        }
     }
 }

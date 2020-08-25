@@ -16,6 +16,7 @@ import javafx.stage.Stage;
 import java.io.IOException;
 
 import static com.asis.controllers.dialogs.DialogCondition.setVariableValue;
+import static com.asis.utilities.AsisUtils.getDefaultTitle;
 
 public class DialogVariableSetter {
 
@@ -27,7 +28,7 @@ public class DialogVariableSetter {
     private VariableSetter variableSetter;
 
     public void init() {
-        variableSetterTitle.setText(variableSetter.getComponentTitle());
+        variableSetterTitle.setText(getDefaultTitle(variableSetter, "Variable"));
         variableNameField.setText(variableSetter.getVariableName());
         variableValueField.setText(String.valueOf(variableSetter.getVariableValue()));
         variablePersistentBox.setSelected(variableSetter.isVariablePersistent());

@@ -264,8 +264,8 @@ public class Controller {
         JOIComponentNode componentNode = new ConditionNode(300, 100, componentId, sceneNodeMainController, getJoiPackage().getJoi().getComponent(componentId));
         initializeComponentNode(componentNode, xPosition, yPosition, title, componentId, suppressJSONUpdating);
 
-        /*if(!suppressJSONUpdating)
-            DialogVariableSetter.openVariableSetter((VariableSetter) componentNode.getJoiComponent());*/
+        if(!suppressJSONUpdating)
+            DialogCondition.openConditionDialog((Condition) componentNode.getJoiComponent());
     }
 
     private void addVariableSetterNode() {

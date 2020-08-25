@@ -18,6 +18,8 @@ import javafx.stage.Stage;
 
 import java.io.IOException;
 
+import static com.asis.utilities.AsisUtils.getDefaultTitle;
+
 public class DialogCondition {
 
     @FXML
@@ -29,18 +31,18 @@ public class DialogCondition {
     private Condition condition;
 
     public void init() {
-        conditionTitle.setText(condition.getComponentTitle());
+        conditionTitle.setText(getDefaultTitle(condition, "Condition"));
 
         operationDropdown.getItems().addAll(Condition.ConditionType.values());
         operationDropdown.getSelectionModel().select(condition.getConditionType());
 
-        for(JOIComponent component: Controller.getInstance().getJoiPackage().getJoi().getJoiComponents()) {
-            if(component instanceof VariableSetter) {
+        for (JOIComponent component : Controller.getInstance().getJoiPackage().getJoi().getJoiComponents()) {
+            if (component instanceof VariableSetter) {
                 variableDropdown.getItems().add(((VariableSetter) component).getVariableName());
             }
         }
 
-        if(condition.getVariable() != null) variableDropdown.getSelectionModel().select(condition.getVariable());
+        if (condition.getVariable() != null) variableDropdown.getSelectionModel().select(condition.getVariable());
         compareValue.setText(String.valueOf(condition.getComparingValue()));
     }
 
@@ -54,7 +56,7 @@ public class DialogCondition {
             Stage stage = (Stage) conditionTitle.getScene().getWindow();
             StageManager.getInstance().closeStage(stage);
         } catch (NullPointerException e) {
-            //DialogMessage.messageDialog("Error", "Please ensure that the title, name and value are not empty.");
+            DialogMessage.messageDialog("Error", "Please make sure the Node Title is filled.");
         }
     }
 
@@ -68,14 +70,14 @@ public class DialogCondition {
         } else {
             try {
                 finalValue = Double.parseDouble(conversionValue);
-            } catch (NumberFormatException ignore){
+            } catch (NumberFormatException ignore) {
                 finalValue = conversionValue;
             }
         }
 
-        if(joiComponent instanceof Condition)
+        if (joiComponent instanceof Condition)
             ((Condition) joiComponent).setComparingValue(finalValue);
-        else if(joiComponent instanceof VariableSetter)
+        else if (joiComponent instanceof VariableSetter)
             ((VariableSetter) joiComponent).setVariableValue(finalValue);
     }
 
