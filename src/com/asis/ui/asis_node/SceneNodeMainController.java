@@ -14,6 +14,7 @@ import javafx.scene.layout.Pane;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.NoSuchElementException;
 import java.util.Optional;
 
 public class SceneNodeMainController {
@@ -210,24 +211,39 @@ public class SceneNodeMainController {
         } else {
             if(getTotalLinesConnectedToOutput(outputConnection) > 1)
                 outputConnection.setButtonColor(AsisConnectionButton.RANDOM_OUT_COLOR);
-            else {
-                if(component instanceof Scene) {
-                    ((Scene) component).addComponent(new GotoScene());
-                    ((Scene) component).getComponent(GotoScene.class).addValue(inputConnection.getParentSceneId());
-                } else if(component instanceof VariableSetter) {
-                    ((VariableSetter) component).setGotoScene(new GotoScene());
-                    ((VariableSetter) component).getGotoScene().addValue(inputConnection.getParentSceneId());
-                } else if(component instanceof Condition) {
-                    if(outputConnection.getId().equals("true_output")) {
-                        ((Condition) component).setGotoSceneTrue(new GotoScene());
-                        ((Condition) component).getGotoSceneTrue().addValue(inputConnection.getParentSceneId());
-                    } else if(outputConnection.getId().equals("false_output")) {
-                        ((Condition) component).setGotoSceneFalse(new GotoScene());
-                        ((Condition) component).getGotoSceneFalse().addValue(inputConnection.getParentSceneId());
-                    }
+
+            if(component instanceof Scene) {
+                System.out.println("Adding connection from "+outputConnection.getParentSceneId()+" to "+inputConnection.getParentSceneId());
+                GotoScene gotoScene;
+                try {
+                    gotoScene = ((Scene) component).getComponent(GotoScene.class);
+                } catch (NoSuchElementException e) {
+                    gotoScene = new GotoScene();
+                }
+
+                gotoScene.addValue(inputConnection.getParentSceneId());
+                ((Scene) component).addComponent(gotoScene);
+            } else if(component instanceof VariableSetter) {
+                GotoScene gotoScene = ((VariableSetter) component).getGotoScene();
+                if(gotoScene == null) gotoScene = new GotoScene();
+                gotoScene.addValue(inputConnection.getParentSceneId());
+
+                ((VariableSetter) component).setGotoScene(gotoScene);
+            } else if(component instanceof Condition) {
+                if(outputConnection.getId().equals("true_output")) {
+                    GotoScene gotoScene = ((Condition) component).getGotoSceneTrue();
+                    if(gotoScene == null) gotoScene = new GotoScene();
+                    gotoScene.addValue(inputConnection.getParentSceneId());
+
+                    ((Condition) component).setGotoSceneTrue(gotoScene);
+                } else if(outputConnection.getId().equals("false_output")) {
+                    GotoScene gotoScene = ((Condition) component).getGotoSceneFalse();
+                    if(gotoScene == null) gotoScene = new GotoScene();
+                    gotoScene.addValue(inputConnection.getParentSceneId());
+
+                    ((Condition) component).setGotoSceneFalse(gotoScene);
                 }
             }
-
         }
     }
 
