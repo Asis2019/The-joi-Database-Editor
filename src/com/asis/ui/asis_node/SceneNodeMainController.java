@@ -213,7 +213,6 @@ public class SceneNodeMainController {
                 outputConnection.setButtonColor(AsisConnectionButton.RANDOM_OUT_COLOR);
 
             if(component instanceof Scene) {
-                System.out.println("Adding connection from "+outputConnection.getParentSceneId()+" to "+inputConnection.getParentSceneId());
                 GotoScene gotoScene;
                 try {
                     gotoScene = ((Scene) component).getComponent(GotoScene.class);

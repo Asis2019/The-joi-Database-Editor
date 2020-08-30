@@ -46,7 +46,7 @@ public class TabNormalOperationController extends TabController {
 
             mainTextArea.textProperty().addListener((observable, oldValue, newValue) -> {
                 String text = newValue.trim().replaceAll("\\n", "#");
-                getScene().getComponent(LineGroup.class).getLine(onLine-1).setText(text);
+                getScene().getComponent(LineGroup.class).getLine(onLine - 1).setText(text);
             });
 
             textTextField.textProperty().bindBidirectional(mainTextArea.textProperty());
@@ -60,7 +60,7 @@ public class TabNormalOperationController extends TabController {
             totalLines = getScene().getComponent(LineGroup.class).getLineArrayList().size();
 
             //Fix extra line bug
-            if(totalLines <= 0) {
+            if (totalLines <= 0) {
                 totalLines = 1;
             }
 
@@ -71,21 +71,21 @@ public class TabNormalOperationController extends TabController {
             setVisibleImage();
 
             //Set line counter
-            lineCounterLabel.setText(onLine+"/"+totalLines);
+            lineCounterLabel.setText(onLine + "/" + totalLines);
         });
     }
 
     private void addColorPickerListeners() {
         textOutlineColorPicker.valueProperty().addListener((observableValue, color, t1) -> {
-            outlineColor = removeLastTwoLetters("#"+colorToHex(t1));
+            outlineColor = removeLastTwoLetters("#" + colorToHex(t1));
             setNodeColorStyle(mainTextArea, fillColor, outlineColor);
-            getScene().getComponent(LineGroup.class).getLine(onLine-1).setOutlineColor(outlineColor);
+            getScene().getComponent(LineGroup.class).getLine(onLine - 1).setOutlineColor(outlineColor);
         });
 
         textColorPicker.valueProperty().addListener((observableValue, color, t1) -> {
-            fillColor = removeLastTwoLetters("#"+colorToHex(t1));
+            fillColor = removeLastTwoLetters("#" + colorToHex(t1));
             setNodeColorStyle(mainTextArea, fillColor, outlineColor);
-            getScene().getComponent(LineGroup.class).getLine(onLine-1).setFillColor(fillColor);
+            getScene().getComponent(LineGroup.class).getLine(onLine - 1).setFillColor(fillColor);
         });
     }
 
@@ -95,15 +95,15 @@ public class TabNormalOperationController extends TabController {
             //Process beat pitch
             try {
                 final double pitch = Double.parseDouble(t1);
-                getScene().getComponent(LineGroup.class).getLine(onLine-1).setChangeBeatPitch(pitch);
+                getScene().getComponent(LineGroup.class).getLine(onLine - 1).setChangeBeatPitch(pitch);
             } catch (NumberFormatException e) {
                 System.out.println("User put bad value into beat pitch");
-                if(t1.isEmpty()) {
-                    getScene().getComponent(LineGroup.class).getLine(onLine-1).setChangeBeatPitch(null);
+                if (t1.isEmpty()) {
+                    getScene().getComponent(LineGroup.class).getLine(onLine - 1).setChangeBeatPitch(null);
                     textFieldBeatPitch.clear();
                     return;
                 }
-                final String backspacedText = t1.substring(0, t1.length()-1);
+                final String backspacedText = t1.substring(0, t1.length() - 1);
                 textFieldBeatPitch.setText(backspacedText);
             }
         });
@@ -113,15 +113,15 @@ public class TabNormalOperationController extends TabController {
             //Process beat speed
             try {
                 final int speed = Integer.parseInt(t1);
-                getScene().getComponent(LineGroup.class).getLine(onLine-1).setChangeBeatSpeed(speed);
+                getScene().getComponent(LineGroup.class).getLine(onLine - 1).setChangeBeatSpeed(speed);
             } catch (NumberFormatException e) {
                 System.out.println("User put bad value into beat speed");
-                if(t1.isEmpty()) {
-                    getScene().getComponent(LineGroup.class).getLine(onLine-1).setChangeBeatSpeed(null);
+                if (t1.isEmpty()) {
+                    getScene().getComponent(LineGroup.class).getLine(onLine - 1).setChangeBeatSpeed(null);
                     textFieldBeatSpeed.clear();
                     return;
                 }
-                final String backspacedText = t1.substring(0, t1.length()-1);
+                final String backspacedText = t1.substring(0, t1.length() - 1);
                 textFieldBeatSpeed.setText(backspacedText);
             }
         });
@@ -130,7 +130,7 @@ public class TabNormalOperationController extends TabController {
     public void actionAddImage() {
         File file = AsisUtils.imageFileChooser();
 
-        if(file != null) {
+        if (file != null) {
             //Add image to json object
             SceneImage image = new SceneImage();
             image.setImage(file);
@@ -143,19 +143,19 @@ public class TabNormalOperationController extends TabController {
     public void actionAddLineImage() {
         File file = AsisUtils.imageFileChooser();
 
-        if(file != null) {
+        if (file != null) {
             //Add image to json object
-            getScene().getComponent(LineGroup.class).getLine(onLine-1).setLineImage(file);
+            getScene().getComponent(LineGroup.class).getLine(onLine - 1).setLineImage(file);
 
             setVisibleImage();
         }
     }
 
     public void actionPreviousLine() {
-        if(onLine <= 1) onLine = 1;
+        if (onLine <= 1) onLine = 1;
         else onLine--;
 
-        if(onLine <= 1) {
+        if (onLine <= 1) {
             previousLineButton.setDisable(true);
             deleteLineButton.setDisable(true);
         }
@@ -164,41 +164,41 @@ public class TabNormalOperationController extends TabController {
         setVisibleImage();
 
 
-        lineCounterLabel.setText(onLine+"/"+totalLines);
+        lineCounterLabel.setText(onLine + "/" + totalLines);
     }
 
     public void actionNextLine() {
-        if(onLine == totalLines) totalLines++;
+        if (onLine == totalLines) totalLines++;
         onLine++;
 
         setLineVariables();
         setVisibleImage();
 
-        lineCounterLabel.setText(onLine+"/"+totalLines);
+        lineCounterLabel.setText(onLine + "/" + totalLines);
 
         deleteLineButton.setDisable(false);
         previousLineButton.setDisable(false);
     }
 
     public void actionDeleteLine() {
-        getScene().getComponent(LineGroup.class).removeLine(onLine-1);
+        getScene().getComponent(LineGroup.class).removeLine(onLine - 1);
 
         totalLines--;
         actionPreviousLine();
     }
 
     public void actionStartBeat() {
-        setLineStartCheckBoxState(getScene().getComponent(LineGroup.class).getLine(onLine-1), checkBoxStartBeat);
+        setLineStartCheckBoxState(getScene().getComponent(LineGroup.class).getLine(onLine - 1), checkBoxStartBeat);
     }
 
     public void actionStopBeat() {
-        setLineStopCheckBoxState(getScene().getComponent(LineGroup.class).getLine(onLine-1), checkBoxStopBeat);
+        setLineStopCheckBoxState(getScene().getComponent(LineGroup.class).getLine(onLine - 1), checkBoxStopBeat);
     }
 
     private void setLineVariables() {
         initializeText();
 
-        JSONObject textObject = getScene().getComponent(LineGroup.class).getLine(onLine-1).toJSON().getJSONObject(0);
+        JSONObject textObject = getScene().getComponent(LineGroup.class).getLine(onLine - 1).toJSON().getJSONObject(0);
         textObjectElseIf();
 
         beatProperties(textObject, checkBoxStopBeat, "stopBeat");
@@ -209,7 +209,7 @@ public class TabNormalOperationController extends TabController {
     }
 
     private void textObjectElseIf() {
-        Line workingLine = getScene().getComponent(LineGroup.class).getLine(onLine-1);
+        Line workingLine = getScene().getComponent(LineGroup.class).getLine(onLine - 1);
         if (workingLine.getFillColor() != null)
             textColorPicker.setValue(Color.web(workingLine.getFillColor()));
 
@@ -217,7 +217,7 @@ public class TabNormalOperationController extends TabController {
             textOutlineColorPicker.setValue(Color.web(workingLine.getOutlineColor()));
 
         mainTextArea.setText(workingLine.getText().replaceAll("#", "\n"));
-        if(workingLine.getStartBeat() != null) checkBoxStartBeat.setSelected(workingLine.getStartBeat());
+        if (workingLine.getStartBeat() != null) checkBoxStartBeat.setSelected(workingLine.getStartBeat());
     }
 
     private File getImageFile() {
@@ -225,32 +225,32 @@ public class TabNormalOperationController extends TabController {
         File workingFile = new File("");
 
         //Scene image code
-        if(getScene().hasComponent(SceneImage.class) && getScene().getComponent(SceneImage.class).getImage() != null) {
+        if (getScene().hasComponent(SceneImage.class) && getScene().getComponent(SceneImage.class).getImage() != null) {
             //check if file exists
-            if(getScene().getComponent(SceneImage.class).getImage().exists()) {
+            if (getScene().getComponent(SceneImage.class).getImage().exists()) {
                 //Set image file
                 workingFile = getScene().getComponent(SceneImage.class).getImage();
 
                 //Remove add image button
                 stackPane.getChildren().remove(iconControllerBox);
             } else {
-                System.out.println("Scene titled: "+scene.getComponentTitle()+", contains and invalid scene image.");
+                System.out.println("Scene titled: " + scene.getComponentTitle() + ", contains and invalid scene image.");
             }
         }
 
         //Line image code
-        if(getScene().getComponent(LineGroup.class).getLine(onLine-1).getLineImage() != null) {
+        if (getScene().getComponent(LineGroup.class).getLine(onLine - 1).getLineImage() != null) {
             //Set image file
-            workingFile = getScene().getComponent(LineGroup.class).getLine(onLine-1).getLineImage();
+            workingFile = getScene().getComponent(LineGroup.class).getLine(onLine - 1).getLineImage();
         }
         return workingFile;
     }
 
     private void initializeText() {
-        if(getScene().getComponent(LineGroup.class).getLine(onLine-1) == null) {
-            getScene().getComponent(LineGroup.class).addNewLine(onLine-1);
-            getScene().getComponent(LineGroup.class).getLine(onLine-1).setFillColor(fillColor);
-            getScene().getComponent(LineGroup.class).getLine(onLine-1).setOutlineColor(outlineColor);
+        if (getScene().getComponent(LineGroup.class).getLine(onLine - 1) == null) {
+            getScene().getComponent(LineGroup.class).addNewLine(onLine - 1);
+            getScene().getComponent(LineGroup.class).getLine(onLine - 1).setFillColor(fillColor);
+            getScene().getComponent(LineGroup.class).getLine(onLine - 1).setOutlineColor(outlineColor);
         }
     }
 
@@ -262,6 +262,7 @@ public class TabNormalOperationController extends TabController {
     public Scene getScene() {
         return scene;
     }
+
     public void setScene(Scene scene) {
         this.scene = scene;
     }

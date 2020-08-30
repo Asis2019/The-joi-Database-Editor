@@ -15,10 +15,14 @@ public class LineGroup implements JSONString, SceneComponent<JSONObject> {
 
     public void removeLine(int lineNumber) {
         getLineArrayList().remove(getLine(lineNumber));
+
+        int previousLineNumber = lineNumber;
+        for (Line line : getLineArrayList())
+            if (line.getLineNumber() > previousLineNumber) line.setLineNumber(previousLineNumber++);
     }
 
     public Line getLine(int lineNumber) {
-        for(Line line: getLineArrayList())
+        for (Line line : getLineArrayList())
             if (line.getLineNumber() == lineNumber) return line;
         return null;
     }
@@ -31,7 +35,7 @@ public class LineGroup implements JSONString, SceneComponent<JSONObject> {
     @Override
     public JSONObject toJSON() {
         JSONObject lineGroupObject = new JSONObject();
-        for(Line line: getLineArrayList()) lineGroupObject.put("line" + line.getLineNumber(), line.toJSON());
+        for (Line line : getLineArrayList()) lineGroupObject.put("line" + line.getLineNumber(), line.toJSON());
         return lineGroupObject;
     }
 
@@ -50,7 +54,7 @@ public class LineGroup implements JSONString, SceneComponent<JSONObject> {
         LineGroup lineGroup = (LineGroup) super.clone();
 
         ArrayList<Line> clonedArray = new ArrayList<>();
-        for (Line line: getLineArrayList()) clonedArray.add(line.clone());
+        for (Line line : getLineArrayList()) clonedArray.add(line.clone());
         lineGroup.setLineArrayList(clonedArray);
 
         return lineGroup;
@@ -70,6 +74,7 @@ public class LineGroup implements JSONString, SceneComponent<JSONObject> {
     public ArrayList<Line> getLineArrayList() {
         return lineArrayList;
     }
+
     private void setLineArrayList(ArrayList<Line> lineArrayList) {
         this.lineArrayList = lineArrayList;
     }
