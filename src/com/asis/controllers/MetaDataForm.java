@@ -24,7 +24,7 @@ public class MetaDataForm {
     @FXML private VBox mainVBox, iconControllerBox;
     @FXML private TextField titleTextField, preparationsTextField, displayedFetishesTextField,
             joiIdTextField, gameVersionTextField, creatorTextField, estimatedDurationField;
-    @FXML private TextArea fetishesTextArea, equipmentTextArea, charactersTextArea;
+    @FXML private TextArea fetishesTextArea, equipmentTextArea, charactersTextArea, franchiseTextArea;
 
     public void initialize() {
         getImageView().setFitHeight(300);
@@ -62,6 +62,7 @@ public class MetaDataForm {
         fetishesTextArea.setText(String.join(",", metaData.getFetishList()));
         charactersTextArea.setText(String.join(",", metaData.getCharacterList()));
         equipmentTextArea.setText(String.join(",", metaData.getEquipmentList()));
+        franchiseTextArea.setText(String.join(",", metaData.getFranchiseList()));
         estimatedDurationField.setText(String.format( "%.0f seconds",metaData.getEstimatedDuration()));
     }
 
@@ -136,6 +137,7 @@ public class MetaDataForm {
         MetaData.addCommaSeparatedStringToList(fetishesTextArea.getText().toLowerCase(), metaData.getFetishList());
         MetaData.addCommaSeparatedStringToList(equipmentTextArea.getText().toLowerCase(), metaData.getEquipmentList());
         MetaData.addCommaSeparatedStringToList(charactersTextArea.getText(), metaData.getCharacterList());
+        MetaData.addCommaSeparatedStringToList(franchiseTextArea.getText(), metaData.getFranchiseList());
 
         return metaData;
     }

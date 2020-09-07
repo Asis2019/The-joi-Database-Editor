@@ -15,6 +15,7 @@ public class MetaData implements Cloneable, JSONString {
     private ArrayList<String> fetishList = new ArrayList<>();
     private ArrayList<String> characterList = new ArrayList<>();
     private ArrayList<String> equipmentList = new ArrayList<>();
+    private ArrayList<String> franchiseList = new ArrayList<>();
 
     public void setDataFromJson(JSONObject jsonObject) {
         //Set single normal fields
@@ -50,6 +51,12 @@ public class MetaData implements Cloneable, JSONString {
             case "displayedFetishes":
                 setDisplayedFetishes(jsonObject.getString("displayedFetishes"));
                 break;
+            case "franchise":
+                JSONArray array = jsonObject.getJSONArray("franchise");
+                for(int i=0; i<array.length(); i++) {
+                    getFranchiseList().add((String) array.get(i));
+                }
+                break;
         }
     }
 
@@ -67,6 +74,8 @@ public class MetaData implements Cloneable, JSONString {
         addListToJsonObject(innerObject, "fetish", getFetishList());
         addListToJsonObject(innerObject, "character", getCharacterList());
         addListToJsonObject(innerObject, "toy", getEquipmentList());
+
+        innerObject.put("franchise", getFranchiseList());
 
         JSONArray array = new JSONArray();
         array.put(innerObject);
@@ -88,6 +97,7 @@ public class MetaData implements Cloneable, JSONString {
         metaData.setFetishList(new ArrayList<>(getFetishList()));
         metaData.setCharacterList(new ArrayList<>(getCharacterList()));
         metaData.setEquipmentList(new ArrayList<>(getEquipmentList()));
+        metaData.setFranchiseList(new ArrayList<>(getFranchiseList()));
 
         return metaData;
     }
@@ -112,6 +122,7 @@ public class MetaData implements Cloneable, JSONString {
         if (!getCreator().equals(metaData.getCreator())) return false;
         if (!getFetishList().equals(metaData.getFetishList())) return false;
         if (!getCharacterList().equals(metaData.getCharacterList())) return false;
+        if (!getFranchiseList().equals(metaData.getFranchiseList())) return false;
         return getEquipmentList().equals(metaData.getEquipmentList());
     }
 
@@ -214,5 +225,12 @@ public class MetaData implements Cloneable, JSONString {
     }
     public void setEstimatedDuration(double estimatedDuration) {
         this.estimatedDuration = estimatedDuration;
+    }
+
+    public ArrayList<String> getFranchiseList() {
+        return franchiseList;
+    }
+    public void setFranchiseList(ArrayList<String> franchiseList) {
+        this.franchiseList = franchiseList;
     }
 }
