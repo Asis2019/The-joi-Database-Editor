@@ -6,78 +6,65 @@
 <?import javafx.scene.image.Image?>
 <?import javafx.scene.image.ImageView?>
 <?import javafx.scene.layout.*?>
-<ScrollPane id="root_container" fitToWidth="true" hbarPolicy="NEVER" pannable="true" prefViewportHeight="720.0"
-            prefViewportWidth="400.0" stylesheets="@../../resources/css/meta_data_form.css"
-            xmlns="http://javafx.com/javafx/10.0.2-internal" xmlns:fx="http://javafx.com/fxml/1"
-            fx:controller="com.asis.controllers.MetaDataForm">
+<ScrollPane id="root_container" fitToWidth="true" hbarPolicy="NEVER" pannable="true" prefViewportHeight="720.0" prefViewportWidth="400.0" stylesheets="@../../resources/css/meta_data_form.css" xmlns="http://javafx.com/javafx/11.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.asis.controllers.MetaDataForm">
     <content>
         <VBox fx:id="mainVBox" alignment="TOP_CENTER" spacing="8.0">
             <opaqueInsets>
-                <Insets/>
+                <Insets />
             </opaqueInsets>
             <padding>
-                <Insets bottom="8.0" left="8.0" right="8.0" top="8.0"/>
+                <Insets bottom="8.0" left="8.0" right="8.0" top="8.0" />
             </padding>
             <children>
-                <VBox id="iconControllerBox" fx:id="iconControllerBox" alignment="CENTER" fillWidth="false"
-                      maxHeight="300.0" maxWidth="300.0" minHeight="50.0" minWidth="50.0" onMouseClicked="#addIcon"
-                      prefHeight="150.0" prefWidth="150.0" VBox.vgrow="NEVER">
+                <VBox id="iconControllerBox" fx:id="iconControllerBox" alignment="CENTER" fillWidth="false" maxHeight="300.0" maxWidth="300.0" minHeight="50.0" minWidth="50.0" onMouseClicked="#addIcon" prefHeight="150.0" prefWidth="150.0" VBox.vgrow="NEVER">
                     <cursor>
-                        <Cursor fx:constant="HAND"/>
+                        <Cursor fx:constant="HAND" />
                     </cursor>
                     <children>
-                        <ImageView id="iconImageView" fitHeight="48.0" fitWidth="48.0"
-                                   pickOnBounds="true" preserveRatio="true">
+                        <ImageView id="iconImageView" fitHeight="48.0" fitWidth="48.0" pickOnBounds="true" preserveRatio="true">
                             <image>
-                                <Image url="@../images/add_icon_ic.png"/>
+                                <Image url="@../images/add_icon_ic.png" />
                             </image>
                         </ImageView>
-                        <Label text="Add Icon" textFill="#bbbbbb"/>
-                        <Label layoutX="86.0" layoutY="101.0" text="(300 x 300)" textFill="#bbbbbb"/>
+                        <Label text="Add Icon" textFill="#bbbbbb" />
+                        <Label layoutX="86.0" layoutY="101.0" text="(300 x 300)" textFill="#bbbbbb" />
                     </children>
                 </VBox>
-                <TextField fx:id="titleTextField" promptText="Title"/>
-                <TextField fx:id="preparationsTextField" layoutX="10.0" layoutY="137.0" promptText="Preparations"/>
-                <TextField fx:id="displayedFetishesTextField" layoutX="10.0" layoutY="137.0"
-                           promptText="Displayed Fetishes"/>
-                <TextField fx:id="creatorTextField" promptText="Creator"/>
-                <TextField fx:id="gameVersionTextField" layoutX="18.0" layoutY="306.0"
-                           promptText="Game Version (e.g 0.0.3.4)"/>
-                <TextField fx:id="joiIdTextField" disable="true" editable="false" promptText="Joi Id"/>
+                <TextField fx:id="titleTextField" promptText="Title" />
+                <TextArea fx:id="preparationsTextArea" layoutX="10.0" layoutY="137.0" minHeight="-Infinity" prefHeight="65.0" promptText="Preparations" VBox.vgrow="ALWAYS" />
+                <TextField fx:id="displayedFetishesTextField" layoutX="10.0" layoutY="137.0" promptText="Displayed Fetishes" />
+                <TextField fx:id="creatorTextField" promptText="Creator" />
+                <TextField fx:id="gameVersionTextField" layoutX="18.0" layoutY="306.0" promptText="Game Version (e.g 0.0.3.4)" />
+                <TextField fx:id="joiIdTextField" disable="true" editable="false" promptText="Joi Id" />
 
                 <HBox>
                     <children>
                         <Label text="Calculated joi Duration" textFill="#bbbbbb" />
                     </children>
                 </HBox>
-                <TextField fx:id="estimatedDurationField" disable="true" editable="false"/>
+                <TextField fx:id="estimatedDurationField" disable="true" editable="false" />
 
                 <HBox>
                     <children>
-                        <Label text="Fetish Tags" textFill="#bbbbbb"/>
+                        <Label text="Fetish Tags" textFill="#bbbbbb" />
                     </children>
                 </HBox>
-                <TextArea fx:id="fetishesTextArea" prefHeight="65.0" prefWidth="200.0"
-                          promptText="Separate tags with a comma ( , )" wrapText="true"/>
+                <TextArea fx:id="fetishesTextArea" prefHeight="65.0" prefWidth="200.0" promptText="Separate tags with a comma ( , )" wrapText="true" />
                 <HBox>
                     <children>
-                        <Label text="Required Equipment" textFill="#bbbbbb"/>
+                        <Label text="Required Equipment" textFill="#bbbbbb" />
                     </children>
                 </HBox>
-                <TextArea fx:id="equipmentTextArea" prefHeight="65.0" prefWidth="200.0"
-                          promptText="Separate items with a comma ( , )" wrapText="true"/>
+                <TextArea fx:id="equipmentTextArea" prefHeight="65.0" prefWidth="200.0" promptText="Separate items with a comma ( , )" wrapText="true" />
                 <HBox>
-                    <Label text="Franchises" textFill="#bbbbbb"/>
+                    <Label text="Franchises" textFill="#bbbbbb" />
                 </HBox>
-                <TextArea fx:id="franchiseTextArea" prefHeight="65.0" prefWidth="200.0"
-                          promptText="Separate franchises with a comma ( , )" wrapText="true"/>
+                <TextArea fx:id="franchiseTextArea" prefHeight="65.0" prefWidth="200.0" promptText="Separate franchises with a comma ( , )" wrapText="true" />
                 <HBox>
-                    <Label text="Characters" textFill="#bbbbbb"/>
+                    <Label text="Characters" textFill="#bbbbbb" />
                 </HBox>
-                <TextArea fx:id="charactersTextArea" prefHeight="65.0" prefWidth="200.0"
-                          promptText="Separate characters with a comma ( , )" wrapText="true"/>
-                <Button id="saveButton" focusTraversable="false" mnemonicParsing="false" onAction="#actionSaveButton"
-                        prefHeight="25.0" prefWidth="90.0" text="Save" textFill="WHITE"/>
+                <TextArea fx:id="charactersTextArea" prefHeight="65.0" prefWidth="200.0" promptText="Separate characters with a comma ( , )" wrapText="true" />
+                <Button id="saveButton" focusTraversable="false" mnemonicParsing="false" onAction="#actionSaveButton" prefHeight="25.0" prefWidth="90.0" text="Save" textFill="WHITE" />
             </children>
         </VBox>
     </content>

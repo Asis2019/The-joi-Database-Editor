@@ -22,9 +22,9 @@ public class MetaDataForm {
     private JOIPackage joiPackage;
 
     @FXML private VBox mainVBox, iconControllerBox;
-    @FXML private TextField titleTextField, preparationsTextField, displayedFetishesTextField,
+    @FXML private TextField titleTextField, displayedFetishesTextField,
             joiIdTextField, gameVersionTextField, creatorTextField, estimatedDurationField;
-    @FXML private TextArea fetishesTextArea, equipmentTextArea, charactersTextArea, franchiseTextArea;
+    @FXML private TextArea fetishesTextArea, equipmentTextArea, charactersTextArea, franchiseTextArea, preparationsTextArea;
 
     public void initialize() {
         getImageView().setFitHeight(300);
@@ -54,7 +54,7 @@ public class MetaDataForm {
 
         //Populate all fields
         titleTextField.setText(metaData.getName());
-        preparationsTextField.setText(metaData.getPreparations());
+        preparationsTextArea.setText(metaData.getPreparations().replaceAll("#","\n"));
         displayedFetishesTextField.setText(metaData.getDisplayedFetishes());
         joiIdTextField.setText(metaData.getJoiId());
         gameVersionTextField.setText(metaData.getVersionAdded());
@@ -128,7 +128,7 @@ public class MetaDataForm {
         metaData.setJoiIcon(getIconFile());
 
         metaData.setName(titleTextField.getText());
-        metaData.setPreparations(preparationsTextField.getText());
+        metaData.setPreparations(preparationsTextArea.getText().trim().replaceAll("\n","#"));
         metaData.setDisplayedFetishes(displayedFetishesTextField.getText());
         metaData.setJoiId(joiIdTextField.getText());
         metaData.setVersionAdded(gameVersionTextField.getText());
