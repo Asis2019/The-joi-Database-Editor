@@ -13,7 +13,7 @@ import java.util.ArrayList;
 
 public class JOI implements JSONString, Cloneable {
     private int sceneIdCounter = 0;
-    private final ArrayList<JOIComponent> joiComponents = new ArrayList<>();
+    private ArrayList<JOIComponent> joiComponents = new ArrayList<>();
 
     public <T extends JOIComponent> void addNewComponent(Class<T> joiComponentClass, Integer... optional) {
         //Check if an id was passed
@@ -32,11 +32,6 @@ public class JOI implements JSONString, Cloneable {
         //Increment counter
         setSceneIdCounter(getSceneIdCounter()+1);
     }
-
-    /*@Deprecated
-    public boolean removeScene(int sceneId) {
-        return getSceneArrayList().remove(getScene(sceneId));
-    }*/
 
     public boolean removeComponent(int sceneId) {
         return getJoiComponents().remove(getComponent(sceneId));
@@ -96,7 +91,6 @@ public class JOI implements JSONString, Cloneable {
 
     public JSONObject toJSON() {
         JSONArray joiArray = new JSONArray();
-        //for(Scene scene: getSceneArrayList()) joiArray.put(scene.toJSON());
 
         for(JOIComponent component: getJoiComponents()) {
             if(component.toJSON() != null)
@@ -116,16 +110,9 @@ public class JOI implements JSONString, Cloneable {
     public JOI clone() throws CloneNotSupportedException {
         JOI joi = (JOI) super.clone();
 
-        /*ArrayList<Scene> clonedArray = new ArrayList<>();
-        for (Scene scene: getSceneArrayList()) clonedArray.add(scene.clone());
-        joi.setSceneArrayList(clonedArray);
-
-        ArrayList<VariableSetter> clonedArray2 = new ArrayList<>();
-        for (VariableSetter setter: getVariableSetterArrayList()) clonedArray2.add((VariableSetter) setter.clone());
-        joi.setVariableSetterArrayList(clonedArray2);*/
-
-        for (JOIComponent component: getJoiComponents())
-            joi.getJoiComponents().add((JOIComponent) component.clone());
+        ArrayList<JOIComponent> clonedArray = new ArrayList<>();
+        for (JOIComponent component: getJoiComponents()) clonedArray.add((JOIComponent) component.clone());
+        joi.setJoiComponents(clonedArray);
 
         joi.setSceneIdCounter(getSceneIdCounter());
 
@@ -151,5 +138,8 @@ public class JOI implements JSONString, Cloneable {
     }
     public ArrayList<JOIComponent> getJoiComponents() {
         return joiComponents;
+    }
+    private void setJoiComponents(ArrayList<JOIComponent> joiComponents) {
+        this.joiComponents = joiComponents;
     }
 }

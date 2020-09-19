@@ -14,7 +14,7 @@ public class Scene extends JOIComponent {
     private final ReadOnlyBooleanWrapper goodEnd = new ReadOnlyBooleanWrapper();
     private String ambience;
 
-    private final ArrayList<SceneComponent<?>> sceneComponents = new ArrayList<>();
+    private ArrayList<SceneComponent<?>> sceneComponents = new ArrayList<>();
 
     public Scene() {
         this(0, 0, 10, "Scene 1");
@@ -195,8 +195,9 @@ public class Scene extends JOIComponent {
         scene.setGoodEnd(isGoodEnd());
         scene.setAmbience(getAmbience());
 
-        for (SceneComponent<?> sceneComponent : getSceneComponents())
-            scene.addComponent((SceneComponent<?>) sceneComponent.clone());
+        ArrayList<SceneComponent<?>> clonedArray = new ArrayList<>();
+        for (SceneComponent<?> sceneComponent : getSceneComponents()) clonedArray.add((SceneComponent<?>) sceneComponent.clone());
+        scene.setSceneComponents(clonedArray);
 
         return scene;
     }
@@ -250,6 +251,10 @@ public class Scene extends JOIComponent {
 
     public ArrayList<SceneComponent<?>> getSceneComponents() {
         return sceneComponents;
+    }
+
+    private void setSceneComponents(ArrayList<SceneComponent<?>> sceneComponents) {
+        this.sceneComponents = sceneComponents;
     }
 
     public String getAmbience() {
