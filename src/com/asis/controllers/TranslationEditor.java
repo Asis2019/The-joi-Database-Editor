@@ -99,6 +99,7 @@ public class TranslationEditor {
                         " Please make sure all joi_text files have the same structure before attempting to translate.\n");
                 e.consume();
             }
+            tableViewJoi.requestFocus();
         });
 
         tableViewJoi.getColumns().add(tableColumn);
