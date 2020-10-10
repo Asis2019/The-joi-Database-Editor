@@ -17,6 +17,8 @@ import javafx.scene.image.Image;
 import javafx.stage.Stage;
 
 import java.io.IOException;
+import java.util.HashSet;
+import java.util.Set;
 
 import static com.asis.utilities.AsisUtils.getDefaultTitle;
 
@@ -36,11 +38,13 @@ public class DialogCondition {
         operationDropdown.getItems().addAll(Condition.ConditionType.values());
         operationDropdown.getSelectionModel().select(condition.getConditionType());
 
+        Set<String> listItems = new HashSet<>();
         for (JOIComponent component : Controller.getInstance().getJoiPackage().getJoi().getJoiComponents()) {
             if (component instanceof VariableSetter) {
-                variableDropdown.getItems().add(((VariableSetter) component).getVariableName());
+                listItems.add(((VariableSetter) component).getVariableName());
             }
         }
+        variableDropdown.getItems().addAll(listItems);
 
         if (condition.getVariable() != null) variableDropdown.getSelectionModel().select(condition.getVariable());
         compareValue.setText(String.valueOf(condition.getComparingValue()));
