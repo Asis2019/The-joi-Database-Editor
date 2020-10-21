@@ -255,7 +255,7 @@ public class TabNormalOperationController extends TabController {
     }
 
     public void setVisibleImage() {
-        super.setVisibleImage(stackPane, viewPane, getImageFile());
+        super.setVisibleImage(stackPane, viewPane, getImageFile(), getScene());
     }
 
     //Getters and setters

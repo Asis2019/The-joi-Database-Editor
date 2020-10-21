@@ -20,7 +20,7 @@ public abstract class JOIComponentNode extends BorderPane {
     private SceneNodeMainController sceneNodeMainController;
     private final VBox outputContainer = new VBox();
     private final VBox inputContainer = new VBox();
-    private final Label titleLabel = new Label("Undefined");
+    protected final Label titleLabel = new Label("Undefined");
     private List<AsisConnectionButton> outputConnections = new ArrayList<>();
     private AsisConnectionButton inputConnection;
     protected ContextMenu contextMenu = new ContextMenu();
@@ -53,7 +53,6 @@ public abstract class JOIComponentNode extends BorderPane {
         titleLabel.textProperty().bindBidirectional(component.componentTitleProperty());
 
         setOnContextMenuRequested(contextMenuEvent -> {
-            //Controller.getInstance().getScrollPane().getContextMenu().hide();
             contextMenu.hide();
             contextMenu.show(this, contextMenuEvent.getScreenX(), contextMenuEvent.getScreenY());
         });

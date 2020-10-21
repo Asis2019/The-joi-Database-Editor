@@ -92,7 +92,7 @@ public class TabTimerController extends TabController {
                     totalSeconds = Integer.parseInt(totalTimerField.getText().trim());
                     asisCenteredArc.setMaxLength(totalSeconds);
 
-                    handelSecondsOverTotal();
+                    handleSecondsOverTotal();
                 } catch (NumberFormatException e) {
                     System.out.println("User inputted bad character into total time field");
                     if (!t1.isEmpty()) {
@@ -113,7 +113,7 @@ public class TabTimerController extends TabController {
                     onSecond = Integer.parseInt(goToSecondsTextField.getText().trim());
                     asisCenteredArc.setArcProgress(onSecond);
 
-                    handelSecondsOverTotal();
+                    handleSecondsOverTotal();
                 } catch (NumberFormatException e) {
                     System.out.println("User inputted bad character into goto second field");
                     if (!t1.isEmpty()) {
@@ -350,7 +350,7 @@ public class TabTimerController extends TabController {
         changeBeatSpeed(textObject, textFieldBeatPitch, "changeBeatPitch");
     }
 
-    private void handelSecondsOverTotal() {
+    private void handleSecondsOverTotal() {
         if (onSecond > totalSeconds) {
             warningLabel.setVisible(true);
             asisCenteredArc.setArcStrokeColor(Color.RED);
@@ -383,7 +383,7 @@ public class TabTimerController extends TabController {
     }
 
     public void setVisibleImage() {
-        super.setVisibleImage(timerStackPane, viewPane, getImageFile());
+        super.setVisibleImage(timerStackPane, viewPane, getImageFile(), getScene(getTimer()));
     }
 
     //Getters and setters

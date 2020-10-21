@@ -3,13 +3,24 @@ package com.asis.ui.asis_node;
 import com.asis.controllers.Controller;
 import com.asis.controllers.dialogs.DialogSceneTitle;
 import com.asis.joi.model.entities.Scene;
+import com.asis.joi.model.entities.SceneImage;
 import javafx.beans.property.ReadOnlyBooleanWrapper;
 import javafx.scene.control.MenuItem;
 import javafx.scene.control.SeparatorMenuItem;
+import javafx.scene.effect.GaussianBlur;
+import javafx.scene.image.Image;
+import javafx.scene.image.ImageView;
+import javafx.scene.layout.StackPane;
+import javafx.scene.paint.Color;
+import javafx.scene.shape.Rectangle;
+
+import java.util.NoSuchElementException;
 
 public class SceneNode extends JOIComponentNode {
     private final ReadOnlyBooleanWrapper isBadEnd = new ReadOnlyBooleanWrapper();
     private final ReadOnlyBooleanWrapper isGoodEnd = new ReadOnlyBooleanWrapper();
+    private final ImageView imageView = new ImageView();
+    private final Rectangle textBackdrop = new Rectangle();
 
     public SceneNode(int width, int height, int sceneId, SceneNodeMainController sceneNodeMainController, Scene scene) {
         super(width, height, sceneId, sceneNodeMainController, scene);
@@ -21,6 +32,39 @@ public class SceneNode extends JOIComponentNode {
 
         initializeEndVariables();
         setupContextMenu();
+
+        imageView.setPreserveRatio(true);
+        imageView.setFitWidth(200);
+        imageView.setLayoutX(getLayoutX()+10);
+        imageView.setLayoutY(getLayoutY()+10);
+        imageView.setManaged(false);
+
+        GaussianBlur blur = new GaussianBlur(5);
+        imageView.setEffect(blur);
+
+
+        Rectangle mask = new Rectangle();
+        mask.setWidth(200);
+        mask.setArcWidth(10);
+        mask.setArcHeight(10);
+        heightProperty().addListener((observableValue, number, t1) -> {
+            mask.setHeight(t1.doubleValue()-20);
+            textBackdrop.setY((t1.doubleValue()/2)-(textBackdrop.getHeight()/2));
+        });
+        imageView.setClip(mask);
+
+        textBackdrop.setFill(Color.BLACK);
+        textBackdrop.setOpacity(0.5);
+        textBackdrop.setHeight(25);
+        textBackdrop.setWidth(200);
+        textBackdrop.setX(titleLabel.getLayoutX()+10);
+        textBackdrop.setManaged(false);
+
+        StackPane stackPane = new StackPane();
+        stackPane.getChildren().addAll(imageView, textBackdrop, titleLabel);
+        setCenter(stackPane);
+
+        hideSceneThumbnail();
     }
 
     private void initializeEndVariables() {
@@ -50,6 +94,23 @@ public class SceneNode extends JOIComponentNode {
 
         isGoodEndProperty().bindBidirectional(getJOIScene().goodEndProperty());
         isBadEndProperty().bindBidirectional(getJOIScene().badEndProperty());
+    }
+
+    public void showSceneThumbnail() {
+        try {
+            textBackdrop.setVisible(true);
+            imageView.setVisible(true);
+            String sceneImage = getJOIScene().getComponent(SceneImage.class).getImage().toURI().toString();
+            Image image = new Image(sceneImage);
+
+            imageView.setImage(image);
+        } catch (NoSuchElementException ignored) {}
+    }
+
+    public void hideSceneThumbnail() {
+        textBackdrop.setVisible(false);
+        imageView.setVisible(false);
+        imageView.setImage(null);
     }
 
     @Override

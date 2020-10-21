@@ -46,6 +46,7 @@ public class Controller {
     private Boolean addSceneContextMenu = false;
     private static Controller instance = null;
     private boolean snapToGrid = false;
+    private boolean showThumbnail = false;
 
     private JOIPackage joiPackage;
     private final ArrayList<JOIComponentNode> joiComponentNodes = new ArrayList<>();
@@ -64,12 +65,13 @@ public class Controller {
     @FXML
     public ToolBar toolBar;
     @FXML
-    private Button gridToggle;
+    private Button gridToggle, thumbnailToggle;
 
     public void initialize() {
         instance = this;
         setupMainContextMenu();
         gridToggle.setTooltip(new Tooltip("Snap to grid"));
+        thumbnailToggle.setTooltip(new Tooltip("Toggle Scene thumbnails"));
     }
 
     public static Controller getInstance() {
@@ -535,6 +537,27 @@ public class Controller {
         imageView.setFitHeight(20);
         imageView.setFitWidth(20);
         gridToggle.setGraphic(imageView);
+    }
+
+    public void actionToggleThumbnail() {
+        showThumbnail = !showThumbnail;
+        ImageView imageView;
+        if(showThumbnail) {
+            imageView = new ImageView(new Image(getClass().getResourceAsStream("/resources/images/ic_thumbnail_on.png")));
+            getJoiComponentNodes().forEach(joiComponentNode -> {
+                if(joiComponentNode instanceof SceneNode)
+                    ((SceneNode) joiComponentNode).showSceneThumbnail();
+            });
+        } else {
+            imageView = new ImageView(new Image(getClass().getResourceAsStream("/resources/images/ic_thumbnail_off.png")));
+            getJoiComponentNodes().forEach(joiComponentNode -> {
+                if(joiComponentNode instanceof SceneNode)
+                    ((SceneNode) joiComponentNode).hideSceneThumbnail();
+            });
+        }
+        imageView.setFitHeight(20);
+        imageView.setFitWidth(20);
+        thumbnailToggle.setGraphic(imageView);
     }
 
     //Getters and setters

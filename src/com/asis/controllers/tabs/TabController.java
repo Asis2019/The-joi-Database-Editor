@@ -6,6 +6,7 @@ import com.asis.joi.model.entities.Line;
 import com.asis.joi.model.entities.Scene;
 import com.asis.joi.model.entities.SceneComponent;
 import com.asis.ui.ImageViewPane;
+import com.asis.ui.asis_node.SceneNode;
 import javafx.scene.Node;
 import javafx.scene.control.CheckBox;
 import javafx.scene.control.TextField;
@@ -25,7 +26,7 @@ public abstract class TabController {
         setTabTitle(tabTitle);
     }
 
-    void setVisibleImage(StackPane stackPane, ImageViewPane viewPane, File workingFile) {
+    void setVisibleImage(StackPane stackPane, ImageViewPane viewPane, File workingFile, Scene scene) {
         //TODO don't create a new image if the same image is already loaded
 
         //Remove image if any is present
@@ -38,6 +39,12 @@ public abstract class TabController {
         sceneImageView.setPreserveRatio(true);
         viewPane.setImageView(sceneImageView);
         stackPane.getChildren().add(0, viewPane);
+
+        Controller.getInstance().getJoiComponentNodes().forEach(joiComponentNode -> {
+            if(joiComponentNode.getComponentId() == scene.getComponentId() && joiComponentNode instanceof SceneNode) {
+                ((SceneNode) joiComponentNode).showSceneThumbnail();
+            }
+        });
     }
 
     void setNodeColorStyle(Node node, String fillColor, String outlineColor) {
