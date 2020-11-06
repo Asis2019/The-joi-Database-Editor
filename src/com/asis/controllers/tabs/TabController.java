@@ -27,24 +27,27 @@ public abstract class TabController {
     }
 
     void setVisibleImage(StackPane stackPane, ImageViewPane viewPane, File workingFile, Scene scene) {
-        //TODO don't create a new image if the same image is already loaded
+        if(viewPane.getImageFile() != workingFile) {
+            //Remove image if any is present
+            stackPane.getChildren().remove(viewPane);
 
-        //Remove image if any is present
-        stackPane.getChildren().remove(viewPane);
+            //Make image visible
+            Image image = new Image(workingFile.toURI().toString());
+            ImageView sceneImageView = new ImageView();
+            sceneImageView.setImage(image);
+            sceneImageView.setPreserveRatio(true);
+            viewPane.setImageView(sceneImageView);
+            viewPane.setImageFile(workingFile);
+            stackPane.getChildren().add(0, viewPane);
 
-        //Make image visible
-        Image image = new Image(workingFile.toURI().toString());
-        ImageView sceneImageView = new ImageView();
-        sceneImageView.setImage(image);
-        sceneImageView.setPreserveRatio(true);
-        viewPane.setImageView(sceneImageView);
-        stackPane.getChildren().add(0, viewPane);
-
-        Controller.getInstance().getJoiComponentNodes().forEach(joiComponentNode -> {
-            if(joiComponentNode.getComponentId() == scene.getComponentId() && joiComponentNode instanceof SceneNode) {
-                ((SceneNode) joiComponentNode).showSceneThumbnail();
+            if(Controller.getInstance().isShowThumbnail()) {
+                Controller.getInstance().getJoiComponentNodes().forEach(joiComponentNode -> {
+                    if (joiComponentNode.getComponentId() == scene.getComponentId() && joiComponentNode instanceof SceneNode) {
+                        ((SceneNode) joiComponentNode).showSceneThumbnail();
+                    }
+                });
             }
-        });
+        }
     }
 
     void setNodeColorStyle(Node node, String fillColor, String outlineColor) {

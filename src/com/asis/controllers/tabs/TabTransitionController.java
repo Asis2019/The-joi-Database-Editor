@@ -1,6 +1,7 @@
 package com.asis.controllers.tabs;
 
 import com.asis.joi.model.entities.Transition;
+import com.asis.ui.NumberField;
 import com.asis.utilities.AsisUtils;
 import javafx.animation.KeyFrame;
 import javafx.animation.KeyValue;
@@ -19,10 +20,12 @@ public class TabTransitionController extends TabController {
     private String textFillColor = "#ffffff";
     private Transition transition;
 
-    @FXML private TextField fadeSpeedField, waitTimeField, transitionTextField;
+    @FXML private TextField transitionTextField;
     @FXML private ColorPicker transitionTextColor, transitionTextOutlineColor, transitionFadeColor;
     @FXML private Label transitionTextLabel;
     @FXML private Pane transitionPaneMask;
+
+    @FXML private NumberField fadeSpeedField, waitTimeField;
 
     public TabTransitionController(String tabTitle, Transition transition) {
         super(tabTitle);
@@ -54,40 +57,10 @@ public class TabTransitionController extends TabController {
         });
 
         //Add transition fade speed to transition object
-        fadeSpeedField.textProperty().addListener((observableValue, color, t1) -> {
-            try {
-                final double fadeSpeed = Double.parseDouble(t1);
-                getTransition().setFadeSpeed(fadeSpeed);
-            } catch (NumberFormatException e) {
-                System.out.println("Incorrect value entered in FadeSpeed field");
-                if(t1.isEmpty()) {
-                    getTransition().setFadeSpeed(1);
-                    fadeSpeedField.clear();
-                    return;
-                }
-
-                final String backspacedText = t1.substring(0, t1.length()-1);
-                fadeSpeedField.setText(backspacedText);
-            }
-        });
+        fadeSpeedField.textProperty().addListener((observableValue, color, t1) -> getTransition().setFadeSpeed(fadeSpeedField.getDoubleNumber(1d)));
 
         //Add transition wait time to transition object
-        waitTimeField.textProperty().addListener((observableValue, color, t1) -> {
-            try {
-                final int waitTime = Integer.parseInt(t1);
-                getTransition().setWaitTime(waitTime);
-            } catch (NumberFormatException e) {
-                System.out.println("Incorrect value entered in waitTime field");
-                if(t1.isEmpty()) {
-                    getTransition().setWaitTime(0);
-                    waitTimeField.clear();
-                    return;
-                }
-
-                final String backspacedText = t1.substring(0, t1.length()-1);
-                waitTimeField.setText(backspacedText);
-            }
-        });
+        waitTimeField.textProperty().addListener((observableValue, color, t1) -> getTransition().setWaitTime(waitTimeField.getIntegerNumber(0)));
     }
 
     private void addInitialDataToFields() {

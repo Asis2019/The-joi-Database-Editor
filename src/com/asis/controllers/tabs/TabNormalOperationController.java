@@ -5,6 +5,7 @@ import com.asis.joi.model.entities.LineGroup;
 import com.asis.joi.model.entities.Scene;
 import com.asis.joi.model.entities.SceneImage;
 import com.asis.ui.ImageViewPane;
+import com.asis.ui.NumberField;
 import com.asis.utilities.AsisUtils;
 import javafx.application.Platform;
 import javafx.fxml.FXML;
@@ -27,14 +28,23 @@ public class TabNormalOperationController extends TabController {
     private final ImageViewPane viewPane = new ImageViewPane();
     private Scene scene;
 
-    @FXML private TextArea textTextField, mainTextArea;
-    @FXML private TextField textFieldBeatPitch, textFieldBeatSpeed;
-    @FXML private ColorPicker textColorPicker, textOutlineColorPicker;
-    @FXML private VBox iconControllerBox;
-    @FXML private StackPane stackPane;
-    @FXML private Label lineCounterLabel;
-    @FXML private Button deleteLineButton, previousLineButton;
-    @FXML private CheckBox checkBoxStopBeat, checkBoxStartBeat;
+    @FXML
+    private TextArea textTextField, mainTextArea;
+    @FXML
+    private ColorPicker textColorPicker, textOutlineColorPicker;
+    @FXML
+    private VBox iconControllerBox;
+    @FXML
+    private StackPane stackPane;
+    @FXML
+    private Label lineCounterLabel;
+    @FXML
+    private Button deleteLineButton, previousLineButton;
+    @FXML
+    private CheckBox checkBoxStopBeat, checkBoxStartBeat;
+
+    @FXML
+    private NumberField textFieldBeatPitch, textFieldBeatSpeed, imageSpeedMultiplier;
 
     public TabNormalOperationController(String tabTitle, Scene scene) {
         super(tabTitle);
@@ -55,6 +65,12 @@ public class TabNormalOperationController extends TabController {
 
             addBeatFieldListeners();
 
+            if(getScene().getComponent(SceneImage.class).getFrameRate() != -1) {
+                imageSpeedMultiplier.setVisible(true);
+                imageSpeedMultiplier.setManaged(true);
+                imageSpeedMultiplier.textProperty().addListener((observableValue, s, t1) ->
+                        getScene().getComponent(LineGroup.class).getLine(onLine - 1).setFrameRateMultiplier(imageSpeedMultiplier.getDoubleNumber()));
+            }
 
             //Set total lines
             totalLines = getScene().getComponent(LineGroup.class).getLineArrayList().size();
@@ -90,41 +106,13 @@ public class TabNormalOperationController extends TabController {
     }
 
     private void addBeatFieldListeners() {
-        //Setup beat fields
-        textFieldBeatPitch.textProperty().addListener((observableValue, s, t1) -> {
-            //Process beat pitch
-            try {
-                final double pitch = Double.parseDouble(t1);
-                getScene().getComponent(LineGroup.class).getLine(onLine - 1).setChangeBeatPitch(pitch);
-            } catch (NumberFormatException e) {
-                System.out.println("User put bad value into beat pitch");
-                if (t1.isEmpty()) {
-                    getScene().getComponent(LineGroup.class).getLine(onLine - 1).setChangeBeatPitch(null);
-                    textFieldBeatPitch.clear();
-                    return;
-                }
-                final String backspacedText = t1.substring(0, t1.length() - 1);
-                textFieldBeatPitch.setText(backspacedText);
-            }
-        });
+        //Process beat pitch
+        textFieldBeatPitch.textProperty().addListener((observableValue, s, t1) ->
+                getScene().getComponent(LineGroup.class).getLine(onLine - 1).setChangeBeatPitch(textFieldBeatPitch.getDoubleNumber()));
 
-        //Setup beat fields
-        textFieldBeatSpeed.textProperty().addListener((observableValue, s, t1) -> {
-            //Process beat speed
-            try {
-                final int speed = Integer.parseInt(t1);
-                getScene().getComponent(LineGroup.class).getLine(onLine - 1).setChangeBeatSpeed(speed);
-            } catch (NumberFormatException e) {
-                System.out.println("User put bad value into beat speed");
-                if (t1.isEmpty()) {
-                    getScene().getComponent(LineGroup.class).getLine(onLine - 1).setChangeBeatSpeed(null);
-                    textFieldBeatSpeed.clear();
-                    return;
-                }
-                final String backspacedText = t1.substring(0, t1.length() - 1);
-                textFieldBeatSpeed.setText(backspacedText);
-            }
-        });
+        //Process beat speed
+        textFieldBeatSpeed.textProperty().addListener((observableValue, s, t1) ->
+                getScene().getComponent(LineGroup.class).getLine(onLine - 1).setChangeBeatSpeed(textFieldBeatSpeed.getIntegerNumber()));
     }
 
     public void actionAddImage() {
@@ -210,6 +198,11 @@ public class TabNormalOperationController extends TabController {
 
     private void textObjectElseIf() {
         Line workingLine = getScene().getComponent(LineGroup.class).getLine(onLine - 1);
+        if(workingLine.getFrameRateMultiplier() != null)
+            imageSpeedMultiplier.setText(workingLine.getFrameRateMultiplier().toString());
+        else
+            imageSpeedMultiplier.clear();
+
         if (workingLine.getFillColor() != null)
             textColorPicker.setValue(Color.web(workingLine.getFillColor()));
 

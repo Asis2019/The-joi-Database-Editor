@@ -5,6 +5,7 @@ import com.asis.joi.model.entities.SceneImage;
 import com.asis.joi.model.entities.Timer;
 import com.asis.ui.AsisCenteredArc;
 import com.asis.ui.ImageViewPane;
+import com.asis.ui.NumberField;
 import com.asis.utilities.AsisUtils;
 import javafx.application.Platform;
 import javafx.fxml.FXML;
@@ -34,7 +35,7 @@ public class TabTimerController extends TabController {
     private Timer timer;
 
     @FXML
-    private TextField goToSecondsTextField, totalTimerField, textFieldBeatPitch, textFieldBeatSpeed;
+    private NumberField goToSecondsTextField, totalTimerField, textFieldBeatPitch, textFieldBeatSpeed, imageSpeedMultiplier;
     @FXML
     private ColorPicker textColorPicker, textOutlineColorPicker, timerTextColorPicker, timerTextOutlineColorPicker;
     @FXML
@@ -88,50 +89,37 @@ public class TabTimerController extends TabController {
 
             //Setup total time field
             totalTimerField.textProperty().addListener((observable, s, t1) -> {
-                try {
-                    totalSeconds = Integer.parseInt(totalTimerField.getText().trim());
-                    asisCenteredArc.setMaxLength(totalSeconds);
+                totalSeconds = totalTimerField.getIntegerNumber(0);
+                asisCenteredArc.setMaxLength(totalSeconds);
 
-                    handleSecondsOverTotal();
-                } catch (NumberFormatException e) {
-                    System.out.println("User inputted bad character into total time field");
-                    if (!t1.isEmpty()) {
-                        t1 = t1.substring(0, t1.length() - 1);
-                        totalTimerField.setText(t1);
-                    } else {
-                        totalTimerField.clear();
-                    }
-                }
-
+                handleSecondsOverTotal();
                 getTimer().setTotalTime(totalSeconds);
                 updateObjectTree();
             });
 
             //Setup go to seconds field
             goToSecondsTextField.textProperty().addListener((observable, s, t1) -> {
-                try {
-                    onSecond = Integer.parseInt(goToSecondsTextField.getText().trim());
-                    asisCenteredArc.setArcProgress(onSecond);
+                onSecond = goToSecondsTextField.getIntegerNumber(0);
+                asisCenteredArc.setArcProgress(onSecond);
 
-                    handleSecondsOverTotal();
-                } catch (NumberFormatException e) {
-                    System.out.println("User inputted bad character into goto second field");
-                    if (!t1.isEmpty()) {
-                        t1 = t1.substring(0, t1.length() - 1);
-                        goToSecondsTextField.setText(t1);
-                    } else {
-                        onSecond = 0;
-                        asisCenteredArc.setArcProgress(onSecond);
-                    }
-                }
-
+                handleSecondsOverTotal();
                 setTextAreaVariables();
                 setVisibleImage();
             });
 
             addCheckBoxFieldListeners();
-
             addBeatFieldListeners();
+
+            if (getScene(getTimer()).getComponent(SceneImage.class).getFrameRate() != -1) {
+                imageSpeedMultiplier.setVisible(true);
+                imageSpeedMultiplier.setManaged(true);
+                imageSpeedMultiplier.textProperty().addListener((observableValue, s, t1) -> {
+                    if (getTimer().getLineGroup().getLine(onSecond) != null) {
+                        getTimer().getLineGroup().getLine(onSecond).setFrameRateMultiplier(imageSpeedMultiplier.getDoubleNumber());
+                        updateObjectTree();
+                    }
+                });
+            }
 
             //timer
             asisCenteredArc.setMaxLength(0);
@@ -159,14 +147,16 @@ public class TabTimerController extends TabController {
         textOutlineColorPicker.valueProperty().addListener((observableValue, color, t1) -> {
             outlineColor = removeLastTwoLetters("#" + colorToHex(t1));
             setNodeColorStyle(timerTextArea, fillColor, outlineColor);
-            if (getTimer().getLineGroup().getLine(onSecond) != null) getTimer().getLineGroup().getLine(onSecond).setOutlineColor(outlineColor);
+            if (getTimer().getLineGroup().getLine(onSecond) != null)
+                getTimer().getLineGroup().getLine(onSecond).setOutlineColor(outlineColor);
             updateObjectTree();
         });
 
         textColorPicker.valueProperty().addListener((observableValue, color, t1) -> {
             fillColor = removeLastTwoLetters("#" + colorToHex(t1));
             setNodeColorStyle(timerTextArea, fillColor, outlineColor);
-            if (getTimer().getLineGroup().getLine(onSecond) != null) getTimer().getLineGroup().getLine(onSecond).setFillColor(fillColor);
+            if (getTimer().getLineGroup().getLine(onSecond) != null)
+                getTimer().getLineGroup().getLine(onSecond).setFillColor(fillColor);
             updateObjectTree();
         });
 
@@ -176,12 +166,12 @@ public class TabTimerController extends TabController {
     }
 
     private void setTimerTextColors(String... optionalColorOverride) {
-        if(optionalColorOverride.length == 0) {
+        if (optionalColorOverride.length == 0) {
             getTimer().setTimerTextColor(removeLastTwoLetters("#" + colorToHex(timerTextColorPicker.getValue())));
             getTimer().setTimerTextOutlineColor(removeLastTwoLetters("#" + colorToHex(timerTextOutlineColorPicker.getValue())));
             asisCenteredArc.setLabelColor(getTimer().getTimerTextColor(), getTimer().getTimerTextOutlineColor(), 1);
             updateObjectTree();
-        } else if(optionalColorOverride.length == 2) {
+        } else if (optionalColorOverride.length == 2) {
             asisCenteredArc.setLabelColor(optionalColorOverride[0], optionalColorOverride[1], 0);
         }
     }
@@ -204,39 +194,15 @@ public class TabTimerController extends TabController {
         //Setup beat fields
         textFieldBeatPitch.textProperty().addListener((observableValue, s, t1) -> {
             //Process beat pitch
-            try {
-                double pitch = Double.parseDouble(t1);
-                getTimer().getLineGroup().getLine(onSecond).setChangeBeatPitch(pitch);
-            } catch (NumberFormatException e) {
-                if (t1.isEmpty()) {
-                    getTimer().getLineGroup().getLine(onSecond).setChangeBeatPitch(null);
-                    textFieldBeatPitch.clear();
-                    updateObjectTree();
-                    return;
-                }
-                t1 = t1.substring(0, t1.length() - 1);
-                textFieldBeatPitch.setText(t1);
-                updateObjectTree();
-            }
+            getTimer().getLineGroup().getLine(onSecond).setChangeBeatPitch(textFieldBeatPitch.getDoubleNumber());
+            updateObjectTree();
         });
 
         //Setup beat fields
         textFieldBeatSpeed.textProperty().addListener((observableValue, s, t1) -> {
             //Process beat speed
-            try {
-                int speed = Integer.parseInt(t1);
-                getTimer().getLineGroup().getLine(onSecond).setChangeBeatSpeed(speed);
-            } catch (NumberFormatException e) {
-                if (t1.isEmpty()) {
-                    getTimer().getLineGroup().getLine(onSecond).setChangeBeatSpeed(null);
-                    textFieldBeatSpeed.clear();
-                    updateObjectTree();
-                    return;
-                }
-                t1 = t1.substring(0, t1.length() - 1);
-                textFieldBeatSpeed.setText(t1);
-                updateObjectTree();
-            }
+            getTimer().getLineGroup().getLine(onSecond).setChangeBeatSpeed(textFieldBeatSpeed.getIntegerNumber());
+            updateObjectTree();
         });
     }
 
@@ -326,13 +292,18 @@ public class TabTimerController extends TabController {
 
             JSONObject textObject = getTimer().getLineGroup().getLine(onSecond).toJSON().getJSONObject(0);
             beatConfiguration(textObject);
-        }
+        } else
+            imageSpeedMultiplier.clear();
+
 
         setLockTextAreaFunctionality(false);
     }
 
     private void setFieldsIfNeeded() {
         Line workingLine = getTimer().getLineGroup().getLine(onSecond);
+        if (workingLine.getFrameRateMultiplier() != null)
+            imageSpeedMultiplier.setText(workingLine.getFrameRateMultiplier().toString());
+
         if (workingLine.getFillColor() != null)
             textColorPicker.setValue(Color.web(workingLine.getFillColor()));
 
@@ -372,7 +343,7 @@ public class TabTimerController extends TabController {
 
     public void actionToggleTimerTextColorPickers() {
         timerTextColorContainer.setDisable(!timerTextColorContainer.isDisabled());
-        if(timerTextColorContainer.isDisabled()) {
+        if (timerTextColorContainer.isDisabled()) {
             getTimer().setTimerTextColor(null);
             getTimer().setTimerTextOutlineColor(null);
             setTimerTextColors("#ffffff", "#ffffff");

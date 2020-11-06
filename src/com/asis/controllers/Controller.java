@@ -580,4 +580,8 @@ public class Controller {
     public boolean isSnapToGrid() {
         return snapToGrid;
     }
+
+    public boolean isShowThumbnail() {
+        return showThumbnail;
+    }
 }

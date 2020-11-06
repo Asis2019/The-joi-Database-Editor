@@ -12,6 +12,8 @@ import javafx.geometry.VPos;
 import javafx.scene.image.ImageView;
 import javafx.scene.layout.Region;
 
+import java.io.File;
+
 /**
  *
  * @author akouznet
@@ -20,6 +22,7 @@ import javafx.scene.layout.Region;
 public class ImageViewPane extends Region {
 
     private final ObjectProperty<ImageView> imageViewProperty = new SimpleObjectProperty<>();
+    private File imageFile;
 
     @Override
     protected void layoutChildren() {
@@ -61,4 +64,11 @@ public class ImageViewPane extends Region {
         this.imageViewProperty.set(imageView);
     }
 
+    public File getImageFile() {
+        return imageFile;
+    }
+
+    public void setImageFile(File imageFile) {
+        this.imageFile = imageFile;
+    }
 }

@@ -34,7 +34,7 @@
                 <TextArea fx:id="preparationsTextArea" layoutX="10.0" layoutY="137.0" minHeight="-Infinity" prefHeight="65.0" promptText="Preparations" VBox.vgrow="ALWAYS" />
                 <TextField fx:id="displayedFetishesTextField" layoutX="10.0" layoutY="137.0" promptText="Displayed Fetishes" />
                 <TextField fx:id="creatorTextField" promptText="Creator" />
-                <TextField fx:id="gameVersionTextField" layoutX="18.0" layoutY="306.0" promptText="Game Version (e.g 0.0.3.4)" />
+                <TextField fx:id="gameVersionTextField" layoutX="18.0" layoutY="306.0" promptText="Game Version (e.g 0.0.3.5)" />
                 <TextField fx:id="joiIdTextField" disable="true" editable="false" promptText="Joi Id" />
 
                 <HBox>

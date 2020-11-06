@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
+<?import com.asis.ui.NumberField?>
 <?import javafx.geometry.Insets?>
 <?import javafx.scene.control.*?>
 <?import javafx.scene.layout.*?>
@@ -44,8 +45,8 @@
                         </value>
                     </ColorPicker>
                     <Separator prefWidth="200.0"/>
-                    <TextField fx:id="waitTimeField" promptText="Wait Time (default 0)"/>
-                    <TextField fx:id="fadeSpeedField" promptText="Fade Speed (default 1)"/>
+                    <NumberField fx:id="waitTimeField" promptText="Wait Time (default 0)" formatType="INTEGER"/>
+                    <NumberField fx:id="fadeSpeedField" promptText="Fade Speed (default 1)"/>
                     <Label fx:id="transitionFadeColorLabel" text="Fade Color:"/>
                     <ColorPicker fx:id="transitionFadeColor" onAction="#actionFadeColor"
                                  promptText="Fade Color">

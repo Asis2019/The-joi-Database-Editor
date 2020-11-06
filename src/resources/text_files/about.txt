@@ -1,4 +1,4 @@
-The joi Database Editor Version 10.1
+The joi Database Editor Version 11
 
 Github:
 https://github.com/Asis2019/The-joi-Database-Editor

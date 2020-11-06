@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
+<?import com.asis.ui.*?>
 <?import javafx.geometry.*?>
 <?import javafx.scene.control.*?>
 <?import javafx.scene.Cursor?>
@@ -58,7 +59,7 @@
                             <content>
                                 <ScrollPane fitToHeight="true" fitToWidth="true" hbarPolicy="NEVER">
                                     <VBox spacing="5.0">
-                                        <TextField fx:id="totalTimerField" promptText="Total Time"/>
+                                        <NumberField fx:id="totalTimerField" promptText="Total Time" formatType="INTEGER"/>
                                         <CheckBox fx:id="checkBoxHideTime" mnemonicParsing="false" text="Hide Time"/>
                                         <CheckBox fx:id="checkBoxHideTimer" layoutX="20.0" layoutY="50.0"
                                                   mnemonicParsing="false" text="Hide Timer"/>
@@ -103,6 +104,7 @@
                                                     <Color/>
                                                 </value>
                                             </ColorPicker>
+                                            <NumberField fx:id="imageSpeedMultiplier" promptText="Image speed multiplier" visible="false" managed="false"/>
                                         </children>
                                     </VBox>
 
@@ -122,9 +124,8 @@
                                             <CheckBox fx:id="checkBoxStopBeat" layoutX="20.0" layoutY="42.0"
                                                       mnemonicParsing="false" onAction="#actionStopBeat"
                                                       text="Stop Beats"/>
-                                            <TextField fx:id="textFieldBeatSpeed" promptText="Beat Speed"/>
-                                            <TextField fx:id="textFieldBeatPitch" layoutX="20.0" layoutY="42.0"
-                                                       promptText="Beat Pitch"/>
+                                            <NumberField fx:id="textFieldBeatSpeed" promptText="Beat Speed" formatType="INTEGER"/>
+                                            <NumberField fx:id="textFieldBeatPitch" layoutX="20.0" layoutY="42.0" promptText="Beat Pitch"/>
                                         </children>
                                     </VBox>
 
@@ -158,7 +159,7 @@
     <top>
         <ToolBar prefHeight="40.0" prefWidth="200.0" BorderPane.alignment="CENTER">
             <items>
-                <TextField fx:id="goToSecondsTextField" promptText="Go to second"/>
+                <NumberField fx:id="goToSecondsTextField" promptText="Go to second" formatType="INTEGER"/>
                 <Label id="warning-label" fx:id="warningLabel"
                        text="WARNING! Selected second is greater than the total lines." visible="false"/>
             </items>

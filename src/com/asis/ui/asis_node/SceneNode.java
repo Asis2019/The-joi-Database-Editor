@@ -34,6 +34,7 @@ public class SceneNode extends JOIComponentNode {
         setupContextMenu();
 
         imageView.setPreserveRatio(true);
+        imageView.setCache(true);
         imageView.setFitWidth(200);
         imageView.setLayoutX(getLayoutX()+10);
         imageView.setLayoutY(getLayoutY()+10);
@@ -104,7 +105,14 @@ public class SceneNode extends JOIComponentNode {
             Image image = new Image(sceneImage);
 
             imageView.setImage(image);
-        } catch (NoSuchElementException ignored) {}
+
+            if(imageView.getBoundsInParent().getHeight() < (getHeight()-20)) {
+                imageView.setFitWidth(0);
+                imageView.setFitHeight(getHeight());
+            }
+        } catch (NoSuchElementException ignored) {
+            hideSceneThumbnail();
+        }
     }
 
     public void hideSceneThumbnail() {

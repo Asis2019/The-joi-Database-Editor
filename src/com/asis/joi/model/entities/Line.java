@@ -15,7 +15,7 @@ public class Line implements JSONString, SceneComponent<JSONArray> {
 
     //Beats
     private Boolean startBeat, stopBeat;
-    private Double changeBeatPitch;
+    private Double changeBeatPitch, frameRateMultiplier;
     private Integer changeBeatSpeed;
 
     public static Line createEntity(JSONObject jsonObject, int lineNumber) {
@@ -56,6 +56,9 @@ public class Line implements JSONString, SceneComponent<JSONArray> {
                 case "changeBeatSpeed":
                     line.setChangeBeatSpeed(jsonObject.getInt("changeBeatSpeed"));
                     break;
+                case "frameRateMultiplier":
+                    line.setFrameRateMultiplier(jsonObject.getDouble("frameRateMultiplier"));
+                    break;
             }
         }
 
@@ -85,6 +88,7 @@ public class Line implements JSONString, SceneComponent<JSONArray> {
         if (getStopBeat() != null) object.put("stopBeat", getStopBeat());
         if (getChangeBeatPitch() != null) object.put("changeBeatPitch", getChangeBeatPitch());
         if (getChangeBeatSpeed() != null) object.put("changeBeatSpeed", getChangeBeatSpeed());
+        if (getFrameRateMultiplier() != null) object.put("frameRateMultiplier", getFrameRateMultiplier());
 
         return new JSONArray().put(object);
     }
@@ -107,6 +111,7 @@ public class Line implements JSONString, SceneComponent<JSONArray> {
         line.setText(getText());
         line.setLineImage(getLineImage());
         line.setLineNumber(getLineNumber());
+        line.setFrameRateMultiplier(getFrameRateMultiplier());
 
         return line;
     }
@@ -129,6 +134,8 @@ public class Line implements JSONString, SceneComponent<JSONArray> {
         if (getStopBeat() != null ? !getStopBeat().equals(line.getStopBeat()) : line.getStopBeat() != null)
             return false;
         if (getChangeBeatPitch() != null ? !getChangeBeatPitch().equals(line.getChangeBeatPitch()) : line.getChangeBeatPitch() != null)
+            return false;
+        if (getFrameRateMultiplier() != null ? !getFrameRateMultiplier().equals(line.getFrameRateMultiplier()) : line.getFrameRateMultiplier() != null)
             return false;
         return getChangeBeatSpeed() != null ? getChangeBeatSpeed().equals(line.getChangeBeatSpeed()) : line.getChangeBeatSpeed() == null;
     }
@@ -204,5 +211,13 @@ public class Line implements JSONString, SceneComponent<JSONArray> {
 
     public void setChangeBeatSpeed(Integer changeBeatSpeed) {
         this.changeBeatSpeed = changeBeatSpeed;
+    }
+
+    public Double getFrameRateMultiplier() {
+        return frameRateMultiplier;
+    }
+
+    public void setFrameRateMultiplier(Double frameRateMultiplier) {
+        this.frameRateMultiplier = frameRateMultiplier;
     }
 }
