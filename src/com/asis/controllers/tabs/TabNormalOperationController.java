@@ -16,6 +16,7 @@ import javafx.scene.paint.Color;
 import org.json.JSONObject;
 
 import java.io.File;
+import java.util.NoSuchElementException;
 
 import static com.asis.utilities.AsisUtils.colorToHex;
 
@@ -65,12 +66,14 @@ public class TabNormalOperationController extends TabController {
 
             addBeatFieldListeners();
 
-            if(getScene().getComponent(SceneImage.class).getFrameRate() != -1) {
-                imageSpeedMultiplier.setVisible(true);
-                imageSpeedMultiplier.setManaged(true);
-                imageSpeedMultiplier.textProperty().addListener((observableValue, s, t1) ->
-                        getScene().getComponent(LineGroup.class).getLine(onLine - 1).setFrameRateMultiplier(imageSpeedMultiplier.getDoubleNumber()));
-            }
+            try {
+                if(getScene().getComponent(SceneImage.class).getFrameRate() != -1) {
+                    imageSpeedMultiplier.setVisible(true);
+                    imageSpeedMultiplier.setManaged(true);
+                    imageSpeedMultiplier.textProperty().addListener((observableValue, s, t1) ->
+                            getScene().getComponent(LineGroup.class).getLine(onLine - 1).setFrameRateMultiplier(imageSpeedMultiplier.getDoubleNumber()));
+                }
+            } catch (NoSuchElementException ignored) {}
 
             //Set total lines
             totalLines = getScene().getComponent(LineGroup.class).getLineArrayList().size();
