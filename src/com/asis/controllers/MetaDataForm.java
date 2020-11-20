@@ -69,8 +69,8 @@ public class MetaDataForm {
     private void updateJoiField(final String creator, final String title) {
         String preparedCreator="", preparedTitle="";
 
-        if(creator != null && !creator.isEmpty()) preparedCreator = creator.toLowerCase().replaceAll(" ","_");
-        if(title != null && !title.isEmpty()) preparedTitle = title.toLowerCase().replaceAll(" ","_");
+        if(creator != null && !creator.isEmpty()) preparedCreator = creator.toLowerCase().replaceAll(" ","_").replaceAll("#", "_");
+        if(title != null && !title.isEmpty()) preparedTitle = title.toLowerCase().replaceAll(" ","_").replaceAll("#", "_");
 
         joiIdTextField.clear();
 
