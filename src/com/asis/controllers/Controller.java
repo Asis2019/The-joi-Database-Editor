@@ -9,6 +9,7 @@ import com.asis.joi.model.entities.JOIComponent;
 import com.asis.joi.model.entities.VariableSetter;
 import com.asis.joi.model.entities.dialog.Dialog;
 import com.asis.joi.model.entities.dialog.DialogOption;
+import com.asis.ui.InfinityPane;
 import com.asis.ui.asis_node.*;
 import com.asis.utilities.AsisUtils;
 import com.asis.utilities.Draggable;
@@ -17,6 +18,7 @@ import javafx.application.Platform;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.geometry.Bounds;
+import javafx.geometry.Point2D;
 import javafx.scene.Node;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
@@ -24,7 +26,6 @@ import javafx.scene.control.*;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.scene.input.MouseButton;
-import javafx.scene.layout.AnchorPane;
 import javafx.stage.DirectoryChooser;
 import javafx.stage.FileChooser;
 import javafx.stage.Stage;
@@ -56,10 +57,7 @@ public class Controller {
     private final ContextMenu mainContextMenu = new ContextMenu();
 
     @FXML
-    private AnchorPane anchorPane;
-    @FXML
-    private ScrollPane scrollPane;
-
+    private InfinityPane infinityPane;
     @FXML
     public MenuBar mainMenuBar;
     @FXML
@@ -101,9 +99,9 @@ public class Controller {
             addConditionNode();
         });
 
-        scrollPane.setContextMenu(mainContextMenu);
-        scrollPane.setOnContextMenuRequested(contextMenuEvent -> {
-            for (Node n : anchorPane.getChildren()) {
+        infinityPane.setContextMenu(mainContextMenu);
+        infinityPane.setOnContextMenuRequested(contextMenuEvent -> {
+            for (Node n : infinityPane.getContainer().getChildren()) {
                 if (n.getUserData() == null) continue;
 
                 Bounds boundsInScene = n.localToScene(n.getBoundsInLocal());
@@ -112,6 +110,7 @@ public class Controller {
                         contextMenuEvent.getSceneY() >= boundsInScene.getMinY() &&
                         contextMenuEvent.getSceneY() <= boundsInScene.getMaxY()) {
                     mainContextMenu.hide();
+                    break;
                 }
             }
 
@@ -212,7 +211,7 @@ public class Controller {
     }
 
     public void actionExit() {
-        Stage stage = (Stage) getAnchorPane().getScene().getWindow();
+        Stage stage = (Stage) getInfinityPane().getScene().getWindow();
         stage.fireEvent(new WindowEvent(stage, WindowEvent.WINDOW_CLOSE_REQUEST));
     }
 
@@ -234,21 +233,20 @@ public class Controller {
                 getJoiPackage().getJoi().getComponent(componentId).setLayoutYPosition(yPosition);
             }
         } else {
-            Bounds bounds = scrollPane.getViewportBounds();
-            double lowestXPixelShown = -1 * bounds.getMinX();
-            double lowestYPixelShown = -1 * bounds.getMinY();
+            Point2D placementCoordinates = getInfinityPane().sceneToWorld(menuEventX, menuEventY);
 
-            componentNode.positionInGrid(lowestXPixelShown + menuEventX, lowestYPixelShown + menuEventY);
+            componentNode.positionInGrid(placementCoordinates.getX(), placementCoordinates.getY());
             addSceneContextMenu = false;
 
             //No suppress check because block only gets run from context menu
-            getJoiPackage().getJoi().getComponent(componentId).setLayoutXPosition(lowestXPixelShown + menuEventX);
-            getJoiPackage().getJoi().getComponent(componentId).setLayoutYPosition(lowestYPixelShown + menuEventY);
+            getJoiPackage().getJoi().getComponent(componentId).setLayoutXPosition(placementCoordinates.getX());
+            getJoiPackage().getJoi().getComponent(componentId).setLayoutYPosition(placementCoordinates.getY());
         }
 
 
         setClickActionForNode(componentNode);
-        getAnchorPane().getChildren().add(componentNode);
+        componentNode.toBack();
+        getInfinityPane().getContainer().getChildren().add(componentNode);
         getJoiComponentNodes().add(componentNode);
     }
 
@@ -317,7 +315,7 @@ public class Controller {
     public void removeComponentNode(JOIComponentNode joiComponentNode) {
         getJoiPackage().getJoi().removeComponent(joiComponentNode.getComponentId());
         sceneNodeMainController.notifyComponentNodeRemoved(joiComponentNode);
-        anchorPane.getChildren().remove(joiComponentNode);
+        infinityPane.getContainer().getChildren().remove(joiComponentNode);
     }
 
     public void actionNewProject() {
@@ -347,11 +345,10 @@ public class Controller {
 
         if (sceneNodeMainController == null) {
             sceneNodeMainController = new SceneNodeMainController(getJoiPackage());
-            sceneNodeMainController.setPane(anchorPane);
-            sceneNodeMainController.setScrollPane(scrollPane);
+            sceneNodeMainController.setPane(infinityPane.getContainer());
         }
 
-        anchorPane.getChildren().clear();
+        infinityPane.getContainer().getChildren().clear();
         getJoiComponentNodes().clear();
         sceneNodeMainController.setJoiPackage(joiPackage);
         sceneNodeMainController.setLineList(new ArrayList<>());
@@ -561,8 +558,8 @@ public class Controller {
     }
 
     //Getters and setters
-    public AnchorPane getAnchorPane() {
-        return anchorPane;
+    public InfinityPane getInfinityPane() {
+        return infinityPane;
     }
 
     public ArrayList<JOIComponentNode> getJoiComponentNodes() {

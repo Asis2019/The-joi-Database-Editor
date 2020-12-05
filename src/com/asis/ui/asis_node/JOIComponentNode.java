@@ -7,6 +7,7 @@ import javafx.geometry.Insets;
 import javafx.geometry.Pos;
 import javafx.scene.control.ContextMenu;
 import javafx.scene.control.Label;
+import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.VBox;
@@ -116,6 +117,8 @@ public abstract class JOIComponentNode extends BorderPane {
     }
 
     private void attachHandlers(AsisConnectionButton connection) {
+        addEventHandler(MouseEvent.MOUSE_PRESSED, mouseEvent -> contextMenu.hide());
+
         connection.setOnMouseMoved(e -> sceneNodeMainController.mouseMoved(e));
         connection.setOnMouseDragged(e -> sceneNodeMainController.mouseMoved(e));
         connection.setOnMousePressed(e -> sceneNodeMainController.mousePressed(connection));

@@ -60,6 +60,8 @@ public class Draggable {
 
         @Override
         public final void handle(final MouseEvent event) {
+            //if(!event.isPrimaryButtonDown() && !event.isMiddleButtonDown()) return;
+
             if (MouseEvent.MOUSE_PRESSED == event.getEventType()) {
                 if (this.eventNode.contains(event.getX(), event.getY())) {
                     this.lastMouseX = event.getSceneX();
@@ -74,8 +76,9 @@ public class Draggable {
                     }
                 }
                 if (this.dragging) {
-                    final double deltaX = event.getSceneX() - this.lastMouseX;
-                    final double deltaY = event.getSceneY() - this.lastMouseY;
+                    final double scale = eventNode.getParent().getScaleX();
+                    final double deltaX = (event.getSceneX() - this.lastMouseX) / scale;
+                    final double deltaY = (event.getSceneY() - this.lastMouseY) / scale;
 
                     for (final Node dragNode : this.dragNodes) {
                         if(dragNode instanceof JOIComponentNode) {

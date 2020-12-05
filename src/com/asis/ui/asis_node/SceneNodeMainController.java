@@ -5,10 +5,11 @@ import com.asis.joi.model.JOIPackage;
 import com.asis.joi.model.entities.*;
 import com.asis.joi.model.entities.dialog.Dialog;
 import com.asis.joi.model.entities.dialog.DialogOption;
+import com.asis.ui.InfinityPane;
 import javafx.beans.property.DoubleProperty;
 import javafx.beans.property.SimpleDoubleProperty;
 import javafx.geometry.Bounds;
-import javafx.scene.control.ScrollPane;
+import javafx.geometry.Point2D;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.Pane;
 
@@ -19,15 +20,14 @@ import java.util.Optional;
 
 public class SceneNodeMainController {
     private Pane root = new Pane();
-    private ScrollPane scrollPane;
 
     private List<AsisConnectionButton> inputConnections = new ArrayList<>();
     private List<BoundLine> lineList = new ArrayList<>();
 
     private AsisConnectionButton currentOutputConnection;
 
-    private DoubleProperty mouseX = new SimpleDoubleProperty();
-    private DoubleProperty mouseY = new SimpleDoubleProperty();
+    private final DoubleProperty mouseX = new SimpleDoubleProperty();
+    private final DoubleProperty mouseY = new SimpleDoubleProperty();
 
     private JOIPackage joiPackage;
 
@@ -250,12 +250,10 @@ public class SceneNodeMainController {
         Controller controller = Controller.getInstance();
         final double menuBarOffset = controller.mainMenuBar.getHeight() + controller.toolBar.getHeight();
 
-        Bounds bounds = scrollPane.getViewportBounds();
-        double lowestXPixelShown = -1 * bounds.getMinX();
-        double lowestYPixelShown = -1 * bounds.getMinY() - menuBarOffset;
+        Point2D placementCoordinates = ((InfinityPane)getPane().getParent()).sceneToWorld(mouseEvent.getSceneX(), mouseEvent.getSceneY());
 
-        mouseX.set(lowestXPixelShown + mouseEvent.getSceneX());
-        mouseY.set(lowestYPixelShown + mouseEvent.getSceneY());
+        mouseX.set(placementCoordinates.getX());
+        mouseY.set(placementCoordinates.getY()-menuBarOffset);
     }
 
     void mousePressed(AsisConnectionButton asisConnectionButton) {
@@ -329,10 +327,6 @@ public class SceneNodeMainController {
     }
     public void setLineList(List<BoundLine> lineList) {
         this.lineList = lineList;
-    }
-
-    public void setScrollPane(ScrollPane scrollPane) {
-        this.scrollPane = scrollPane;
     }
 
     public void setPane(Pane pane) {

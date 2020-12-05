@@ -1,12 +1,13 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
+<?import com.asis.ui.InfinityPane?>
 <?import javafx.geometry.Rectangle2D?>
 <?import javafx.scene.control.*?>
 <?import javafx.scene.image.Image?>
 <?import javafx.scene.image.ImageView?>
 <?import javafx.scene.layout.*?>
 <?import java.net.URL?>
-<BorderPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="400.0" prefWidth="600.0" xmlns="http://javafx.com/javafx/10.0.2-internal" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.asis.controllers.Controller">
+<BorderPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="400.0" prefWidth="600.0" xmlns="http://javafx.com/javafx/11.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.asis.controllers.Controller">
     <top>
         <VBox BorderPane.alignment="CENTER">
             <children>
@@ -34,7 +35,7 @@
                         </Menu>
                     </menus>
                 </MenuBar>
-                <ToolBar fx:id="toolBar" prefHeight="40.0" prefWidth="200.0">
+                <ToolBar fx:id="toolBar">
                     <Button mnemonicParsing="false" onAction="#actionAddSceneButton" text="Add new scene" />
                     <Button layoutX="10.0" layoutY="11.0" mnemonicParsing="false" onAction="#actionOpenMetadata" text="Project Details" />
              <Button fx:id="gridToggle" contentDisplay="GRAPHIC_ONLY" mnemonicParsing="false" onAction="#actionToggleGrid" prefHeight="26.0" text="Button">
@@ -68,10 +69,7 @@
         </VBox>
     </top>
     <center>
-        <ScrollPane fx:id="scrollPane" hbarPolicy="NEVER" pannable="true" styleClass="edge-to-edge" vbarPolicy="NEVER">
-            <AnchorPane id="anchorPane" fx:id="anchorPane" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="8000.0" prefWidth="8000.0">
-            </AnchorPane>
-        </ScrollPane>
+        <InfinityPane fx:id="infinityPane" BorderPane.alignment="TOP_LEFT"/>
     </center>
     <stylesheets>
         <URL value="@../../resources/css/main_stylesheet.css" />
