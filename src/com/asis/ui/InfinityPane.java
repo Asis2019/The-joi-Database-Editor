@@ -4,6 +4,7 @@ import com.asis.controllers.Controller;
 import javafx.application.Platform;
 import javafx.event.EventHandler;
 import javafx.geometry.Point2D;
+import javafx.scene.Cursor;
 import javafx.scene.Node;
 import javafx.scene.control.ContextMenu;
 import javafx.scene.input.KeyCode;
@@ -52,6 +53,10 @@ public class InfinityPane extends StackPane {
             } else {
                 contextMenu.hide();
             }
+        });
+        addEventHandler(MouseEvent.MOUSE_RELEASED, mouseEvent -> {
+            if(MouseEvent.MOUSE_RELEASED == mouseEvent.getEventType())
+                ((Node) mouseEvent.getSource()).setCursor(Cursor.DEFAULT);
         });
         focusedProperty().addListener((observableValue, aBoolean, t1) -> {
             if(!t1) contextMenu.hide();
@@ -157,8 +162,6 @@ public class InfinityPane extends StackPane {
     private static class Pannable implements EventHandler<MouseEvent> {
         private double lastMouseX = 0, lastMouseY = 0; // scene coords
 
-        private boolean dragging = false;
-
         private final Node eventNode;
         private final Node dragNode;
 
@@ -179,7 +182,7 @@ public class InfinityPane extends StackPane {
                     event.consume();
                 }
             } else if (MouseEvent.MOUSE_DRAGGED == event.getEventType()) {
-                if (!this.dragging) this.dragging = true;
+                ((Node) event.getSource()).setCursor(Cursor.MOVE);
 
                 final double deltaX = (event.getSceneX() - this.lastMouseX);
                 final double deltaY = (event.getSceneY() - this.lastMouseY);
@@ -193,13 +196,7 @@ public class InfinityPane extends StackPane {
                 this.lastMouseY = event.getSceneY();
 
                 event.consume();
-            } else if (MouseEvent.MOUSE_RELEASED == event.getEventType()) {
-                if (this.dragging) {
-                    event.consume();
-                    this.dragging = false;
-                }
             }
-
         }
     }
 

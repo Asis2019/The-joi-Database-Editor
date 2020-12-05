@@ -2,6 +2,7 @@ package com.asis.utilities;
 
 import com.asis.ui.asis_node.JOIComponentNode;
 import javafx.event.EventHandler;
+import javafx.scene.Cursor;
 import javafx.scene.Node;
 import javafx.scene.input.MouseEvent;
 
@@ -60,8 +61,6 @@ public class Draggable {
 
         @Override
         public final void handle(final MouseEvent event) {
-            //if(!event.isPrimaryButtonDown() && !event.isMiddleButtonDown()) return;
-
             if (MouseEvent.MOUSE_PRESSED == event.getEventType()) {
                 if (this.eventNode.contains(event.getX(), event.getY())) {
                     this.lastMouseX = event.getSceneX();
@@ -74,6 +73,7 @@ public class Draggable {
                     for (final Listener listener : this.dragListeners) {
                         listener.accept(this, Draggable.Event.DragStart);
                     }
+                    ((Node) event.getSource()).setCursor(Cursor.MOVE);
                 }
                 if (this.dragging) {
                     final double scale = eventNode.getParent().getScaleX();
@@ -100,6 +100,7 @@ public class Draggable {
                 }
             } else if (MouseEvent.MOUSE_RELEASED == event.getEventType()) {
                 if (this.dragging) {
+                    ((Node) event.getSource()).setCursor(Cursor.DEFAULT);
                     event.consume();
                     this.dragging = false;
                     for (final Listener listener : this.dragListeners) {
