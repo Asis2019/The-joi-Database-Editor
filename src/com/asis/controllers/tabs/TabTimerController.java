@@ -19,6 +19,7 @@ import org.json.JSONObject;
 
 import java.io.File;
 import java.util.Comparator;
+import java.util.NoSuchElementException;
 
 import static com.asis.utilities.AsisUtils.colorToHex;
 
@@ -78,7 +79,7 @@ public class TabTimerController extends TabController {
                         getTimer().getLineGroup().getLine(onSecond).setFillColor(fillColor);
                         getTimer().getLineGroup().getLine(onSecond).setOutlineColor(outlineColor);
                     } else {
-                        getTimer().getLineGroup().removeLine(onSecond);
+                        getTimer().getLineGroup().getLineArrayList().remove(getTimer().getLineGroup().getLine(onSecond));
                     }
 
                     updateObjectTree();
@@ -110,16 +111,18 @@ public class TabTimerController extends TabController {
             addCheckBoxFieldListeners();
             addBeatFieldListeners();
 
-            if (getScene(getTimer()).getComponent(SceneImage.class).getFrameRate() != -1) {
-                imageSpeedMultiplier.setVisible(true);
-                imageSpeedMultiplier.setManaged(true);
-                imageSpeedMultiplier.textProperty().addListener((observableValue, s, t1) -> {
-                    if (getTimer().getLineGroup().getLine(onSecond) != null) {
-                        getTimer().getLineGroup().getLine(onSecond).setFrameRateMultiplier(imageSpeedMultiplier.getDoubleNumber());
-                        updateObjectTree();
-                    }
-                });
-            }
+            try {
+                if (getScene(getTimer()).getComponent(SceneImage.class).getFrameRate() != -1) {
+                    imageSpeedMultiplier.setVisible(true);
+                    imageSpeedMultiplier.setManaged(true);
+                    imageSpeedMultiplier.textProperty().addListener((observableValue, s, t1) -> {
+                        if (getTimer().getLineGroup().getLine(onSecond) != null) {
+                            getTimer().getLineGroup().getLine(onSecond).setFrameRateMultiplier(imageSpeedMultiplier.getDoubleNumber());
+                            updateObjectTree();
+                        }
+                    });
+                }
+            } catch (NoSuchElementException ignore){}
 
             //timer
             asisCenteredArc.setMaxLength(0);

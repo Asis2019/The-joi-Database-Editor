@@ -1,4 +1,4 @@
-Creating your own joi is easy once you understand how the editor works. This will be a simple guid on the concepts of scenes and some good practices.
+Creating your own joi is easy once you understand how the editor works. This will be a simple guide on the concepts of scenes and some good practices.
 
 Scenes:
 Scenes are the containers that hold everything in your joi. They can be connected to each other in different ways to get different effects.
