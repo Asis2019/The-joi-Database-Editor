@@ -16,6 +16,7 @@
                      </Menu>
                      <Menu mnemonicParsing="false" text="Scene Items">
                         <items>
+                            <MenuItem fx:id="menuItemAddNormalOperation" mnemonicParsing="false" onAction="#menuItemAddNormalOperation" text="Add lines to scene" />
                             <MenuItem fx:id="menuItemAddDialog" mnemonicParsing="false" onAction="#menuItemAddDialog" text="Add dialog options to scene" />
                             <MenuItem fx:id="menuItemAddTransition" mnemonicParsing="false" onAction="#menuItemAddTransition" text="Add transition to scene" />
                             <MenuItem fx:id="menuItemAddTimer" mnemonicParsing="false" onAction="#menuItemAddTimer" text="Add timer to scene" />

@@ -1,13 +1,9 @@
 package com.asis.controllers;
 
 import com.asis.controllers.dialogs.DialogConfirmation;
-import com.asis.controllers.dialogs.DialogMessage;
 import com.asis.controllers.tabs.*;
 import com.asis.joi.JOIPackageManager;
-import com.asis.joi.model.entities.Scene;
-import com.asis.joi.model.entities.SceneImage;
-import com.asis.joi.model.entities.Timer;
-import com.asis.joi.model.entities.Transition;
+import com.asis.joi.model.entities.*;
 import com.asis.joi.model.entities.dialog.Dialog;
 import com.asis.utilities.AsisUtils;
 import com.asis.utilities.StageManager;
@@ -37,42 +33,37 @@ public class SceneDetails {
     @FXML
     private TabPane effectTabs;
     @FXML
-    private MenuItem menuItemAddTimer, menuItemAddTransition, menuItemAddDialog;
+    private MenuItem menuItemAddTimer, menuItemAddTransition, menuItemAddDialog, menuItemAddNormalOperation;
     @FXML
     private BorderPane sceneDetailBorderPane;
 
     void initialize(Scene scene) {
         setScene(scene);
 
-        //Load appropriate tabs for current scene
-        try {
-            //Normal tab always need to be loaded and present
-            TabNormalOperationController tabNormalOperationController = new TabNormalOperationController("Normal Operation", getScene());
-            tabNormalOperationController.setClosable(false);
-            setTabNormalOperationController(tabNormalOperationController);
-            createNewTab(tabNormalOperationController, "/resources/fxml/tab_normal_operation.fxml");
+        //--Load appropriate tabs for current scene
+        //add normal operation tab (line tab) to sceneDetails
+        if (getScene().hasComponent(LineGroup.class))
+            addLineTab(getScene().getComponent(LineGroup.class));
 
-            //add timer tab to sceneDetails
-            if (getScene().hasComponent(Timer.class))
-                addTimerTab(getScene().getComponent(Timer.class));
+        //add timer tab to sceneDetails
+        if (getScene().hasComponent(Timer.class))
+            addTimerTab(getScene().getComponent(Timer.class));
 
-            //add dialog tab to sceneDetails
-            if (getScene().hasComponent(Dialog.class))
-                addDialogTab(getScene().getComponent(Dialog.class));
+        //add dialog tab to sceneDetails
+        if (getScene().hasComponent(Dialog.class))
+            addDialogTab(getScene().getComponent(Dialog.class));
 
-            //add transition tab to sceneDetails
-            if (getScene().hasComponent(Transition.class))
-                addTransitionTab(getScene().getComponent(Transition.class));
-
-        } catch (IOException e) {
-            AsisUtils.errorDialogWindow(e);
-        }
+        //add transition tab to sceneDetails
+        if (getScene().hasComponent(Transition.class))
+            addTransitionTab(getScene().getComponent(Transition.class));
 
         Platform.runLater(this::addListenerToEffectTab);
     }
 
     private void addListenerToEffectTab() {
         getEffectTabs().getSelectionModel().selectedItemProperty().addListener((ov, oldTab, newTab) -> {
+            if(newTab == null) return;
+
             //This is done so that if a scene image is added in one tab, it is synced with the others
             switch (newTab.getText()) {
                 case "Normal Operation":
@@ -84,6 +75,17 @@ public class SceneDetails {
                     break;
             }
         });
+    }
+
+    private void addLineTab(LineGroup lineGroup) {
+        try {
+            TabNormalOperationController tabNormalOperationController = new TabNormalOperationController("Normal Operation", lineGroup);
+            setTabNormalOperationController(tabNormalOperationController);
+            createNewTab(tabNormalOperationController, "/resources/fxml/tab_normal_operation.fxml", 0);
+            menuItemAddNormalOperation.setDisable(true);
+        } catch (IOException e) {
+            AsisUtils.errorDialogWindow(e);
+        }
     }
 
     private void addTimerTab(Timer timer) {
@@ -131,7 +133,10 @@ public class SceneDetails {
         newTab.setOnCloseRequest(this::handleOnTabCloseRequested);
 
         if (indexPosition.length > 0) {
-            getEffectTabs().getTabs().add(indexPosition[0], newTab);
+            if(getEffectTabs().getTabs().size() >= 1)
+                getEffectTabs().getTabs().add(indexPosition[0], newTab);
+            else
+                getEffectTabs().getTabs().add(newTab);
         } else {
             getEffectTabs().getTabs().add(newTab);
         }
@@ -142,7 +147,13 @@ public class SceneDetails {
 
         switch (toCloseTab.getText()) {
             case "Normal Operation":
-                DialogMessage.messageDialog("Error", "Normal operations tab can't be closed.");
+                if (!getTabNormalOperationController().getLineGroup().equals(new LineGroup())) {
+                    if (!DialogConfirmation.show("Delete Line", "Are you sure you want to remove the text in your scene?")) {
+                        event.consume();
+                        return;
+                    }
+                }
+                closeLine();
                 break;
 
             case "Timer":
@@ -176,7 +187,13 @@ public class SceneDetails {
                 break;
         }
 
-        toCloseTab.getTabPane().getTabs().remove(toCloseTab);
+        //toCloseTab.getTabPane().getTabs().remove(toCloseTab);
+    }
+
+    private void closeLine() {
+        menuItemAddNormalOperation.setDisable(false);
+        setTabNormalOperationController(null);
+        getScene().removeComponent(LineGroup.class);
     }
 
     private void closeTransition() {
@@ -225,6 +242,14 @@ public class SceneDetails {
                 getTabTimerController().setVisibleImage();
             }
         }
+    }
+
+    @FXML
+    private void menuItemAddNormalOperation() {
+        LineGroup lineGroup = new LineGroup();
+        getScene().addComponent(lineGroup);
+
+        addLineTab(lineGroup);
     }
 
     @FXML

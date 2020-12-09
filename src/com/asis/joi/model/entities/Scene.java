@@ -140,6 +140,8 @@ public class Scene extends JOIComponent {
         }
 
         //set lines
+        scene.removeComponent(LineGroup.class);
+        if(jsonObject.has("line0")) scene.addComponent(new LineGroup());
         int i = 0;
         while (jsonObject.has("line" + i)) {
             LineGroup lineGroup = scene.getComponent(LineGroup.class);
@@ -177,8 +179,10 @@ public class Scene extends JOIComponent {
         if (!hasComponent(Transition.class)) sceneObject.put("noFade", true);
 
         //Merge lineGroup object into sceneObject
-        if (getComponent(LineGroup.class).getLineArrayList().size() > 0)
-            sceneObject = AsisUtils.mergeObject(sceneObject, getComponent(LineGroup.class).toJSON());
+        try {
+            if (getComponent(LineGroup.class).getLineArrayList().size() > 0)
+                sceneObject = AsisUtils.mergeObject(sceneObject, getComponent(LineGroup.class).toJSON());
+        } catch (NoSuchElementException ignore) {}
 
         //Merge GotoScene object into sceneObject
         if (hasComponent(GotoScene.class))
