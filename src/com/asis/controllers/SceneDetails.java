@@ -37,7 +37,7 @@ public class SceneDetails {
     @FXML
     private BorderPane sceneDetailBorderPane;
 
-    void initialize(Scene scene) {
+    public void initialize(Scene scene) {
         setScene(scene);
 
         //--Load appropriate tabs for current scene

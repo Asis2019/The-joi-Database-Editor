@@ -1,12 +1,17 @@
 package com.asis.ui.asis_node;
 
 import com.asis.controllers.Controller;
+import com.asis.controllers.dialogs.DialogCondition;
+import com.asis.controllers.dialogs.DialogVariableSetter;
+import com.asis.joi.model.entities.Condition;
 import com.asis.joi.model.entities.JOIComponent;
+import com.asis.joi.model.entities.VariableSetter;
 import javafx.beans.value.ObservableValue;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
 import javafx.scene.control.ContextMenu;
 import javafx.scene.control.Label;
+import javafx.scene.input.MouseButton;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.HBox;
@@ -47,6 +52,7 @@ public abstract class JOIComponentNode extends BorderPane {
         translateYProperty().addListener((observableValue, number, t1) -> joiComponent.setLayoutYPosition(t1.doubleValue()));
         focusedProperty().addListener((ObservableValue<? extends Boolean> observable, Boolean oldValue, Boolean newValue) -> focusState(newValue));
 
+        setDoubleClickAction();
         initializeVBoxes();
 
         focusState(false);
@@ -62,6 +68,22 @@ public abstract class JOIComponentNode extends BorderPane {
     protected abstract void focusState(boolean value);
 
     protected abstract void setupContextMenu();
+
+    private void setDoubleClickAction() {
+        setOnMousePressed(mouseEvent -> requestFocus());
+        setOnMouseClicked(mouseEvent -> {
+            //User double clicked
+            if (mouseEvent.getButton().equals(MouseButton.PRIMARY))
+                if (mouseEvent.getClickCount() == 2) {
+                    if(this instanceof SceneNode)
+                        SceneNode.openSceneDetails((SceneNode) this);
+                    else if(this instanceof VariableSetterNode)
+                        DialogVariableSetter.openVariableSetter((VariableSetter) getJoiComponent());
+                    else if(this instanceof ConditionNode)
+                        DialogCondition.openConditionDialog((Condition) getJoiComponent());
+                }
+        });
+    }
 
     public List<AsisConnectionButton> getOutputButtons() {
         return this.outputConnections;

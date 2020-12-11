@@ -25,7 +25,6 @@ import javafx.scene.Scene;
 import javafx.scene.control.*;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
-import javafx.scene.input.MouseButton;
 import javafx.stage.DirectoryChooser;
 import javafx.stage.FileChooser;
 import javafx.stage.Stage;
@@ -170,46 +169,6 @@ public class Controller {
         }
     }
 
-    private void setClickActionForNode(JOIComponentNode componentNode) {
-        componentNode.setOnMousePressed(mouseEvent -> componentNode.requestFocus());
-
-        componentNode.setOnMouseClicked(mouseEvent -> {
-            //User double clicked
-            if (mouseEvent.getButton().equals(MouseButton.PRIMARY))
-                if (mouseEvent.getClickCount() == 2) {
-                    if(componentNode instanceof SceneNode)
-                        openSceneDetails((SceneNode) componentNode);
-                    else if(componentNode instanceof VariableSetterNode)
-                        DialogVariableSetter.openVariableSetter((VariableSetter) componentNode.getJoiComponent());
-                    else if(componentNode instanceof ConditionNode)
-                        DialogCondition.openConditionDialog((Condition) componentNode.getJoiComponent());
-                }
-        });
-    }
-
-    public void openSceneDetails(SceneNode sceneNode) {
-        if (StageManager.getInstance().requestStageFocus(sceneNode.getComponentId())) return;
-
-        //Open new window
-        try {
-            FXMLLoader fxmlLoader = new FXMLLoader(getClass().getResource("/resources/fxml/SceneDetails.fxml"));
-            Parent root = fxmlLoader.load();
-
-            SceneDetails sceneDetails = fxmlLoader.getController();
-            sceneDetails.initialize((com.asis.joi.model.entities.Scene) getJoiPackage().getJoi().getComponent(sceneNode.getComponentId()));
-
-            Stage stage = new Stage();
-            stage.getIcons().add(new Image(Controller.class.getResourceAsStream("/resources/images/icon.png")));
-            stage.setTitle(sceneNode.getTitle());
-            stage.setUserData(sceneNode.getComponentId());
-            stage.setScene(new Scene(root, 1280, 720));
-
-            StageManager.getInstance().openStage(stage);
-        } catch (IOException e) {
-            AsisUtils.errorDialogWindow(e);
-        }
-    }
-
     public void actionExit() {
         Stage stage = (Stage) getInfinityPane().getScene().getWindow();
         stage.fireEvent(new WindowEvent(stage, WindowEvent.WINDOW_CLOSE_REQUEST));
@@ -243,8 +202,6 @@ public class Controller {
             getJoiPackage().getJoi().getComponent(componentId).setLayoutYPosition(placementCoordinates.getY());
         }
 
-
-        setClickActionForNode(componentNode);
         componentNode.toBack();
         getInfinityPane().getContainer().getChildren().add(componentNode);
         getJoiComponentNodes().add(componentNode);

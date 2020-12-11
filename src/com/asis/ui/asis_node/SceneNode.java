@@ -1,10 +1,16 @@
 package com.asis.ui.asis_node;
 
+import com.asis.Main;
 import com.asis.controllers.Controller;
+import com.asis.controllers.SceneDetails;
 import com.asis.controllers.dialogs.DialogSceneTitle;
 import com.asis.joi.model.entities.Scene;
 import com.asis.joi.model.entities.SceneImage;
+import com.asis.utilities.AsisUtils;
+import com.asis.utilities.StageManager;
 import javafx.beans.property.ReadOnlyBooleanWrapper;
+import javafx.fxml.FXMLLoader;
+import javafx.scene.Parent;
 import javafx.scene.control.MenuItem;
 import javafx.scene.control.SeparatorMenuItem;
 import javafx.scene.effect.GaussianBlur;
@@ -13,7 +19,9 @@ import javafx.scene.image.ImageView;
 import javafx.scene.layout.StackPane;
 import javafx.scene.paint.Color;
 import javafx.scene.shape.Rectangle;
+import javafx.stage.Stage;
 
+import java.io.IOException;
 import java.util.NoSuchElementException;
 
 public class SceneNode extends JOIComponentNode {
@@ -121,6 +129,29 @@ public class SceneNode extends JOIComponentNode {
         imageView.setImage(null);
     }
 
+    public static void openSceneDetails(SceneNode sceneNode) {
+        if (StageManager.getInstance().requestStageFocus(sceneNode.getComponentId())) return;
+
+        //Open new window
+        try {
+            FXMLLoader fxmlLoader = new FXMLLoader(Main.class.getResource("/resources/fxml/SceneDetails.fxml"));
+            Parent root = fxmlLoader.load();
+
+            SceneDetails sceneDetails = fxmlLoader.getController();
+            sceneDetails.initialize(sceneNode.getJOIScene());
+
+            Stage stage = new Stage();
+            stage.getIcons().add(new Image(Controller.class.getResourceAsStream("/resources/images/icon.png")));
+            stage.setTitle(sceneNode.getTitle());
+            stage.setUserData(sceneNode.getComponentId());
+            stage.setScene(new javafx.scene.Scene(root, 1280, 720));
+
+            StageManager.getInstance().openStage(stage);
+        } catch (IOException e) {
+            AsisUtils.errorDialogWindow(e);
+        }
+    }
+
     @Override
     protected void setupContextMenu() {
         Controller controller = Controller.getInstance();
@@ -136,7 +167,7 @@ public class SceneNode extends JOIComponentNode {
         //Handle menu actions
         editSceneItem.setOnAction(actionEvent -> {
             if (getJoiComponent() != null) {
-                controller.openSceneDetails(this);
+                openSceneDetails(this);
             }
         });
 
