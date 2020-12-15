@@ -17,5 +17,38 @@
   }, {
     "menu_name": "Español",
     "file_code": "es"
+  }],
+  "FEATURES": [{
+    "feature_code": "ambience",
+    "feature_read_name": "Ambience",
+    "feature_description": "Joi contains ambient sounds"
+  }, {
+    "feature_code": "branching_path",
+    "feature_read_name": "Branching paths",
+    "feature_description": "Joi contains branching paths"
+  }, {
+    "feature_code": "multi_end",
+    "feature_read_name": "Multiple ending",
+    "feature_description": "Joi contains multiple endings"
+  }, {
+    "feature_code": "timer",
+    "feature_read_name": "Timers",
+    "feature_description": "Joi contains timers"
+  }, {
+    "feature_code": "beats",
+    "feature_read_name": "Joi beats",
+    "feature_description": "Joi contains beats"
+  }, {
+    "feature_code": "animated",
+    "feature_read_name": "Animated images",
+    "feature_description": "Joi contains animated images"
+  }, {
+    "feature_code": "random",
+    "feature_read_name": "Randomness",
+    "feature_description": "Joi contains random chance"
+  }, {
+    "feature_code": "persistent_vars",
+    "feature_read_name": "Persistent variables",
+    "feature_description": "Joi will remember some choices from previous sessions"
   }]
 }

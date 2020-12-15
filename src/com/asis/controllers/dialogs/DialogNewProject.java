@@ -22,7 +22,7 @@ import java.io.IOException;
 import java.nio.file.FileAlreadyExistsException;
 
 import static com.asis.controllers.dialogs.DialogUnsavedChanges.*;
-import static com.asis.utilities.AsisUtils.getLanguageValueForAlternateKey;
+import static com.asis.utilities.AsisUtils.getValueForAlternateKey;
 
 
 public class DialogNewProject {
@@ -84,6 +84,8 @@ public class DialogNewProject {
 
     public void actionButtonFinish() {
         try {
+            JSONArray array = (JSONArray) Config.get("LANGUAGES");
+
             if (!isFirstLoad() && JOIPackageManager.getInstance().changesHaveOccurred()) {
                 int choice = DialogUnsavedChanges.unsavedChangesDialog("New Project", "You have unsaved work, are you sure you want to continue?");
                 switch (choice) {
@@ -91,16 +93,16 @@ public class DialogNewProject {
                         return;
 
                     case CHOICE_DO_NOT_SAVE:
-                        Controller.getInstance().processNewProject(getProjectPath(), projectNameTextField.getText().trim(), getLanguageValueForAlternateKey(getLanguagesDropDown().getValue(), "menu_name"));
+                        Controller.getInstance().processNewProject(getProjectPath(), projectNameTextField.getText().trim(), getValueForAlternateKey(array, getLanguagesDropDown().getValue(), "file_code","menu_name"));
                         break;
 
                     case CHOICE_SAVE:
                         Controller.getInstance().actionSaveProject();
-                        Controller.getInstance().processNewProject(getProjectPath(), projectNameTextField.getText().trim(), getLanguageValueForAlternateKey(getLanguagesDropDown().getValue(), "menu_name"));
+                        Controller.getInstance().processNewProject(getProjectPath(), projectNameTextField.getText().trim(), getValueForAlternateKey(array, getLanguagesDropDown().getValue(), "file_code","menu_name"));
                         break;
                 }
             } else {
-                Controller.getInstance().processNewProject(getProjectPath(), projectNameTextField.getText().trim(), getLanguageValueForAlternateKey(getLanguagesDropDown().getValue(), "menu_name"));
+                Controller.getInstance().processNewProject(getProjectPath(), projectNameTextField.getText().trim(), getValueForAlternateKey(array, getLanguagesDropDown().getValue(), "file_code","menu_name"));
             }
 
             Stage stage = (Stage) projectNameTextField.getScene().getWindow();

@@ -94,3 +94,47 @@
     -fx-border-color: rgb(0, 93, 247);
 }
 
+/*-------Menu stuff---------*/
+.menu-button {
+    -fx-background-color: rgb(60, 63, 65);
+    -fx-padding: 0em 0em 0em 0em;
+    -fx-border-color: rgb(100, 100, 100);
+    -fx-border-width: 1;
+}
+
+.menu-button .label {
+    -fx-text-fill: rgb(187, 187, 187);
+}
+
+.menu-item {
+    -fx-background-color: rgb(60, 63, 65);
+}
+
+.menu-item .label {
+    -fx-text-fill: rgb(187, 187, 187);
+}
+
+.menu-item:hover {
+    -fx-background-color: rgb(59, 124, 212);
+}
+
+.check-box:selected .mark {
+    -fx-background-color: rgb(187, 187, 187);
+}
+
+.check-box:selected > .box,
+.check-box:indeterminate > .box,
+.check-box > .box {
+    -fx-background-color: rgb(69, 73, 74);
+
+    -fx-border-color: rgb(100, 100, 100);
+    -fx-border-width: 1;
+}
+
+.context-menu {
+    -fx-skin: "com.sun.javafx.scene.control.skin.ContextMenuSkin";
+    -fx-background-color: rgb(60, 63, 65);
+    -fx-padding: 0em 0em 0em 0em;
+    -fx-border-color: rgb(100, 100, 100);
+    -fx-border-width: 1;
+}

@@ -131,16 +131,10 @@ public class AsisUtils {
         return list;
     }
 
-    public static String getLanguageValueForAlternateKey(String value, String key) {
-        Object data = Config.get("LANGUAGES");
-        if (data instanceof JSONArray) {
-            for (int i = 0; i < ((JSONArray) data).length(); i++) {
-                String other = "menu_name";
-                if (other.equals(key)) other = "file_code";
-
-                if (((JSONArray) data).getJSONObject(i).getString(key).equals(value)) {
-                    return ((JSONArray) data).getJSONObject(i).getString(other);
-                }
+    public static String getValueForAlternateKey(JSONArray array, String value, String targetKey, String haveKey) {
+        for (int i = 0; i < array.length(); i++) {
+            if(array.getJSONObject(i).getString(haveKey).equals(value)) {
+                return array.getJSONObject(i).getString(targetKey);
             }
         }
         throw new IllegalArgumentException(String.format("The language code for %s could not be found in settings.json\nPlease make sure to select a valid option from the dropdown.", value));

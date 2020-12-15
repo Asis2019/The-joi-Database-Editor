@@ -16,6 +16,7 @@ public class MetaData implements Cloneable, JSONString {
     private ArrayList<String> characterList = new ArrayList<>();
     private ArrayList<String> equipmentList = new ArrayList<>();
     private ArrayList<String> franchiseList = new ArrayList<>();
+    private ArrayList<String> featureList = new ArrayList<>();
 
     public void setDataFromJson(JSONObject jsonObject) {
         //Set single normal fields
@@ -57,6 +58,12 @@ public class MetaData implements Cloneable, JSONString {
                     getFranchiseList().add((String) array.get(i));
                 }
                 break;
+            case "features":
+                JSONArray featuresArray = jsonObject.getJSONArray("features");
+                for(int i=0; i<featuresArray.length(); i++) {
+                    getFeatureList().add((String) featuresArray.get(i));
+                }
+                break;
         }
     }
 
@@ -76,6 +83,7 @@ public class MetaData implements Cloneable, JSONString {
         addListToJsonObject(innerObject, "toy", getEquipmentList());
 
         innerObject.put("franchise", getFranchiseList());
+        innerObject.put("features", getFeatureList());
 
         JSONArray array = new JSONArray();
         array.put(innerObject);
@@ -98,6 +106,7 @@ public class MetaData implements Cloneable, JSONString {
         metaData.setCharacterList(new ArrayList<>(getCharacterList()));
         metaData.setEquipmentList(new ArrayList<>(getEquipmentList()));
         metaData.setFranchiseList(new ArrayList<>(getFranchiseList()));
+        metaData.setFeatureList(new ArrayList<>(getFeatureList()));
 
         return metaData;
     }
@@ -123,6 +132,7 @@ public class MetaData implements Cloneable, JSONString {
         if (!getFetishList().equals(metaData.getFetishList())) return false;
         if (!getCharacterList().equals(metaData.getCharacterList())) return false;
         if (!getFranchiseList().equals(metaData.getFranchiseList())) return false;
+        if (!getFeatureList().equals(metaData.getFeatureList())) return false;
         return getEquipmentList().equals(metaData.getEquipmentList());
     }
 
@@ -232,5 +242,12 @@ public class MetaData implements Cloneable, JSONString {
     }
     public void setFranchiseList(ArrayList<String> franchiseList) {
         this.franchiseList = franchiseList;
+    }
+
+    public ArrayList<String> getFeatureList() {
+        return featureList;
+    }
+    public void setFeatureList(ArrayList<String> featureList) {
+        this.featureList = featureList;
     }
 }

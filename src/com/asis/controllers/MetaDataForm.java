@@ -3,16 +3,19 @@ package com.asis.controllers;
 import com.asis.joi.JOIPackageManager;
 import com.asis.joi.model.JOIPackage;
 import com.asis.joi.model.MetaData;
+import com.asis.utilities.AsisUtils;
+import com.asis.utilities.Config;
 import javafx.fxml.FXML;
 import javafx.scene.Cursor;
-import javafx.scene.control.TextArea;
-import javafx.scene.control.TextField;
+import javafx.scene.control.*;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.scene.layout.VBox;
+import javafx.scene.paint.Color;
 import javafx.stage.FileChooser;
 import javafx.stage.Stage;
 import javafx.stage.WindowEvent;
+import org.json.JSONArray;
 
 import java.io.File;
 
@@ -25,6 +28,7 @@ public class MetaDataForm {
     @FXML private TextField titleTextField, displayedFetishesTextField,
             joiIdTextField, gameVersionTextField, creatorTextField, estimatedDurationField;
     @FXML private TextArea fetishesTextArea, equipmentTextArea, charactersTextArea, franchiseTextArea, preparationsTextArea;
+    @FXML private MenuButton featureSelection;
 
     public void initialize() {
         getImageView().setFitHeight(300);
@@ -64,6 +68,23 @@ public class MetaDataForm {
         equipmentTextArea.setText(String.join(",", metaData.getEquipmentList()));
         franchiseTextArea.setText(String.join(",", metaData.getFranchiseList()));
         estimatedDurationField.setText(String.format( "%.0f seconds",metaData.getEstimatedDuration()));
+
+        //Populate featureSelection from file
+        JSONArray availableFeatures = (JSONArray) Config.get("FEATURES");
+        for(int i=0; i<availableFeatures.length(); i++) {
+            CheckBox checkBox = new CheckBox(availableFeatures.getJSONObject(i).getString("feature_read_name"));
+            checkBox.setTooltip(new Tooltip(availableFeatures.getJSONObject(i).getString("feature_description")));
+            checkBox.prefWidthProperty().bind(featureSelection.widthProperty());
+            checkBox.setTextFill(new Color(0.73, 0.73, 0.73, 1));
+
+            CustomMenuItem customMenuItem = new CustomMenuItem(checkBox);
+            customMenuItem.setHideOnClick(false);
+
+            if(metaData.getFeatureList().contains(availableFeatures.getJSONObject(i).getString("feature_code")))
+                checkBox.setSelected(true);
+
+            featureSelection.getItems().add(customMenuItem);
+        }
     }
 
     private void updateJoiField(final String creator, final String title) {
@@ -138,6 +159,18 @@ public class MetaDataForm {
         MetaData.addCommaSeparatedStringToList(equipmentTextArea.getText().toLowerCase(), metaData.getEquipmentList());
         MetaData.addCommaSeparatedStringToList(charactersTextArea.getText(), metaData.getCharacterList());
         MetaData.addCommaSeparatedStringToList(franchiseTextArea.getText(), metaData.getFranchiseList());
+
+        JSONArray availableFeatures = (JSONArray) Config.get("FEATURES");
+        featureSelection.getItems().forEach(menuItem -> {
+            if(menuItem instanceof CustomMenuItem) {
+                CustomMenuItem item = (CustomMenuItem) menuItem;
+
+                CheckBox checkBox = (CheckBox) item.getContent();
+                if(checkBox.isSelected()) {
+                    metaData.getFeatureList().add(AsisUtils.getValueForAlternateKey(availableFeatures, checkBox.getText(), "feature_code", "feature_read_name"));
+                }
+            }
+        });
 
         return metaData;
     }

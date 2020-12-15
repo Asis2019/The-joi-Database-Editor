@@ -2,6 +2,7 @@ package com.asis.controllers.dialogs;
 
 import com.asis.Main;
 import com.asis.utilities.AsisUtils;
+import com.asis.utilities.Config;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
@@ -10,6 +11,7 @@ import javafx.scene.control.ComboBox;
 import javafx.scene.image.Image;
 import javafx.stage.Modality;
 import javafx.stage.Stage;
+import org.json.JSONArray;
 
 import java.io.IOException;
 import java.util.ArrayList;
@@ -24,13 +26,15 @@ public class DialogRequestLanguage {
 
 
     public void populateDropdown() {
-        for(String s: languages) languagesDropDown.getItems().add(AsisUtils.getLanguageValueForAlternateKey(s, "file_code"));
+        JSONArray array = (JSONArray) Config.get("LANGUAGES");
+        for(String s: languages) languagesDropDown.getItems().add(AsisUtils.getValueForAlternateKey(array,s, "menu_name","file_code"));
 
         languagesDropDown.getSelectionModel().select(0);
     }
 
     public void actionContinue() {
-        selectedLanguageCode = AsisUtils.getLanguageValueForAlternateKey(languagesDropDown.getValue(), "menu_name");
+        JSONArray array = (JSONArray) Config.get("LANGUAGES");
+        selectedLanguageCode = AsisUtils.getValueForAlternateKey(array,languagesDropDown.getValue(), "file_code","menu_name");
         Stage stage = (Stage) languagesDropDown.getScene().getWindow();
         stage.close();
     }

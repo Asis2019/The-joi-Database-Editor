@@ -18,7 +18,7 @@
                                 <MenuItem mnemonicParsing="false" onAction="#actionNewProject" text="New Project" />
                                 <MenuItem mnemonicParsing="false" onAction="#actionLoadProject" text="Load Project" />
                                 <MenuItem mnemonicParsing="false" onAction="#actionExportToZip" text="Export to Zip" />
-                                <MenuItem mnemonicParsing="false" onAction="#actionSaveProject" text="Save" />
+                                <MenuItem mnemonicParsing="false" onAction="#actionSaveProject" text="Save" accelerator="Shortcut+S"/>
                                 <MenuItem mnemonicParsing="false" onAction="#actionSaveProjectAs" text="Save As..." />
                                 <SeparatorMenuItem mnemonicParsing="false" />
                                 <MenuItem mnemonicParsing="false" onAction="#actionExit" text="Exit" />
@@ -69,7 +69,7 @@
         </VBox>
     </top>
     <center>
-        <InfinityPane fx:id="infinityPane" BorderPane.alignment="TOP_LEFT"/>
+        <InfinityPane fx:id="infinityPane" BorderPane.alignment="TOP_LEFT" />
     </center>
     <stylesheets>
         <URL value="@../../resources/css/main_stylesheet.css" />

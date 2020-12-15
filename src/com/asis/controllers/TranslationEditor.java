@@ -63,7 +63,7 @@ public class TranslationEditor {
         Collections.sort(joiPackageLanguages);
 
         for (String languageCode : joiPackageLanguages) {
-            TableColumn<TableRow<SceneComponent<?>>, String> columnLineText = new TableColumn<>(AsisUtils.getLanguageValueForAlternateKey(languageCode, "file_code"));
+            TableColumn<TableRow<SceneComponent<?>>, String> columnLineText = new TableColumn<>(AsisUtils.getValueForAlternateKey((JSONArray) Config.get("LANGUAGES"),languageCode, "menu_name","file_code"));
             columnLineText.setSortable(false);
             columnLineText.setPrefWidth(300d);
 
