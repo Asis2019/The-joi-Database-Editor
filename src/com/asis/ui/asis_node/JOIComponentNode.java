@@ -6,7 +6,6 @@ import com.asis.controllers.dialogs.DialogVariableSetter;
 import com.asis.joi.model.entities.Condition;
 import com.asis.joi.model.entities.JOIComponent;
 import com.asis.joi.model.entities.VariableSetter;
-import javafx.beans.value.ObservableValue;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
 import javafx.scene.control.ContextMenu;
@@ -50,7 +49,6 @@ public abstract class JOIComponentNode extends BorderPane {
 
         translateXProperty().addListener((observableValue, number, t1) -> joiComponent.setLayoutXPosition(t1.doubleValue()));
         translateYProperty().addListener((observableValue, number, t1) -> joiComponent.setLayoutYPosition(t1.doubleValue()));
-        focusedProperty().addListener((ObservableValue<? extends Boolean> observable, Boolean oldValue, Boolean newValue) -> focusState(newValue));
 
         setDoubleClickAction();
         initializeVBoxes();
@@ -65,12 +63,12 @@ public abstract class JOIComponentNode extends BorderPane {
         });
     }
 
-    protected abstract void focusState(boolean value);
+    public abstract void focusState(boolean value);
 
     protected abstract void setupContextMenu();
 
     private void setDoubleClickAction() {
-        setOnMousePressed(mouseEvent -> requestFocus());
+        setOnMousePressed(mouseEvent -> requestFocus()); //May be unnecessary
         setOnMouseClicked(mouseEvent -> {
             //User double clicked
             if (mouseEvent.getButton().equals(MouseButton.PRIMARY))

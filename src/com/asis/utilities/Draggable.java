@@ -1,5 +1,6 @@
 package com.asis.utilities;
 
+import com.asis.controllers.Controller;
 import com.asis.ui.asis_node.JOIComponentNode;
 import javafx.event.EventHandler;
 import javafx.scene.Cursor;
@@ -7,7 +8,6 @@ import javafx.scene.Node;
 import javafx.scene.input.MouseEvent;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 
 /**
@@ -42,16 +42,14 @@ public class Draggable {
         private boolean dragging = false;
 
         private final Node eventNode;
-        private final List<Node> dragNodes = new ArrayList<>();
         private final List<Listener> dragListeners = new ArrayList<>();
 
-        public Nature(final Node node) {
-            this(node, node);
+        public Nature(final Node node, Node eventNode) {
+            this(node);
         }
 
-        public Nature(final Node eventNode, final Node... dragNodes) {
+        public Nature(final Node eventNode) {
             this.eventNode = eventNode;
-            this.dragNodes.addAll(Arrays.asList(dragNodes));
             this.eventNode.addEventHandler(MouseEvent.ANY, this);
         }
 
@@ -61,10 +59,21 @@ public class Draggable {
 
         @Override
         public final void handle(final MouseEvent event) {
+            SelectionModel selectionModel = Controller.getInstance().getSelectionModel();
+
             if (MouseEvent.MOUSE_PRESSED == event.getEventType()) {
                 if (this.eventNode.contains(event.getX(), event.getY())) {
                     this.lastMouseX = event.getSceneX();
                     this.lastMouseY = event.getSceneY();
+
+                    if(selectionModel.contains(eventNode)) return;
+
+                    //Clear selection if ctrl or shift isn't held
+                    if (!event.isShiftDown() && !event.isControlDown()) selectionModel.clear();
+                    else return;
+
+                    selectionModel.add(eventNode);
+
                     event.consume();
                 }
             } else if (MouseEvent.MOUSE_DRAGGED == event.getEventType()) {
@@ -80,7 +89,7 @@ public class Draggable {
                     final double deltaX = (event.getSceneX() - this.lastMouseX) / scale;
                     final double deltaY = (event.getSceneY() - this.lastMouseY) / scale;
 
-                    for (final Node dragNode : this.dragNodes) {
+                    for (Node dragNode: selectionModel.selection) {
                         if(dragNode instanceof JOIComponentNode) {
                             JOIComponentNode draggingScene = (JOIComponentNode) dragNode;
 
@@ -105,6 +114,18 @@ public class Draggable {
                     this.dragging = false;
                     for (final Listener listener : this.dragListeners) {
                         listener.accept(this, Draggable.Event.DragEnd);
+                    }
+                } else {
+                    //Add current node to selection
+                    if (event.isControlDown()) {
+                        if (selectionModel.contains(eventNode)) {
+                            selectionModel.remove(eventNode);
+                        } else {
+                            selectionModel.add(eventNode);
+                        }
+                    } else {
+                        selectionModel.clear();
+                        selectionModel.add(eventNode);
                     }
                 }
             }

@@ -3,6 +3,7 @@ package com.asis.ui;
 import com.asis.controllers.Controller;
 import javafx.application.Platform;
 import javafx.event.EventHandler;
+import javafx.geometry.Bounds;
 import javafx.geometry.Point2D;
 import javafx.scene.Cursor;
 import javafx.scene.Node;
@@ -47,14 +48,12 @@ public class InfinityPane extends StackPane {
         addEventHandler(MouseEvent.MOUSE_PRESSED, mouseEvent -> {
             requestFocus();
 
-            if(mouseEvent.isSecondaryButtonDown()) {
-                contextMenu.hide();
-                contextMenu.show(this, mouseEvent.getScreenX(), mouseEvent.getScreenY());
-            } else {
-                contextMenu.hide();
-            }
+            if(!nodeAtPosition(mouseEvent.getSceneX(), mouseEvent.getSceneY()))
+                Controller.getInstance().getSelectionModel().clear();
         });
         addEventHandler(MouseEvent.MOUSE_RELEASED, mouseEvent -> {
+            contextMenu.hide();
+
             if(MouseEvent.MOUSE_RELEASED == mouseEvent.getEventType())
                 ((Node) mouseEvent.getSource()).setCursor(Cursor.DEFAULT);
         });
@@ -128,6 +127,22 @@ public class InfinityPane extends StackPane {
 
     public void setContextMenu(ContextMenu contextMenu) {
         this.contextMenu = contextMenu;
+    }
+
+    public boolean nodeAtPosition(double x, double y) {
+        for (Node n : getContainer().getChildren()) {
+            if (n.getUserData() == null) continue;
+
+            Bounds boundsInScene = n.localToScene(n.getBoundsInLocal());
+            if (x >= boundsInScene.getMinX() &&
+                    x <= boundsInScene.getMaxX() &&
+                    y >= boundsInScene.getMinY() &&
+                    y <= boundsInScene.getMaxY()) {
+                return true;
+            }
+        }
+
+        return false;
     }
 
     public Point2D sceneToWorld(double sceneX, double sceneY) {

@@ -41,7 +41,7 @@ public class ConditionNode extends JOIComponentNode {
     }
 
     @Override
-    protected void focusState(boolean value) {
+    public void focusState(boolean value) {
         if (value) {
             setStyle(
                     "-fx-background-color: #5a5a5a, rgb(60, 63, 65), #5a5a5a, rgb(60, 63, 65), #5a5a5a;" +

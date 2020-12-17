@@ -232,7 +232,7 @@ public class SceneNode extends JOIComponentNode {
     }
 
     @Override
-    protected void focusState(boolean value) {
+    public void focusState(boolean value) {
         if (value) {
             setStyle(
                     "-fx-background-color: #5a5a5a;" +

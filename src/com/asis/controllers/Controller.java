@@ -13,18 +13,18 @@ import com.asis.ui.InfinityPane;
 import com.asis.ui.asis_node.*;
 import com.asis.utilities.AsisUtils;
 import com.asis.utilities.Draggable;
+import com.asis.utilities.SelectionModel;
 import com.asis.utilities.StageManager;
 import javafx.application.Platform;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
-import javafx.geometry.Bounds;
 import javafx.geometry.Point2D;
-import javafx.scene.Node;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.scene.control.*;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
+import javafx.scene.input.MouseEvent;
 import javafx.stage.DirectoryChooser;
 import javafx.stage.FileChooser;
 import javafx.stage.Stage;
@@ -48,6 +48,7 @@ public class Controller {
     private boolean snapToGrid = false;
     private boolean showThumbnail = false;
 
+    private SelectionModel selectionModel = new SelectionModel();
     private JOIPackage joiPackage;
     private final ArrayList<JOIComponentNode> joiComponentNodes = new ArrayList<>();
 
@@ -69,6 +70,15 @@ public class Controller {
         setupMainContextMenu();
         gridToggle.setTooltip(new Tooltip("Snap to grid"));
         thumbnailToggle.setTooltip(new Tooltip("Toggle Scene thumbnails"));
+
+        Platform.runLater(()-> {
+            getInfinityPane().addEventHandler(MouseEvent.MOUSE_PRESSED, mouseEvent -> {
+                if(mouseEvent.isPrimaryButtonDown() || mouseEvent.isSecondaryButtonDown()) {
+                    //if(!getInfinityPane().nodeAtPosition(mouseEvent.getSceneX(), mouseEvent.getSceneY()))
+                        //getSelectionModel().clear();
+                }
+            });
+        });
     }
 
     public static Controller getInstance() {
@@ -100,17 +110,8 @@ public class Controller {
 
         infinityPane.setContextMenu(mainContextMenu);
         infinityPane.setOnContextMenuRequested(contextMenuEvent -> {
-            for (Node n : infinityPane.getContainer().getChildren()) {
-                if (n.getUserData() == null) continue;
-
-                Bounds boundsInScene = n.localToScene(n.getBoundsInLocal());
-                if (contextMenuEvent.getSceneX() >= boundsInScene.getMinX() &&
-                        contextMenuEvent.getSceneX() <= boundsInScene.getMaxX() &&
-                        contextMenuEvent.getSceneY() >= boundsInScene.getMinY() &&
-                        contextMenuEvent.getSceneY() <= boundsInScene.getMaxY()) {
-                    mainContextMenu.hide();
-                    break;
-                }
+            if(!getInfinityPane().nodeAtPosition(contextMenuEvent.getSceneX(), contextMenuEvent.getSceneY())) {
+                mainContextMenu.show(infinityPane, contextMenuEvent.getScreenX(), contextMenuEvent.getScreenY());
             }
 
             menuEventX = contextMenuEvent.getX();
@@ -537,5 +538,9 @@ public class Controller {
 
     public boolean isShowThumbnail() {
         return showThumbnail;
+    }
+
+    public SelectionModel getSelectionModel() {
+        return selectionModel;
     }
 }
