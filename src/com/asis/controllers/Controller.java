@@ -24,7 +24,6 @@ import javafx.scene.Scene;
 import javafx.scene.control.*;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
-import javafx.scene.input.MouseEvent;
 import javafx.stage.DirectoryChooser;
 import javafx.stage.FileChooser;
 import javafx.stage.Stage;
@@ -70,15 +69,6 @@ public class Controller {
         setupMainContextMenu();
         gridToggle.setTooltip(new Tooltip("Snap to grid"));
         thumbnailToggle.setTooltip(new Tooltip("Toggle Scene thumbnails"));
-
-        Platform.runLater(()-> {
-            getInfinityPane().addEventHandler(MouseEvent.MOUSE_PRESSED, mouseEvent -> {
-                if(mouseEvent.isPrimaryButtonDown() || mouseEvent.isSecondaryButtonDown()) {
-                    //if(!getInfinityPane().nodeAtPosition(mouseEvent.getSceneX(), mouseEvent.getSceneY()))
-                        //getSelectionModel().clear();
-                }
-            });
-        });
     }
 
     public static Controller getInstance() {
