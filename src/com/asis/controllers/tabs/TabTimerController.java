@@ -71,15 +71,9 @@ public class TabTimerController extends TabController {
                     final String formattedText = newValue.replaceAll("\\n", "#");
 
                     if (!newValue.isEmpty()) {
-                        if (getTimer().getLineGroup().getLine(onSecond) == null) {
-                            getTimer().getLineGroup().addNewLine(onSecond);
-                        }
-
                         getTimer().getLineGroup().getLine(onSecond).setText(formattedText);
                         getTimer().getLineGroup().getLine(onSecond).setFillColor(fillColor);
                         getTimer().getLineGroup().getLine(onSecond).setOutlineColor(outlineColor);
-                    } else {
-                        getTimer().getLineGroup().getLineArrayList().remove(getTimer().getLineGroup().getLine(onSecond));
                     }
 
                     updateObjectTree();
@@ -103,9 +97,23 @@ public class TabTimerController extends TabController {
                 onSecond = goToSecondsTextField.getIntegerNumber(0);
                 asisCenteredArc.setArcProgress(onSecond);
 
+                if (!s.trim().isEmpty()) {
+                    Line line = getTimer().getLineGroup().getLine(Integer.parseInt(s));
+                    if (line != null) {
+                        final String formattedText = line.getText().replaceAll("\\n", "#");
+
+                        if (formattedText.isEmpty())
+                            getTimer().getLineGroup().getLineArrayList().remove(getTimer().getLineGroup().getLine(Integer.parseInt(s)));
+                    }
+                }
+
+                if (getTimer().getLineGroup().getLine(onSecond) == null) getTimer().getLineGroup().addNewLine(onSecond);
+
                 handleSecondsOverTotal();
                 setTextAreaVariables();
                 setVisibleImage();
+
+                updateObjectTree();
             });
 
             addCheckBoxFieldListeners();
@@ -122,7 +130,8 @@ public class TabTimerController extends TabController {
                         }
                     });
                 }
-            } catch (NoSuchElementException ignore){}
+            } catch (NoSuchElementException ignore) {
+            }
 
             //timer
             asisCenteredArc.setMaxLength(0);

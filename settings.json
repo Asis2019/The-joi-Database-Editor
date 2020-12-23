@@ -50,5 +50,9 @@
     "feature_code": "persistent_vars",
     "feature_read_name": "Persistent variables",
     "feature_description": "Joi will remember some choices from previous sessions"
+  }, {
+	"feature_code": "dialog_option",
+	"feature_read_name": "Dialog option",
+	"feature_description": "Joi contains dialog options"
   }]
 }
