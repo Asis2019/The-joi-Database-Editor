@@ -27,6 +27,13 @@ public class LineGroup implements JSONString, SceneComponent<JSONObject> {
         return null;
     }
 
+    public Line getMaxLine() {
+        int size = getLineArrayList().size();
+        if(size == 0) return null;
+
+        return getLineArrayList().get(size-1);
+    }
+
     @Override
     public String jsonKeyName() {
         return null;

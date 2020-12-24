@@ -53,6 +53,8 @@ public class TabTimerController extends TabController {
     private Label warningLabel;
     @FXML
     private TreeView<String> objectTree;
+    @FXML
+    private Button deleteLineButton;
 
     public TabTimerController(String tabTitle, Timer timer) {
         super(tabTitle);
@@ -62,19 +64,21 @@ public class TabTimerController extends TabController {
         Platform.runLater(() -> {
             setNodeColorStyle(textTextArea, fillColor, outlineColor);
 
-
             //Setup text area
             textTextArea.textProperty().bindBidirectional(timerTextArea.textProperty());
 
             textTextArea.textProperty().addListener((observable, oldValue, newValue) -> {
                 if (!isLockTextAreaFunctionality()) {
+                    if (getTimer().getLineGroup().getLine(onSecond) == null) {
+                        getTimer().getLineGroup().addNewLine(onSecond);
+                        deleteLineButton.setDisable(false);
+                    }
+
                     final String formattedText = newValue.replaceAll("\\n", "#");
 
-                    if (!newValue.isEmpty()) {
-                        getTimer().getLineGroup().getLine(onSecond).setText(formattedText);
-                        getTimer().getLineGroup().getLine(onSecond).setFillColor(fillColor);
-                        getTimer().getLineGroup().getLine(onSecond).setOutlineColor(outlineColor);
-                    }
+                    getTimer().getLineGroup().getLine(onSecond).setText(formattedText);
+                    getTimer().getLineGroup().getLine(onSecond).setFillColor(fillColor);
+                    getTimer().getLineGroup().getLine(onSecond).setOutlineColor(outlineColor);
 
                     updateObjectTree();
                 }
@@ -100,14 +104,17 @@ public class TabTimerController extends TabController {
                 if (!s.trim().isEmpty()) {
                     Line line = getTimer().getLineGroup().getLine(Integer.parseInt(s));
                     if (line != null) {
-                        final String formattedText = line.getText().replaceAll("\\n", "#");
+                        Line emptyLine = new Line();
+                        emptyLine.setLineNumber(line.getLineNumber());
 
-                        if (formattedText.isEmpty())
+                        if(line.equals(emptyLine))
                             getTimer().getLineGroup().getLineArrayList().remove(getTimer().getLineGroup().getLine(Integer.parseInt(s)));
                     }
                 }
 
-                if (getTimer().getLineGroup().getLine(onSecond) == null) getTimer().getLineGroup().addNewLine(onSecond);
+                if (!isLockTextAreaFunctionality() && getTimer().getLineGroup().getLine(onSecond) == null) getTimer().getLineGroup().addNewLine(onSecond);
+
+                deleteLineButton.setDisable(getTimer().getLineGroup().getLineArrayList().size() == 0);
 
                 handleSecondsOverTotal();
                 setTextAreaVariables();
@@ -274,6 +281,22 @@ public class TabTimerController extends TabController {
             getTimer().getLineGroup().getLine(onSecond).setLineImage(file);
 
             setVisibleImage();
+        }
+    }
+
+    public void actionDeleteLine() {
+        getTimer().getLineGroup().getLineArrayList().remove(getTimer().getLineGroup().getLine(onSecond));
+
+        Line line = getTimer().getLineGroup().getMaxLine();
+        if(line != null)
+            goToSecondsTextField.setText(String.valueOf(line.getLineNumber()));
+        else {
+            setLockTextAreaFunctionality(true);
+            goToSecondsTextField.clear();
+            textTextArea.clear();
+            deleteLineButton.setDisable(true);
+            updateObjectTree();
+            setLockTextAreaFunctionality(false);
         }
     }
 
