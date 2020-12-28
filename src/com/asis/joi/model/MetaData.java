@@ -82,8 +82,8 @@ public class MetaData implements Cloneable, JSONString {
         addListToJsonObject(innerObject, "character", getCharacterList());
         addListToJsonObject(innerObject, "toy", getEquipmentList());
 
-        innerObject.put("franchise", getFranchiseList());
-        innerObject.put("features", getFeatureList());
+        if(!getFranchiseList().isEmpty()) innerObject.put("franchise", getFranchiseList());
+        if(!getFeatureList().isEmpty()) innerObject.put("features", getFeatureList());
 
         JSONArray array = new JSONArray();
         array.put(innerObject);
