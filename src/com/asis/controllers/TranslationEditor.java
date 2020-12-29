@@ -120,8 +120,10 @@ public class TranslationEditor {
                 if(component instanceof Scene) {
                     Scene scene = (Scene) component;
                     //Add normal text
-                    for (Line line : scene.getComponent(LineGroup.class).getLineArrayList()) {
-                        addDataToCell(itemsList, columnIndex, scene.getComponentTitle() + " - Line " + line.getLineNumber(), line);
+                    if (scene.hasComponent(LineGroup.class)) {
+                        for (Line line : scene.getComponent(LineGroup.class).getLineArrayList()) {
+                            addDataToCell(itemsList, columnIndex, scene.getComponentTitle() + " - Line " + line.getLineNumber(), line);
+                        }
                     }
 
                     //Add text from timers options

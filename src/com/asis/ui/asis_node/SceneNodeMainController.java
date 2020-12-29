@@ -131,7 +131,8 @@ public class SceneNodeMainController {
             //Remove from inner dialog location
             if (getTotalLinesConnectedToOutput(outputConnection) > 1) {
                 getLineList().remove(boundLine);
-                ((Scene) joiComponent).getComponent(Dialog.class).getOptionArrayList().get(outputConnection.getOptionNumber()).getGotoScene().removeValue(outputConnection.getOptionNumber());
+                ((Scene) joiComponent).getComponent(Dialog.class).getOptionArrayList()
+                        .get(outputConnection.getOptionNumber()).getGotoScene().removeValue(inputConnection.getParentSceneId());
                 outputConnection.setBoundLine(null);
 
                 //Check if after removing there are still multiple lines
