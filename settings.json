@@ -17,6 +17,9 @@
   }, {
     "menu_name": "Español",
     "file_code": "es"
+  }, {
+    "menu_name": "Italiano",
+    "file_code": "it"
   }],
   "FEATURES": [{
     "feature_code": "ambience",

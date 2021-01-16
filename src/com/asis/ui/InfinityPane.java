@@ -8,8 +8,6 @@ import javafx.geometry.Point2D;
 import javafx.scene.Cursor;
 import javafx.scene.Node;
 import javafx.scene.control.ContextMenu;
-import javafx.scene.input.KeyCode;
-import javafx.scene.input.KeyEvent;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.input.ScrollEvent;
 import javafx.scene.layout.Pane;
@@ -64,20 +62,7 @@ public class InfinityPane extends StackPane {
         Platform.runLater(()-> {
             minWidthProperty().bind(getScene().widthProperty());
             minHeightProperty().bind(getScene().heightProperty());
-
             clipChildren(this);
-
-            getScene().addEventHandler(KeyEvent.KEY_PRESSED, keyEvent -> {
-                if(keyEvent.getCode() == KeyCode.R) {
-                    container.setTranslateX(0);
-                    container.setTranslateY(0);
-                    scale = 1;
-                    container.setScaleX(scale);
-                    container.setScaleY(scale);
-                    reSetStyle();
-                }
-            });
-
             reSetStyle();
         });
     }
@@ -122,6 +107,15 @@ public class InfinityPane extends StackPane {
         container.setTranslateX(nonZoomedXOffset * scale);
         container.setTranslateY(nonZoomedYOffset * scale);
 
+        reSetStyle();
+    }
+
+    public void resetPosition() {
+        container.setTranslateX(0);
+        container.setTranslateY(0);
+        scale = 1;
+        container.setScaleX(scale);
+        container.setScaleY(scale);
         reSetStyle();
     }
 

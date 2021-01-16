@@ -80,23 +80,25 @@ public class Controller {
         MenuItem newSceneItem = new MenuItem("New Scene");
         MenuItem newVariableSetterItem = new MenuItem("New Variable");
         MenuItem newConditionItem = new MenuItem("New Condition");
-        mainContextMenu.getItems().addAll(newSceneItem, newVariableSetterItem, newConditionItem);
+        SeparatorMenuItem separatorMenuItem = new SeparatorMenuItem();
+
+        MenuItem reset_view = new MenuItem("Reset view");
+        mainContextMenu.getItems().addAll(newSceneItem, newVariableSetterItem, newConditionItem, separatorMenuItem, reset_view);
 
         //Handle menu actions
         newSceneItem.setOnAction(event -> {
             addSceneContextMenu = true;
             addScene(false);
         });
-
         newVariableSetterItem.setOnAction(actionEvent -> {
             addSceneContextMenu = true;
             addVariableSetterNode();
         });
-
         newConditionItem.setOnAction(actionEvent -> {
             addSceneContextMenu = true;
             addConditionNode();
         });
+        reset_view.setOnAction(actionEvent -> getInfinityPane().resetPosition());
 
         infinityPane.setContextMenu(mainContextMenu);
         infinityPane.setOnContextMenuRequested(contextMenuEvent -> {
