@@ -6,7 +6,6 @@ import com.asis.joi.model.entities.Condition;
 import com.asis.joi.model.entities.JOIComponent;
 import com.asis.joi.model.entities.VariableSetter;
 import com.asis.utilities.AsisUtils;
-import com.asis.utilities.StageManager;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
@@ -14,6 +13,7 @@ import javafx.scene.Scene;
 import javafx.scene.control.ComboBox;
 import javafx.scene.control.TextField;
 import javafx.scene.image.Image;
+import javafx.stage.Modality;
 import javafx.stage.Stage;
 
 import java.io.IOException;
@@ -30,7 +30,9 @@ public class DialogCondition {
     private ComboBox<String> variableDropdown;
     @FXML
     private TextField conditionTitle, compareValue;
+
     private Condition condition;
+    private static boolean result = true;
 
     public void init() {
         conditionTitle.setText(getDefaultTitle(condition, "Condition"));
@@ -58,9 +60,9 @@ public class DialogCondition {
             condition.setVariable(variableDropdown.getValue());
 
             Stage stage = (Stage) conditionTitle.getScene().getWindow();
-            StageManager.getInstance().closeStage(stage);
+            stage.close();
         } catch (NullPointerException e) {
-            DialogMessage.messageDialog("Error", "Please make sure the Node Title is filled.");
+            DialogMessage.messageDialog("Error", "Please make sure the Node Title is filled.", 600, 200);
         }
     }
 
@@ -85,8 +87,8 @@ public class DialogCondition {
             ((VariableSetter) joiComponent).setVariableValue(finalValue);
     }
 
-    public static void openConditionDialog(Condition condition) {
-        if (StageManager.getInstance().requestStageFocus(condition.getComponentId())) return;
+    public static boolean openConditionDialog(Condition condition) {
+        result = true;
 
         try {
             Stage stage = new Stage();
@@ -95,7 +97,7 @@ public class DialogCondition {
             Parent root = fxmlLoader.load();
 
             DialogCondition controller = fxmlLoader.getController();
-            controller.setCondition(condition);
+            controller.condition = condition;
             controller.init();
 
             Scene main_scene = new Scene(root);
@@ -104,14 +106,13 @@ public class DialogCondition {
             stage.setScene(main_scene);
             stage.setUserData(condition.getComponentId());
             stage.setTitle("Condition");
-
-            StageManager.getInstance().openStage(stage);
+            stage.setOnCloseRequest(windowEvent -> result = false);
+            stage.initModality(Modality.APPLICATION_MODAL);
+            stage.showAndWait();
         } catch (IOException e) {
             AsisUtils.errorDialogWindow(e);
         }
-    }
 
-    public void setCondition(Condition condition) {
-        this.condition = condition;
+        return result;
     }
 }

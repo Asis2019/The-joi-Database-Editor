@@ -102,7 +102,7 @@ public class Controller {
 
         infinityPane.setContextMenu(mainContextMenu);
         infinityPane.setOnContextMenuRequested(contextMenuEvent -> {
-            if(!getInfinityPane().nodeAtPosition(contextMenuEvent.getSceneX(), contextMenuEvent.getSceneY())) {
+            if (!getInfinityPane().nodeAtPosition(contextMenuEvent.getSceneX(), contextMenuEvent.getSceneY())) {
                 mainContextMenu.show(infinityPane, contextMenuEvent.getScreenX(), contextMenuEvent.getScreenY());
             }
 
@@ -180,7 +180,7 @@ public class Controller {
             //TODO issue 5 make new scenes via button adjacent
             componentNode.positionInGrid(xPosition, yPosition);
 
-            if(!suppressJSONUpdating) {
+            if (!suppressJSONUpdating) {
                 getJoiPackage().getJoi().getComponent(componentId).setLayoutXPosition(xPosition);
                 getJoiPackage().getJoi().getComponent(componentId).setLayoutYPosition(yPosition);
             }
@@ -206,7 +206,7 @@ public class Controller {
     }
 
     private void addConditionNode(double xPosition, double yPosition, String title, int componentId, boolean suppressJSONUpdating) {
-        if(!suppressJSONUpdating) {
+        if (!suppressJSONUpdating) {
             getJoiPackage().getJoi().addNewComponent(Condition.class, componentId);
             getJoiPackage().getJoi().getComponent(componentId).setComponentTitle(title);
         }
@@ -214,8 +214,13 @@ public class Controller {
         JOIComponentNode componentNode = new ConditionNode(300, 100, componentId, sceneNodeMainController, getJoiPackage().getJoi().getComponent(componentId));
         initializeComponentNode(componentNode, xPosition, yPosition, title, componentId, suppressJSONUpdating);
 
-        if(!suppressJSONUpdating)
-            DialogCondition.openConditionDialog((Condition) componentNode.getJoiComponent());
+        if (!suppressJSONUpdating) {
+            componentNode.setVisible(false);
+            boolean result = DialogCondition.openConditionDialog((Condition) componentNode.getJoiComponent());
+
+            if (!result) removeComponentNode(componentNode);
+            else componentNode.setVisible(true);
+        }
     }
 
     private void addVariableSetterNode() {
@@ -224,7 +229,7 @@ public class Controller {
     }
 
     private void addVariableSetterNode(double xPosition, double yPosition, String title, int componentId, boolean suppressJSONUpdating) {
-        if(!suppressJSONUpdating) {
+        if (!suppressJSONUpdating) {
             getJoiPackage().getJoi().addNewComponent(VariableSetter.class, componentId);
             getJoiPackage().getJoi().getComponent(componentId).setComponentTitle(title);
         }
@@ -232,8 +237,13 @@ public class Controller {
         JOIComponentNode componentNode = new VariableSetterNode(300, 100, componentId, sceneNodeMainController, getJoiPackage().getJoi().getComponent(componentId));
         initializeComponentNode(componentNode, xPosition, yPosition, title, componentId, suppressJSONUpdating);
 
-        if(!suppressJSONUpdating)
-            DialogVariableSetter.openVariableSetter((VariableSetter) componentNode.getJoiComponent());
+        if (!suppressJSONUpdating) {
+            componentNode.setVisible(false);
+            boolean result = DialogVariableSetter.openVariableSetter((VariableSetter) componentNode.getJoiComponent());
+
+            if (!result) removeComponentNode(componentNode);
+            else componentNode.setVisible(true);
+        }
     }
 
     private void addScene(final boolean isFirstScene) {
@@ -245,7 +255,7 @@ public class Controller {
             title = defaultTitle;
         } else {
             title = DialogSceneTitle.addNewSceneDialog(defaultTitle);
-            if(title == null) return;
+            if (title == null) return;
         }
 
         addScene(10, 0, title, sceneId - 1, false);
@@ -277,7 +287,7 @@ public class Controller {
         if (newProjectDirectory.exists()) {
             boolean notEmpty = Arrays.stream(Objects.requireNonNull(newProjectDirectory.list())).anyMatch(fileName -> fileName.contains("joi_text_") || fileName.contains("info_"));
 
-            if(notEmpty) {
+            if (notEmpty) {
                 DialogMessage.messageDialog("WARNING", String.format("The project path: %s is not empty.\nPlease select a different path or empty the current one.",
                         newProjectDirectory.getAbsolutePath()), 600, 200);
                 throw new FileAlreadyExistsException("CANCEL");
@@ -344,26 +354,27 @@ public class Controller {
 
                 //Create component nodes
                 for (JOIComponent component : getJoiPackage().getJoi().getJoiComponents()) {
-                    if(component instanceof com.asis.joi.model.entities.Scene)
+                    if (component instanceof com.asis.joi.model.entities.Scene)
                         addScene(component.getLayoutXPosition(), component.getLayoutYPosition(), component.getComponentTitle(), component.getComponentId(), true);
-                    else if(component instanceof VariableSetter)
+                    else if (component instanceof VariableSetter)
                         addVariableSetterNode(component.getLayoutXPosition(), component.getLayoutYPosition(), component.getComponentTitle(), component.getComponentId(), true);
-                    else if(component instanceof Condition)
+                    else if (component instanceof Condition)
                         addConditionNode(component.getLayoutXPosition(), component.getLayoutYPosition(), component.getComponentTitle(), component.getComponentId(), true);
                 }
                 //Create connections
                 for (JOIComponent component : getJoiPackage().getJoi().getJoiComponents()) {
-                    if(component instanceof com.asis.joi.model.entities.Scene) {
+                    if (component instanceof com.asis.joi.model.entities.Scene) {
                         com.asis.joi.model.entities.Scene scene = (com.asis.joi.model.entities.Scene) component;
                         final AsisConnectionButton output = getJOIComponentNodeWithId(getJoiComponentNodes(), component.getComponentId()).getOutputButtons().get(0);
-                        if(scene.hasComponent(GotoScene.class)) createConnections(scene.getComponent(GotoScene.class), output);
+                        if (scene.hasComponent(GotoScene.class))
+                            createConnections(scene.getComponent(GotoScene.class), output);
 
                         createConnectionsForDialogOutputs(scene);
-                    } else if(component instanceof VariableSetter) {
+                    } else if (component instanceof VariableSetter) {
                         VariableSetter setter = (VariableSetter) component;
                         final AsisConnectionButton output = getJOIComponentNodeWithId(getJoiComponentNodes(), component.getComponentId()).getOutputButtons().get(0);
                         createConnections(setter.getGotoScene(), output);
-                    } else if(component instanceof Condition) {
+                    } else if (component instanceof Condition) {
                         Condition condition = (Condition) component;
                         final AsisConnectionButton trueOutput = getJOIComponentNodeWithId(getJoiComponentNodes(), component.getComponentId()).getOutputButtons().get(0);
                         final AsisConnectionButton falseOutput = getJOIComponentNodeWithId(getJoiComponentNodes(), component.getComponentId()).getOutputButtons().get(1);
@@ -417,7 +428,8 @@ public class Controller {
     }
 
     public JOIComponentNode getJOIComponentNodeWithId(ArrayList<JOIComponentNode> components, int componentId) {
-        for (JOIComponentNode componentNode : components) if (componentNode.getComponentId() == componentId) return componentNode;
+        for (JOIComponentNode componentNode : components)
+            if (componentNode.getComponentId() == componentId) return componentNode;
         return null;
     }
 
@@ -476,7 +488,7 @@ public class Controller {
     public void actionToggleGrid() {
         snapToGrid = !snapToGrid;
         ImageView imageView;
-        if(snapToGrid) {
+        if (snapToGrid) {
             imageView = new ImageView(new Image(getClass().getResourceAsStream("/resources/images/ic_grid_on.png")));
         } else {
             imageView = new ImageView(new Image(getClass().getResourceAsStream("/resources/images/ic_grid_off.png")));
@@ -489,16 +501,16 @@ public class Controller {
     public void actionToggleThumbnail() {
         showThumbnail = !showThumbnail;
         ImageView imageView;
-        if(showThumbnail) {
+        if (showThumbnail) {
             imageView = new ImageView(new Image(getClass().getResourceAsStream("/resources/images/ic_thumbnail_on.png")));
             getJoiComponentNodes().forEach(joiComponentNode -> {
-                if(joiComponentNode instanceof SceneNode)
+                if (joiComponentNode instanceof SceneNode)
                     ((SceneNode) joiComponentNode).showSceneThumbnail();
             });
         } else {
             imageView = new ImageView(new Image(getClass().getResourceAsStream("/resources/images/ic_thumbnail_off.png")));
             getJoiComponentNodes().forEach(joiComponentNode -> {
-                if(joiComponentNode instanceof SceneNode)
+                if (joiComponentNode instanceof SceneNode)
                     ((SceneNode) joiComponentNode).hideSceneThumbnail();
             });
         }

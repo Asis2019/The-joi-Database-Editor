@@ -11,6 +11,7 @@ import javafx.scene.Scene;
 import javafx.scene.control.CheckBox;
 import javafx.scene.control.TextField;
 import javafx.scene.image.Image;
+import javafx.stage.Modality;
 import javafx.stage.Stage;
 
 import java.io.IOException;
@@ -26,6 +27,8 @@ public class DialogVariableSetter {
     private CheckBox variablePersistentBox;
 
     private VariableSetter variableSetter;
+
+    private static boolean result = true;
 
     public void init() {
         variableSetterTitle.setText(getDefaultTitle(variableSetter, "Variable"));
@@ -44,7 +47,7 @@ public class DialogVariableSetter {
             Stage stage = (Stage) variableSetterTitle.getScene().getWindow();
             StageManager.getInstance().closeStage(stage);
         } catch (NullPointerException e) {
-            DialogMessage.messageDialog("Error", "Please ensure that the title, name and value are not empty.");
+            DialogMessage.messageDialog("Unable to save variable", "Please ensure that the variable name is not empty.", 600, 200);
         }
     }
 
@@ -52,8 +55,8 @@ public class DialogVariableSetter {
         this.variableSetter = variableSetter;
     }
 
-    public static void openVariableSetter(VariableSetter variableSetter) {
-        if (StageManager.getInstance().requestStageFocus(variableSetter.getComponentId())) return;
+    public static boolean openVariableSetter(VariableSetter variableSetter) {
+        result = true;
 
         try {
             Stage stage = new Stage();
@@ -71,11 +74,14 @@ public class DialogVariableSetter {
             stage.setScene(main_scene);
             stage.setUserData(variableSetter.getComponentId());
             stage.setTitle("Variable Setter");
-
-            StageManager.getInstance().openStage(stage);
+            stage.setOnCloseRequest(windowEvent -> result = false);
+            stage.initModality(Modality.APPLICATION_MODAL);
+            stage.showAndWait();
         } catch (IOException e) {
             AsisUtils.errorDialogWindow(e);
         }
+
+        return result;
     }
 
 }

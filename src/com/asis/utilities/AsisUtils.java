@@ -4,13 +4,18 @@ import com.asis.controllers.Controller;
 import com.asis.controllers.dialogs.DialogMessage;
 import com.asis.joi.JOIPackageManager;
 import com.asis.joi.model.entities.JOIComponent;
+import javafx.animation.KeyFrame;
+import javafx.animation.Timeline;
+import javafx.scene.control.Tooltip;
 import javafx.scene.paint.Color;
 import javafx.stage.FileChooser;
+import javafx.util.Duration;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.io.*;
+import java.lang.reflect.Field;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.util.ArrayList;
@@ -170,6 +175,24 @@ public class AsisUtils {
             return prefix + " " + sceneId;
         } else {
             return joiComponent.getComponentTitle();
+        }
+    }
+
+    // Hacky code to change tooltips speed
+    public static void hackTooltipStartTiming(Tooltip tooltip) {
+        try {
+            Field fieldBehavior = tooltip.getClass().getDeclaredField("BEHAVIOR");
+            fieldBehavior.setAccessible(true);
+            Object objBehavior = fieldBehavior.get(tooltip);
+
+            Field fieldTimer = objBehavior.getClass().getDeclaredField("activationTimer");
+            fieldTimer.setAccessible(true);
+            Timeline objTimer = (Timeline) fieldTimer.get(objBehavior);
+
+            objTimer.getKeyFrames().clear();
+            objTimer.getKeyFrames().add(new KeyFrame(new Duration(250)));
+        } catch (Exception e) {
+            e.printStackTrace();
         }
     }
 }

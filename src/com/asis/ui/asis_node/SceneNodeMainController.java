@@ -266,6 +266,8 @@ public class SceneNodeMainController {
             //Connection is an input type
             for (BoundLine line : getLineList()) {
                 if (line.getEndPointConnectionObject() == asisConnectionButton) {
+                    line.unbindEnd();
+
                     currentOutputConnection = line.getStartPointConnectionObject();
                     root.getChildren().remove(line);
                     removeConnectionFromStory(currentOutputConnection, asisConnectionButton, line);
@@ -282,9 +284,8 @@ public class SceneNodeMainController {
         Optional<AsisConnectionButton> asisConnectionButton = findNode(mouseEvent.getSceneX(), mouseEvent.getSceneY());
         if (asisConnectionButton.isPresent()) {
             stopDrag(asisConnectionButton.get());
-        } else {
+        } else if(currentOutputConnection != null) {
             BoundLine boundLine = currentOutputConnection.getBoundLine();
-            boundLine.unbindEnd();
 
             root.getChildren().remove(boundLine);
             getLineList().remove(boundLine);

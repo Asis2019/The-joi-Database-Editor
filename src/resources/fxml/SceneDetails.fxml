@@ -3,7 +3,8 @@
 <?import javafx.geometry.Insets?>
 <?import javafx.scene.control.*?>
 <?import javafx.scene.layout.*?>
-<BorderPane id="darkThemeBackground" fx:id="sceneDetailBorderPane" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="720.0" prefWidth="800.0" stylesheets="@../../resources/css/scene_details_stylesheet.css" xmlns="http://javafx.com/javafx/11.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.asis.controllers.SceneDetails">
+<?import java.net.URL?>
+<BorderPane id="darkThemeBackground" fx:id="sceneDetailBorderPane" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="720.0" prefWidth="800.0" xmlns="http://javafx.com/javafx/11.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.asis.controllers.SceneDetails">
    <top>
        <VBox BorderPane.alignment="CENTER">
           <children>
@@ -37,4 +38,8 @@
            </BorderPane.margin>
        </TabPane>
    </center>
+   <stylesheets>
+      <URL value="@../css/scene_details_stylesheet.css" />
+      <URL value="@../css/menu_bar_stylesheet.css" />
+   </stylesheets>
 </BorderPane>

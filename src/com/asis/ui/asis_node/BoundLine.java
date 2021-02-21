@@ -1,8 +1,14 @@
 package com.asis.ui.asis_node;
 
+import com.asis.controllers.Controller;
 import javafx.beans.binding.Bindings;
+import javafx.scene.control.Tooltip;
 import javafx.scene.shape.CubicCurve;
 import javafx.scene.shape.StrokeLineCap;
+
+import java.util.ArrayList;
+
+import static com.asis.utilities.AsisUtils.hackTooltipStartTiming;
 
 public class BoundLine extends CubicCurve {
 
@@ -47,11 +53,34 @@ public class BoundLine extends CubicCurve {
     private void bindEnd() {
         endXProperty().bind(getEndPointConnectionObject().centerXProperty());
         endYProperty().bind(getEndPointConnectionObject().centerYProperty());
+
+        Controller controller = Controller.getInstance();
+        ArrayList<JOIComponentNode> joiComponentNodes = controller.getJoiComponentNodes();
+
+
+        //TODO is unable to handle multiple lines connected to the same point
+        String tooltipText = controller.getJOIComponentNodeWithId(joiComponentNodes, getEndPointConnectionObject().getParentSceneId()).getTitle();
+
+        Tooltip tooltip = new Tooltip(String.valueOf(tooltipText));
+        hackTooltipStartTiming(tooltip);
+        tooltip.getScene().cursorProperty().bind(getStartPointConnectionObject().cursorProperty());
+        getStartPointConnectionObject().setTooltip(tooltip);
+
+        String tooltip2Text = controller.getJOIComponentNodeWithId(joiComponentNodes, getStartPointConnectionObject().getParentSceneId()).getTitle();
+
+        Tooltip tooltip2 = new Tooltip(tooltip2Text);
+        hackTooltipStartTiming(tooltip2);
+        tooltip2.getScene().cursorProperty().bind(getEndPointConnectionObject().cursorProperty());
+        getEndPointConnectionObject().setTooltip(tooltip2);
     }
+
 
     public void unbindEnd() {
         endXProperty().unbind();
         endYProperty().unbind();
+
+        if(getStartPointConnectionObject() != null) getStartPointConnectionObject().setTooltip(null);
+        if(getEndPointConnectionObject() != null) getEndPointConnectionObject().setTooltip(null);
     }
 
     public void setStartPointConnectionObject(AsisConnectionButton startPointConnectionObject) {
