@@ -12,6 +12,7 @@ public class MetaData implements Cloneable, JSONString {
     private File joiIcon;
     private String preparations="", name="", joiId="", versionAdded="", displayedFetishes="", creator="";
     private double estimatedDuration = 0;
+    private boolean usesCustomDuration = false;
     private ArrayList<String> fetishList = new ArrayList<>();
     private ArrayList<String> characterList = new ArrayList<>();
     private ArrayList<String> equipmentList = new ArrayList<>();
@@ -64,6 +65,12 @@ public class MetaData implements Cloneable, JSONString {
                     getFeatureList().add((String) featuresArray.get(i));
                 }
                 break;
+            case "customDuration":
+                setUsesCustomDuration(jsonObject.getBoolean("customDuration"));
+                break;
+            case "estimatedDuration":
+                setEstimatedDuration(jsonObject.getDouble("estimatedDuration"));
+                break;
         }
     }
 
@@ -77,6 +84,7 @@ public class MetaData implements Cloneable, JSONString {
         addStringToJsonWithDefault(innerObject, "", getCreator(),"creator");
 
         innerObject.put("estimatedDuration", getEstimatedDuration());
+        innerObject.put("customDuration", isUsingCustomDuration());
 
         addListToJsonObject(innerObject, "fetish", getFetishList());
         addListToJsonObject(innerObject, "character", getCharacterList());
@@ -101,6 +109,9 @@ public class MetaData implements Cloneable, JSONString {
         metaData.setVersionAdded(getVersionAdded());
         metaData.setDisplayedFetishes(getDisplayedFetishes());
         metaData.setCreator(getCreator());
+
+        metaData.setUsesCustomDuration(isUsingCustomDuration());
+        metaData.setEstimatedDuration(getEstimatedDuration());
 
         metaData.setFetishList(new ArrayList<>(getFetishList()));
         metaData.setCharacterList(new ArrayList<>(getCharacterList()));
@@ -129,6 +140,7 @@ public class MetaData implements Cloneable, JSONString {
         if (!getVersionAdded().equals(metaData.getVersionAdded())) return false;
         if (!getDisplayedFetishes().equals(metaData.getDisplayedFetishes())) return false;
         if (!getCreator().equals(metaData.getCreator())) return false;
+        if (isUsingCustomDuration() != metaData.isUsingCustomDuration()) return false;
         if (!getFetishList().equals(metaData.getFetishList())) return false;
         if (!getCharacterList().equals(metaData.getCharacterList())) return false;
         if (!getFranchiseList().equals(metaData.getFranchiseList())) return false;
@@ -249,5 +261,12 @@ public class MetaData implements Cloneable, JSONString {
     }
     public void setFeatureList(ArrayList<String> featureList) {
         this.featureList = featureList;
+    }
+
+    public boolean isUsingCustomDuration() {
+        return usesCustomDuration;
+    }
+    public void setUsesCustomDuration(boolean usesCustomDuration) {
+        this.usesCustomDuration = usesCustomDuration;
     }
 }

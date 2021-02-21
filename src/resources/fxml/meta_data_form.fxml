@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
+<?import com.asis.ui.NumberField?>
 <?import javafx.geometry.Insets?>
 <?import javafx.scene.control.*?>
 <?import javafx.scene.Cursor?>
@@ -46,10 +47,16 @@
 
                 <HBox>
                     <children>
-                        <Label text="Calculated joi Duration" textFill="#bbbbbb" />
+                        <Label text="Calculated joi Duration (in seconds)" textFill="#bbbbbb" />
                     </children>
                 </HBox>
-                <TextField fx:id="estimatedDurationField" disable="true" editable="false" />
+                <HBox>
+                    <children>
+                        <CheckBox fx:id="customDuration" text="Use custom duration" textFill="#bbbbbb" />
+                    </children>
+                </HBox>
+
+                <NumberField fx:id="estimatedDurationField" disable="true" formatType="DECIMAL" />
 
                 <HBox>
                     <children>

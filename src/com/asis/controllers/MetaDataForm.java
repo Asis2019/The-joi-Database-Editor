@@ -3,6 +3,7 @@ package com.asis.controllers;
 import com.asis.joi.JOIPackageManager;
 import com.asis.joi.model.JOIPackage;
 import com.asis.joi.model.MetaData;
+import com.asis.ui.NumberField;
 import com.asis.utilities.AsisUtils;
 import com.asis.utilities.Config;
 import javafx.fxml.FXML;
@@ -26,9 +27,11 @@ public class MetaDataForm {
 
     @FXML private VBox mainVBox, iconControllerBox;
     @FXML private TextField titleTextField, displayedFetishesTextField,
-            joiIdTextField, gameVersionTextField, creatorTextField, estimatedDurationField;
+            joiIdTextField, gameVersionTextField, creatorTextField;
     @FXML private TextArea fetishesTextArea, equipmentTextArea, charactersTextArea, franchiseTextArea, preparationsTextArea;
     @FXML private MenuButton featureSelection;
+    @FXML private CheckBox customDuration;
+    @FXML private NumberField estimatedDurationField;
 
     public void initialize() {
         getImageView().setFitHeight(300);
@@ -37,10 +40,13 @@ public class MetaDataForm {
         getImageView().setOnMouseClicked(mouseEvent -> addIcon());
 
         setIdUpdatingListeners();
+
+        Tooltip tooltip = new Tooltip("Input the duration of your joi in seconds");
+        customDuration.setTooltip(tooltip);
+        estimatedDurationField.disableProperty().bind(customDuration.selectedProperty().not());
     }
 
     void inflateJOIPackageObject(JOIPackage joiPackage) {
-        joiPackage.getMetaData().setEstimatedDuration(joiPackage.getJoi().getDuration());
         setJoiPackage(joiPackage);
 
         //Image
@@ -67,7 +73,12 @@ public class MetaDataForm {
         charactersTextArea.setText(String.join(",", metaData.getCharacterList()));
         equipmentTextArea.setText(String.join(",", metaData.getEquipmentList()));
         franchiseTextArea.setText(String.join(",", metaData.getFranchiseList()));
-        estimatedDurationField.setText(String.format( "%.0f seconds",metaData.getEstimatedDuration()));
+
+        if(!metaData.isUsingCustomDuration()) joiPackage.getMetaData().setEstimatedDuration(joiPackage.getJoi().getDuration());
+
+        estimatedDurationField.setText(String.valueOf(metaData.getEstimatedDuration()));
+        customDuration.setSelected(metaData.isUsingCustomDuration());
+
 
         //Populate featureSelection from file
         JSONArray availableFeatures = (JSONArray) Config.get("FEATURES");
@@ -143,6 +154,10 @@ public class MetaDataForm {
         stage.fireEvent(new WindowEvent(stage, WindowEvent.WINDOW_CLOSE_REQUEST));
     }
 
+    public void actionCustomDuration() {
+        //estimatedDurationField.setDisable(!customDuration.isSelected());
+    }
+
     private MetaData addFieldDataToMetaData() {
         MetaData metaData = new MetaData();
 
@@ -154,6 +169,11 @@ public class MetaDataForm {
         metaData.setJoiId(joiIdTextField.getText());
         metaData.setVersionAdded(gameVersionTextField.getText());
         metaData.setCreator(creatorTextField.getText());
+
+        metaData.setUsesCustomDuration(customDuration.isSelected());
+        if(metaData.isUsingCustomDuration()) {
+            metaData.setEstimatedDuration(Double.parseDouble(estimatedDurationField.getText().trim()));
+        }
 
         MetaData.addCommaSeparatedStringToList(fetishesTextArea.getText().toLowerCase(), metaData.getFetishList());
         MetaData.addCommaSeparatedStringToList(equipmentTextArea.getText().toLowerCase(), metaData.getEquipmentList());
