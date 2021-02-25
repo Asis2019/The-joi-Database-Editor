@@ -9,8 +9,8 @@ import javafx.scene.control.SeparatorMenuItem;
 
 public class ConditionNode extends JOIComponentNode {
 
-    public ConditionNode(int width, int height, int componentId, SceneNodeMainController sceneNodeMainController, JOIComponent component) {
-        super(width, height, componentId, sceneNodeMainController, component);
+    public ConditionNode(int width, int height, int componentId, JOIComponent component) {
+        super(width, height, componentId, component);
 
         setUserData("condition");
 

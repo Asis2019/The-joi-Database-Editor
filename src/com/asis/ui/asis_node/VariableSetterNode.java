@@ -9,8 +9,8 @@ import javafx.scene.control.SeparatorMenuItem;
 
 public class VariableSetterNode extends JOIComponentNode {
 
-    public VariableSetterNode(int width, int height, int componentId, SceneNodeMainController sceneNodeMainController, JOIComponent component) {
-        super(width, height, componentId, sceneNodeMainController, component);
+    public VariableSetterNode(int width, int height, int componentId, JOIComponent component) {
+        super(width, height, componentId, component);
 
         setUserData("variableSetter");
 

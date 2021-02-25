@@ -1,15 +1,26 @@
 package com.asis.ui.asis_node;
 
+import com.asis.controllers.Controller;
+import com.asis.joi.model.entities.JOIComponent;
+import com.asis.joi.model.entities.Scene;
 import javafx.beans.property.ReadOnlyDoubleProperty;
 import javafx.beans.property.ReadOnlyDoubleWrapper;
+import javafx.collections.FXCollections;
+import javafx.collections.ListChangeListener;
+import javafx.collections.ObservableList;
 import javafx.geometry.Bounds;
 import javafx.scene.Cursor;
 import javafx.scene.control.Button;
-import javafx.scene.layout.Pane;
+import javafx.scene.control.Tooltip;
+
+import java.util.ArrayList;
+
+import static com.asis.utilities.AsisUtils.hackTooltipStartTiming;
 
 public class AsisConnectionButton extends Button {
 
-    public static final String DEFAULT_COLOR = "#63c763ff";
+    public static final String DEFAULT_COLOR = "#a8689e";
+    public static final String SINGLE_LINE_COLOR = "#63c763ff";
     public static final String BAD_END_COLOR = "#c76363ff";
     public static final String GOOD_END_COLOR = "#6392c7ff";
     public static final String RANDOM_OUT_COLOR = "#c7c763ff";
@@ -17,10 +28,9 @@ public class AsisConnectionButton extends Button {
     private final ReadOnlyDoubleWrapper centerX = new ReadOnlyDoubleWrapper();
     private final ReadOnlyDoubleWrapper centerY = new ReadOnlyDoubleWrapper();
 
-    private final Pane parentPane;
-    private BoundLine boundLine;
+    private final ObservableList<BoundLine> boundLines = FXCollections.observableArrayList(new ArrayList<>());
 
-    private final int parentSceneId;
+    private final JOIComponent joiComponent;
     private int optionNumber;
 
     private final boolean connectionType; //false is output true is input
@@ -37,19 +47,49 @@ public class AsisConnectionButton extends Button {
                     "-fx-border-width: 1;" +
                     "-fx-background-insets: 1;";
 
-    AsisConnectionButton(Pane parentPane, boolean connectionType, int parentSceneId) {
-        this.parentPane = parentPane;
+    AsisConnectionButton(boolean connectionType, JOIComponent joiComponent) {
         this.connectionType = connectionType;
-        this.parentSceneId = parentSceneId;
+        this.joiComponent = joiComponent;
 
         setStyle(outputConnectorStyle);
         setCursor(Cursor.HAND);
 
         localToSceneTransformProperty().addListener((observableValue, transform, t1) -> calcCenter());
+
+        boundLines.addListener((ListChangeListener<BoundLine>) change -> {
+            calcCenter();
+            processConnectionColors();
+        });
+
+        if (getJoiComponent() instanceof Scene) {
+            Scene scene = (Scene) getJoiComponent();
+            scene.goodEndProperty().addListener((observableValue, aBoolean, t1) -> processConnectionColors());
+            scene.badEndProperty().addListener((observableValue, aBoolean, t1) -> processConnectionColors());
+        }
+
+        processConnectionColors();
     }
 
-    void setBoundLine(BoundLine boundLine) {
-        this.boundLine = boundLine;
+    void calculateTooltip() {
+        if (!hasBoundLine()) {
+            setTooltip(null);
+            return;
+        }
+
+        StringBuilder tooltipText = new StringBuilder();
+        for (BoundLine line : getBoundLines()) {
+            if (connectionType) {
+                tooltipText.append(line.getStartPointConnectionObject().getJoiComponent().getComponentTitle());
+            } else {
+                tooltipText.append(line.getEndPointConnectionObject().getJoiComponent().getComponentTitle());
+            }
+            tooltipText.append("\n");
+        }
+
+        Tooltip tooltip = new Tooltip(tooltipText.toString());
+        hackTooltipStartTiming(tooltip);
+        tooltip.getScene().cursorProperty().bind(cursorProperty());
+        setTooltip(tooltip);
     }
 
     void setButtonColor(String hexColor) {
@@ -66,21 +106,51 @@ public class AsisConnectionButton extends Button {
     }
 
     BoundLine getBoundLine() {
-        return this.boundLine;
+        return getBoundLines().get(getBoundLines().size() - 1);
+    }
+
+    void cycleList() {
+        //This method exists so that you can select different lines from the input
+        BoundLine line = getBoundLine();
+
+        getBoundLines().remove(line);
+        getBoundLines().add(0, line);
     }
 
     boolean hasBoundLine() {
-        return boundLine != null;
+        return !boundLines.isEmpty();
     }
 
-    void calcCenter() {
-        Bounds bounds = parentPane.sceneToLocal(localToScene(getBoundsInLocal()));
+    private void calcCenter() {
+        Bounds bounds = Controller.getInstance().getInfinityPane().getContainer().sceneToLocal(localToScene(getBoundsInLocal()));
         centerX.set(bounds.getMinX() + bounds.getWidth() / 2);
         centerY.set(bounds.getMinY() + bounds.getHeight() / 2);
     }
 
+    void processConnectionColors() {
+        if (getConnectionType() && getJoiComponent() instanceof Scene) {
+            Scene scene = (Scene) getJoiComponent();
+
+            if (scene.isGoodEnd()) {
+                setButtonColor(GOOD_END_COLOR);
+                return;
+            } else if (scene.isBadEnd()) {
+                setButtonColor(BAD_END_COLOR);
+                return;
+            }
+        }
+
+        if (getBoundLines().size() > 1) {
+            setButtonColor(RANDOM_OUT_COLOR);
+        } else if (getBoundLines().size() == 1) {
+            setButtonColor(SINGLE_LINE_COLOR);
+        } else {
+            setButtonColor(DEFAULT_COLOR);
+        }
+    }
+
     public int getParentSceneId() {
-        return this.parentSceneId;
+        return getJoiComponent().getComponentId();
     }
 
     boolean getConnectionType() {
@@ -101,5 +171,13 @@ public class AsisConnectionButton extends Button {
 
     public void setOptionNumber(int optionNumber) {
         this.optionNumber = optionNumber;
+    }
+
+    ObservableList<BoundLine> getBoundLines() {
+        return boundLines;
+    }
+
+    public JOIComponent getJoiComponent() {
+        return joiComponent;
     }
 }

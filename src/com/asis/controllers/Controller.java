@@ -51,8 +51,6 @@ public class Controller {
     private JOIPackage joiPackage;
     private final ArrayList<JOIComponentNode> joiComponentNodes = new ArrayList<>();
 
-    private SceneNodeMainController sceneNodeMainController;
-
     private final ContextMenu mainContextMenu = new ContextMenu();
 
     @FXML
@@ -211,7 +209,7 @@ public class Controller {
             getJoiPackage().getJoi().getComponent(componentId).setComponentTitle(title);
         }
 
-        JOIComponentNode componentNode = new ConditionNode(300, 100, componentId, sceneNodeMainController, getJoiPackage().getJoi().getComponent(componentId));
+        JOIComponentNode componentNode = new ConditionNode(300, 100, componentId, getJoiPackage().getJoi().getComponent(componentId));
         initializeComponentNode(componentNode, xPosition, yPosition, title, componentId, suppressJSONUpdating);
 
         if (!suppressJSONUpdating) {
@@ -234,7 +232,7 @@ public class Controller {
             getJoiPackage().getJoi().getComponent(componentId).setComponentTitle(title);
         }
 
-        JOIComponentNode componentNode = new VariableSetterNode(300, 100, componentId, sceneNodeMainController, getJoiPackage().getJoi().getComponent(componentId));
+        JOIComponentNode componentNode = new VariableSetterNode(300, 100, componentId, getJoiPackage().getJoi().getComponent(componentId));
         initializeComponentNode(componentNode, xPosition, yPosition, title, componentId, suppressJSONUpdating);
 
         if (!suppressJSONUpdating) {
@@ -268,13 +266,13 @@ public class Controller {
             getJoiPackage().getJoi().getComponent(sceneId).setComponentTitle(title);
         }
 
-        SceneNode sceneNode = new SceneNode(300, 100, sceneId, sceneNodeMainController, (com.asis.joi.model.entities.Scene) getJoiPackage().getJoi().getComponent(sceneId));
+        SceneNode sceneNode = new SceneNode(300, 100, sceneId, (com.asis.joi.model.entities.Scene) getJoiPackage().getJoi().getComponent(sceneId));
         initializeComponentNode(sceneNode, xPosition, yPosition, title, sceneId, suppressJSONUpdating);
     }
 
     public void removeComponentNode(JOIComponentNode joiComponentNode) {
         getJoiPackage().getJoi().removeComponent(joiComponentNode.getComponentId());
-        sceneNodeMainController.notifyComponentNodeRemoved(joiComponentNode);
+        ComponentConnectionManager.getInstance().removeConnection(joiComponentNode);
         infinityPane.getContainer().getChildren().remove(joiComponentNode);
     }
 
@@ -303,15 +301,9 @@ public class Controller {
     private void resetJoiPackage(JOIPackage joiPackage) {
         setJoiPackage(joiPackage);
 
-        if (sceneNodeMainController == null) {
-            sceneNodeMainController = new SceneNodeMainController(getJoiPackage());
-            sceneNodeMainController.setPane(infinityPane.getContainer());
-        }
-
         infinityPane.getContainer().getChildren().clear();
         getJoiComponentNodes().clear();
-        sceneNodeMainController.setJoiPackage(joiPackage);
-        sceneNodeMainController.setLineList(new ArrayList<>());
+
         StageManager.getInstance().closeAllStages();
     }
 
@@ -412,18 +404,24 @@ public class Controller {
         final boolean gotoHasSingleOutput = gotoScene != null && gotoScene.getGotoSceneArrayList().size() == 1;
         final boolean gotoHasMultipleOutput = gotoScene != null && gotoScene.getGotoSceneArrayList().size() > 1;
 
-        //Check for scene normal connections
-        if (gotoHasSingleOutput) {
-            AsisConnectionButton input = getJOIComponentNodeWithId(getJoiComponentNodes(), gotoScene.getGotoSceneArrayList().get(0)).getInputConnection();
-            sceneNodeMainController.createConnection(output, input);
-        }
+        try {
+            ComponentConnectionManager componentConnectionManager = ComponentConnectionManager.getInstance();
 
-        //Check for scene range connections
-        if (gotoHasMultipleOutput) {
-            for (int i = 0; i < gotoScene.getGotoSceneArrayList().size(); i++) {
-                AsisConnectionButton input = getJOIComponentNodeWithId(getJoiComponentNodes(), gotoScene.getGotoSceneArrayList().get(i)).getInputConnection();
-                sceneNodeMainController.createConnection(output, input);
+            //Check for scene normal connections
+            if (gotoHasSingleOutput) {
+                AsisConnectionButton input = getJOIComponentNodeWithId(getJoiComponentNodes(), gotoScene.getGotoSceneArrayList().get(0)).getInputConnection();
+                componentConnectionManager.createConnection(output, input);
             }
+
+            //Check for scene range connections
+            if (gotoHasMultipleOutput) {
+                for (int i = 0; i < gotoScene.getGotoSceneArrayList().size(); i++) {
+                    AsisConnectionButton input = getJOIComponentNodeWithId(getJoiComponentNodes(), gotoScene.getGotoSceneArrayList().get(i)).getInputConnection();
+                    componentConnectionManager.createConnection(output, input);
+                }
+            }
+        } catch (NullPointerException e) {
+            throw new RuntimeException("Failed to load scene: "+output.getJoiComponent().getComponentTitle());
         }
     }
 

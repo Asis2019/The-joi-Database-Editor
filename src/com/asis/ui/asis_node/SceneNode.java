@@ -8,7 +8,6 @@ import com.asis.joi.model.entities.Scene;
 import com.asis.joi.model.entities.SceneImage;
 import com.asis.utilities.AsisUtils;
 import com.asis.utilities.StageManager;
-import javafx.beans.property.ReadOnlyBooleanWrapper;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
 import javafx.scene.control.MenuItem;
@@ -25,13 +24,11 @@ import java.io.IOException;
 import java.util.NoSuchElementException;
 
 public class SceneNode extends JOIComponentNode {
-    private final ReadOnlyBooleanWrapper isBadEnd = new ReadOnlyBooleanWrapper();
-    private final ReadOnlyBooleanWrapper isGoodEnd = new ReadOnlyBooleanWrapper();
     private final ImageView imageView = new ImageView();
     private final Rectangle textBackdrop = new Rectangle();
 
-    public SceneNode(int width, int height, int sceneId, SceneNodeMainController sceneNodeMainController, Scene scene) {
-        super(width, height, sceneId, sceneNodeMainController, scene);
+    public SceneNode(int width, int height, int sceneId, Scene scene) {
+        super(width, height, sceneId, scene);
 
         setUserData("sceneNode");
 
@@ -77,32 +74,8 @@ public class SceneNode extends JOIComponentNode {
     }
 
     private void initializeEndVariables() {
-        isGoodEndProperty().addListener((observableValue, aBoolean, t1) -> {
-            if (isGoodEnd()) {
-                // Make children hidden
-                setOutputConnectionsInvisible();
-                getInputConnection().setButtonColor(AsisConnectionButton.GOOD_END_COLOR);
-            } else {
-                // Make children visible
-                setOutputConnectionsVisible();
-                getInputConnection().setButtonColor(AsisConnectionButton.DEFAULT_COLOR);
-            }
-        });
-
-        isBadEndProperty().addListener((observableValue, aBoolean, t1) -> {
-            if (isBadEnd()) {
-                // Make children hidden
-                setOutputConnectionsInvisible();
-                getInputConnection().setButtonColor(AsisConnectionButton.BAD_END_COLOR);
-            } else {
-                // Make children visible
-                setOutputConnectionsVisible();
-                getInputConnection().setButtonColor(AsisConnectionButton.DEFAULT_COLOR);
-            }
-        });
-
-        isGoodEndProperty().bindBidirectional(getJOIScene().goodEndProperty());
-        isBadEndProperty().bindBidirectional(getJOIScene().badEndProperty());
+        getJOIScene().goodEndProperty().addListener((observableValue, aBoolean, t1) -> changeOutputConnectionsVisibility(!t1));
+        getJOIScene().badEndProperty().addListener((observableValue, aBoolean, t1) -> changeOutputConnectionsVisibility(!t1));
     }
 
     public void showSceneThumbnail() {
@@ -188,15 +161,11 @@ public class SceneNode extends JOIComponentNode {
         });
 
         goodEndItem.setOnAction(actionEvent -> {
-            if (getJoiComponent() != null) {
-                setIsGoodEnd(!isGoodEnd());
-            }
+            if (getJoiComponent() != null) getJOIScene().goodEndProperty().set(!isGoodEnd());
         });
 
         badEndItem.setOnAction(actionEvent -> {
-            if (getJoiComponent() != null) {
-                setIsBadEnd(!isBadEnd());
-            }
+            if (getJoiComponent() != null) getJOIScene().badEndProperty().set(!isBadEnd());
         });
 
         setOnContextMenuRequested(contextMenuEvent -> {
@@ -227,7 +196,6 @@ public class SceneNode extends JOIComponentNode {
                 }
             }
             contextMenu.show(this, contextMenuEvent.getScreenX(), contextMenuEvent.getScreenY());
-            //super.getOnContextMenuRequested().handle(contextMenuEvent);
         });
     }
 
@@ -258,26 +226,10 @@ public class SceneNode extends JOIComponentNode {
     }
 
     public boolean isBadEnd() {
-        return isBadEnd.getValue();
-    }
-
-    public ReadOnlyBooleanWrapper isBadEndProperty() {
-        return isBadEnd;
-    }
-
-    public void setIsBadEnd(boolean isBadEnd) {
-        this.isBadEnd.set(isBadEnd);
+        return getJOIScene().badEndProperty().getValue();
     }
 
     public boolean isGoodEnd() {
-        return isGoodEnd.getValue();
-    }
-
-    public ReadOnlyBooleanWrapper isGoodEndProperty() {
-        return isGoodEnd;
-    }
-
-    public void setIsGoodEnd(boolean isGoodEnd) {
-        this.isGoodEnd.set(isGoodEnd);
+        return getJOIScene().goodEndProperty().getValue();
     }
 }

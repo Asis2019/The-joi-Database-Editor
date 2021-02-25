@@ -22,7 +22,6 @@ import java.util.List;
 
 public abstract class JOIComponentNode extends BorderPane {
     protected final JOIComponent joiComponent;
-    private SceneNodeMainController sceneNodeMainController;
     private final VBox outputContainer = new VBox();
     private final VBox inputContainer = new VBox();
     protected final Label titleLabel = new Label("Undefined");
@@ -32,10 +31,9 @@ public abstract class JOIComponentNode extends BorderPane {
 
     public double innerX, innerY;
 
-    protected JOIComponentNode(int width, int height, int componentId, SceneNodeMainController sceneNodeMainController, JOIComponent component) {
+    protected JOIComponentNode(int width, int height, int componentId, JOIComponent component) {
         this.joiComponent = component;
         this.joiComponent.setComponentId(componentId);
-        this.sceneNodeMainController = sceneNodeMainController;
 
         titleLabel.setStyle(
                 "-fx-text-fill: white;" +
@@ -91,17 +89,13 @@ public abstract class JOIComponentNode extends BorderPane {
     }
 
     protected void createNewInputConnectionPoint() {
-        inputConnection = new AsisConnectionButton(sceneNodeMainController.getPane(), true, getComponentId());
+        inputConnection = new AsisConnectionButton(true, getJoiComponent());
         attachHandlers(inputConnection);
-
-        //Add button to lookup list
-        sceneNodeMainController.addInputConnection(inputConnection);
-
         inputContainer.getChildren().add(inputConnection);
     }
 
     public AsisConnectionButton createNewOutputConnectionPoint(String labelText, String connectionId) {
-        AsisConnectionButton connection = new AsisConnectionButton(sceneNodeMainController.getPane(), false, getComponentId());
+        AsisConnectionButton connection = new AsisConnectionButton(false, getJoiComponent());
         attachHandlers(connection);
 
         Label connectionLabel = new Label(labelText);
@@ -139,10 +133,12 @@ public abstract class JOIComponentNode extends BorderPane {
     private void attachHandlers(AsisConnectionButton connection) {
         addEventHandler(MouseEvent.MOUSE_PRESSED, mouseEvent -> contextMenu.hide());
 
-        connection.setOnMouseMoved(e -> sceneNodeMainController.mouseMoved(e));
-        connection.setOnMouseDragged(e -> sceneNodeMainController.mouseMoved(e));
-        connection.setOnMousePressed(e -> sceneNodeMainController.mousePressed(connection));
-        connection.setOnMouseReleased(e -> sceneNodeMainController.mouseReleased(e));
+        ComponentConnectionManager componentConnectionManager = ComponentConnectionManager.getInstance();
+
+        connection.setOnMouseMoved(componentConnectionManager::mouseMoved);
+        connection.setOnMouseDragged(componentConnectionManager::mouseMoved);
+        connection.setOnMousePressed(e -> componentConnectionManager.mousePressed(connection));
+        connection.setOnMouseReleased(componentConnectionManager::mouseReleased);
     }
 
     private void initializeVBoxes() {
@@ -186,17 +182,10 @@ public abstract class JOIComponentNode extends BorderPane {
         titleLabel.setText(title);
     }
 
-    void setOutputConnectionsInvisible() {
+    void changeOutputConnectionsVisibility(boolean visibility) {
         for (int i = 0; i < outputContainer.getChildren().size(); i++) {
-            outputContainer.getChildren().get(i).setDisable(true);
-            outputContainer.getChildren().get(i).setVisible(false);
-        }
-    }
-
-    void setOutputConnectionsVisible() {
-        for (int i = 0; i < outputContainer.getChildren().size(); i++) {
-            outputContainer.getChildren().get(i).setDisable(false);
-            outputContainer.getChildren().get(i).setVisible(true);
+            outputContainer.getChildren().get(i).setDisable(!visibility);
+            outputContainer.getChildren().get(i).setVisible(visibility);
         }
     }
 
