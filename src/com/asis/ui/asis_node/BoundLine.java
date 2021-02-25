@@ -15,6 +15,13 @@ public class BoundLine extends CubicCurve {
                     "-fx-border-width: 1px;" +
                     "-fx-effect: dropshadow(three-pass-box, black, 10, 0, 0, 1);" +
                     "-fx-fill: transparent;";
+    private static final String lineStyleHover =
+            "-fx-stroke: rgb(115, 115, 115);" +
+                    "-fx-stroke-width: 3px;" +
+                    "-fx-border-color: black;" +
+                    "-fx-border-width: 1px;" +
+                    "-fx-effect: dropshadow(three-pass-box, deepskyblue, 10, 0, 0, 1);" +
+                    "-fx-fill: transparent;";
 
     BoundLine(AsisConnectionButton startPointConnectionObject) {
         setStartPointConnectionObject(startPointConnectionObject);
@@ -30,6 +37,11 @@ public class BoundLine extends CubicCurve {
     }
 
     private void configureLineCurve() {
+        hoverProperty().addListener((observableValue, aBoolean, t1) -> {
+            if(t1) setStyle(lineStyleHover);
+            else setStyle(lineStyle);
+        });
+
         setStyle(lineStyle);
         setStrokeLineCap(StrokeLineCap.BUTT);
         setCache(false);
