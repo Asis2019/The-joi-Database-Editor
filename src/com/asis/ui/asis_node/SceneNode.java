@@ -76,6 +76,7 @@ public class SceneNode extends JOIComponentNode {
     private void initializeEndVariables() {
         getJOIScene().goodEndProperty().addListener((observableValue, aBoolean, t1) -> changeOutputConnectionsVisibility(!t1));
         getJOIScene().badEndProperty().addListener((observableValue, aBoolean, t1) -> changeOutputConnectionsVisibility(!t1));
+        changeOutputConnectionsVisibility(!(getJOIScene().isGoodEnd() || getJOIScene().isBadEnd()));
     }
 
     public void showSceneThumbnail() {

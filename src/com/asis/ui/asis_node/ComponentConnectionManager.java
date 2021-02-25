@@ -260,13 +260,17 @@ public class ComponentConnectionManager {
 
         if (outputConnection.getId().contains("dialog_option")) {
             //Remove from inner dialog location
-            if (outputConnection.getBoundLines().size() > 1) {
-                ((Scene) joiComponent).getComponent(Dialog.class).getOptionArrayList()
-                        .get(outputConnection.getOptionNumber()).getGotoScene().removeValue(inputSceneId);
+            try {
+                DialogOption dialogOption = ((Scene) joiComponent).getComponent(Dialog.class).getOptionArrayList()
+                        .get(outputConnection.getOptionNumber());
 
-            } else {
-                ((Scene) joiComponent).getComponent(Dialog.class).getOptionArrayList().get(outputConnection.getOptionNumber()).setGotoScene(null);
-            }
+                if (outputConnection.getBoundLines().size() > 1) {
+                    dialogOption.getGotoScene().removeValue(inputSceneId);
+
+                } else {
+                    dialogOption.setGotoScene(null);
+                }
+            } catch (NullPointerException ignore) {}
         } else {
             if (outputConnection.getBoundLines().size() > 1) {
 
