@@ -124,7 +124,6 @@ public class ComponentConnectionManager {
 
             // Check if connection is an input
             if (asisConnectionButton.getConnectionType()) {
-
                 BoundLine boundLine = currentlyActiveConnection.getBoundLine();
 
                 //Check if any lines have the same output and input already and if connection is not the same as currently active
@@ -145,16 +144,19 @@ public class ComponentConnectionManager {
                     }
                 }
 
+                //*note* currentlyActiveConnection can be an input, which is why some of the code might seem odd
+
                 // Establish connection properly
-                boundLine.unbindEnd();
-                boundLine.setEndPointConnectionObject(asisConnectionButton);
-                asisConnectionButton.getBoundLines().add(boundLine);
+                AsisConnectionButton from = boundLine.getStartPointConnectionObject();
+                removeLine(boundLine);
 
                 //Set tooltip texts
                 currentlyActiveConnection.calculateTooltip();
+                from.calculateTooltip();
                 asisConnectionButton.calculateTooltip();
 
-                addConnectionToStory(currentlyActiveConnection, asisConnectionButton);
+                createConnection(from, asisConnectionButton);
+                addConnectionToStory(from, asisConnectionButton);
 
                 currentlyActiveConnection = null;
                 return;
