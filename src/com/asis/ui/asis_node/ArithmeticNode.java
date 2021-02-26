@@ -1,36 +1,41 @@
 package com.asis.ui.asis_node;
 
-import com.asis.controllers.dialogs.DialogCondition;
-import com.asis.joi.model.entities.Condition;
+import com.asis.controllers.dialogs.DialogArithmetic;
+import com.asis.joi.model.entities.Arithmetic;
 import com.asis.joi.model.entities.JOIComponent;
 import javafx.scene.control.MenuItem;
 import javafx.scene.control.SeparatorMenuItem;
 
-public class ConditionNode extends JOIComponentNode {
+public class ArithmeticNode extends JOIComponentNode {
 
-    public ConditionNode(int width, int height, int componentId, JOIComponent component) {
+
+    protected ArithmeticNode(int width, int height, int componentId, JOIComponent component) {
         super(width, height, componentId, component);
 
-        setUserData("condition");
+        setUserData("arithmetic");
 
         createNewInputConnectionPoint();
-        createNewOutputConnectionPoint("True", "true_output");
-        createNewOutputConnectionPoint("False", "false_output");
+        createNewOutputConnectionPoint(null, "normal_output");
 
         setupContextMenu();
     }
 
+
+
     @Override
     protected void setupContextMenu() {
-        MenuItem editSceneItem = new MenuItem("Edit Condition");
+        MenuItem editSceneItem = new MenuItem("Edit Arithmetic");
         SeparatorMenuItem separatorMenuItem = new SeparatorMenuItem();
         MenuItem deleteNodeItem = new MenuItem("Delete");
         contextMenu.getItems().addAll(editSceneItem, separatorMenuItem, deleteNodeItem);
 
         //Handle menu actions
         editSceneItem.setOnAction(actionEvent -> {
-            if (getJoiComponent() != null) DialogCondition.openConditionDialog((Condition) getJoiComponent());
+            if (getJoiComponent() != null) {
+                DialogArithmetic.openArithmetic((Arithmetic) getJoiComponent());
+            }
         });
+
         deleteNodeItem.setOnAction(actionEvent -> {
             if (getJoiComponent() != null) {
                 ComponentNodeManager.getInstance().removeComponentNode(this);
@@ -42,7 +47,7 @@ public class ConditionNode extends JOIComponentNode {
     public void focusState(boolean value) {
         if (value) {
             setStyle(
-                    "-fx-background-color: #5a5a5a, rgb(60, 63, 65), #5a5a5a, rgb(60, 63, 65), #5a5a5a;" +
+                    "-fx-background-color: #5a5a5a, #5a5a5a, #5a5a5a, #273036, #5a5a5a;" +
                             "-fx-background-radius: 10;" +
                             "-fx-background-insets: 8, 8 17 8 17, 8 22 8 22, 8 27 8 27, 8 32 8 32;" +
                             "-fx-effect: dropshadow(three-pass-box, deepskyblue, 10, 0, 0, 1);" +
@@ -50,7 +55,7 @@ public class ConditionNode extends JOIComponentNode {
             );
         } else {
             setStyle(
-                    "-fx-background-color: #5a5a5a, rgb(60, 63, 65), #5a5a5a, rgb(60, 63, 65), #5a5a5a;" +
+                    "-fx-background-color: #5a5a5a, #5a5a5a, #5a5a5a, #273036, #5a5a5a;" +
                             "-fx-background-radius: 10;" +
                             "-fx-background-insets: 8, 8 17 8 17, 8 22 8 22, 8 27 8 27, 8 32 8 32;" +
                             "-fx-effect: dropshadow(three-pass-box, black, 10, 0, 0, 1);" +

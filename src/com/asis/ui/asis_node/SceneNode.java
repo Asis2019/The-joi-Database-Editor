@@ -157,7 +157,7 @@ public class SceneNode extends JOIComponentNode {
 
         deleteNodeItem.setOnAction(actionEvent -> {
             if (getJoiComponent() != null) {
-                controller.removeComponentNode(this);
+                ComponentNodeManager.getInstance().removeComponentNode(this);
             }
         });
 

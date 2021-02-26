@@ -217,7 +217,6 @@ public class ComponentConnectionManager {
             dialogOption.getGotoScene().addValue(inputConnection.getParentSceneId());
         } else {
             if (component instanceof Scene) {
-
                 GotoScene gotoScene;
                 try {
                     gotoScene = ((Scene) component).getComponent(GotoScene.class);
@@ -229,15 +228,20 @@ public class ComponentConnectionManager {
                 ((Scene) component).addComponent(gotoScene);
 
             } else if (component instanceof VariableSetter) {
-
                 GotoScene gotoScene = ((VariableSetter) component).getGotoScene();
                 if (gotoScene == null) gotoScene = new GotoScene();
                 gotoScene.addValue(inputConnection.getParentSceneId());
 
                 ((VariableSetter) component).setGotoScene(gotoScene);
 
-            } else if (component instanceof Condition) {
+            } else if (component instanceof Arithmetic) {
+                GotoScene gotoScene = ((Arithmetic) component).getGotoScene();
+                if (gotoScene == null) gotoScene = new GotoScene();
+                gotoScene.addValue(inputConnection.getParentSceneId());
 
+                ((Arithmetic) component).setGotoScene(gotoScene);
+
+            } else if (component instanceof Condition) {
                 if (outputConnection.getId().equals("true_output")) {
                     GotoScene gotoScene = ((Condition) component).getGotoSceneTrue();
                     if (gotoScene == null) gotoScene = new GotoScene();
@@ -279,6 +283,8 @@ public class ComponentConnectionManager {
                     gotoScene = ((Scene) joiComponent).getComponent(GotoScene.class);
                 } else if (joiComponent instanceof VariableSetter) {
                     gotoScene = ((VariableSetter) joiComponent).getGotoScene();
+                } else if (joiComponent instanceof Arithmetic) {
+                    gotoScene = ((Arithmetic) joiComponent).getGotoScene();
                 } else if (joiComponent instanceof Condition) {
                     if (outputConnection.getId().equals("true_output")) {
                         gotoScene = ((Condition) joiComponent).getGotoSceneTrue();
@@ -297,6 +303,8 @@ public class ComponentConnectionManager {
                     ((Scene) joiComponent).removeComponent(GotoScene.class);
                 } else if (joiComponent instanceof VariableSetter) {
                     ((VariableSetter) joiComponent).setGotoScene(null);
+                } else if (joiComponent instanceof Arithmetic) {
+                    ((Arithmetic) joiComponent).setGotoScene(null);
                 } else if (joiComponent instanceof Condition) {
                     if (outputConnection.getId().equals("true_output")) {
                         ((Condition) joiComponent).setGotoSceneTrue(null);

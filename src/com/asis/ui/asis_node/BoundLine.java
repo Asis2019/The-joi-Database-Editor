@@ -43,7 +43,7 @@ public class BoundLine extends CubicCurve {
         });
 
         setStyle(lineStyle);
-        setStrokeLineCap(StrokeLineCap.BUTT);
+        setStrokeLineCap(StrokeLineCap.ROUND);
         setCache(false);
         controlX1Property().bind(Bindings.add(startXProperty(), 100));
         controlX2Property().bind(Bindings.add(endXProperty(), -100));

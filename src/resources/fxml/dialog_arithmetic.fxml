@@ -1,0 +1,58 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.geometry.Insets?>
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+<?import java.net.URL?>
+<BorderPane id="darkThemeBackground" minHeight="-Infinity" minWidth="-Infinity" prefWidth="400.0" xmlns="http://javafx.com/javafx/11.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.asis.controllers.dialogs.DialogArithmetic">
+    <center>
+        <VBox BorderPane.alignment="CENTER">
+            <children>
+                <GridPane vgap="8.0" VBox.vgrow="ALWAYS">
+                    <columnConstraints>
+                        <ColumnConstraints hgrow="SOMETIMES" minWidth="10.0" prefWidth="100.0" />
+                        <ColumnConstraints hgrow="SOMETIMES" minWidth="10.0" prefWidth="100.0" />
+                  <ColumnConstraints />
+                    </columnConstraints>
+                    <rowConstraints>
+                        <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
+                        <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
+                        <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
+                        <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
+                  <RowConstraints />
+                    </rowConstraints>
+                    <children>
+                        <Label text="Node Title:" textFill="WHITE" />
+                        <Label text="Usage example: &lt;var1&gt;=5*&lt;var5&gt;+100" textFill="WHITE" GridPane.columnSpan="2" GridPane.rowIndex="1" />
+
+                        <TextField fx:id="arithmeticTitle" maxWidth="150.0" GridPane.columnIndex="1" GridPane.halignment="RIGHT" />
+
+                        <TextField fx:id="mathematicalExpression" GridPane.columnSpan="2" GridPane.fillWidth="true" GridPane.halignment="RIGHT" GridPane.rowIndex="2" />
+                    </children>
+                    <VBox.margin>
+                        <Insets />
+                    </VBox.margin>
+                </GridPane>
+            </children>
+            <padding>
+                <Insets bottom="16.0" left="16.0" right="16.0" top="16.0" />
+            </padding>
+            <BorderPane.margin>
+                <Insets />
+            </BorderPane.margin>
+        </VBox>
+    </center>
+    <stylesheets>
+        <URL value="@../css/scene_details_stylesheet.css" />
+        <URL value="@../css/combo_box_stylesheet.css" />
+        <URL value="@../css/text_field_stylesheet.css" />
+    </stylesheets>
+    <bottom>
+        <ToolBar prefHeight="40.0" prefWidth="200.0" BorderPane.alignment="CENTER">
+            <items>
+                <Pane HBox.hgrow="ALWAYS" />
+                <Button defaultButton="true" layoutX="10.0" layoutY="11.0" mnemonicParsing="false" onAction="#actionSave" prefWidth="100.0" text="Save" />
+            </items>
+        </ToolBar>
+    </bottom>
+</BorderPane>

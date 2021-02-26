@@ -1,9 +1,6 @@
 package com.asis.joi.model;
 
-import com.asis.joi.model.entities.Condition;
-import com.asis.joi.model.entities.JOIComponent;
-import com.asis.joi.model.entities.Scene;
-import com.asis.joi.model.entities.VariableSetter;
+import com.asis.joi.model.entities.*;
 import org.json.JSONArray;
 import org.json.JSONObject;
 import org.json.JSONString;
@@ -64,6 +61,9 @@ public class JOI implements JSONString, Cloneable {
                 } else if(array.getJSONObject(i).has("componentType") && array.getJSONObject(i).getString("componentType").equals("Conditional")) {
                     Condition condition = Condition.createEntity(array.getJSONObject(i));
                     joi.getJoiComponents().add(condition);
+                } else if(array.getJSONObject(i).has("componentType") && array.getJSONObject(i).getString("componentType").equals("Arithmetic")) {
+                    Arithmetic arithmetic = Arithmetic.createEntity(array.getJSONObject(i));
+                    joi.getJoiComponents().add(arithmetic);
                 } else {
                     Scene scene = Scene.createEntity(array.getJSONObject(i));
                     joi.getJoiComponents().add(scene);

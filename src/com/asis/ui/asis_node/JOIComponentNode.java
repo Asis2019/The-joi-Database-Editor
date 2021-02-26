@@ -1,8 +1,10 @@
 package com.asis.ui.asis_node;
 
 import com.asis.controllers.Controller;
+import com.asis.controllers.dialogs.DialogArithmetic;
 import com.asis.controllers.dialogs.DialogCondition;
 import com.asis.controllers.dialogs.DialogVariableSetter;
+import com.asis.joi.model.entities.Arithmetic;
 import com.asis.joi.model.entities.Condition;
 import com.asis.joi.model.entities.JOIComponent;
 import com.asis.joi.model.entities.VariableSetter;
@@ -77,6 +79,8 @@ public abstract class JOIComponentNode extends BorderPane {
                         DialogVariableSetter.openVariableSetter((VariableSetter) getJoiComponent());
                     else if(this instanceof ConditionNode)
                         DialogCondition.openConditionDialog((Condition) getJoiComponent());
+                    else if(this instanceof ArithmeticNode)
+                        DialogArithmetic.openArithmetic((Arithmetic) getJoiComponent());
                 }
         });
     }
