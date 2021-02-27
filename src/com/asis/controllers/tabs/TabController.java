@@ -43,7 +43,7 @@ public abstract class TabController {
             if(Controller.getInstance().isShowThumbnail()) {
                 Controller.getInstance().getJoiComponentNodes().forEach(joiComponentNode -> {
                     if (joiComponentNode.getComponentId() == scene.getComponentId() && joiComponentNode instanceof SceneNode) {
-                        ((SceneNode) joiComponentNode).showSceneThumbnail();
+                        ((SceneNode) joiComponentNode).toggleSceneThumbnail(true);
                     }
                 });
             }

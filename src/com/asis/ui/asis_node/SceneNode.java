@@ -72,7 +72,7 @@ public class SceneNode extends JOIComponentNode {
         stackPane.getChildren().addAll(imageView, textBackdrop, titleLabel);
         setCenter(stackPane);
 
-        hideSceneThumbnail();
+        toggleSceneThumbnail(false);
     }
 
     private void initializeEndVariables() {
@@ -81,25 +81,25 @@ public class SceneNode extends JOIComponentNode {
         changeOutputConnectionsVisibility(!(getJOIScene().isGoodEnd() || getJOIScene().isBadEnd()));
     }
 
-    public void showSceneThumbnail() {
-        try {
-            textBackdrop.setVisible(true);
-            imageView.setVisible(true);
-            String sceneImage = getJOIScene().getComponent(SceneImage.class).getImage().toURI().toString();
-            Image image = new Image(sceneImage);
+    public void toggleSceneThumbnail(boolean show) {
+        if(show) {
+            try {
+                textBackdrop.setVisible(true);
+                imageView.setVisible(true);
+                String sceneImage = getJOIScene().getComponent(SceneImage.class).getImage().toURI().toString();
+                Image image = new Image(sceneImage);
 
-            imageView.setImage(image);
+                imageView.setImage(image);
 
-            if(imageView.getBoundsInParent().getHeight() < (getHeight()-20)) {
-                imageView.setFitWidth(0);
-                imageView.setFitHeight(getHeight());
-            }
-        } catch (NoSuchElementException ignored) {
-            hideSceneThumbnail();
+                if(imageView.getBoundsInParent().getHeight() < (getHeight()-20)) {
+                    imageView.setFitWidth(0);
+                    imageView.setFitHeight(getHeight());
+                }
+
+                return;
+            } catch (NoSuchElementException ignored) {}
         }
-    }
 
-    public void hideSceneThumbnail() {
         textBackdrop.setVisible(false);
         imageView.setVisible(false);
         imageView.setImage(null);

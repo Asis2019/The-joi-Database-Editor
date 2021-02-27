@@ -398,11 +398,11 @@ public class Controller {
     public void actionToggleGrid() {
         snapToGrid = !snapToGrid;
         ImageView imageView;
-        if (snapToGrid) {
+        if (snapToGrid)
             imageView = new ImageView(new Image(getClass().getResourceAsStream("/resources/images/ic_grid_on.png")));
-        } else {
+        else
             imageView = new ImageView(new Image(getClass().getResourceAsStream("/resources/images/ic_grid_off.png")));
-        }
+
         imageView.setFitHeight(20);
         imageView.setFitWidth(20);
         gridToggle.setGraphic(imageView);
@@ -411,19 +411,16 @@ public class Controller {
     public void actionToggleThumbnail() {
         showThumbnail = !showThumbnail;
         ImageView imageView;
-        if (showThumbnail) {
+        if (showThumbnail)
             imageView = new ImageView(new Image(getClass().getResourceAsStream("/resources/images/ic_thumbnail_on.png")));
-            getJoiComponentNodes().forEach(joiComponentNode -> {
-                if (joiComponentNode instanceof SceneNode)
-                    ((SceneNode) joiComponentNode).showSceneThumbnail();
-            });
-        } else {
+        else
             imageView = new ImageView(new Image(getClass().getResourceAsStream("/resources/images/ic_thumbnail_off.png")));
-            getJoiComponentNodes().forEach(joiComponentNode -> {
-                if (joiComponentNode instanceof SceneNode)
-                    ((SceneNode) joiComponentNode).hideSceneThumbnail();
-            });
-        }
+
+        getJoiComponentNodes().forEach(joiComponentNode -> {
+            if (joiComponentNode instanceof SceneNode)
+                ((SceneNode) joiComponentNode).toggleSceneThumbnail(showThumbnail);
+        });
+
         imageView.setFitHeight(20);
         imageView.setFitWidth(20);
         thumbnailToggle.setGraphic(imageView);
