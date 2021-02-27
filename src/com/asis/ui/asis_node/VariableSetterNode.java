@@ -3,8 +3,6 @@ package com.asis.ui.asis_node;
 import com.asis.controllers.dialogs.DialogVariableSetter;
 import com.asis.joi.model.entities.JOIComponent;
 import com.asis.joi.model.entities.VariableSetter;
-import javafx.scene.control.MenuItem;
-import javafx.scene.control.SeparatorMenuItem;
 
 public class VariableSetterNode extends JOIComponentNode {
 
@@ -12,32 +10,12 @@ public class VariableSetterNode extends JOIComponentNode {
         super(width, height, componentId, component);
 
         setUserData("variableSetter");
+        setId("Variable");
 
         createNewInputConnectionPoint();
         createNewOutputConnectionPoint(null, "normal_output");
 
         setupContextMenu();
-    }
-
-    @Override
-    protected void setupContextMenu() {
-        MenuItem editSceneItem = new MenuItem("Edit Variable");
-        SeparatorMenuItem separatorMenuItem = new SeparatorMenuItem();
-        MenuItem deleteNodeItem = new MenuItem("Delete");
-        contextMenu.getItems().addAll(editSceneItem, separatorMenuItem, deleteNodeItem);
-
-        //Handle menu actions
-        editSceneItem.setOnAction(actionEvent -> {
-            if (getJoiComponent() != null) {
-                DialogVariableSetter.openVariableSetter((VariableSetter) getJoiComponent());
-            }
-        });
-
-        deleteNodeItem.setOnAction(actionEvent -> {
-            if (getJoiComponent() != null) {
-                ComponentNodeManager.getInstance().removeComponentNode(this);
-            }
-        });
     }
 
     @Override
@@ -59,5 +37,10 @@ public class VariableSetterNode extends JOIComponentNode {
                             "-fx-opacity: 1;"
             );
         }
+    }
+
+    @Override
+    protected boolean openDialog() {
+        return DialogVariableSetter.openVariableSetter((VariableSetter) getJoiComponent());
     }
 }

@@ -12,6 +12,8 @@ import javafx.geometry.Insets;
 import javafx.geometry.Pos;
 import javafx.scene.control.ContextMenu;
 import javafx.scene.control.Label;
+import javafx.scene.control.MenuItem;
+import javafx.scene.control.SeparatorMenuItem;
 import javafx.scene.input.MouseButton;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.BorderPane;
@@ -33,7 +35,7 @@ public abstract class JOIComponentNode extends BorderPane {
 
     public double innerX, innerY;
 
-    protected JOIComponentNode(int width, int height, int componentId, JOIComponent component) {
+    public JOIComponentNode(int width, int height, int componentId, JOIComponent component) {
         this.joiComponent = component;
         this.joiComponent.setComponentId(componentId);
 
@@ -65,7 +67,23 @@ public abstract class JOIComponentNode extends BorderPane {
 
     public abstract void focusState(boolean value);
 
-    protected abstract void setupContextMenu();
+    protected abstract boolean openDialog();
+
+    protected void setupContextMenu() {
+        MenuItem editSceneItem = new MenuItem("Edit "+getId());
+        SeparatorMenuItem separatorMenuItem = new SeparatorMenuItem();
+        MenuItem deleteNodeItem = new MenuItem("Delete");
+        contextMenu.getItems().addAll(editSceneItem, separatorMenuItem, deleteNodeItem);
+
+        //Handle menu actions
+        editSceneItem.setOnAction(actionEvent -> {
+            if (getJoiComponent() != null) openDialog();
+        });
+
+        deleteNodeItem.setOnAction(actionEvent -> {
+            if (getJoiComponent() != null) removeComponentNode(this);
+        });
+    }
 
     private void setDoubleClickAction() {
         setOnMousePressed(mouseEvent -> requestFocus()); //May be unnecessary
@@ -83,13 +101,6 @@ public abstract class JOIComponentNode extends BorderPane {
                         DialogArithmetic.openArithmetic((Arithmetic) getJoiComponent());
                 }
         });
-    }
-
-    public List<AsisConnectionButton> getOutputButtons() {
-        return this.outputConnections;
-    }
-    public AsisConnectionButton getInputConnection() {
-        return this.inputConnection;
     }
 
     protected void createNewInputConnectionPoint() {
@@ -173,6 +184,13 @@ public abstract class JOIComponentNode extends BorderPane {
         return multiple * (Math.round(v / multiple));
     }
 
+    public static void removeComponentNode(JOIComponentNode joiComponentNode) {
+        Controller controller = Controller.getInstance();
+        controller.getJoiPackage().getJoi().removeComponent(joiComponentNode.getComponentId());
+        ComponentConnectionManager.getInstance().removeConnection(joiComponentNode);
+        controller.getInfinityPane().getContainer().getChildren().remove(joiComponentNode);
+    }
+
     //Getters and setters
     public int getComponentId() {
         return this.joiComponent.getComponentId();
@@ -181,7 +199,6 @@ public abstract class JOIComponentNode extends BorderPane {
     public String getTitle() {
         return titleLabel.getText();
     }
-
     public void setTitle(String title) {
         titleLabel.setText(title);
     }
@@ -195,6 +212,13 @@ public abstract class JOIComponentNode extends BorderPane {
 
     public JOIComponent getJoiComponent() {
         return this.joiComponent;
+    }
+
+    public List<AsisConnectionButton> getOutputButtons() {
+        return this.outputConnections;
+    }
+    public AsisConnectionButton getInputConnection() {
+        return this.inputConnection;
     }
 
 }

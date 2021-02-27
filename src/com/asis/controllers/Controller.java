@@ -89,15 +89,15 @@ public class Controller {
         });
         newVariableSetterItem.setOnAction(actionEvent -> {
             addSceneContextMenu = true;
-            ComponentNodeManager.getInstance().addVariableSetterNode();
+            ComponentNodeManager.getInstance().addJOIComponentNode(VariableSetterNode.class, VariableSetter.class);
         });
         newConditionItem.setOnAction(actionEvent -> {
             addSceneContextMenu = true;
-            ComponentNodeManager.getInstance().addConditionNode();
+            ComponentNodeManager.getInstance().addJOIComponentNode(ConditionNode.class, Condition.class);
         });
         newArithmeticItem.setOnAction(actionEvent -> {
             addSceneContextMenu = true;
-            ComponentNodeManager.getInstance().addArithmeticNode();
+            ComponentNodeManager.getInstance().addJOIComponentNode(ArithmeticNode.class, Arithmetic.class);
         });
         reset_view.setOnAction(actionEvent -> getInfinityPane().resetPosition());
 
@@ -243,13 +243,22 @@ public class Controller {
                 //Create component nodes
                 for (JOIComponent component : getJoiPackage().getJoi().getJoiComponents()) {
                     if (component instanceof com.asis.joi.model.entities.Scene)
-                        ComponentNodeManager.getInstance().addScene(component.getLayoutXPosition(), component.getLayoutYPosition(), component.getComponentTitle(), component.getComponentId(), true);
+                        ComponentNodeManager.getInstance().addJOIComponentNode(
+                                SceneNode.class, com.asis.joi.model.entities.Scene.class,
+                                component.getLayoutXPosition(), component.getLayoutYPosition(), component.getComponentTitle(),
+                                component.getComponentId(), true);
                     else if (component instanceof VariableSetter)
-                        ComponentNodeManager.getInstance().addVariableSetterNode(component.getLayoutXPosition(), component.getLayoutYPosition(), component.getComponentTitle(), component.getComponentId(), true);
+                        ComponentNodeManager.getInstance().addJOIComponentNode(
+                                VariableSetterNode.class, VariableSetter.class,
+                                component.getLayoutXPosition(), component.getLayoutYPosition(), component.getComponentTitle(), component.getComponentId(), true);
                     else if (component instanceof Condition)
-                        ComponentNodeManager.getInstance().addConditionNode(component.getLayoutXPosition(), component.getLayoutYPosition(), component.getComponentTitle(), component.getComponentId(), true);
+                        ComponentNodeManager.getInstance().addJOIComponentNode(
+                                ConditionNode.class, Condition.class,
+                                component.getLayoutXPosition(), component.getLayoutYPosition(), component.getComponentTitle(), component.getComponentId(), true);
                     else if (component instanceof Arithmetic)
-                        ComponentNodeManager.getInstance().addArithmeticNode(component.getLayoutXPosition(), component.getLayoutYPosition(), component.getComponentTitle(), component.getComponentId(), true);
+                        ComponentNodeManager.getInstance().addJOIComponentNode(
+                                ArithmeticNode.class, Arithmetic.class,
+                                component.getLayoutXPosition(), component.getLayoutYPosition(), component.getComponentTitle(), component.getComponentId(), true);
                 }
                 //Create connections
                 for (JOIComponent component : getJoiPackage().getJoi().getJoiComponents()) {

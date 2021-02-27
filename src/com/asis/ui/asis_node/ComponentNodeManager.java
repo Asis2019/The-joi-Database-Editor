@@ -1,17 +1,17 @@
 package com.asis.ui.asis_node;
 
 import com.asis.controllers.Controller;
-import com.asis.controllers.dialogs.DialogArithmetic;
-import com.asis.controllers.dialogs.DialogCondition;
 import com.asis.controllers.dialogs.DialogSceneTitle;
-import com.asis.controllers.dialogs.DialogVariableSetter;
-import com.asis.joi.model.entities.Arithmetic;
-import com.asis.joi.model.entities.Condition;
-import com.asis.joi.model.entities.VariableSetter;
+import com.asis.joi.model.entities.JOIComponent;
+import com.asis.joi.model.entities.Scene;
+import com.asis.utilities.AsisUtils;
 import com.asis.utilities.Draggable;
 import javafx.geometry.Point2D;
 
+import java.lang.reflect.InvocationTargetException;
 import java.util.ArrayList;
+
+import static com.asis.ui.asis_node.JOIComponentNode.removeComponentNode;
 
 /**
  * Handles creating component nodes
@@ -55,75 +55,6 @@ public class ComponentNodeManager {
         getJoiComponentNodes().add(componentNode);
     }
 
-    public void addArithmeticNode() {
-        final int componentId = controller.getJoiPackage().getJoi().getSceneIdCounter();
-        addArithmeticNode(0, 10, null, componentId, false);
-    }
-
-    public void addArithmeticNode(double xPosition, double yPosition, String title, int componentId, boolean suppressJSONUpdating) {
-        if (!suppressJSONUpdating) {
-            controller.getJoiPackage().getJoi().addNewComponent(Arithmetic.class, componentId);
-            controller.getJoiPackage().getJoi().getComponent(componentId).setComponentTitle(title);
-        }
-
-        JOIComponentNode componentNode = new ArithmeticNode(300, 100, componentId, controller.getJoiPackage().getJoi().getComponent(componentId));
-        initializeComponentNode(componentNode, xPosition, yPosition, title, componentId, suppressJSONUpdating);
-
-        if (!suppressJSONUpdating) {
-            componentNode.setVisible(false);
-            boolean result = DialogArithmetic.openArithmetic((Arithmetic) componentNode.getJoiComponent());
-
-            if (!result) removeComponentNode(componentNode);
-            else componentNode.setVisible(true);
-        }
-    }
-
-    public void addConditionNode() {
-        final int componentId = controller.getJoiPackage().getJoi().getSceneIdCounter();
-        addConditionNode(0, 10, null, componentId, false);
-    }
-
-    public void addConditionNode(double xPosition, double yPosition, String title, int componentId, boolean suppressJSONUpdating) {
-        if (!suppressJSONUpdating) {
-            controller.getJoiPackage().getJoi().addNewComponent(Condition.class, componentId);
-            controller.getJoiPackage().getJoi().getComponent(componentId).setComponentTitle(title);
-        }
-
-        JOIComponentNode componentNode = new ConditionNode(300, 100, componentId, controller.getJoiPackage().getJoi().getComponent(componentId));
-        initializeComponentNode(componentNode, xPosition, yPosition, title, componentId, suppressJSONUpdating);
-
-        if (!suppressJSONUpdating) {
-            componentNode.setVisible(false);
-            boolean result = DialogCondition.openConditionDialog((Condition) componentNode.getJoiComponent());
-
-            if (!result) removeComponentNode(componentNode);
-            else componentNode.setVisible(true);
-        }
-    }
-
-    public void addVariableSetterNode() {
-        final int componentId = controller.getJoiPackage().getJoi().getSceneIdCounter();
-        addVariableSetterNode(0, 10, null, componentId, false);
-    }
-
-    public void addVariableSetterNode(double xPosition, double yPosition, String title, int componentId, boolean suppressJSONUpdating) {
-        if (!suppressJSONUpdating) {
-            controller.getJoiPackage().getJoi().addNewComponent(VariableSetter.class, componentId);
-            controller.getJoiPackage().getJoi().getComponent(componentId).setComponentTitle(title);
-        }
-
-        JOIComponentNode componentNode = new VariableSetterNode(300, 100, componentId, controller.getJoiPackage().getJoi().getComponent(componentId));
-        initializeComponentNode(componentNode, xPosition, yPosition, title, componentId, suppressJSONUpdating);
-
-        if (!suppressJSONUpdating) {
-            componentNode.setVisible(false);
-            boolean result = DialogVariableSetter.openVariableSetter((VariableSetter) componentNode.getJoiComponent());
-
-            if (!result) removeComponentNode(componentNode);
-            else componentNode.setVisible(true);
-        }
-    }
-
     public void addScene(final boolean isFirstScene) {
         final int sceneId = controller.getJoiPackage().getJoi().getSceneIdCounter() + 1;
         final String defaultTitle = "Scene " + sceneId;
@@ -136,24 +67,37 @@ public class ComponentNodeManager {
             if (title == null) return;
         }
 
-        addScene(10, 0, title, sceneId - 1, false);
+        addJOIComponentNode(SceneNode.class, Scene.class, 10, 0, title, sceneId - 1, false);
     }
 
-    public void addScene(double xPosition, double yPosition, String title, int sceneId, boolean suppressJSONUpdating) {
+    public void addJOIComponentNode(Class<? extends JOIComponentNode> componentNodeClass, Class<? extends JOIComponent> componentClass) {
+        final int componentId = controller.getJoiPackage().getJoi().getSceneIdCounter();
+        addJOIComponentNode(componentNodeClass, componentClass, 0, 10, null, componentId, false);
+    }
+
+    public void addJOIComponentNode(Class<? extends JOIComponentNode> componentNodeClass, Class<? extends JOIComponent> componentClass, double xPosition, double yPosition, String title, int componentId, boolean suppressJSONUpdating) {
         //Add new scene to json if not suppressed
         if (!suppressJSONUpdating) {
-            controller.getJoiPackage().getJoi().addNewComponent(com.asis.joi.model.entities.Scene.class, sceneId);
-            controller.getJoiPackage().getJoi().getComponent(sceneId).setComponentTitle(title);
+            controller.getJoiPackage().getJoi().addNewComponent(componentClass, componentId);
+            controller.getJoiPackage().getJoi().getComponent(componentId).setComponentTitle(title);
         }
 
-        SceneNode sceneNode = new SceneNode(300, 100, sceneId, (com.asis.joi.model.entities.Scene) controller.getJoiPackage().getJoi().getComponent(sceneId));
-        initializeComponentNode(sceneNode, xPosition, yPosition, title, sceneId, suppressJSONUpdating);
-    }
+        try {
+            JOIComponentNode componentNode = componentNodeClass
+                    .getConstructor(int.class, int.class, int.class, JOIComponent.class)
+                    .newInstance(300, 100, componentId, controller.getJoiPackage().getJoi().getComponent(componentId));
+            initializeComponentNode(componentNode, xPosition, yPosition, title, componentId, suppressJSONUpdating);
 
-    public void removeComponentNode(JOIComponentNode joiComponentNode) {
-        controller.getJoiPackage().getJoi().removeComponent(joiComponentNode.getComponentId());
-        ComponentConnectionManager.getInstance().removeConnection(joiComponentNode);
-        controller.getInfinityPane().getContainer().getChildren().remove(joiComponentNode);
+            if (!suppressJSONUpdating && !(componentNode instanceof SceneNode)) {
+                componentNode.setVisible(false);
+                boolean result = componentNode.openDialog();
+
+                if (!result) removeComponentNode(componentNode);
+                else componentNode.setVisible(true);
+            }
+        } catch (NoSuchMethodException | IllegalAccessException | InvocationTargetException | InstantiationException e) {
+            AsisUtils.errorDialogWindow(e);
+        }
     }
 
     public static ComponentNodeManager getInstance() {

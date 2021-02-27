@@ -4,6 +4,7 @@ import com.asis.Main;
 import com.asis.controllers.Controller;
 import com.asis.controllers.SceneDetails;
 import com.asis.controllers.dialogs.DialogSceneTitle;
+import com.asis.joi.model.entities.JOIComponent;
 import com.asis.joi.model.entities.Scene;
 import com.asis.joi.model.entities.SceneImage;
 import com.asis.utilities.AsisUtils;
@@ -11,7 +12,6 @@ import com.asis.utilities.StageManager;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
 import javafx.scene.control.MenuItem;
-import javafx.scene.control.SeparatorMenuItem;
 import javafx.scene.effect.GaussianBlur;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
@@ -21,16 +21,18 @@ import javafx.scene.shape.Rectangle;
 import javafx.stage.Stage;
 
 import java.io.IOException;
+import java.util.Arrays;
 import java.util.NoSuchElementException;
 
 public class SceneNode extends JOIComponentNode {
     private final ImageView imageView = new ImageView();
     private final Rectangle textBackdrop = new Rectangle();
 
-    public SceneNode(int width, int height, int sceneId, Scene scene) {
+    public SceneNode(int width, int height, int sceneId, JOIComponent scene) {
         super(width, height, sceneId, scene);
 
         setUserData("sceneNode");
+        setId("Scene");
 
         createNewInputConnectionPoint();
         createNewOutputConnectionPoint("Default", "normal_output");
@@ -128,23 +130,16 @@ public class SceneNode extends JOIComponentNode {
 
     @Override
     protected void setupContextMenu() {
+        super.setupContextMenu();
+
         Controller controller = Controller.getInstance();
 
-        MenuItem editSceneItem = new MenuItem("Edit Scene");
         MenuItem editNameItem = new MenuItem("Change Name");
         MenuItem goodEndItem = new MenuItem("Set as Good End");
         MenuItem badEndItem = new MenuItem("Set as Bad End");
-        SeparatorMenuItem separatorMenuItem = new SeparatorMenuItem();
-        MenuItem deleteNodeItem = new MenuItem("Delete");
-        contextMenu.getItems().addAll(editSceneItem, editNameItem, goodEndItem, badEndItem, separatorMenuItem, deleteNodeItem);
+        contextMenu.getItems().addAll(1, Arrays.asList(editNameItem, goodEndItem, badEndItem));
 
         //Handle menu actions
-        editSceneItem.setOnAction(actionEvent -> {
-            if (getJoiComponent() != null) {
-                openSceneDetails(this);
-            }
-        });
-
         editNameItem.setOnAction(actionEvent -> {
             if (getJoiComponent() != null) {
                 String title = DialogSceneTitle.addNewSceneDialog(getTitle());
@@ -152,12 +147,6 @@ public class SceneNode extends JOIComponentNode {
 
                 controller.getJoiPackage().getJoi().getComponent(getComponentId()).setComponentTitle(title);
                 setTitle(title);
-            }
-        });
-
-        deleteNodeItem.setOnAction(actionEvent -> {
-            if (getJoiComponent() != null) {
-                ComponentNodeManager.getInstance().removeComponentNode(this);
             }
         });
 
@@ -219,6 +208,12 @@ public class SceneNode extends JOIComponentNode {
                             "-fx-opacity: 1;"
             );
         }
+    }
+
+    @Override
+    protected boolean openDialog() {
+        openSceneDetails(this);
+        return true;
     }
 
     //Getters and setters

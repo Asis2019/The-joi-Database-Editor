@@ -3,8 +3,6 @@ package com.asis.ui.asis_node;
 import com.asis.controllers.dialogs.DialogCondition;
 import com.asis.joi.model.entities.Condition;
 import com.asis.joi.model.entities.JOIComponent;
-import javafx.scene.control.MenuItem;
-import javafx.scene.control.SeparatorMenuItem;
 
 public class ConditionNode extends JOIComponentNode {
 
@@ -12,30 +10,13 @@ public class ConditionNode extends JOIComponentNode {
         super(width, height, componentId, component);
 
         setUserData("condition");
+        setId("Condition");
 
         createNewInputConnectionPoint();
         createNewOutputConnectionPoint("True", "true_output");
         createNewOutputConnectionPoint("False", "false_output");
 
         setupContextMenu();
-    }
-
-    @Override
-    protected void setupContextMenu() {
-        MenuItem editSceneItem = new MenuItem("Edit Condition");
-        SeparatorMenuItem separatorMenuItem = new SeparatorMenuItem();
-        MenuItem deleteNodeItem = new MenuItem("Delete");
-        contextMenu.getItems().addAll(editSceneItem, separatorMenuItem, deleteNodeItem);
-
-        //Handle menu actions
-        editSceneItem.setOnAction(actionEvent -> {
-            if (getJoiComponent() != null) DialogCondition.openConditionDialog((Condition) getJoiComponent());
-        });
-        deleteNodeItem.setOnAction(actionEvent -> {
-            if (getJoiComponent() != null) {
-                ComponentNodeManager.getInstance().removeComponentNode(this);
-            }
-        });
     }
 
     @Override
@@ -57,5 +38,10 @@ public class ConditionNode extends JOIComponentNode {
                             "-fx-opacity: 1;"
             );
         }
+    }
+
+    @Override
+    protected boolean openDialog() {
+        return DialogCondition.openConditionDialog((Condition) getJoiComponent());
     }
 }

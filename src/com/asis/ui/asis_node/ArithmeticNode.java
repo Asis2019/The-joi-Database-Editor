@@ -3,44 +3,19 @@ package com.asis.ui.asis_node;
 import com.asis.controllers.dialogs.DialogArithmetic;
 import com.asis.joi.model.entities.Arithmetic;
 import com.asis.joi.model.entities.JOIComponent;
-import javafx.scene.control.MenuItem;
-import javafx.scene.control.SeparatorMenuItem;
 
 public class ArithmeticNode extends JOIComponentNode {
 
-
-    protected ArithmeticNode(int width, int height, int componentId, JOIComponent component) {
+    public ArithmeticNode(int width, int height, int componentId, JOIComponent component) {
         super(width, height, componentId, component);
 
         setUserData("arithmetic");
+        setId("Arithmetic");
 
         createNewInputConnectionPoint();
         createNewOutputConnectionPoint(null, "normal_output");
 
         setupContextMenu();
-    }
-
-
-
-    @Override
-    protected void setupContextMenu() {
-        MenuItem editSceneItem = new MenuItem("Edit Arithmetic");
-        SeparatorMenuItem separatorMenuItem = new SeparatorMenuItem();
-        MenuItem deleteNodeItem = new MenuItem("Delete");
-        contextMenu.getItems().addAll(editSceneItem, separatorMenuItem, deleteNodeItem);
-
-        //Handle menu actions
-        editSceneItem.setOnAction(actionEvent -> {
-            if (getJoiComponent() != null) {
-                DialogArithmetic.openArithmetic((Arithmetic) getJoiComponent());
-            }
-        });
-
-        deleteNodeItem.setOnAction(actionEvent -> {
-            if (getJoiComponent() != null) {
-                ComponentNodeManager.getInstance().removeComponentNode(this);
-            }
-        });
     }
 
     @Override
@@ -62,5 +37,10 @@ public class ArithmeticNode extends JOIComponentNode {
                             "-fx-opacity: 1;"
             );
         }
+    }
+
+    @Override
+    protected boolean openDialog() {
+        return DialogArithmetic.openArithmetic((Arithmetic) getJoiComponent());
     }
 }
