@@ -41,7 +41,7 @@ public class TabNormalOperationController extends TabController {
     @FXML
     private Button deleteLineButton, previousLineButton;
     @FXML
-    private CheckBox checkBoxStopBeat, checkBoxStartBeat;
+    private CheckBox checkBoxStopBeat, checkBoxStartBeat, checkStopAmbience;
 
     @FXML
     private NumberField textFieldBeatPitch, textFieldBeatSpeed, imageSpeedMultiplier;
@@ -185,8 +185,17 @@ public class TabNormalOperationController extends TabController {
         setLineStopCheckBoxState(getLineGroup().getLine(onLine), checkBoxStopBeat);
     }
 
+    public void actionStopAmbience() {
+        if(checkStopAmbience.isSelected())
+            getLineGroup().getLine(onLine).setStopAmbience(checkStopAmbience.isSelected());
+        else
+            getLineGroup().getLine(onLine).setStopAmbience(null);
+    }
+
     private void setLineVariables() {
         initializeText();
+
+        checkStopAmbience.setSelected(getLineGroup().getLine(onLine).getStopAmbience() != null);
 
         JSONObject textObject = getLineGroup().getLine(onLine).toJSON().getJSONObject(0);
         textObjectElseIf();

@@ -48,7 +48,7 @@ public class TabTimerController extends TabController {
     @FXML
     private HBox container;
     @FXML
-    private CheckBox checkBoxStopBeat, checkBoxStartBeat, checkBoxHideTime, checkBoxHideTimer;
+    private CheckBox checkBoxStopBeat, checkBoxStartBeat, checkBoxHideTime, checkBoxHideTimer, checkStopAmbience;
     @FXML
     private Label warningLabel;
     @FXML
@@ -345,6 +345,9 @@ public class TabTimerController extends TabController {
         if (workingLine.getOutlineColor() != null)
             textOutlineColorPicker.setValue(Color.web(workingLine.getOutlineColor()));
 
+        if(workingLine.getStopAmbience() != null)
+            checkStopAmbience.setSelected(true);
+
         timerTextArea.setText(workingLine.getText().replaceAll("#", "\n"));
     }
 
@@ -374,6 +377,13 @@ public class TabTimerController extends TabController {
     public void actionStopBeat() {
         setLineStopCheckBoxState(getTimer().getLineGroup().getLine(onSecond), checkBoxStopBeat);
         updateObjectTree();
+    }
+
+    public void actionStopAmbience() {
+        if(checkStopAmbience.isSelected())
+            getTimer().getLineGroup().getLine(onSecond).setStopAmbience(checkStopAmbience.isSelected());
+        else
+            getTimer().getLineGroup().getLine(onSecond).setStopAmbience(null);
     }
 
     public void actionToggleTimerTextColorPickers() {

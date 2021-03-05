@@ -54,6 +54,7 @@
                                             </value>
                                         </ColorPicker>
                                         <NumberField fx:id="imageSpeedMultiplier" managed="false" promptText="Image speed multiplier" visible="false" />
+                                        <CheckBox fx:id="checkStopAmbience" layoutX="20.0" layoutY="42.0" mnemonicParsing="false" onAction="#actionStopAmbience" text="Stop Ambience" />
                                     </children>
                                 </VBox>
                             </content>
