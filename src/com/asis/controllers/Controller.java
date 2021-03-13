@@ -71,10 +71,7 @@ public class Controller {
             JSONObject object = (JSONObject) Config.get("ZOOM");
             if(object.has("minimum")) getInfinityPane().setMinimumScale(object.getDouble("minimum"));
             if(object.has("maximum")) getInfinityPane().setMaximumScale(object.getDouble("maximum"));
-
-        } catch (ClassCastException e) {
-            AsisUtils.errorDialogWindow(e);
-        }
+        } catch (ClassCastException ignore) {}
     }
 
     public static Controller getInstance() {
