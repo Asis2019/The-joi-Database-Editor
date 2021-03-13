@@ -22,7 +22,8 @@ public class InfinityPane extends StackPane {
     private ContextMenu contextMenu;
     private final Pane container = new Pane();
 
-    private double scale = 1d;
+    private double scale = 1d, minimumScale = 0.5, maximumScale = 2.5;
+
 
     public InfinityPane() {
         super();
@@ -99,7 +100,7 @@ public class InfinityPane extends StackPane {
         double nonZoomedYOffset = container.getTranslateY() / scale;
 
         //Rounding is needed because java will cause floating point errors otherwise
-        scale = clamp(Math.round((container.getScaleX() + scaleFactor) * 1000d)/1000d, 0.5, 2.5);
+        scale = clamp(Math.round((container.getScaleX() + scaleFactor) * 1000d)/1000d, minimumScale, maximumScale);
 
         container.setScaleX(scale);
         container.setScaleY(scale);
@@ -166,6 +167,15 @@ public class InfinityPane extends StackPane {
         outputClip.widthProperty().bind(region.widthProperty());
 
         region.setClip(outputClip);
+    }
+
+    public void setMinimumScale(double minimumScale) {
+        this.minimumScale = minimumScale;
+    }
+
+    public void setMaximumScale(double maximumScale) {
+        System.out.println(maximumScale);
+        this.maximumScale = maximumScale;
     }
 
     private static class Pannable implements EventHandler<MouseEvent> {

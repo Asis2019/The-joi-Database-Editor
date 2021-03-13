@@ -57,5 +57,9 @@
 	"feature_code": "dialog_option",
 	"feature_read_name": "Dialog option",
 	"feature_description": "Joi contains dialog options"
-  }]
+  }],
+  "ZOOM": {
+    "minimum": 0.5,
+    "maximum": 2.5
+  }
 }

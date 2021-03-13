@@ -12,6 +12,7 @@ import com.asis.joi.model.entities.dialog.DialogOption;
 import com.asis.ui.InfinityPane;
 import com.asis.ui.asis_node.*;
 import com.asis.utilities.AsisUtils;
+import com.asis.utilities.Config;
 import com.asis.utilities.SelectionModel;
 import com.asis.utilities.StageManager;
 import javafx.application.Platform;
@@ -26,6 +27,7 @@ import javafx.stage.DirectoryChooser;
 import javafx.stage.FileChooser;
 import javafx.stage.Stage;
 import javafx.stage.WindowEvent;
+import org.json.JSONObject;
 
 import java.io.File;
 import java.io.IOException;
@@ -64,6 +66,15 @@ public class Controller {
         setupMainContextMenu();
         gridToggle.setTooltip(new Tooltip("Snap to grid"));
         thumbnailToggle.setTooltip(new Tooltip("Toggle Scene thumbnails"));
+
+        try {
+            JSONObject object = (JSONObject) Config.get("ZOOM");
+            if(object.has("minimum")) getInfinityPane().setMinimumScale(object.getDouble("minimum"));
+            if(object.has("maximum")) getInfinityPane().setMaximumScale(object.getDouble("maximum"));
+
+        } catch (ClassCastException e) {
+            AsisUtils.errorDialogWindow(e);
+        }
     }
 
     public static Controller getInstance() {
