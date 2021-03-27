@@ -18,6 +18,7 @@ import javafx.scene.input.MouseButton;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.HBox;
+import javafx.scene.layout.Pane;
 import javafx.scene.layout.VBox;
 import javafx.scene.paint.Color;
 
@@ -188,7 +189,7 @@ public abstract class JOIComponentNode extends BorderPane {
         Controller controller = Controller.getInstance();
         controller.getJoiPackage().getJoi().removeComponent(joiComponentNode.getComponentId());
         ComponentConnectionManager.getInstance().removeConnection(joiComponentNode);
-        controller.getInfinityPane().getContainer().getChildren().remove(joiComponentNode);
+        ((Pane) joiComponentNode.getParent()).getChildren().remove(joiComponentNode);
     }
 
     //Getters and setters

@@ -28,6 +28,25 @@ public abstract class JOIComponent implements JSONString, Cloneable {
         return object;
     }
 
+    protected static void createEntity(JSONObject jsonObject, JOIComponent joiComponent) {
+        for (String key : jsonObject.keySet()) {
+            switch (key) {
+                case "sceneId":
+                    joiComponent.setComponentId(jsonObject.getInt(key));
+                    break;
+                case "sceneTitle":
+                    joiComponent.setComponentTitle(jsonObject.getString(key));
+                    break;
+                case "layoutXPosition":
+                    joiComponent.setLayoutXPosition(jsonObject.getDouble(key));
+                    break;
+                case "layoutYPosition":
+                    joiComponent.setLayoutYPosition(jsonObject.getDouble(key));
+                    break;
+            }
+        }
+    }
+
     @Override
     public Object clone() throws CloneNotSupportedException {
         JOIComponent component = (JOIComponent) super.clone();

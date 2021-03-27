@@ -15,39 +15,28 @@ public class VariableSetter extends JOIComponent {
 
     public static VariableSetter createEntity(JSONObject jsonObject) {
         VariableSetter setter = new VariableSetter(0);
+        createEntity(jsonObject, setter);
 
         for (String key : jsonObject.keySet()) {
             switch (key) {
-                case "sceneId":
-                    setter.setComponentId(jsonObject.getInt("sceneId"));
-                    break;
-                case "sceneTitle":
-                    setter.setComponentTitle(jsonObject.getString("sceneTitle"));
-                    break;
-                case "layoutXPosition":
-                    setter.setLayoutXPosition(jsonObject.getDouble("layoutXPosition"));
-                    break;
-                case "layoutYPosition":
-                    setter.setLayoutYPosition(jsonObject.getDouble("layoutYPosition"));
-                    break;
                 case "name":
-                    setter.setVariableName(jsonObject.getString("name"));
+                    setter.setVariableName(jsonObject.getString(key));
                     break;
                 case "value":
-                    setter.setVariableValue(jsonObject.get("value"));
+                    setter.setVariableValue(jsonObject.get(key));
                     break;
                 case "persistent":
-                    setter.setVariablePersistent(jsonObject.getBoolean("persistent"));
+                    setter.setVariablePersistent(jsonObject.getBoolean(key));
                     break;
                 case "gotoSceneInRange":
                     JSONObject gotoRangeObject = new JSONObject();
-                    gotoRangeObject.put("array", jsonObject.getJSONArray("gotoSceneInRange"));
+                    gotoRangeObject.put("array", jsonObject.getJSONArray(key));
 
                     setter.setGotoScene(GotoScene.createEntity(gotoRangeObject));
                     break;
                 case "gotoScene":
                     JSONObject gotoObject = new JSONObject();
-                    gotoObject.put("array", new JSONArray(new int[]{jsonObject.getInt("gotoScene")}));
+                    gotoObject.put("array", new JSONArray(new int[]{jsonObject.getInt(key)}));
 
                     setter.setGotoScene(GotoScene.createEntity(gotoObject));
                     break;
