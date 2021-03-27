@@ -5,12 +5,14 @@ import com.asis.controllers.dialogs.DialogMessage;
 import com.asis.controllers.dialogs.DialogNewProject;
 import com.asis.controllers.dialogs.DialogUnsavedChanges;
 import com.asis.joi.JOIPackageManager;
-import com.asis.joi.model.JOIPackage;
-import com.asis.joi.model.entities.*;
-import com.asis.joi.model.entities.dialog.Dialog;
-import com.asis.joi.model.entities.dialog.DialogOption;
+import com.asis.joi.LoadJOIService;
+import com.asis.joi.model.entities.Arithmetic;
+import com.asis.joi.model.entities.Condition;
+import com.asis.joi.model.entities.Group;
+import com.asis.joi.model.entities.VariableSetter;
 import com.asis.ui.InfinityPane;
 import com.asis.ui.asis_node.*;
+import com.asis.ui.asis_node.node_group.NodeGroup;
 import com.asis.utilities.AsisUtils;
 import com.asis.utilities.Config;
 import com.asis.utilities.SelectionModel;
@@ -48,9 +50,6 @@ public class Controller {
     private boolean showThumbnail = false;
 
     private SelectionModel selectionModel = new SelectionModel();
-    private JOIPackage joiPackage;
-
-    private final ContextMenu mainContextMenu = new ContextMenu();
 
     @FXML
     private InfinityPane infinityPane;
@@ -63,7 +62,20 @@ public class Controller {
 
     public void initialize() {
         instance = this;
-        setupMainContextMenu();
+        /* Block for context menu of infinity pane. This should be moved somewhere else probably */{
+            ContextMenu contextMenu = buildWorkspaceContextMenu(getInfinityPane(), -1);
+
+            infinityPane.setContextMenu(contextMenu);
+            infinityPane.setOnContextMenuRequested(contextMenuEvent -> {
+                if (!getInfinityPane().nodeAtPosition(contextMenuEvent.getSceneX(), contextMenuEvent.getSceneY())) {
+                    contextMenu.show(infinityPane, contextMenuEvent.getScreenX(), contextMenuEvent.getScreenY());
+                }
+
+                menuEventX = contextMenuEvent.getX();
+                menuEventY = contextMenuEvent.getY();
+            });
+        }
+
         gridToggle.setTooltip(new Tooltip("Snap to grid"));
         thumbnailToggle.setTooltip(new Tooltip("Toggle Scene thumbnails"));
 
@@ -78,46 +90,57 @@ public class Controller {
         return instance;
     }
 
-    private void setupMainContextMenu() {
+    public static ContextMenu buildWorkspaceContextMenu(InfinityPane infinityPane, int groupId) {
+        ContextMenu contextMenu = new ContextMenu();
+
         //Create items and add them to there menu
         MenuItem newSceneItem = new MenuItem("New Scene");
         MenuItem newVariableSetterItem = new MenuItem("New Variable");
         MenuItem newConditionItem = new MenuItem("New Condition");
         MenuItem newArithmeticItem = new MenuItem("New Arithmetic");
         SeparatorMenuItem separatorMenuItem = new SeparatorMenuItem();
+        MenuItem newGroupItem = new MenuItem("New Node Group");
+        SeparatorMenuItem separatorMenuItem2 = new SeparatorMenuItem();
 
         MenuItem reset_view = new MenuItem("Reset view");
-        mainContextMenu.getItems().addAll(newSceneItem, newVariableSetterItem, newConditionItem,
-                newArithmeticItem, separatorMenuItem, reset_view);
+        contextMenu.getItems().addAll(newSceneItem, newVariableSetterItem, newConditionItem,
+                newArithmeticItem, separatorMenuItem, newGroupItem, separatorMenuItem2, reset_view);
 
         //Handle menu actions
+        Controller controller = Controller.getInstance();
         newSceneItem.setOnAction(event -> {
-            addSceneContextMenu = true;
+            controller.addSceneContextMenu = true;
+            ComponentNodeManager.getInstance().setWorkingPane(infinityPane);
+            ComponentNodeManager.getInstance().setWorkingGroupId(groupId);
             ComponentNodeManager.getInstance().addScene(false);
         });
         newVariableSetterItem.setOnAction(actionEvent -> {
-            addSceneContextMenu = true;
+            controller.addSceneContextMenu = true;
+            ComponentNodeManager.getInstance().setWorkingPane(infinityPane);
+            ComponentNodeManager.getInstance().setWorkingGroupId(groupId);
             ComponentNodeManager.getInstance().addJOIComponentNode(VariableSetterNode.class, VariableSetter.class);
         });
         newConditionItem.setOnAction(actionEvent -> {
-            addSceneContextMenu = true;
+            controller.addSceneContextMenu = true;
+            ComponentNodeManager.getInstance().setWorkingPane(infinityPane);
+            ComponentNodeManager.getInstance().setWorkingGroupId(groupId);
             ComponentNodeManager.getInstance().addJOIComponentNode(ConditionNode.class, Condition.class);
         });
         newArithmeticItem.setOnAction(actionEvent -> {
-            addSceneContextMenu = true;
+            controller.addSceneContextMenu = true;
+            ComponentNodeManager.getInstance().setWorkingPane(infinityPane);
+            ComponentNodeManager.getInstance().setWorkingGroupId(groupId);
             ComponentNodeManager.getInstance().addJOIComponentNode(ArithmeticNode.class, Arithmetic.class);
         });
-        reset_view.setOnAction(actionEvent -> getInfinityPane().resetPosition());
-
-        infinityPane.setContextMenu(mainContextMenu);
-        infinityPane.setOnContextMenuRequested(contextMenuEvent -> {
-            if (!getInfinityPane().nodeAtPosition(contextMenuEvent.getSceneX(), contextMenuEvent.getSceneY())) {
-                mainContextMenu.show(infinityPane, contextMenuEvent.getScreenX(), contextMenuEvent.getScreenY());
-            }
-
-            menuEventX = contextMenuEvent.getX();
-            menuEventY = contextMenuEvent.getY();
+        newGroupItem.setOnAction(actionEvent -> {
+            controller.addSceneContextMenu = true;
+            ComponentNodeManager.getInstance().setWorkingPane(infinityPane);
+            ComponentNodeManager.getInstance().setWorkingGroupId(groupId);
+            ComponentNodeManager.getInstance().addJOIComponentNode(NodeGroup.class, Group.class);
         });
+        reset_view.setOnAction(actionEvent -> infinityPane.resetPosition());
+
+        return contextMenu;
     }
 
     public void actionOpenMetadata() {
@@ -128,7 +151,7 @@ public class Controller {
             Parent root = fxmlLoader.load();
 
             MetaDataForm metaDataForm = fxmlLoader.getController();
-            metaDataForm.inflateJOIPackageObject(getJoiPackage());
+            metaDataForm.inflateJOIPackageObject(LoadJOIService.getInstance().getJoiPackage());
 
             Stage stage = new Stage();
             stage.getIcons().add(new Image(Controller.class.getResourceAsStream("/resources/images/icon.png")));
@@ -198,17 +221,15 @@ public class Controller {
 
         JOIPackageManager.getInstance().clear();
         JOIPackageManager.getInstance().setJoiPackageDirectory(newProjectDirectory);
-        resetJoiPackage(JOIPackageManager.getInstance().getNewJOIPackage(defaultProjectLanguageCode));
-        ComponentNodeManager.getInstance().addScene(true);
-    }
 
-    private void resetJoiPackage(JOIPackage joiPackage) {
-        setJoiPackage(joiPackage);
-
-        infinityPane.getContainer().getChildren().clear();
+        //Clear all previous nodes and set new package
+        LoadJOIService.getInstance().setJoiPackage(JOIPackageManager.getInstance().getNewJOIPackage(defaultProjectLanguageCode));
+        getInfinityPane().getContainer().getChildren().clear();
         getJoiComponentNodes().clear();
 
-        StageManager.getInstance().closeAllStages();
+        //Set the pane and add the first scene
+        ComponentNodeManager.getInstance().setWorkingPane(infinityPane);
+        ComponentNodeManager.getInstance().addScene(true);
     }
 
     public boolean actionLoadProject() {
@@ -225,123 +246,10 @@ public class Controller {
         }
 
         try {
-            return processLoadProject();
+            return LoadJOIService.getInstance().processLoadProject(getInfinityPane());
         } catch (IOException e) {
             AsisUtils.errorDialogWindow(e);
             return false;
-        }
-    }
-
-    public boolean processLoadProject() throws IOException {
-        DirectoryChooser directoryChooser = new DirectoryChooser();
-        directoryChooser.setInitialDirectory(JOIPackageManager.getInstance().getJoiPackageDirectory());
-        File file = directoryChooser.showDialog(null);
-
-        if (file != null) {
-            try {
-                //Set project directory to current
-                JOIPackageManager.getInstance().setJoiPackageDirectory(file);
-                JOIPackage newJoiPackage = JOIPackageManager.getInstance().getJOIPackage();
-                if (newJoiPackage == null) return false;
-
-                //Load joi
-                //Reset old variables
-                resetJoiPackage(newJoiPackage);
-
-                //Create component nodes
-                for (JOIComponent component : getJoiPackage().getJoi().getJoiComponents()) {
-                    if (component instanceof com.asis.joi.model.entities.Scene)
-                        ComponentNodeManager.getInstance().addJOIComponentNode(
-                                SceneNode.class, com.asis.joi.model.entities.Scene.class,
-                                component.getLayoutXPosition(), component.getLayoutYPosition(), component.getComponentTitle(),
-                                component.getComponentId(), true);
-                    else if (component instanceof VariableSetter)
-                        ComponentNodeManager.getInstance().addJOIComponentNode(
-                                VariableSetterNode.class, VariableSetter.class,
-                                component.getLayoutXPosition(), component.getLayoutYPosition(), component.getComponentTitle(), component.getComponentId(), true);
-                    else if (component instanceof Condition)
-                        ComponentNodeManager.getInstance().addJOIComponentNode(
-                                ConditionNode.class, Condition.class,
-                                component.getLayoutXPosition(), component.getLayoutYPosition(), component.getComponentTitle(), component.getComponentId(), true);
-                    else if (component instanceof Arithmetic)
-                        ComponentNodeManager.getInstance().addJOIComponentNode(
-                                ArithmeticNode.class, Arithmetic.class,
-                                component.getLayoutXPosition(), component.getLayoutYPosition(), component.getComponentTitle(), component.getComponentId(), true);
-                }
-                //Create connections
-                for (JOIComponent component : getJoiPackage().getJoi().getJoiComponents()) {
-                    if (component instanceof com.asis.joi.model.entities.Scene) {
-                        com.asis.joi.model.entities.Scene scene = (com.asis.joi.model.entities.Scene) component;
-                        final AsisConnectionButton output = getJOIComponentNodeWithId(getJoiComponentNodes(), component.getComponentId()).getOutputButtons().get(0);
-                        if (scene.hasComponent(GotoScene.class))
-                            createConnections(scene.getComponent(GotoScene.class), output);
-
-                        createConnectionsForDialogOutputs(scene);
-                    } else if (component instanceof VariableSetter) {
-                        VariableSetter setter = (VariableSetter) component;
-                        final AsisConnectionButton output = getJOIComponentNodeWithId(getJoiComponentNodes(), component.getComponentId()).getOutputButtons().get(0);
-                        createConnections(setter.getGotoScene(), output);
-                    } else if (component instanceof Condition) {
-                        Condition condition = (Condition) component;
-                        final AsisConnectionButton trueOutput = getJOIComponentNodeWithId(getJoiComponentNodes(), component.getComponentId()).getOutputButtons().get(0);
-                        final AsisConnectionButton falseOutput = getJOIComponentNodeWithId(getJoiComponentNodes(), component.getComponentId()).getOutputButtons().get(1);
-
-                        createConnections(condition.getGotoSceneTrue(), trueOutput);
-                        createConnections(condition.getGotoSceneFalse(), falseOutput);
-                    } else if (component instanceof Arithmetic) {
-                        Arithmetic arithmetic = (Arithmetic) component;
-                        final AsisConnectionButton output = getJOIComponentNodeWithId(getJoiComponentNodes(), component.getComponentId()).getOutputButtons().get(0);
-
-                        createConnections(arithmetic.getGotoScene(), output);
-                    }
-                }
-
-                //Loading completed successfully
-                return true;
-            } catch (RuntimeException e) {
-                e.printStackTrace();
-                DialogMessage.messageDialog("LOADING FAILED", "The editor was unable to load this joi for the following reason:\n" + e.getMessage(), 600, 200);
-                return false;
-            }
-        }
-
-        //Loading failed do to null file
-        return false;
-    }
-
-    private void createConnectionsForDialogOutputs(com.asis.joi.model.entities.Scene scene) {
-        if (scene.hasComponent(Dialog.class) && !scene.getComponent(Dialog.class).getOptionArrayList().isEmpty()) {
-            for (DialogOption dialogOption : scene.getComponent(Dialog.class).getOptionArrayList()) {
-                AsisConnectionButton output = getJOIComponentNodeWithId(getJoiComponentNodes(), scene.getComponentId()).createNewOutputConnectionPoint("Option " + dialogOption.getOptionNumber(), "dialog_option_" + (dialogOption.getOptionNumber() + 1));
-                output.setOptionNumber(dialogOption.getOptionNumber());
-
-                createConnections(dialogOption.getGotoScene(), output);
-            }
-        }
-    }
-
-    private void createConnections(GotoScene gotoScene, AsisConnectionButton output) {
-        final boolean gotoHasSingleOutput = gotoScene != null && gotoScene.getGotoSceneArrayList().size() == 1;
-        final boolean gotoHasMultipleOutput = gotoScene != null && gotoScene.getGotoSceneArrayList().size() > 1;
-
-        try {
-            ComponentConnectionManager componentConnectionManager = ComponentConnectionManager.getInstance();
-
-            //Check for scene normal connections
-            if (gotoHasSingleOutput) {
-                AsisConnectionButton input = getJOIComponentNodeWithId(getJoiComponentNodes(), gotoScene.getGotoSceneArrayList().get(0)).getInputConnection();
-                componentConnectionManager.createConnection(output, input);
-            }
-
-            //Check for scene range connections
-            if (gotoHasMultipleOutput) {
-                for (int i = 0; i < gotoScene.getGotoSceneArrayList().size(); i++) {
-                    AsisConnectionButton input = getJOIComponentNodeWithId(getJoiComponentNodes(), gotoScene.getGotoSceneArrayList().get(i)).getInputConnection();
-                    componentConnectionManager.createConnection(output, input);
-                }
-            }
-        } catch (NullPointerException e) {
-            throw new RuntimeException("Failed to load scene: " + output.getJoiComponent().getComponentTitle());
         }
     }
 
@@ -441,14 +349,6 @@ public class Controller {
 
     public ArrayList<JOIComponentNode> getJoiComponentNodes() {
         return ComponentNodeManager.getInstance().getJoiComponentNodes();
-    }
-
-    public JOIPackage getJoiPackage() {
-        return joiPackage;
-    }
-
-    public void setJoiPackage(JOIPackage joiPackage) {
-        this.joiPackage = joiPackage;
     }
 
     public boolean isSnapToGrid() {

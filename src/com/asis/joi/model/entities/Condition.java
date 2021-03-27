@@ -22,32 +22,21 @@ public class Condition extends JOIComponent {
 
     public static Condition createEntity(JSONObject jsonObject) {
         Condition condition = new Condition(0);
+        createEntity(jsonObject, condition);
 
         for (String key : jsonObject.keySet()) {
             switch (key) {
-                case "sceneId":
-                    condition.setComponentId(jsonObject.getInt("sceneId"));
-                    break;
-                case "sceneTitle":
-                    condition.setComponentTitle(jsonObject.getString("sceneTitle"));
-                    break;
-                case "layoutXPosition":
-                    condition.setLayoutXPosition(jsonObject.getDouble("layoutXPosition"));
-                    break;
-                case "layoutYPosition":
-                    condition.setLayoutYPosition(jsonObject.getDouble("layoutYPosition"));
-                    break;
                 case "conditionType":
-                    condition.setConditionType(ConditionType.valueOf(jsonObject.getString("conditionType")));
+                    condition.setConditionType(ConditionType.valueOf(jsonObject.getString(key)));
                     break;
                 case "variable":
-                    condition.setVariable(jsonObject.getString("variable"));
+                    condition.setVariable(jsonObject.getString(key));
                     break;
                 case "comparingValue":
-                    condition.setComparingValue(jsonObject.get("comparingValue"));
+                    condition.setComparingValue(jsonObject.get(key));
                     break;
                 case "gotoScene":
-                    JSONArray jsonArray = jsonObject.getJSONArray("gotoScene");
+                    JSONArray jsonArray = jsonObject.getJSONArray(key);
                     for(int i=0; i<jsonArray.length(); i++) {
                         JSONObject gotoObject = new JSONObject();
 

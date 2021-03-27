@@ -4,6 +4,7 @@ import com.asis.Main;
 import com.asis.controllers.Controller;
 import com.asis.controllers.SceneDetails;
 import com.asis.controllers.dialogs.DialogSceneTitle;
+import com.asis.joi.LoadJOIService;
 import com.asis.joi.model.entities.JOIComponent;
 import com.asis.joi.model.entities.Scene;
 import com.asis.joi.model.entities.SceneImage;
@@ -132,8 +133,6 @@ public class SceneNode extends JOIComponentNode {
     protected void setupContextMenu() {
         super.setupContextMenu();
 
-        Controller controller = Controller.getInstance();
-
         MenuItem editNameItem = new MenuItem("Change Name");
         MenuItem goodEndItem = new MenuItem("Set as Good End");
         MenuItem badEndItem = new MenuItem("Set as Bad End");
@@ -145,7 +144,7 @@ public class SceneNode extends JOIComponentNode {
                 String title = DialogSceneTitle.addNewSceneDialog(getTitle());
                 if(title == null) return;
 
-                controller.getJoiPackage().getJoi().getComponent(getComponentId()).setComponentTitle(title);
+                LoadJOIService.getInstance().getJoiPackage().getJoi().getComponent(getComponentId()).setComponentTitle(title);
                 setTitle(title);
             }
         });

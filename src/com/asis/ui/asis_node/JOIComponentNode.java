@@ -4,10 +4,12 @@ import com.asis.controllers.Controller;
 import com.asis.controllers.dialogs.DialogArithmetic;
 import com.asis.controllers.dialogs.DialogCondition;
 import com.asis.controllers.dialogs.DialogVariableSetter;
+import com.asis.joi.LoadJOIService;
 import com.asis.joi.model.entities.Arithmetic;
 import com.asis.joi.model.entities.Condition;
 import com.asis.joi.model.entities.JOIComponent;
 import com.asis.joi.model.entities.VariableSetter;
+import com.asis.ui.asis_node.node_group.NodeGroup;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
 import javafx.scene.control.ContextMenu;
@@ -18,6 +20,7 @@ import javafx.scene.input.MouseButton;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.HBox;
+import javafx.scene.layout.Pane;
 import javafx.scene.layout.VBox;
 import javafx.scene.paint.Color;
 
@@ -30,7 +33,7 @@ public abstract class JOIComponentNode extends BorderPane {
     private final VBox inputContainer = new VBox();
     protected final Label titleLabel = new Label("Undefined");
     private List<AsisConnectionButton> outputConnections = new ArrayList<>();
-    private AsisConnectionButton inputConnection;
+    private List<AsisConnectionButton> inputConnections = new ArrayList<>();
     protected ContextMenu contextMenu = new ContextMenu();
 
     public double innerX, innerY;
@@ -91,6 +94,8 @@ public abstract class JOIComponentNode extends BorderPane {
             //User double clicked
             if (mouseEvent.getButton().equals(MouseButton.PRIMARY))
                 if (mouseEvent.getClickCount() == 2) {
+                    if(this instanceof NodeGroup)
+                        NodeGroup.openNodeGroupWindow((NodeGroup) this);
                     if(this instanceof SceneNode)
                         SceneNode.openSceneDetails((SceneNode) this);
                     else if(this instanceof VariableSetterNode)
@@ -104,9 +109,11 @@ public abstract class JOIComponentNode extends BorderPane {
     }
 
     protected void createNewInputConnectionPoint() {
-        inputConnection = new AsisConnectionButton(true, getJoiComponent());
+        AsisConnectionButton inputConnection = new AsisConnectionButton(true, getJoiComponent());
         attachHandlers(inputConnection);
         inputContainer.getChildren().add(inputConnection);
+
+        inputConnections.add(inputConnection);
     }
 
     public AsisConnectionButton createNewOutputConnectionPoint(String labelText, String connectionId) {
@@ -185,10 +192,11 @@ public abstract class JOIComponentNode extends BorderPane {
     }
 
     public static void removeComponentNode(JOIComponentNode joiComponentNode) {
-        Controller controller = Controller.getInstance();
-        controller.getJoiPackage().getJoi().removeComponent(joiComponentNode.getComponentId());
+        LoadJOIService.getInstance().getJoiPackage().getJoi().removeComponent(joiComponentNode.getComponentId());
         ComponentConnectionManager.getInstance().removeConnection(joiComponentNode);
-        controller.getInfinityPane().getContainer().getChildren().remove(joiComponentNode);
+
+        if (joiComponentNode.getParent() instanceof Pane)
+            ((Pane) joiComponentNode.getParent()).getChildren().remove(joiComponentNode);
     }
 
     //Getters and setters
@@ -218,7 +226,7 @@ public abstract class JOIComponentNode extends BorderPane {
         return this.outputConnections;
     }
     public AsisConnectionButton getInputConnection() {
-        return this.inputConnection;
+        return this.inputConnections.get(0);
     }
 
 }

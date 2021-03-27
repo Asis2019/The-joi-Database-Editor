@@ -1,6 +1,7 @@
 package com.asis.ui.asis_node;
 
 import com.asis.controllers.Controller;
+import com.asis.joi.LoadJOIService;
 import com.asis.joi.model.entities.*;
 import com.asis.joi.model.entities.dialog.Dialog;
 import com.asis.joi.model.entities.dialog.DialogOption;
@@ -18,6 +19,7 @@ public class ComponentConnectionManager {
     private static ComponentConnectionManager componentConnectionManager = new ComponentConnectionManager();
 
     private final Controller controller = Controller.getInstance();
+    private final LoadJOIService loadJOIService = LoadJOIService.getInstance();
 
     private AsisConnectionButton currentlyActiveConnection = null;
 
@@ -208,7 +210,7 @@ public class ComponentConnectionManager {
 
     //TODO both these methods really need to be cleaned and streamlined
     private void addConnectionToStory(AsisConnectionButton outputConnection, AsisConnectionButton inputConnection) {
-        final JOIComponent component = controller.getJoiPackage().getJoi().getComponent(outputConnection.getParentSceneId());
+        final JOIComponent component = loadJOIService.getJoiPackage().getJoi().getComponent(outputConnection.getParentSceneId());
 
         //Process where to add the jump to
         if (outputConnection.getId().contains("dialog_option")) {
@@ -262,7 +264,7 @@ public class ComponentConnectionManager {
     }
 
     private void removeConnectionFromStory(AsisConnectionButton outputConnection, int inputSceneId) {
-        final JOIComponent joiComponent = controller.getJoiPackage().getJoi().getComponent(outputConnection.getParentSceneId());
+        final JOIComponent joiComponent = loadJOIService.getJoiPackage().getJoi().getComponent(outputConnection.getParentSceneId());
 
         if (outputConnection.getId().contains("dialog_option")) {
             //Remove from inner dialog location

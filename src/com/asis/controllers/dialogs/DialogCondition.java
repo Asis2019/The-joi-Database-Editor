@@ -1,7 +1,7 @@
 package com.asis.controllers.dialogs;
 
 import com.asis.Main;
-import com.asis.controllers.Controller;
+import com.asis.joi.LoadJOIService;
 import com.asis.joi.model.entities.Condition;
 import com.asis.joi.model.entities.JOIComponent;
 import com.asis.joi.model.entities.VariableSetter;
@@ -41,7 +41,7 @@ public class DialogCondition {
         operationDropdown.getSelectionModel().select(condition.getConditionType());
 
         Set<String> listItems = new HashSet<>();
-        for (JOIComponent component : Controller.getInstance().getJoiPackage().getJoi().getJoiComponents()) {
+        for (JOIComponent component : LoadJOIService.getInstance().getJoiPackage().getJoi().getJoiComponents()) {
             if (component instanceof VariableSetter) {
                 listItems.add(((VariableSetter) component).getVariableName());
             }

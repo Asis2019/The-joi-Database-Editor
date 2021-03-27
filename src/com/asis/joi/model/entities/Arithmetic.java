@@ -13,33 +13,22 @@ public class Arithmetic extends JOIComponent {
 
     public static Arithmetic createEntity(JSONObject jsonObject) {
         Arithmetic arithmetic = new Arithmetic(0);
+        createEntity(jsonObject, arithmetic);
 
         for (String key : jsonObject.keySet()) {
             switch (key) {
-                case "sceneId":
-                    arithmetic.setComponentId(jsonObject.getInt("sceneId"));
-                    break;
-                case "sceneTitle":
-                    arithmetic.setComponentTitle(jsonObject.getString("sceneTitle"));
-                    break;
-                case "layoutXPosition":
-                    arithmetic.setLayoutXPosition(jsonObject.getDouble("layoutXPosition"));
-                    break;
-                case "layoutYPosition":
-                    arithmetic.setLayoutYPosition(jsonObject.getDouble("layoutYPosition"));
-                    break;
                 case "operation":
-                    arithmetic.setMathematicalExpression(jsonObject.getString("operation"));
+                    arithmetic.setMathematicalExpression(jsonObject.getString(key));
                     break;
                 case "gotoSceneInRange":
                     JSONObject gotoRangeObject = new JSONObject();
-                    gotoRangeObject.put("array", jsonObject.getJSONArray("gotoSceneInRange"));
+                    gotoRangeObject.put("array", jsonObject.getJSONArray(key));
 
                     arithmetic.setGotoScene(GotoScene.createEntity(gotoRangeObject));
                     break;
                 case "gotoScene":
                     JSONObject gotoObject = new JSONObject();
-                    gotoObject.put("array", new JSONArray(new int[]{jsonObject.getInt("gotoScene")}));
+                    gotoObject.put("array", new JSONArray(new int[]{jsonObject.getInt(key)}));
 
                     arithmetic.setGotoScene(GotoScene.createEntity(gotoObject));
                     break;

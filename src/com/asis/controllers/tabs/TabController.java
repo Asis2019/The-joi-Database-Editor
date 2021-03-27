@@ -1,6 +1,7 @@
 package com.asis.controllers.tabs;
 
 import com.asis.controllers.Controller;
+import com.asis.joi.LoadJOIService;
 import com.asis.joi.model.entities.JOIComponent;
 import com.asis.joi.model.entities.Line;
 import com.asis.joi.model.entities.Scene;
@@ -55,7 +56,7 @@ public abstract class TabController {
     }
 
     <T extends SceneComponent<?>> Scene getScene(T component) {
-        for(JOIComponent joiComponent: Controller.getInstance().getJoiPackage().getJoi().getJoiComponents()) {
+        for(JOIComponent joiComponent: LoadJOIService.getInstance().getJoiPackage().getJoi().getJoiComponents()) {
             if(joiComponent instanceof Scene) {
                 if (((Scene) joiComponent).containsComponent(component)) return ((Scene) joiComponent);
             }

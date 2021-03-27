@@ -77,23 +77,12 @@ public class Scene extends JOIComponent {
 
     public static Scene createEntity(JSONObject jsonObject) {
         Scene scene = new Scene();
+        createEntity(jsonObject, scene);
 
         //Note scene id is not set here, it is set by the joi class
         //Set other fields
         for (String key : jsonObject.keySet()) {
             switch (key) {
-                case "sceneId":
-                    scene.setComponentId(jsonObject.getInt("sceneId"));
-                    break;
-                case "sceneTitle":
-                    scene.setComponentTitle(jsonObject.getString("sceneTitle"));
-                    break;
-                case "layoutXPosition":
-                    scene.setLayoutXPosition(jsonObject.getDouble("layoutXPosition"));
-                    break;
-                case "layoutYPosition":
-                    scene.setLayoutYPosition(jsonObject.getDouble("layoutYPosition"));
-                    break;
                 case "joiEnd":
                     scene.setGoodEnd(true);
                     break;
@@ -102,40 +91,40 @@ public class Scene extends JOIComponent {
                     break;
                 case "sceneImage":
                     if (jsonObject.get("sceneImage") instanceof JSONObject)
-                        scene.addComponent(SceneImage.createEntity(jsonObject.getJSONObject("sceneImage")));
+                        scene.addComponent(SceneImage.createEntity(jsonObject.getJSONObject(key)));
                     else
-                        scene.addComponent(SceneImage.createEntity(jsonObject.getString("sceneImage")));
+                        scene.addComponent(SceneImage.createEntity(jsonObject.getString(key)));
                     break;
                 case "noFade":
                     scene.removeComponent(Transition.class);
                     break;
                 case "transition":
                     scene.removeComponent(Transition.class);
-                    scene.addComponent(Transition.createEntity(jsonObject.getJSONArray("transition").getJSONObject(0)));
+                    scene.addComponent(Transition.createEntity(jsonObject.getJSONArray(key).getJSONObject(0)));
                     break;
                 case "timer":
-                    scene.addComponent(Timer.createEntity(jsonObject.getJSONArray("timer").getJSONObject(0)));
+                    scene.addComponent(Timer.createEntity(jsonObject.getJSONArray(key).getJSONObject(0)));
                     break;
                 case "customDialogueBox":
-                    scene.addComponent(CustomDialogueBox.createEntity(jsonObject.getJSONObject("customDialogueBox")));
+                    scene.addComponent(CustomDialogueBox.createEntity(jsonObject.getJSONObject(key)));
                     break;
                 case "dialogChoice":
-                    scene.addComponent(Dialog.createEntity(jsonObject.getJSONArray("dialogChoice").getJSONObject(0)));
+                    scene.addComponent(Dialog.createEntity(jsonObject.getJSONArray(key).getJSONObject(0)));
                     break;
                 case "gotoScene":
                     JSONObject gotoObject = new JSONObject();
-                    gotoObject.put("array", new JSONArray(new int[]{jsonObject.getInt("gotoScene")}));
+                    gotoObject.put("array", new JSONArray(new int[]{jsonObject.getInt(key)}));
 
                     scene.addComponent(GotoScene.createEntity(gotoObject));
                     break;
                 case "gotoSceneInRange":
                     JSONObject gotoRObject = new JSONObject();
-                    gotoRObject.put("array", jsonObject.getJSONArray("gotoSceneInRange"));
+                    gotoRObject.put("array", jsonObject.getJSONArray(key));
 
                     scene.addComponent(GotoScene.createEntity(gotoRObject));
                     break;
                 case "ambience":
-                    scene.setAmbience(jsonObject.getString("ambience"));
+                    scene.setAmbience(jsonObject.getString(key));
             }
         }
 
