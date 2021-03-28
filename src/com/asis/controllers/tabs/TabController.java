@@ -1,12 +1,12 @@
 package com.asis.controllers.tabs;
 
 import com.asis.controllers.Controller;
+import com.asis.controllers.EditorWindow;
 import com.asis.joi.model.entities.JOIComponent;
 import com.asis.joi.model.entities.Line;
 import com.asis.joi.model.entities.Scene;
 import com.asis.joi.model.entities.SceneComponent;
 import com.asis.ui.ImageViewPane;
-import com.asis.ui.asis_node.ComponentNodeManager;
 import com.asis.ui.asis_node.SceneNode;
 import javafx.scene.Node;
 import javafx.scene.control.CheckBox;
@@ -22,9 +22,15 @@ import java.util.Optional;
 public abstract class TabController {
     private boolean isClosable = true;
     private String tabTitle = "";
+    private EditorWindow editorWindow;
 
     TabController(String tabTitle) {
         setTabTitle(tabTitle);
+    }
+
+    TabController(String tabTitle, EditorWindow editorWindow) {
+        setTabTitle(tabTitle);
+        setEditorWindow(editorWindow);
     }
 
     void setVisibleImage(StackPane stackPane, ImageViewPane viewPane, File workingFile, Scene scene) {
@@ -42,7 +48,7 @@ public abstract class TabController {
             stackPane.getChildren().add(0, viewPane);
 
             if(Controller.getInstance().isShowThumbnail()) {
-                ComponentNodeManager.getInstance().getJoiComponentNodes().forEach(joiComponentNode -> {
+                getEditorWindow().getNodeManager().getJoiComponentNodes().forEach(joiComponentNode -> {
                     if (joiComponentNode.getComponentId() == scene.getComponentId() && joiComponentNode instanceof SceneNode) {
                         ((SceneNode) joiComponentNode).toggleSceneThumbnail(true);
                     }
@@ -117,5 +123,12 @@ public abstract class TabController {
     }
     public void setClosable(boolean closable) {
         isClosable = closable;
+    }
+
+    public EditorWindow getEditorWindow() {
+        return editorWindow;
+    }
+    public void setEditorWindow(EditorWindow editorWindow) {
+        this.editorWindow = editorWindow;
     }
 }

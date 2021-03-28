@@ -1,6 +1,7 @@
 package com.asis.ui.asis_node;
 
 import com.asis.controllers.Controller;
+import com.asis.controllers.EditorWindow;
 import com.asis.joi.model.entities.JOIComponent;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
@@ -28,11 +29,15 @@ public abstract class JOIComponentNode extends BorderPane {
     private AsisConnectionButton inputConnection;
     protected ContextMenu contextMenu = new ContextMenu();
 
+    //The controller window this node is attached too
+    private EditorWindow editorWindow;
+
     public double innerX, innerY;
 
-    public JOIComponentNode(int width, int height, int componentId, JOIComponent component) {
+    public JOIComponentNode(int width, int height, int componentId, JOIComponent component, EditorWindow editorWindow) {
         this.joiComponent = component;
         this.joiComponent.setComponentId(componentId);
+        setEditorWindow(editorWindow);
 
         titleLabel.setStyle(
                 "-fx-text-fill: white;" +
@@ -133,7 +138,7 @@ public abstract class JOIComponentNode extends BorderPane {
     private void attachHandlers(AsisConnectionButton connection) {
         addEventHandler(MouseEvent.MOUSE_PRESSED, mouseEvent -> contextMenu.hide());
 
-        ComponentConnectionManager componentConnectionManager = ComponentConnectionManager.getInstance();
+        ComponentConnectionManager componentConnectionManager = getEditorWindow().getConnectionManager();
 
         connection.setOnMouseMoved(componentConnectionManager::mouseMoved);
         connection.setOnMouseDragged(componentConnectionManager::mouseMoved);
@@ -169,10 +174,10 @@ public abstract class JOIComponentNode extends BorderPane {
         return multiple * (Math.round(v / multiple));
     }
 
-    public static void removeComponentNode(JOIComponentNode joiComponentNode) {
+    public void removeComponentNode(JOIComponentNode joiComponentNode) {
         Controller controller = Controller.getInstance();
         controller.getJoiPackage().getJoi().removeComponent(joiComponentNode.getComponentId());
-        ComponentConnectionManager.getInstance().removeConnection(joiComponentNode);
+        getEditorWindow().getConnectionManager().removeConnection(joiComponentNode);
         ((Pane) joiComponentNode.getParent()).getChildren().remove(joiComponentNode);
     }
 
@@ -206,4 +211,10 @@ public abstract class JOIComponentNode extends BorderPane {
         return this.inputConnection;
     }
 
+    public EditorWindow getEditorWindow() {
+        return editorWindow;
+    }
+    public void setEditorWindow(EditorWindow editorWindow) {
+        this.editorWindow = editorWindow;
+    }
 }

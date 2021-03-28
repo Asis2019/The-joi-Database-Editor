@@ -1,6 +1,7 @@
 package com.asis.ui.asis_node;
 
 import com.asis.controllers.Controller;
+import com.asis.controllers.EditorWindow;
 import com.asis.joi.model.entities.*;
 import com.asis.joi.model.entities.dialog.Dialog;
 import com.asis.joi.model.entities.dialog.DialogOption;
@@ -15,22 +16,14 @@ import java.util.ArrayList;
 import java.util.NoSuchElementException;
 
 public class ComponentConnectionManager {
-
-    private static ComponentConnectionManager componentConnectionManager = new ComponentConnectionManager();
-
-    private final Controller controller = Controller.getInstance();
-
-    private AsisConnectionButton currentlyActiveConnection = null;
-
     private final DoubleProperty mouseX = new SimpleDoubleProperty();
     private final DoubleProperty mouseY = new SimpleDoubleProperty();
 
-    private ComponentConnectionManager() {
-        if (componentConnectionManager == null) componentConnectionManager = this;
-    }
+    private AsisConnectionButton currentlyActiveConnection = null;
+    private final EditorWindow editorWindow;
 
-    public static ComponentConnectionManager getInstance() {
-        return componentConnectionManager;
+    public ComponentConnectionManager(EditorWindow editorWindow) {
+        this.editorWindow = editorWindow;
     }
 
     /**
@@ -66,7 +59,7 @@ public class ComponentConnectionManager {
         from.getBoundLines().add(boundLine);
         to.getBoundLines().add(boundLine);
 
-        controller.getInfinityPane().getContainer().getChildren().add(0, boundLine);
+        editorWindow.getInfinityPane().getContainer().getChildren().add(0, boundLine);
 
         if (from.getBoundLines().size() > 1)
             from.setButtonColor(AsisConnectionButton.RANDOM_OUT_COLOR);
@@ -102,9 +95,10 @@ public class ComponentConnectionManager {
      * @param mouseEvent a mouse event
      */
     void mouseMoved(MouseEvent mouseEvent) {
+        Controller controller = Controller.getInstance();
         final double menuBarOffset = controller.mainMenuBar.getHeight() + controller.toolBar.getHeight();
 
-        Point2D placementCoordinates = controller.getInfinityPane().sceneToWorld(mouseEvent.getSceneX(), mouseEvent.getSceneY());
+        Point2D placementCoordinates = editorWindow.getInfinityPane().sceneToWorld(mouseEvent.getSceneX(), mouseEvent.getSceneY());
 
         mouseX.set(placementCoordinates.getX());
         mouseY.set(placementCoordinates.getY() - menuBarOffset);
@@ -185,7 +179,7 @@ public class ComponentConnectionManager {
         connectionLine.endXProperty().bind(mouseX);
         connectionLine.endYProperty().bind(mouseY);
 
-        controller.getInfinityPane().getContainer().getChildren().add(0, connectionLine);
+        editorWindow.getInfinityPane().getContainer().getChildren().add(0, connectionLine);
     }
 
     /**
@@ -194,7 +188,7 @@ public class ComponentConnectionManager {
      * @param boundLine - the line to remove
      */
     private void removeLine(BoundLine boundLine) {
-        controller.getInfinityPane().getContainer().getChildren().remove(boundLine);
+        editorWindow.getInfinityPane().getContainer().getChildren().remove(boundLine);
 
         if (boundLine.getEndPointConnectionObject() != null) {
             boundLine.getEndPointConnectionObject().getBoundLines().remove(boundLine);
@@ -208,7 +202,8 @@ public class ComponentConnectionManager {
     }
 
     private void addConnectionToStory(AsisConnectionButton outputConnection, AsisConnectionButton inputConnection) {
-        final JOIComponent component = controller.getJoiPackage().getJoi().getComponent(outputConnection.getParentSceneId());
+        final JOIComponent component = Controller.getInstance().getJoiPackage().getJoi().getComponent(outputConnection.getParentSceneId());
+        if(component == null) return;
 
         //Process where to add the jump to
         if (outputConnection.getId().contains("dialog_option")) {
@@ -223,7 +218,9 @@ public class ComponentConnectionManager {
     }
 
     private void removeConnectionFromStory(AsisConnectionButton outputConnection, int inputSceneId) {
-        final JOIComponent joiComponent = controller.getJoiPackage().getJoi().getComponent(outputConnection.getParentSceneId());
+        final JOIComponent joiComponent = Controller.getInstance().getJoiPackage().getJoi().getComponent(outputConnection.getParentSceneId());
+        if(joiComponent == null) return;
+
         final boolean isMultiLined = outputConnection.getBoundLines().size() > 1;
 
         if (outputConnection.getId().contains("dialog_option")) {
