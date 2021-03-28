@@ -174,7 +174,6 @@ public class InfinityPane extends StackPane {
     }
 
     public void setMaximumScale(double maximumScale) {
-        System.out.println(maximumScale);
         this.maximumScale = maximumScale;
     }
 

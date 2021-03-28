@@ -2,6 +2,7 @@ package com.asis.ui.asis_node;
 
 import com.asis.Main;
 import com.asis.controllers.Controller;
+import com.asis.controllers.EditorWindow;
 import com.asis.controllers.SceneDetails;
 import com.asis.controllers.dialogs.DialogSceneTitle;
 import com.asis.joi.LoadJOIService;
@@ -29,8 +30,8 @@ public class SceneNode extends JOIComponentNode {
     private final ImageView imageView = new ImageView();
     private final Rectangle textBackdrop = new Rectangle();
 
-    public SceneNode(int width, int height, int sceneId, JOIComponent scene) {
-        super(width, height, sceneId, scene);
+    public SceneNode(int width, int height, int sceneId, JOIComponent scene, EditorWindow editorWindow) {
+        super(width, height, sceneId, scene, editorWindow);
 
         setUserData("sceneNode");
         setId("Scene");
@@ -115,7 +116,7 @@ public class SceneNode extends JOIComponentNode {
             Parent root = fxmlLoader.load();
 
             SceneDetails sceneDetails = fxmlLoader.getController();
-            sceneDetails.initialize(sceneNode.getJOIScene());
+            sceneDetails.initialize(sceneNode, sceneNode.getEditorWindow());
 
             Stage stage = new Stage();
             stage.getIcons().add(new Image(Controller.class.getResourceAsStream("/resources/images/icon.png")));

@@ -1,6 +1,6 @@
 package com.asis.controllers.tabs;
 
-import com.asis.controllers.Controller;
+import com.asis.controllers.EditorWindow;
 import com.asis.joi.model.entities.Scene;
 import com.asis.joi.model.entities.dialog.Dialog;
 import com.asis.joi.model.entities.dialog.DialogOption;
@@ -18,10 +18,11 @@ import javafx.scene.layout.VBox;
 public class TabDialogOptionController extends TabController {
     private Dialog dialog;
 
-    @FXML private VBox buttonContainer;
+    @FXML
+    private VBox buttonContainer;
 
-    public TabDialogOptionController(String tabTitle, Dialog dialog) {
-        super(tabTitle);
+    public TabDialogOptionController(String tabTitle, Dialog dialog, EditorWindow editorWindow) {
+        super(tabTitle, editorWindow);
 
         setDialog(dialog);
 
@@ -29,7 +30,7 @@ public class TabDialogOptionController extends TabController {
     }
 
     private void loadDialogOptionsIfPresent() {
-        for(DialogOption dialogOption: getDialog().getOptionArrayList()) {
+        for (DialogOption dialogOption : getDialog().getOptionArrayList()) {
             StackPane stackPane = new StackPane();
 
             TextField textField = new TextField();
@@ -53,17 +54,18 @@ public class TabDialogOptionController extends TabController {
         }
     }
 
-    @FXML public void actionAddOption() {
+    @FXML
+    public void actionAddOption() {
         final int totalOptions = getDialog().getOptionArrayList().size();
 
-        if(totalOptions < 4) {
+        if (totalOptions < 4) {
             getDialog().addDialogOption();
 
             StackPane stackPane = new StackPane();
 
             TextField textField = new TextField();
             textField.setMaxWidth(500);
-            textField.setPromptText("Option "+totalOptions);
+            textField.setPromptText("Option " + totalOptions);
             textField.setId("optionTextField");
             textField.setAlignment(Pos.CENTER);
             textField.getStylesheets().add(getClass().getResource("/resources/css/text_field_stylesheet.css").toString());
@@ -80,27 +82,28 @@ public class TabDialogOptionController extends TabController {
             //Add new connection point to scene
             Scene scene = getScene(getDialog());
 
-            if(scene != null) {
-                JOIComponentNode componentNode = Controller.getInstance().getJOIComponentNodeWithId(Controller.getInstance().getJoiComponentNodes(), scene.getComponentId());
+            if (scene != null) {
+                JOIComponentNode componentNode = getEditorWindow().getNodeManager().getJOIComponentNodeWithId(scene.getComponentId());
                 AsisConnectionButton asisConnectionButton = componentNode.createNewOutputConnectionPoint("Option " + totalOptions, "dialog_option_" + totalOptions);
                 asisConnectionButton.setOptionNumber(totalOptions);
             }
         }
     }
 
-    @FXML public void actionRemoveOption() {
+    @FXML
+    public void actionRemoveOption() {
         final int totalOptions = getDialog().getOptionArrayList().size();
 
-        if(totalOptions > 0) {
-            buttonContainer.getChildren().remove(totalOptions-1);
+        if (totalOptions > 0) {
+            buttonContainer.getChildren().remove(totalOptions - 1);
             Scene scene = getScene(getDialog());
 
-            if(scene != null) {
-                JOIComponentNode componentNode = Controller.getInstance().getJOIComponentNodeWithId(Controller.getInstance().getJoiComponentNodes(), scene.getComponentId());
+            if (scene != null) {
+                JOIComponentNode componentNode = getEditorWindow().getNodeManager().getJOIComponentNodeWithId(scene.getComponentId());
                 componentNode.removeOutputConnection();
             }
 
-            getDialog().getOptionArrayList().remove(totalOptions-1);
+            getDialog().getOptionArrayList().remove(totalOptions - 1);
         }
     }
 
@@ -112,6 +115,7 @@ public class TabDialogOptionController extends TabController {
     public Dialog getDialog() {
         return dialog;
     }
+
     public void setDialog(Dialog dialog) {
         this.dialog = dialog;
     }

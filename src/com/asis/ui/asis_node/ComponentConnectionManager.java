@@ -1,10 +1,11 @@
 package com.asis.ui.asis_node;
 
 import com.asis.controllers.Controller;
-import com.asis.joi.LoadJOIService;
+import com.asis.controllers.EditorWindow;
 import com.asis.joi.model.entities.*;
 import com.asis.joi.model.entities.dialog.Dialog;
 import com.asis.joi.model.entities.dialog.DialogOption;
+import com.asis.ui.asis_node.node_functional_expansion.ComponentVisitor;
 import javafx.beans.property.DoubleProperty;
 import javafx.beans.property.SimpleDoubleProperty;
 import javafx.geometry.Point2D;
@@ -15,23 +16,14 @@ import java.util.ArrayList;
 import java.util.NoSuchElementException;
 
 public class ComponentConnectionManager {
-
-    private static ComponentConnectionManager componentConnectionManager = new ComponentConnectionManager();
-
-    private final Controller controller = Controller.getInstance();
-    private final LoadJOIService loadJOIService = LoadJOIService.getInstance();
-
-    private AsisConnectionButton currentlyActiveConnection = null;
-
     private final DoubleProperty mouseX = new SimpleDoubleProperty();
     private final DoubleProperty mouseY = new SimpleDoubleProperty();
 
-    private ComponentConnectionManager() {
-        if (componentConnectionManager == null) componentConnectionManager = this;
-    }
+    private AsisConnectionButton currentlyActiveConnection = null;
+    private final EditorWindow editorWindow;
 
-    public static ComponentConnectionManager getInstance() {
-        return componentConnectionManager;
+    public ComponentConnectionManager(EditorWindow editorWindow) {
+        this.editorWindow = editorWindow;
     }
 
     /**
@@ -67,7 +59,7 @@ public class ComponentConnectionManager {
         from.getBoundLines().add(boundLine);
         to.getBoundLines().add(boundLine);
 
-        controller.getInfinityPane().getContainer().getChildren().add(0, boundLine);
+        editorWindow.getInfinityPane().getContainer().getChildren().add(0, boundLine);
 
         if (from.getBoundLines().size() > 1)
             from.setButtonColor(AsisConnectionButton.RANDOM_OUT_COLOR);
@@ -103,9 +95,10 @@ public class ComponentConnectionManager {
      * @param mouseEvent a mouse event
      */
     void mouseMoved(MouseEvent mouseEvent) {
+        Controller controller = Controller.getInstance();
         final double menuBarOffset = controller.mainMenuBar.getHeight() + controller.toolBar.getHeight();
 
-        Point2D placementCoordinates = controller.getInfinityPane().sceneToWorld(mouseEvent.getSceneX(), mouseEvent.getSceneY());
+        Point2D placementCoordinates = editorWindow.getInfinityPane().sceneToWorld(mouseEvent.getSceneX(), mouseEvent.getSceneY());
 
         mouseX.set(placementCoordinates.getX());
         mouseY.set(placementCoordinates.getY() - menuBarOffset);
@@ -186,7 +179,7 @@ public class ComponentConnectionManager {
         connectionLine.endXProperty().bind(mouseX);
         connectionLine.endYProperty().bind(mouseY);
 
-        controller.getInfinityPane().getContainer().getChildren().add(0, connectionLine);
+        editorWindow.getInfinityPane().getContainer().getChildren().add(0, connectionLine);
     }
 
     /**
@@ -195,7 +188,7 @@ public class ComponentConnectionManager {
      * @param boundLine - the line to remove
      */
     private void removeLine(BoundLine boundLine) {
-        controller.getInfinityPane().getContainer().getChildren().remove(boundLine);
+        editorWindow.getInfinityPane().getContainer().getChildren().remove(boundLine);
 
         if (boundLine.getEndPointConnectionObject() != null) {
             boundLine.getEndPointConnectionObject().getBoundLines().remove(boundLine);
@@ -208,9 +201,9 @@ public class ComponentConnectionManager {
         boundLine.getStartPointConnectionObject().calculateTooltip();
     }
 
-    //TODO both these methods really need to be cleaned and streamlined
     private void addConnectionToStory(AsisConnectionButton outputConnection, AsisConnectionButton inputConnection) {
-        final JOIComponent component = loadJOIService.getJoiPackage().getJoi().getComponent(outputConnection.getParentSceneId());
+        final JOIComponent component = Controller.getInstance().getJoiPackage().getJoi().getComponent(outputConnection.getParentSceneId());
+        if(component == null) return;
 
         //Process where to add the jump to
         if (outputConnection.getId().contains("dialog_option")) {
@@ -220,51 +213,15 @@ public class ComponentConnectionManager {
 
             dialogOption.getGotoScene().addValue(inputConnection.getParentSceneId());
         } else {
-            if (component instanceof Scene) {
-                GotoScene gotoScene;
-                try {
-                    gotoScene = ((Scene) component).getComponent(GotoScene.class);
-                } catch (NoSuchElementException e) {
-                    gotoScene = new GotoScene();
-                }
-
-                gotoScene.addValue(inputConnection.getParentSceneId());
-                ((Scene) component).addComponent(gotoScene);
-
-            } else if (component instanceof VariableSetter) {
-                GotoScene gotoScene = ((VariableSetter) component).getGotoScene();
-                if (gotoScene == null) gotoScene = new GotoScene();
-                gotoScene.addValue(inputConnection.getParentSceneId());
-
-                ((VariableSetter) component).setGotoScene(gotoScene);
-
-            } else if (component instanceof Arithmetic) {
-                GotoScene gotoScene = ((Arithmetic) component).getGotoScene();
-                if (gotoScene == null) gotoScene = new GotoScene();
-                gotoScene.addValue(inputConnection.getParentSceneId());
-
-                ((Arithmetic) component).setGotoScene(gotoScene);
-
-            } else if (component instanceof Condition) {
-                if (outputConnection.getId().equals("true_output")) {
-                    GotoScene gotoScene = ((Condition) component).getGotoSceneTrue();
-                    if (gotoScene == null) gotoScene = new GotoScene();
-                    gotoScene.addValue(inputConnection.getParentSceneId());
-
-                    ((Condition) component).setGotoSceneTrue(gotoScene);
-                } else if (outputConnection.getId().equals("false_output")) {
-                    GotoScene gotoScene = ((Condition) component).getGotoSceneFalse();
-                    if (gotoScene == null) gotoScene = new GotoScene();
-                    gotoScene.addValue(inputConnection.getParentSceneId());
-
-                    ((Condition) component).setGotoSceneFalse(gotoScene);
-                }
-            }
+            component.accept(new AddConnectionResolver(outputConnection.getId(), inputConnection.getParentSceneId()));
         }
     }
 
     private void removeConnectionFromStory(AsisConnectionButton outputConnection, int inputSceneId) {
-        final JOIComponent joiComponent = loadJOIService.getJoiPackage().getJoi().getComponent(outputConnection.getParentSceneId());
+        final JOIComponent joiComponent = Controller.getInstance().getJoiPackage().getJoi().getComponent(outputConnection.getParentSceneId());
+        if(joiComponent == null) return;
+
+        final boolean isMultiLined = outputConnection.getBoundLines().size() > 1;
 
         if (outputConnection.getId().contains("dialog_option")) {
             //Remove from inner dialog location
@@ -272,51 +229,120 @@ public class ComponentConnectionManager {
                 DialogOption dialogOption = ((Scene) joiComponent).getComponent(Dialog.class).getOptionArrayList()
                         .get(outputConnection.getOptionNumber());
 
-                if (outputConnection.getBoundLines().size() > 1) {
-                    dialogOption.getGotoScene().removeValue(inputSceneId);
-
-                } else {
-                    dialogOption.setGotoScene(null);
-                }
+                if (isMultiLined) dialogOption.getGotoScene().removeValue(inputSceneId);
+                else dialogOption.setGotoScene(null);
             } catch (NullPointerException ignore) {}
         } else {
-            if (outputConnection.getBoundLines().size() > 1) {
+            joiComponent.accept(new RemoveConnectionResolver(isMultiLined, inputSceneId, outputConnection.getId()));
+        }
+    }
 
-                GotoScene gotoScene;
-                if (joiComponent instanceof Scene) {
-                    gotoScene = ((Scene) joiComponent).getComponent(GotoScene.class);
-                } else if (joiComponent instanceof VariableSetter) {
-                    gotoScene = ((VariableSetter) joiComponent).getGotoScene();
-                } else if (joiComponent instanceof Arithmetic) {
-                    gotoScene = ((Arithmetic) joiComponent).getGotoScene();
-                } else if (joiComponent instanceof Condition) {
-                    if (outputConnection.getId().equals("true_output")) {
-                        gotoScene = ((Condition) joiComponent).getGotoSceneTrue();
-                    } else if (outputConnection.getId().equals("false_output")) {
-                        gotoScene = ((Condition) joiComponent).getGotoSceneFalse();
-                    } else {
-                        throw new RuntimeException("connection id was not true or false!");
-                    }
-                } else {
-                    return;
-                }
-                gotoScene.removeValue(inputSceneId);
+    private static class RemoveConnectionResolver implements ComponentVisitor {
+        final boolean isMultiLined;
+        final int inputSceneId;
+        final String outputConnectionId;
 
+        public RemoveConnectionResolver(boolean isMultiLined, int inputSceneId, String outputConnectionId) {
+            this.isMultiLined = isMultiLined;
+            this.inputSceneId = inputSceneId;
+            this.outputConnectionId = outputConnectionId;
+        }
+
+        @Override
+        public void visit(Scene scene) {
+            if(isMultiLined)
+                scene.getComponent(GotoScene.class).removeValue(inputSceneId);
+            else
+                scene.removeComponent(GotoScene.class);
+        }
+
+        @Override
+        public void visit(Condition condition) {
+            if(isMultiLined) {
+                if (outputConnectionId.equals("true_output"))
+                    condition.getGotoSceneTrue().removeValue(inputSceneId);
+                else if (outputConnectionId.equals("false_output"))
+                    condition.getGotoSceneFalse().removeValue(inputSceneId);
+                else throw new RuntimeException("connection id was not true or false!");
             } else {
-                if (joiComponent instanceof Scene) {
-                    ((Scene) joiComponent).removeComponent(GotoScene.class);
-                } else if (joiComponent instanceof VariableSetter) {
-                    ((VariableSetter) joiComponent).setGotoScene(null);
-                } else if (joiComponent instanceof Arithmetic) {
-                    ((Arithmetic) joiComponent).setGotoScene(null);
-                } else if (joiComponent instanceof Condition) {
-                    if (outputConnection.getId().equals("true_output")) {
-                        ((Condition) joiComponent).setGotoSceneTrue(null);
-                    } else if (outputConnection.getId().equals("false_output")) {
-                        ((Condition) joiComponent).setGotoSceneFalse(null);
-                    }
-                }
+                if (outputConnectionId.equals("true_output")) condition.setGotoSceneTrue(null);
+                else if (outputConnectionId.equals("false_output")) condition.setGotoSceneFalse(null);
             }
+        }
+
+        @Override
+        public void visit(VariableSetter variableSetter) {
+            if(isMultiLined)
+                variableSetter.getGotoScene().removeValue(inputSceneId);
+            else
+                variableSetter.setGotoScene(null);
+        }
+
+        @Override
+        public void visit(Arithmetic arithmetic) {
+            if(isMultiLined)
+                arithmetic.getGotoScene().removeValue(inputSceneId);
+            else
+                arithmetic.setGotoScene(null);
+        }
+    }
+
+    private static class AddConnectionResolver implements ComponentVisitor {
+
+        final String outputId;
+        final int parentSceneId;
+
+        public AddConnectionResolver(String outputId, int parentSceneId) {
+            this.outputId = outputId;
+            this.parentSceneId = parentSceneId;
+        }
+
+        @Override
+        public void visit(Scene scene) {
+            GotoScene gotoScene;
+            try {
+                gotoScene = scene.getComponent(GotoScene.class);
+            } catch (NoSuchElementException e) {
+                gotoScene = new GotoScene();
+            }
+
+            gotoScene.addValue(parentSceneId);
+            scene.addComponent(gotoScene);
+        }
+
+        @Override
+        public void visit(Condition condition) {
+            if (outputId.equals("true_output")) {
+                GotoScene gotoScene = condition.getGotoSceneTrue();
+                if (gotoScene == null) gotoScene = new GotoScene();
+                gotoScene.addValue(parentSceneId);
+
+                condition.setGotoSceneTrue(gotoScene);
+            } else if (outputId.equals("false_output")) {
+                GotoScene gotoScene = condition.getGotoSceneFalse();
+                if (gotoScene == null) gotoScene = new GotoScene();
+                gotoScene.addValue(parentSceneId);
+
+                condition.setGotoSceneFalse(gotoScene);
+            }
+        }
+
+        @Override
+        public void visit(VariableSetter variableSetter) {
+            GotoScene gotoScene = variableSetter.getGotoScene();
+            if (gotoScene == null) gotoScene = new GotoScene();
+            gotoScene.addValue(parentSceneId);
+
+            variableSetter.setGotoScene(gotoScene);
+        }
+
+        @Override
+        public void visit(Arithmetic arithmetic) {
+            GotoScene gotoScene = arithmetic.getGotoScene();
+            if (gotoScene == null) gotoScene = new GotoScene();
+            gotoScene.addValue(parentSceneId);
+
+            arithmetic.setGotoScene(gotoScene);
         }
     }
 }

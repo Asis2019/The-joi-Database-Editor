@@ -5,6 +5,7 @@ import com.asis.controllers.tabs.*;
 import com.asis.joi.JOIPackageManager;
 import com.asis.joi.model.entities.*;
 import com.asis.joi.model.entities.dialog.Dialog;
+import com.asis.ui.asis_node.SceneNode;
 import com.asis.utilities.AsisUtils;
 import com.asis.utilities.StageManager;
 import javafx.application.Platform;
@@ -23,7 +24,8 @@ import java.io.File;
 import java.io.IOException;
 
 public class SceneDetails {
-    private Scene scene;
+    private SceneNode sceneNode;
+    private EditorWindow editorWindow;
 
     private TabNormalOperationController tabNormalOperationController;
     private TabTimerController tabTimerController;
@@ -37,8 +39,9 @@ public class SceneDetails {
     @FXML
     private BorderPane sceneDetailBorderPane;
 
-    public void initialize(Scene scene) {
-        setScene(scene);
+    public void initialize(SceneNode scene, EditorWindow editorWindow) {
+        setEditorWindow(editorWindow);
+        setSceneNode(scene);
 
         //--Load appropriate tabs for current scene
         //add normal operation tab (line tab) to sceneDetails
@@ -101,7 +104,7 @@ public class SceneDetails {
 
     private void addDialogTab(Dialog dialog) {
         try {
-            TabDialogOptionController tabDialogOptionController = new TabDialogOptionController("Dialog", dialog);
+            TabDialogOptionController tabDialogOptionController = new TabDialogOptionController("Dialog", dialog, getEditorWindow());
             setTabDialogOptionController(tabDialogOptionController);
             createNewTab(tabDialogOptionController, "/resources/fxml/tab_dialog_option.fxml", 1);
             menuItemAddDialog.setDisable(true);
@@ -204,7 +207,7 @@ public class SceneDetails {
 
     private void closeDialog() {
         menuItemAddDialog.setDisable(false);
-        Controller.getInstance().getJOIComponentNodeWithId(Controller.getInstance().getJoiComponentNodes(), getScene().getComponentId()).removeAllOutputConnection();
+        getEditorWindow().getNodeManager().getJOIComponentNodeWithId(getScene().getComponentId()).removeAllOutputConnection();
         setTabDialogOptionController(null);
         getScene().removeComponent(Dialog.class);
     }
@@ -289,11 +292,15 @@ public class SceneDetails {
 
     //Getters and setters
     public Scene getScene() {
-        return scene;
+        return (Scene) sceneNode.getJoiComponent();
     }
 
-    public void setScene(Scene scene) {
-        this.scene = scene;
+    public SceneNode getSceneNode() {
+        return this.sceneNode;
+    }
+
+    public void setSceneNode(SceneNode scene) {
+        this.sceneNode = scene;
     }
 
     private TabPane getEffectTabs() {
@@ -330,5 +337,13 @@ public class SceneDetails {
 
     private void setTabTransitionController(TabTransitionController tabTransitionController) {
         this.tabTransitionController = tabTransitionController;
+    }
+
+    public EditorWindow getEditorWindow() {
+        return editorWindow;
+    }
+
+    public void setEditorWindow(EditorWindow editorWindow) {
+        this.editorWindow = editorWindow;
     }
 }

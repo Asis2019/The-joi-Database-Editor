@@ -5,14 +5,12 @@ import com.asis.controllers.dialogs.DialogMessage;
 import com.asis.controllers.dialogs.DialogNewProject;
 import com.asis.controllers.dialogs.DialogUnsavedChanges;
 import com.asis.joi.JOIPackageManager;
-import com.asis.joi.LoadJOIService;
-import com.asis.joi.model.entities.Arithmetic;
-import com.asis.joi.model.entities.Condition;
-import com.asis.joi.model.entities.Group;
-import com.asis.joi.model.entities.VariableSetter;
+import com.asis.joi.model.JOIPackage;
+import com.asis.joi.model.entities.JOIComponent;
 import com.asis.ui.InfinityPane;
-import com.asis.ui.asis_node.*;
-import com.asis.ui.asis_node.node_group.NodeGroup;
+import com.asis.ui.asis_node.SceneNode;
+import com.asis.ui.asis_node.node_functional_expansion.AddComponentNodeResolver;
+import com.asis.ui.asis_node.node_functional_expansion.CreateComponentConnectionsResolver;
 import com.asis.utilities.AsisUtils;
 import com.asis.utilities.Config;
 import com.asis.utilities.SelectionModel;
@@ -22,7 +20,10 @@ import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
-import javafx.scene.control.*;
+import javafx.scene.control.Button;
+import javafx.scene.control.MenuBar;
+import javafx.scene.control.ToolBar;
+import javafx.scene.control.Tooltip;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.stage.DirectoryChooser;
@@ -34,22 +35,19 @@ import org.json.JSONObject;
 import java.io.File;
 import java.io.IOException;
 import java.nio.file.FileAlreadyExistsException;
-import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Objects;
 
 import static com.asis.controllers.dialogs.DialogUnsavedChanges.CHOICE_CANCEL;
 import static com.asis.controllers.dialogs.DialogUnsavedChanges.CHOICE_SAVE;
 
-public class Controller {
-    public double menuEventX;
-    public double menuEventY;
-    public Boolean addSceneContextMenu = false;
+public class Controller extends EditorWindow {
     private static Controller instance = null;
     private boolean snapToGrid = false;
     private boolean showThumbnail = false;
 
-    private SelectionModel selectionModel = new SelectionModel();
+    private final SelectionModel selectionModel = new SelectionModel();
+    private JOIPackage joiPackage;
 
     @FXML
     private InfinityPane infinityPane;
@@ -60,87 +58,24 @@ public class Controller {
     @FXML
     private Button gridToggle, thumbnailToggle;
 
+    @Override
     public void initialize() {
         instance = this;
-        /* Block for context menu of infinity pane. This should be moved somewhere else probably */{
-            ContextMenu contextMenu = buildWorkspaceContextMenu(getInfinityPane(), -1);
+        super.initialize();
 
-            infinityPane.setContextMenu(contextMenu);
-            infinityPane.setOnContextMenuRequested(contextMenuEvent -> {
-                if (!getInfinityPane().nodeAtPosition(contextMenuEvent.getSceneX(), contextMenuEvent.getSceneY())) {
-                    contextMenu.show(infinityPane, contextMenuEvent.getScreenX(), contextMenuEvent.getScreenY());
-                }
-
-                menuEventX = contextMenuEvent.getX();
-                menuEventY = contextMenuEvent.getY();
-            });
-        }
-
+        setupInfinityPaneContextMenu();
         gridToggle.setTooltip(new Tooltip("Snap to grid"));
         thumbnailToggle.setTooltip(new Tooltip("Toggle Scene thumbnails"));
 
         try {
             JSONObject object = (JSONObject) Config.get("ZOOM");
-            if(object.has("minimum")) getInfinityPane().setMinimumScale(object.getDouble("minimum"));
-            if(object.has("maximum")) getInfinityPane().setMaximumScale(object.getDouble("maximum"));
+            if (object.has("minimum")) getInfinityPane().setMinimumScale(object.getDouble("minimum"));
+            if (object.has("maximum")) getInfinityPane().setMaximumScale(object.getDouble("maximum"));
         } catch (ClassCastException ignore) {}
     }
 
     public static Controller getInstance() {
         return instance;
-    }
-
-    public static ContextMenu buildWorkspaceContextMenu(InfinityPane infinityPane, int groupId) {
-        ContextMenu contextMenu = new ContextMenu();
-
-        //Create items and add them to there menu
-        MenuItem newSceneItem = new MenuItem("New Scene");
-        MenuItem newVariableSetterItem = new MenuItem("New Variable");
-        MenuItem newConditionItem = new MenuItem("New Condition");
-        MenuItem newArithmeticItem = new MenuItem("New Arithmetic");
-        SeparatorMenuItem separatorMenuItem = new SeparatorMenuItem();
-        MenuItem newGroupItem = new MenuItem("New Node Group");
-        SeparatorMenuItem separatorMenuItem2 = new SeparatorMenuItem();
-
-        MenuItem reset_view = new MenuItem("Reset view");
-        contextMenu.getItems().addAll(newSceneItem, newVariableSetterItem, newConditionItem,
-                newArithmeticItem, separatorMenuItem, newGroupItem, separatorMenuItem2, reset_view);
-
-        //Handle menu actions
-        Controller controller = Controller.getInstance();
-        newSceneItem.setOnAction(event -> {
-            controller.addSceneContextMenu = true;
-            ComponentNodeManager.getInstance().setWorkingPane(infinityPane);
-            ComponentNodeManager.getInstance().setWorkingGroupId(groupId);
-            ComponentNodeManager.getInstance().addScene(false);
-        });
-        newVariableSetterItem.setOnAction(actionEvent -> {
-            controller.addSceneContextMenu = true;
-            ComponentNodeManager.getInstance().setWorkingPane(infinityPane);
-            ComponentNodeManager.getInstance().setWorkingGroupId(groupId);
-            ComponentNodeManager.getInstance().addJOIComponentNode(VariableSetterNode.class, VariableSetter.class);
-        });
-        newConditionItem.setOnAction(actionEvent -> {
-            controller.addSceneContextMenu = true;
-            ComponentNodeManager.getInstance().setWorkingPane(infinityPane);
-            ComponentNodeManager.getInstance().setWorkingGroupId(groupId);
-            ComponentNodeManager.getInstance().addJOIComponentNode(ConditionNode.class, Condition.class);
-        });
-        newArithmeticItem.setOnAction(actionEvent -> {
-            controller.addSceneContextMenu = true;
-            ComponentNodeManager.getInstance().setWorkingPane(infinityPane);
-            ComponentNodeManager.getInstance().setWorkingGroupId(groupId);
-            ComponentNodeManager.getInstance().addJOIComponentNode(ArithmeticNode.class, Arithmetic.class);
-        });
-        newGroupItem.setOnAction(actionEvent -> {
-            controller.addSceneContextMenu = true;
-            ComponentNodeManager.getInstance().setWorkingPane(infinityPane);
-            ComponentNodeManager.getInstance().setWorkingGroupId(groupId);
-            ComponentNodeManager.getInstance().addJOIComponentNode(NodeGroup.class, Group.class);
-        });
-        reset_view.setOnAction(actionEvent -> infinityPane.resetPosition());
-
-        return contextMenu;
     }
 
     public void actionOpenMetadata() {
@@ -151,7 +86,7 @@ public class Controller {
             Parent root = fxmlLoader.load();
 
             MetaDataForm metaDataForm = fxmlLoader.getController();
-            metaDataForm.inflateJOIPackageObject(LoadJOIService.getInstance().getJoiPackage());
+            metaDataForm.inflateJOIPackageObject(getJoiPackage());
 
             Stage stage = new Stage();
             stage.getIcons().add(new Image(Controller.class.getResourceAsStream("/resources/images/icon.png")));
@@ -221,15 +156,10 @@ public class Controller {
 
         JOIPackageManager.getInstance().clear();
         JOIPackageManager.getInstance().setJoiPackageDirectory(newProjectDirectory);
+        setJoiPackage(JOIPackageManager.getInstance().getNewJOIPackage(defaultProjectLanguageCode));
+        resetEditorWindow();
 
-        //Clear all previous nodes and set new package
-        LoadJOIService.getInstance().setJoiPackage(JOIPackageManager.getInstance().getNewJOIPackage(defaultProjectLanguageCode));
-        getInfinityPane().getContainer().getChildren().clear();
-        getJoiComponentNodes().clear();
-
-        //Set the pane and add the first scene
-        ComponentNodeManager.getInstance().setWorkingPane(infinityPane);
-        ComponentNodeManager.getInstance().addScene(true);
+        getNodeManager().addScene(true);
     }
 
     public boolean actionLoadProject() {
@@ -246,17 +176,48 @@ public class Controller {
         }
 
         try {
-            return LoadJOIService.getInstance().processLoadProject(getInfinityPane());
+            return processLoadProject();
         } catch (IOException e) {
             AsisUtils.errorDialogWindow(e);
             return false;
         }
     }
 
-    public JOIComponentNode getJOIComponentNodeWithId(ArrayList<JOIComponentNode> components, int componentId) {
-        for (JOIComponentNode componentNode : components)
-            if (componentNode.getComponentId() == componentId) return componentNode;
-        return null;
+    public boolean processLoadProject() throws IOException {
+        DirectoryChooser directoryChooser = new DirectoryChooser();
+        directoryChooser.setInitialDirectory(JOIPackageManager.getInstance().getJoiPackageDirectory());
+        File file = directoryChooser.showDialog(null);
+
+        if (file != null) {
+            try {
+                //Set project directory to current
+                JOIPackageManager.getInstance().setJoiPackageDirectory(file);
+                JOIPackage newJoiPackage = JOIPackageManager.getInstance().getJOIPackage();
+                if (newJoiPackage == null) return false;
+
+                //Reset old variables
+                setJoiPackage(newJoiPackage);
+                resetEditorWindow();
+
+                //Create component nodes
+                for (JOIComponent component : getJoiPackage().getJoi().getJoiComponents())
+                    component.accept(new AddComponentNodeResolver(this));
+
+                //Create connections
+                for (JOIComponent component : getJoiPackage().getJoi().getJoiComponents())
+                    component.accept(new CreateComponentConnectionsResolver(this));
+
+                //Loading completed successfully
+                return true;
+            } catch (RuntimeException e) {
+                e.printStackTrace();
+                DialogMessage.messageDialog("LOADING FAILED", "The editor was unable to load this joi for the following reason:\n" + e.getMessage(), 600, 200);
+                return false;
+            }
+        }
+
+        //Loading failed do to null file
+        return false;
     }
 
     public void actionSaveProject() {
@@ -308,7 +269,7 @@ public class Controller {
     }
 
     public void actionAddSceneButton() {
-        ComponentNodeManager.getInstance().addScene(false);
+        getNodeManager().addScene(false);
     }
 
     public void actionToggleGrid() {
@@ -332,7 +293,7 @@ public class Controller {
         else
             imageView = new ImageView(new Image(getClass().getResourceAsStream("/resources/images/ic_thumbnail_off.png")));
 
-        getJoiComponentNodes().forEach(joiComponentNode -> {
+        getNodeManager().getJoiComponentNodes().forEach(joiComponentNode -> {
             if (joiComponentNode instanceof SceneNode)
                 ((SceneNode) joiComponentNode).toggleSceneThumbnail(showThumbnail);
         });
@@ -343,12 +304,17 @@ public class Controller {
     }
 
     //Getters and setters
+    @Override
     public InfinityPane getInfinityPane() {
         return infinityPane;
     }
 
-    public ArrayList<JOIComponentNode> getJoiComponentNodes() {
-        return ComponentNodeManager.getInstance().getJoiComponentNodes();
+    public JOIPackage getJoiPackage() {
+        return joiPackage;
+    }
+
+    public void setJoiPackage(JOIPackage joiPackage) {
+        this.joiPackage = joiPackage;
     }
 
     public boolean isSnapToGrid() {

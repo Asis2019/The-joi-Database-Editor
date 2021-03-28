@@ -4,12 +4,10 @@ import com.asis.controllers.Controller;
 import com.asis.controllers.dialogs.DialogArithmetic;
 import com.asis.controllers.dialogs.DialogCondition;
 import com.asis.controllers.dialogs.DialogVariableSetter;
-import com.asis.joi.LoadJOIService;
 import com.asis.joi.model.entities.Arithmetic;
 import com.asis.joi.model.entities.Condition;
 import com.asis.joi.model.entities.JOIComponent;
 import com.asis.joi.model.entities.VariableSetter;
-import com.asis.ui.asis_node.node_group.NodeGroup;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
 import javafx.scene.control.ContextMenu;
@@ -20,7 +18,6 @@ import javafx.scene.input.MouseButton;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.HBox;
-import javafx.scene.layout.Pane;
 import javafx.scene.layout.VBox;
 import javafx.scene.paint.Color;
 
@@ -36,11 +33,15 @@ public abstract class JOIComponentNode extends BorderPane {
     private List<AsisConnectionButton> inputConnections = new ArrayList<>();
     protected ContextMenu contextMenu = new ContextMenu();
 
+    //The controller window this node is attached too
+    private EditorWindow editorWindow;
+
     public double innerX, innerY;
 
-    public JOIComponentNode(int width, int height, int componentId, JOIComponent component) {
+    public JOIComponentNode(int width, int height, int componentId, JOIComponent component, EditorWindow editorWindow) {
         this.joiComponent = component;
         this.joiComponent.setComponentId(componentId);
+        setEditorWindow(editorWindow);
 
         titleLabel.setStyle(
                 "-fx-text-fill: white;" +
@@ -91,20 +92,8 @@ public abstract class JOIComponentNode extends BorderPane {
     private void setDoubleClickAction() {
         setOnMousePressed(mouseEvent -> requestFocus()); //May be unnecessary
         setOnMouseClicked(mouseEvent -> {
-            //User double clicked
-            if (mouseEvent.getButton().equals(MouseButton.PRIMARY))
-                if (mouseEvent.getClickCount() == 2) {
-                    if(this instanceof NodeGroup)
-                        NodeGroup.openNodeGroupWindow((NodeGroup) this);
-                    if(this instanceof SceneNode)
-                        SceneNode.openSceneDetails((SceneNode) this);
-                    else if(this instanceof VariableSetterNode)
-                        DialogVariableSetter.openVariableSetter((VariableSetter) getJoiComponent());
-                    else if(this instanceof ConditionNode)
-                        DialogCondition.openConditionDialog((Condition) getJoiComponent());
-                    else if(this instanceof ArithmeticNode)
-                        DialogArithmetic.openArithmetic((Arithmetic) getJoiComponent());
-                }
+            if (mouseEvent.getButton().equals(MouseButton.PRIMARY) && mouseEvent.getClickCount() == 2)
+                openDialog();
         });
     }
 
@@ -155,7 +144,7 @@ public abstract class JOIComponentNode extends BorderPane {
     private void attachHandlers(AsisConnectionButton connection) {
         addEventHandler(MouseEvent.MOUSE_PRESSED, mouseEvent -> contextMenu.hide());
 
-        ComponentConnectionManager componentConnectionManager = ComponentConnectionManager.getInstance();
+        ComponentConnectionManager componentConnectionManager = getEditorWindow().getConnectionManager();
 
         connection.setOnMouseMoved(componentConnectionManager::mouseMoved);
         connection.setOnMouseDragged(componentConnectionManager::mouseMoved);
@@ -191,12 +180,11 @@ public abstract class JOIComponentNode extends BorderPane {
         return multiple * (Math.round(v / multiple));
     }
 
-    public static void removeComponentNode(JOIComponentNode joiComponentNode) {
-        LoadJOIService.getInstance().getJoiPackage().getJoi().removeComponent(joiComponentNode.getComponentId());
-        ComponentConnectionManager.getInstance().removeConnection(joiComponentNode);
-
-        if (joiComponentNode.getParent() instanceof Pane)
-            ((Pane) joiComponentNode.getParent()).getChildren().remove(joiComponentNode);
+    public void removeComponentNode(JOIComponentNode joiComponentNode) {
+        Controller controller = Controller.getInstance();
+        controller.getJoiPackage().getJoi().removeComponent(joiComponentNode.getComponentId());
+        getEditorWindow().getConnectionManager().removeConnection(joiComponentNode);
+        ((Pane) joiComponentNode.getParent()).getChildren().remove(joiComponentNode);
     }
 
     //Getters and setters
@@ -229,4 +217,10 @@ public abstract class JOIComponentNode extends BorderPane {
         return this.inputConnections.get(0);
     }
 
+    public EditorWindow getEditorWindow() {
+        return editorWindow;
+    }
+    public void setEditorWindow(EditorWindow editorWindow) {
+        this.editorWindow = editorWindow;
+    }
 }
