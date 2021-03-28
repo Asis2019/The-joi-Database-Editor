@@ -6,11 +6,14 @@ import com.asis.controllers.dialogs.DialogNewProject;
 import com.asis.controllers.dialogs.DialogUnsavedChanges;
 import com.asis.joi.JOIPackageManager;
 import com.asis.joi.model.JOIPackage;
-import com.asis.joi.model.entities.*;
-import com.asis.joi.model.entities.dialog.Dialog;
-import com.asis.joi.model.entities.dialog.DialogOption;
+import com.asis.joi.model.entities.Arithmetic;
+import com.asis.joi.model.entities.Condition;
+import com.asis.joi.model.entities.JOIComponent;
+import com.asis.joi.model.entities.VariableSetter;
 import com.asis.ui.InfinityPane;
 import com.asis.ui.asis_node.*;
+import com.asis.ui.asis_node.node_functional_expansion.AddComponentNodeResolver;
+import com.asis.ui.asis_node.node_functional_expansion.CreateComponentConnectionsResolver;
 import com.asis.utilities.AsisUtils;
 import com.asis.utilities.Config;
 import com.asis.utilities.SelectionModel;
@@ -32,7 +35,6 @@ import org.json.JSONObject;
 import java.io.File;
 import java.io.IOException;
 import java.nio.file.FileAlreadyExistsException;
-import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Objects;
 
@@ -69,9 +71,10 @@ public class Controller {
 
         try {
             JSONObject object = (JSONObject) Config.get("ZOOM");
-            if(object.has("minimum")) getInfinityPane().setMinimumScale(object.getDouble("minimum"));
-            if(object.has("maximum")) getInfinityPane().setMaximumScale(object.getDouble("maximum"));
-        } catch (ClassCastException ignore) {}
+            if (object.has("minimum")) getInfinityPane().setMinimumScale(object.getDouble("minimum"));
+            if (object.has("maximum")) getInfinityPane().setMaximumScale(object.getDouble("maximum"));
+        } catch (ClassCastException ignore) {
+        }
     }
 
     public static Controller getInstance() {
@@ -206,7 +209,7 @@ public class Controller {
         setJoiPackage(joiPackage);
 
         infinityPane.getContainer().getChildren().clear();
-        getJoiComponentNodes().clear();
+        ComponentNodeManager.getInstance().getJoiComponentNodes().clear();
 
         StageManager.getInstance().closeAllStages();
     }
@@ -244,57 +247,16 @@ public class Controller {
                 JOIPackage newJoiPackage = JOIPackageManager.getInstance().getJOIPackage();
                 if (newJoiPackage == null) return false;
 
-                //Load joi
                 //Reset old variables
                 resetJoiPackage(newJoiPackage);
 
                 //Create component nodes
-                for (JOIComponent component : getJoiPackage().getJoi().getJoiComponents()) {
-                    if (component instanceof com.asis.joi.model.entities.Scene)
-                        ComponentNodeManager.getInstance().addJOIComponentNode(
-                                SceneNode.class, com.asis.joi.model.entities.Scene.class,
-                                component.getLayoutXPosition(), component.getLayoutYPosition(), component.getComponentTitle(),
-                                component.getComponentId(), true);
-                    else if (component instanceof VariableSetter)
-                        ComponentNodeManager.getInstance().addJOIComponentNode(
-                                VariableSetterNode.class, VariableSetter.class,
-                                component.getLayoutXPosition(), component.getLayoutYPosition(), component.getComponentTitle(), component.getComponentId(), true);
-                    else if (component instanceof Condition)
-                        ComponentNodeManager.getInstance().addJOIComponentNode(
-                                ConditionNode.class, Condition.class,
-                                component.getLayoutXPosition(), component.getLayoutYPosition(), component.getComponentTitle(), component.getComponentId(), true);
-                    else if (component instanceof Arithmetic)
-                        ComponentNodeManager.getInstance().addJOIComponentNode(
-                                ArithmeticNode.class, Arithmetic.class,
-                                component.getLayoutXPosition(), component.getLayoutYPosition(), component.getComponentTitle(), component.getComponentId(), true);
-                }
+                for (JOIComponent component : getJoiPackage().getJoi().getJoiComponents())
+                    component.accept(new AddComponentNodeResolver());
+
                 //Create connections
-                for (JOIComponent component : getJoiPackage().getJoi().getJoiComponents()) {
-                    if (component instanceof com.asis.joi.model.entities.Scene) {
-                        com.asis.joi.model.entities.Scene scene = (com.asis.joi.model.entities.Scene) component;
-                        final AsisConnectionButton output = getJOIComponentNodeWithId(getJoiComponentNodes(), component.getComponentId()).getOutputButtons().get(0);
-                        if (scene.hasComponent(GotoScene.class))
-                            createConnections(scene.getComponent(GotoScene.class), output);
-
-                        createConnectionsForDialogOutputs(scene);
-                    } else if (component instanceof VariableSetter) {
-                        VariableSetter setter = (VariableSetter) component;
-                        final AsisConnectionButton output = getJOIComponentNodeWithId(getJoiComponentNodes(), component.getComponentId()).getOutputButtons().get(0);
-                        createConnections(setter.getGotoScene(), output);
-                    } else if (component instanceof Condition) {
-                        Condition condition = (Condition) component;
-                        final AsisConnectionButton trueOutput = getJOIComponentNodeWithId(getJoiComponentNodes(), component.getComponentId()).getOutputButtons().get(0);
-                        final AsisConnectionButton falseOutput = getJOIComponentNodeWithId(getJoiComponentNodes(), component.getComponentId()).getOutputButtons().get(1);
-
-                        createConnections(condition.getGotoSceneTrue(), trueOutput);
-                        createConnections(condition.getGotoSceneFalse(), falseOutput);
-                    } else if (component instanceof Arithmetic) {
-                        Arithmetic arithmetic = (Arithmetic) component;
-                        final AsisConnectionButton output = getJOIComponentNodeWithId(getJoiComponentNodes(), component.getComponentId()).getOutputButtons().get(0);
-
-                        createConnections(arithmetic.getGotoScene(), output);
-                    }
-                }
+                for (JOIComponent component : getJoiPackage().getJoi().getJoiComponents())
+                    component.accept(new CreateComponentConnectionsResolver());
 
                 //Loading completed successfully
                 return true;
@@ -307,48 +269,6 @@ public class Controller {
 
         //Loading failed do to null file
         return false;
-    }
-
-    private void createConnectionsForDialogOutputs(com.asis.joi.model.entities.Scene scene) {
-        if (scene.hasComponent(Dialog.class) && !scene.getComponent(Dialog.class).getOptionArrayList().isEmpty()) {
-            for (DialogOption dialogOption : scene.getComponent(Dialog.class).getOptionArrayList()) {
-                AsisConnectionButton output = getJOIComponentNodeWithId(getJoiComponentNodes(), scene.getComponentId()).createNewOutputConnectionPoint("Option " + dialogOption.getOptionNumber(), "dialog_option_" + (dialogOption.getOptionNumber() + 1));
-                output.setOptionNumber(dialogOption.getOptionNumber());
-
-                createConnections(dialogOption.getGotoScene(), output);
-            }
-        }
-    }
-
-    private void createConnections(GotoScene gotoScene, AsisConnectionButton output) {
-        final boolean gotoHasSingleOutput = gotoScene != null && gotoScene.getGotoSceneArrayList().size() == 1;
-        final boolean gotoHasMultipleOutput = gotoScene != null && gotoScene.getGotoSceneArrayList().size() > 1;
-
-        try {
-            ComponentConnectionManager componentConnectionManager = ComponentConnectionManager.getInstance();
-
-            //Check for scene normal connections
-            if (gotoHasSingleOutput) {
-                AsisConnectionButton input = getJOIComponentNodeWithId(getJoiComponentNodes(), gotoScene.getGotoSceneArrayList().get(0)).getInputConnection();
-                componentConnectionManager.createConnection(output, input);
-            }
-
-            //Check for scene range connections
-            if (gotoHasMultipleOutput) {
-                for (int i = 0; i < gotoScene.getGotoSceneArrayList().size(); i++) {
-                    AsisConnectionButton input = getJOIComponentNodeWithId(getJoiComponentNodes(), gotoScene.getGotoSceneArrayList().get(i)).getInputConnection();
-                    componentConnectionManager.createConnection(output, input);
-                }
-            }
-        } catch (NullPointerException e) {
-            throw new RuntimeException("Failed to load scene: " + output.getJoiComponent().getComponentTitle());
-        }
-    }
-
-    public JOIComponentNode getJOIComponentNodeWithId(ArrayList<JOIComponentNode> components, int componentId) {
-        for (JOIComponentNode componentNode : components)
-            if (componentNode.getComponentId() == componentId) return componentNode;
-        return null;
     }
 
     public void actionSaveProject() {
@@ -424,7 +344,7 @@ public class Controller {
         else
             imageView = new ImageView(new Image(getClass().getResourceAsStream("/resources/images/ic_thumbnail_off.png")));
 
-        getJoiComponentNodes().forEach(joiComponentNode -> {
+        ComponentNodeManager.getInstance().getJoiComponentNodes().forEach(joiComponentNode -> {
             if (joiComponentNode instanceof SceneNode)
                 ((SceneNode) joiComponentNode).toggleSceneThumbnail(showThumbnail);
         });
@@ -437,10 +357,6 @@ public class Controller {
     //Getters and setters
     public InfinityPane getInfinityPane() {
         return infinityPane;
-    }
-
-    public ArrayList<JOIComponentNode> getJoiComponentNodes() {
-        return ComponentNodeManager.getInstance().getJoiComponentNodes();
     }
 
     public JOIPackage getJoiPackage() {

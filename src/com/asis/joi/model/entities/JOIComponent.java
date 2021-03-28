@@ -4,7 +4,7 @@ import javafx.beans.property.ReadOnlyStringWrapper;
 import org.json.JSONObject;
 import org.json.JSONString;
 
-public abstract class JOIComponent implements JSONString, Cloneable {
+public abstract class JOIComponent implements JSONString, Cloneable, ComponentVisitable {
     private int componentId; //AKA sceneId | same thing
     private double layoutXPosition=0, layoutYPosition=10;
     private final ReadOnlyStringWrapper componentTitle = new ReadOnlyStringWrapper("Undefined");

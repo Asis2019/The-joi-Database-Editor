@@ -1,6 +1,7 @@
 package com.asis.joi.model.entities;
 
 import com.asis.joi.model.entities.dialog.Dialog;
+import com.asis.ui.asis_node.node_functional_expansion.ComponentVisitor;
 import com.asis.utilities.AsisUtils;
 import javafx.beans.property.ReadOnlyBooleanWrapper;
 import org.json.JSONArray;
@@ -226,6 +227,11 @@ public class Scene extends JOIComponent {
         if (getAmbience() != null ? !getAmbience().equals(scene.getAmbience()) : scene.getAmbience() != null)
             return false;
         return getSceneComponents().equals(scene.getSceneComponents());
+    }
+
+    @Override
+    public void accept(ComponentVisitor componentVisitor) {
+        componentVisitor.visit(this);
     }
 
     //Getters and Setters

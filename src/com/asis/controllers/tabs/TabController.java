@@ -6,6 +6,7 @@ import com.asis.joi.model.entities.Line;
 import com.asis.joi.model.entities.Scene;
 import com.asis.joi.model.entities.SceneComponent;
 import com.asis.ui.ImageViewPane;
+import com.asis.ui.asis_node.ComponentNodeManager;
 import com.asis.ui.asis_node.SceneNode;
 import javafx.scene.Node;
 import javafx.scene.control.CheckBox;
@@ -41,7 +42,7 @@ public abstract class TabController {
             stackPane.getChildren().add(0, viewPane);
 
             if(Controller.getInstance().isShowThumbnail()) {
-                Controller.getInstance().getJoiComponentNodes().forEach(joiComponentNode -> {
+                ComponentNodeManager.getInstance().getJoiComponentNodes().forEach(joiComponentNode -> {
                     if (joiComponentNode.getComponentId() == scene.getComponentId() && joiComponentNode instanceof SceneNode) {
                         ((SceneNode) joiComponentNode).toggleSceneThumbnail(true);
                     }

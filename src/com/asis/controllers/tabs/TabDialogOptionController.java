@@ -1,6 +1,5 @@
 package com.asis.controllers.tabs;
 
-import com.asis.controllers.Controller;
 import com.asis.joi.model.entities.Scene;
 import com.asis.joi.model.entities.dialog.Dialog;
 import com.asis.joi.model.entities.dialog.DialogOption;
@@ -14,6 +13,8 @@ import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.scene.layout.StackPane;
 import javafx.scene.layout.VBox;
+
+import static com.asis.ui.asis_node.ComponentNodeManager.getJOIComponentNodeWithId;
 
 public class TabDialogOptionController extends TabController {
     private Dialog dialog;
@@ -81,7 +82,7 @@ public class TabDialogOptionController extends TabController {
             Scene scene = getScene(getDialog());
 
             if(scene != null) {
-                JOIComponentNode componentNode = Controller.getInstance().getJOIComponentNodeWithId(Controller.getInstance().getJoiComponentNodes(), scene.getComponentId());
+                JOIComponentNode componentNode = getJOIComponentNodeWithId(scene.getComponentId());
                 AsisConnectionButton asisConnectionButton = componentNode.createNewOutputConnectionPoint("Option " + totalOptions, "dialog_option_" + totalOptions);
                 asisConnectionButton.setOptionNumber(totalOptions);
             }
@@ -96,7 +97,7 @@ public class TabDialogOptionController extends TabController {
             Scene scene = getScene(getDialog());
 
             if(scene != null) {
-                JOIComponentNode componentNode = Controller.getInstance().getJOIComponentNodeWithId(Controller.getInstance().getJoiComponentNodes(), scene.getComponentId());
+                JOIComponentNode componentNode = getJOIComponentNodeWithId(scene.getComponentId());
                 componentNode.removeOutputConnection();
             }
 

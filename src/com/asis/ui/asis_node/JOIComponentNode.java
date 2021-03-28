@@ -1,13 +1,7 @@
 package com.asis.ui.asis_node;
 
 import com.asis.controllers.Controller;
-import com.asis.controllers.dialogs.DialogArithmetic;
-import com.asis.controllers.dialogs.DialogCondition;
-import com.asis.controllers.dialogs.DialogVariableSetter;
-import com.asis.joi.model.entities.Arithmetic;
-import com.asis.joi.model.entities.Condition;
 import com.asis.joi.model.entities.JOIComponent;
-import com.asis.joi.model.entities.VariableSetter;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
 import javafx.scene.control.ContextMenu;
@@ -89,18 +83,8 @@ public abstract class JOIComponentNode extends BorderPane {
     private void setDoubleClickAction() {
         setOnMousePressed(mouseEvent -> requestFocus()); //May be unnecessary
         setOnMouseClicked(mouseEvent -> {
-            //User double clicked
-            if (mouseEvent.getButton().equals(MouseButton.PRIMARY))
-                if (mouseEvent.getClickCount() == 2) {
-                    if(this instanceof SceneNode)
-                        SceneNode.openSceneDetails((SceneNode) this);
-                    else if(this instanceof VariableSetterNode)
-                        DialogVariableSetter.openVariableSetter((VariableSetter) getJoiComponent());
-                    else if(this instanceof ConditionNode)
-                        DialogCondition.openConditionDialog((Condition) getJoiComponent());
-                    else if(this instanceof ArithmeticNode)
-                        DialogArithmetic.openArithmetic((Arithmetic) getJoiComponent());
-                }
+            if (mouseEvent.getButton().equals(MouseButton.PRIMARY) && mouseEvent.getClickCount() == 2)
+                openDialog();
         });
     }
 

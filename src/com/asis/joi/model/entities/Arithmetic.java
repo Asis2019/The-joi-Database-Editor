@@ -1,5 +1,6 @@
 package com.asis.joi.model.entities;
 
+import com.asis.ui.asis_node.node_functional_expansion.ComponentVisitor;
 import org.json.JSONArray;
 import org.json.JSONObject;
 
@@ -57,6 +58,24 @@ public class Arithmetic extends JOIComponent {
         arithmetic.setMathematicalExpression(getMathematicalExpression());
 
         return arithmetic;
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (!(o instanceof Arithmetic)) return false;
+        if (!super.equals(o)) return false;
+
+        Arithmetic that = (Arithmetic) o;
+
+        if (getGotoScene() != null ? !getGotoScene().equals(that.getGotoScene()) : that.getGotoScene() != null)
+            return false;
+        return getMathematicalExpression() != null ? getMathematicalExpression().equals(that.getMathematicalExpression()) : that.getMathematicalExpression() == null;
+    }
+
+    @Override
+    public void accept(ComponentVisitor componentVisitor) {
+        componentVisitor.visit(this);
     }
 
     public GotoScene getGotoScene() {

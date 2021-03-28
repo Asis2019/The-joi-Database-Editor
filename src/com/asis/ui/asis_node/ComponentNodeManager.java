@@ -32,7 +32,6 @@ public class ComponentNodeManager {
 
         //Set and save position
         if (!controller.addSceneContextMenu) {
-            //TODO issue 5 make new scenes via button adjacent
             componentNode.positionInGrid(xPosition, yPosition);
 
             if (!suppressJSONUpdating) {
@@ -106,5 +105,12 @@ public class ComponentNodeManager {
 
     public ArrayList<JOIComponentNode> getJoiComponentNodes() {
         return joiComponentNodes;
+    }
+
+    public static JOIComponentNode getJOIComponentNodeWithId(int componentId) {
+        ArrayList<JOIComponentNode> components = getInstance().getJoiComponentNodes();
+        for (JOIComponentNode componentNode : components)
+            if (componentNode.getComponentId() == componentId) return componentNode;
+        return null;
     }
 }

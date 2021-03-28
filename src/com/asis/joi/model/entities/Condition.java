@@ -1,5 +1,6 @@
 package com.asis.joi.model.entities;
 
+import com.asis.ui.asis_node.node_functional_expansion.ComponentVisitor;
 import org.json.JSONArray;
 import org.json.JSONObject;
 
@@ -119,13 +120,8 @@ public class Condition extends JOIComponent {
     }
 
     @Override
-    public int hashCode() {
-        int result = getGotoSceneTrue() != null ? getGotoSceneTrue().hashCode() : 0;
-        result = 31 * result + (getGotoSceneFalse() != null ? getGotoSceneFalse().hashCode() : 0);
-        result = 31 * result + (getVariable() != null ? getVariable().hashCode() : 0);
-        result = 31 * result + (getComparingValue() != null ? getComparingValue().hashCode() : 0);
-        result = 31 * result + getConditionType().hashCode();
-        return result;
+    public void accept(ComponentVisitor componentVisitor) {
+        componentVisitor.visit(this);
     }
 
     //Getters and Setters

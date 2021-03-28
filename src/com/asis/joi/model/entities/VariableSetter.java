@@ -1,5 +1,6 @@
 package com.asis.joi.model.entities;
 
+import com.asis.ui.asis_node.node_functional_expansion.ComponentVisitor;
 import org.json.JSONArray;
 import org.json.JSONObject;
 
@@ -84,6 +85,11 @@ public class VariableSetter extends JOIComponent {
         if (getVariableValue() != null ? !getVariableValue().equals(that.getVariableValue()) : that.getVariableValue() != null)
             return false;
         return getGotoScene() != null ? getGotoScene().equals(that.getGotoScene()) : that.getGotoScene() == null;
+    }
+
+    @Override
+    public void accept(ComponentVisitor componentVisitor) {
+        componentVisitor.visit(this);
     }
 
     //Getters and Setters

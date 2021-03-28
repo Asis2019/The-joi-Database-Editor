@@ -22,6 +22,8 @@ import javafx.stage.Stage;
 import java.io.File;
 import java.io.IOException;
 
+import static com.asis.ui.asis_node.ComponentNodeManager.getJOIComponentNodeWithId;
+
 public class SceneDetails {
     private Scene scene;
 
@@ -204,7 +206,7 @@ public class SceneDetails {
 
     private void closeDialog() {
         menuItemAddDialog.setDisable(false);
-        Controller.getInstance().getJOIComponentNodeWithId(Controller.getInstance().getJoiComponentNodes(), getScene().getComponentId()).removeAllOutputConnection();
+        getJOIComponentNodeWithId(getScene().getComponentId()).removeAllOutputConnection();
         setTabDialogOptionController(null);
         getScene().removeComponent(Dialog.class);
     }

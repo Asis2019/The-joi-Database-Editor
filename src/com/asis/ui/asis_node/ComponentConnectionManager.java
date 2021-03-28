@@ -218,6 +218,7 @@ public class ComponentConnectionManager {
 
             dialogOption.getGotoScene().addValue(inputConnection.getParentSceneId());
         } else {
+            //TODO it would be possible to move these into a new class that extends ComponentVisitor
             if (component instanceof Scene) {
                 GotoScene gotoScene;
                 try {
