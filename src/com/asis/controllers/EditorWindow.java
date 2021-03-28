@@ -19,6 +19,7 @@ public abstract class EditorWindow {
 
     public void initialize() {
         getInfinityPane().setUserData(this);
+        setupInfinityPaneContextMenu();
     }
 
     /**

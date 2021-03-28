@@ -94,13 +94,13 @@ public abstract class JOIComponentNode extends BorderPane {
     }
 
     protected void createNewInputConnectionPoint() {
-        inputConnection = new AsisConnectionButton(true, getJoiComponent());
+        inputConnection = new AsisConnectionButton(true, getJoiComponent(), getEditorWindow().getInfinityPane().getContainer());
         attachHandlers(inputConnection);
         inputContainer.getChildren().add(inputConnection);
     }
 
     public AsisConnectionButton createNewOutputConnectionPoint(String labelText, String connectionId) {
-        AsisConnectionButton connection = new AsisConnectionButton(false, getJoiComponent());
+        AsisConnectionButton connection = new AsisConnectionButton(false, getJoiComponent(), getEditorWindow().getInfinityPane().getContainer());
         attachHandlers(connection);
 
         Label connectionLabel = new Label(labelText);

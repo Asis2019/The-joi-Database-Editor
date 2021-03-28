@@ -1,6 +1,5 @@
 package com.asis.ui.asis_node;
 
-import com.asis.controllers.Controller;
 import com.asis.joi.model.entities.JOIComponent;
 import com.asis.joi.model.entities.Scene;
 import javafx.beans.property.ReadOnlyDoubleProperty;
@@ -12,6 +11,7 @@ import javafx.geometry.Bounds;
 import javafx.scene.Cursor;
 import javafx.scene.control.Button;
 import javafx.scene.control.Tooltip;
+import javafx.scene.layout.Pane;
 
 import java.util.ArrayList;
 
@@ -35,6 +35,8 @@ public class AsisConnectionButton extends Button {
 
     private final boolean connectionType; //false is output true is input
 
+    private final Pane workspacePane;
+
     private static final String outputConnectorStyle =
             "-fx-background-color: " + DEFAULT_COLOR + ", transparent, transparent;" +
                     "-fx-background-radius: 5em;" +
@@ -47,9 +49,10 @@ public class AsisConnectionButton extends Button {
                     "-fx-border-width: 1;" +
                     "-fx-background-insets: 1;";
 
-    AsisConnectionButton(boolean connectionType, JOIComponent joiComponent) {
+    AsisConnectionButton(boolean connectionType, JOIComponent joiComponent, Pane workspacePane) {
         this.connectionType = connectionType;
         this.joiComponent = joiComponent;
+        this.workspacePane = workspacePane;
 
         setStyle(outputConnectorStyle);
         setCursor(Cursor.HAND);
@@ -122,7 +125,7 @@ public class AsisConnectionButton extends Button {
     }
 
     private void calcCenter() {
-        Bounds bounds = Controller.getInstance().getInfinityPane().getContainer().sceneToLocal(localToScene(getBoundsInLocal()));
+        Bounds bounds = workspacePane.sceneToLocal(localToScene(getBoundsInLocal()));
         centerX.set(bounds.getMinX() + bounds.getWidth() / 2);
         centerY.set(bounds.getMinY() + bounds.getHeight() / 2);
     }

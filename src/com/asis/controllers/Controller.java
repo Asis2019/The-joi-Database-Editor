@@ -63,7 +63,6 @@ public class Controller extends EditorWindow {
         instance = this;
         super.initialize();
 
-        setupInfinityPaneContextMenu();
         gridToggle.setTooltip(new Tooltip("Snap to grid"));
         thumbnailToggle.setTooltip(new Tooltip("Toggle Scene thumbnails"));
 
