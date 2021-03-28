@@ -5,7 +5,6 @@ import com.asis.controllers.Controller;
 import com.asis.controllers.EditorWindow;
 import com.asis.controllers.SceneDetails;
 import com.asis.controllers.dialogs.DialogSceneTitle;
-import com.asis.joi.LoadJOIService;
 import com.asis.joi.model.entities.JOIComponent;
 import com.asis.joi.model.entities.Scene;
 import com.asis.joi.model.entities.SceneImage;
@@ -145,7 +144,7 @@ public class SceneNode extends JOIComponentNode {
                 String title = DialogSceneTitle.addNewSceneDialog(getTitle());
                 if(title == null) return;
 
-                LoadJOIService.getInstance().getJoiPackage().getJoi().getComponent(getComponentId()).setComponentTitle(title);
+                Controller.getInstance().getJoiPackage().getJoi().getComponent(getComponentId()).setComponentTitle(title);
                 setTitle(title);
             }
         });

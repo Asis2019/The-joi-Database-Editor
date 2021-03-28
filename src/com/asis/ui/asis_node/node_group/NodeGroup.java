@@ -2,6 +2,7 @@ package com.asis.ui.asis_node.node_group;
 
 import com.asis.Main;
 import com.asis.controllers.Controller;
+import com.asis.controllers.EditorWindow;
 import com.asis.controllers.NodeGroupWindow;
 import com.asis.joi.model.entities.Group;
 import com.asis.joi.model.entities.JOIComponent;
@@ -17,8 +18,8 @@ import java.io.IOException;
 
 public class NodeGroup extends JOIComponentNode {
 
-    public NodeGroup(int width, int height, int componentId, JOIComponent component) {
-        super(width, height, componentId, component);
+    public NodeGroup(int width, int height, int componentId, JOIComponent component, EditorWindow editorWindow) {
+        super(width, height, componentId, component, editorWindow);
 
         setUserData("group");
         setId("NodeGroup");

@@ -3,7 +3,6 @@ package com.asis.utilities;
 import com.asis.controllers.Controller;
 import com.asis.controllers.dialogs.DialogMessage;
 import com.asis.joi.JOIPackageManager;
-import com.asis.joi.LoadJOIService;
 import com.asis.joi.model.entities.JOIComponent;
 import javafx.animation.KeyFrame;
 import javafx.animation.Timeline;
@@ -172,7 +171,7 @@ public class AsisUtils {
 
     public static String getDefaultTitle(JOIComponent joiComponent, String prefix) {
         if(joiComponent.getComponentTitle() == null) {
-            final int sceneId = LoadJOIService.getInstance().getJoiPackage().getJoi().getSceneIdCounter();
+            final int sceneId = Controller.getInstance().getJoiPackage().getJoi().getSceneIdCounter();
             return prefix + " " + sceneId;
         } else {
             return joiComponent.getComponentTitle();

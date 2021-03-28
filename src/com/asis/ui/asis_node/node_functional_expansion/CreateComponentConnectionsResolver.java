@@ -45,8 +45,13 @@ public class CreateComponentConnectionsResolver implements ComponentVisitor {
     @Override
     public void visit(Arithmetic arithmetic) {
         final AsisConnectionButton output = editorWindow.getNodeManager().getJOIComponentNodeWithId(arithmetic.getComponentId()).getOutputButtons().get(0);
-
         createConnections(arithmetic.getGotoScene(), output);
+    }
+
+    @Override
+    public void visit(Group group) {
+        //final AsisConnectionButton output = editorWindow.getNodeManager().getJOIComponentNodeWithId(group.getComponentId()).getOutputButtons().get(0);
+        //createConnections(group.getGotoScene(), output);
     }
 
     private void createConnectionsForDialogOutputs(Scene scene) {

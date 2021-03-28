@@ -1,5 +1,6 @@
 package com.asis.joi.model.entities;
 
+import com.asis.ui.asis_node.node_functional_expansion.ComponentVisitor;
 import org.json.JSONObject;
 
 import java.util.ArrayList;
@@ -65,6 +66,11 @@ public class Group extends JOIComponent {
         return getOutputNodeData().equals(group.getOutputNodeData());
     }
 
+    @Override
+    public void accept(ComponentVisitor componentVisitor) {
+        componentVisitor.visit(this);
+    }
+
     public InnerNode getInputNodeData() {
         return inputNodeData;
     }
@@ -77,6 +83,8 @@ public class Group extends JOIComponent {
         fromNode.layoutXPosition = toNode.layoutXPosition;
         fromNode.layoutYPosition = toNode.layoutYPosition;
     }
+
+
 
     private static class InnerNode {
         public ArrayList<Integer> connectedScenes = new ArrayList<>();

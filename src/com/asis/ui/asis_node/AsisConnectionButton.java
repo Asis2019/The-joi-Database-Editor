@@ -1,6 +1,6 @@
 package com.asis.ui.asis_node;
 
-import com.asis.controllers.Controller;
+import com.asis.controllers.EditorWindow;
 import com.asis.joi.model.entities.JOIComponent;
 import com.asis.joi.model.entities.Scene;
 import javafx.beans.property.ReadOnlyDoubleProperty;
@@ -32,6 +32,7 @@ public class AsisConnectionButton extends Button {
 
     private final JOIComponent joiComponent;
     private int optionNumber;
+    private final EditorWindow editorWindow;
 
     private final boolean connectionType; //false is output true is input
 
@@ -47,9 +48,10 @@ public class AsisConnectionButton extends Button {
                     "-fx-border-width: 1;" +
                     "-fx-background-insets: 1;";
 
-    AsisConnectionButton(boolean connectionType, JOIComponent joiComponent) {
+    AsisConnectionButton(boolean connectionType, JOIComponent joiComponent, EditorWindow editorWindow) {
         this.connectionType = connectionType;
         this.joiComponent = joiComponent;
+        this.editorWindow = editorWindow;
 
         setStyle(outputConnectorStyle);
         setCursor(Cursor.HAND);
@@ -122,7 +124,7 @@ public class AsisConnectionButton extends Button {
     }
 
     private void calcCenter() {
-        Bounds bounds = Controller.getInstance().getInfinityPane().getContainer().sceneToLocal(localToScene(getBoundsInLocal()));
+        Bounds bounds = editorWindow.getInfinityPane().getContainer().sceneToLocal(localToScene(getBoundsInLocal()));
         centerX.set(bounds.getMinX() + bounds.getWidth() / 2);
         centerY.set(bounds.getMinY() + bounds.getHeight() / 2);
     }

@@ -285,6 +285,11 @@ public class ComponentConnectionManager {
             else
                 arithmetic.setGotoScene(null);
         }
+
+        @Override
+        public void visit(Group group) {
+
+        }
     }
 
     private static class AddConnectionResolver implements ComponentVisitor {
@@ -343,6 +348,11 @@ public class ComponentConnectionManager {
             gotoScene.addValue(parentSceneId);
 
             arithmetic.setGotoScene(gotoScene);
+        }
+
+        @Override
+        public void visit(Group group) {
+
         }
     }
 }

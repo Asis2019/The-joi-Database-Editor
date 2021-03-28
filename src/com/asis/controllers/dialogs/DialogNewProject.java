@@ -3,7 +3,6 @@ package com.asis.controllers.dialogs;
 import com.asis.Main;
 import com.asis.controllers.Controller;
 import com.asis.joi.JOIPackageManager;
-import com.asis.joi.LoadJOIService;
 import com.asis.utilities.AsisUtils;
 import com.asis.utilities.Config;
 import javafx.fxml.FXML;
@@ -70,7 +69,7 @@ public class DialogNewProject {
             result = Controller.getInstance().actionLoadProject();
         } else {
             try {
-                result = LoadJOIService.getInstance().processLoadProject(Controller.getInstance().getInfinityPane());
+                result = Controller.getInstance().processLoadProject();
             } catch (IOException e) {
                 AsisUtils.errorDialogWindow(e);
                 result = false;

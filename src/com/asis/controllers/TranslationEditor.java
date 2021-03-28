@@ -3,7 +3,6 @@ package com.asis.controllers;
 import com.asis.controllers.dialogs.DialogMessage;
 import com.asis.controllers.dialogs.DialogRequestLanguage;
 import com.asis.joi.JOIPackageManager;
-import com.asis.joi.LoadJOIService;
 import com.asis.joi.model.JOIPackage;
 import com.asis.joi.model.entities.*;
 import com.asis.joi.model.entities.dialog.Dialog;
@@ -200,7 +199,7 @@ public class TranslationEditor {
             String newLanguage = DialogRequestLanguage.requestLanguage(languages);
             if (newLanguage == null) return;
 
-            JOIPackage joiPackage = LoadJOIService.getInstance().getJoiPackage().clone();
+            JOIPackage joiPackage = Controller.getInstance().getJoiPackage().clone();
             joiPackage.setPackageLanguageCode(newLanguage);
 
             JOIPackageManager.getInstance().addJOIPackage(joiPackage);

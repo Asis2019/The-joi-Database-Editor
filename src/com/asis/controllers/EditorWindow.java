@@ -2,9 +2,11 @@ package com.asis.controllers;
 
 import com.asis.joi.model.entities.Arithmetic;
 import com.asis.joi.model.entities.Condition;
+import com.asis.joi.model.entities.Group;
 import com.asis.joi.model.entities.VariableSetter;
 import com.asis.ui.InfinityPane;
 import com.asis.ui.asis_node.*;
+import com.asis.ui.asis_node.node_group.NodeGroup;
 import com.asis.utilities.StageManager;
 import javafx.scene.control.ContextMenu;
 import javafx.scene.control.MenuItem;
@@ -19,6 +21,7 @@ public abstract class EditorWindow {
 
     public void initialize() {
         getInfinityPane().setUserData(this);
+        setupInfinityPaneContextMenu();
     }
 
     /**
@@ -40,10 +43,12 @@ public abstract class EditorWindow {
         MenuItem newConditionItem = new MenuItem("New Condition");
         MenuItem newArithmeticItem = new MenuItem("New Arithmetic");
         SeparatorMenuItem separatorMenuItem = new SeparatorMenuItem();
+        MenuItem newNodeGroupItem = new MenuItem("New Node Group");
+        SeparatorMenuItem separatorMenuItem2 = new SeparatorMenuItem();
 
         MenuItem reset_view = new MenuItem("Reset view");
         editorWindowContextMenu.getItems().addAll(newSceneItem, newVariableSetterItem, newConditionItem,
-                newArithmeticItem, separatorMenuItem, reset_view);
+                newArithmeticItem, separatorMenuItem, newNodeGroupItem, separatorMenuItem2, reset_view);
 
         //Handle menu actions
         newSceneItem.setOnAction(event -> {
@@ -61,6 +66,10 @@ public abstract class EditorWindow {
         newArithmeticItem.setOnAction(actionEvent -> {
             getNodeManager().calledFromContextMenu = true;
             getNodeManager().addJOIComponentNode(ArithmeticNode.class, Arithmetic.class);
+        });
+        newNodeGroupItem.setOnAction(actionEvent -> {
+            getNodeManager().calledFromContextMenu = true;
+            getNodeManager().addJOIComponentNode(NodeGroup.class, Group.class);
         });
         reset_view.setOnAction(actionEvent -> getInfinityPane().resetPosition());
 
