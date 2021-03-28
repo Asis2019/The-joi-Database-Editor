@@ -26,7 +26,7 @@ public abstract class JOIComponentNode extends BorderPane {
     private final VBox inputContainer = new VBox();
     protected final Label titleLabel = new Label("Undefined");
     private List<AsisConnectionButton> outputConnections = new ArrayList<>();
-    private List<AsisConnectionButton> inputConnections = new ArrayList<>();
+    private AsisConnectionButton inputConnection;
     protected ContextMenu contextMenu = new ContextMenu();
 
     //The controller window this node is attached too
@@ -94,15 +94,13 @@ public abstract class JOIComponentNode extends BorderPane {
     }
 
     protected void createNewInputConnectionPoint() {
-        AsisConnectionButton inputConnection = new AsisConnectionButton(true, getJoiComponent(), getEditorWindow());
+        inputConnection = new AsisConnectionButton(true, getJoiComponent(), getEditorWindow().getInfinityPane().getContainer());
         attachHandlers(inputConnection);
         inputContainer.getChildren().add(inputConnection);
-
-        inputConnections.add(inputConnection);
     }
 
     public AsisConnectionButton createNewOutputConnectionPoint(String labelText, String connectionId) {
-        AsisConnectionButton connection = new AsisConnectionButton(false, getJoiComponent(), getEditorWindow());
+        AsisConnectionButton connection = new AsisConnectionButton(false, getJoiComponent(), getEditorWindow().getInfinityPane().getContainer());
         attachHandlers(connection);
 
         Label connectionLabel = new Label(labelText);
@@ -210,7 +208,7 @@ public abstract class JOIComponentNode extends BorderPane {
         return this.outputConnections;
     }
     public AsisConnectionButton getInputConnection() {
-        return this.inputConnections.get(0);
+        return this.inputConnection;
     }
 
     public EditorWindow getEditorWindow() {
