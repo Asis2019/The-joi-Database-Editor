@@ -29,6 +29,10 @@ public class DialogSceneTitle {
     }
 
     public static String addNewSceneDialog(String defaultTitle) {
+        return addNewSceneDialog(defaultTitle, "Scene Title");
+    }
+
+    public static String addNewSceneDialog(String defaultTitle, String title) {
         sceneTitle = null;
 
         try {
@@ -44,7 +48,7 @@ public class DialogSceneTitle {
             stage.initModality(Modality.APPLICATION_MODAL);
             stage.getIcons().add(new Image(Main.class.getResourceAsStream("/resources/images/icon.png")));
             stage.setScene(main_scene);
-            stage.setTitle("Scene Title");
+            stage.setTitle(title);
             stage.showAndWait();
         } catch (IOException e) {
             AsisUtils.errorDialogWindow(e);

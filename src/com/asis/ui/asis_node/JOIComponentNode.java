@@ -23,7 +23,7 @@ import java.util.List;
 public abstract class JOIComponentNode extends BorderPane {
     protected final JOIComponent joiComponent;
     private final VBox outputContainer = new VBox();
-    private final VBox inputContainer = new VBox();
+    protected final VBox inputContainer = new VBox();
     protected final Label titleLabel = new Label("Undefined");
     private List<AsisConnectionButton> outputConnections = new ArrayList<>();
     private AsisConnectionButton inputConnection;
@@ -135,7 +135,7 @@ public abstract class JOIComponentNode extends BorderPane {
         }
     }
 
-    private void attachHandlers(AsisConnectionButton connection) {
+    protected void attachHandlers(AsisConnectionButton connection) {
         addEventHandler(MouseEvent.MOUSE_PRESSED, mouseEvent -> contextMenu.hide());
 
         ComponentConnectionManager componentConnectionManager = getEditorWindow().getConnectionManager();

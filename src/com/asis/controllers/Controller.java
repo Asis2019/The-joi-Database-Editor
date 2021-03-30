@@ -40,6 +40,7 @@ import java.util.Objects;
 
 import static com.asis.controllers.dialogs.DialogUnsavedChanges.CHOICE_CANCEL;
 import static com.asis.controllers.dialogs.DialogUnsavedChanges.CHOICE_SAVE;
+import static com.asis.joi.model.entities.JOIComponent.NOT_GROUPED;
 
 public class Controller extends EditorWindow {
     private static Controller instance = null;
@@ -199,12 +200,16 @@ public class Controller extends EditorWindow {
                 resetEditorWindow();
 
                 //Create component nodes
-                for (JOIComponent component : getJoiPackage().getJoi().getJoiComponents())
+                for (JOIComponent component : getJoiPackage().getJoi().getJoiComponents()) {
+                    if (component.getGroupId() != NOT_GROUPED) continue;
                     component.accept(new AddComponentNodeResolver(this));
+                }
 
                 //Create connections
-                for (JOIComponent component : getJoiPackage().getJoi().getJoiComponents())
+                for (JOIComponent component : getJoiPackage().getJoi().getJoiComponents()) {
+                    if (component.getGroupId() != NOT_GROUPED) continue;
                     component.accept(new CreateComponentConnectionsResolver(this));
+                }
 
                 //Loading completed successfully
                 return true;

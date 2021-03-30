@@ -5,8 +5,10 @@ import org.json.JSONObject;
 import org.json.JSONString;
 
 public abstract class JOIComponent implements JSONString, Cloneable, ComponentVisitable {
+    public static int NOT_GROUPED = -1; //-1 means not in a group. The id of the group the component belongs too.
+
     private int componentId; //AKA sceneId | same thing
-    private int groupId = -1; //-1 means not in a group. The id of the group the component belongs too.
+    private int groupId = NOT_GROUPED;
     private double layoutXPosition=0, layoutYPosition=10;
     private final ReadOnlyStringWrapper componentTitle = new ReadOnlyStringWrapper("Undefined");
 

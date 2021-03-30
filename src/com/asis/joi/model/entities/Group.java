@@ -3,13 +3,9 @@ package com.asis.joi.model.entities;
 import com.asis.ui.asis_node.node_functional_expansion.ComponentVisitor;
 import org.json.JSONObject;
 
-import java.util.ArrayList;
-
-import static com.asis.utilities.AsisUtils.convertJSONArrayToList;
-
 public class Group extends JOIComponent {
-    private final InnerNode inputNodeData = new InnerNode();
-    private final InnerNode outputNodeData = new InnerNode();
+    private GroupBridge inputNodeData;
+    private GroupBridge outputNodeData;
 
     public Group(int componentId) {
         super(componentId);
@@ -22,10 +18,10 @@ public class Group extends JOIComponent {
         for (String key : jsonObject.keySet()) {
             switch (key) {
                 case "inputNodeData":
-                    group.getInputNodeData().fromJSON(jsonObject.getJSONObject(key));
+                    group.setInputNodeData(GroupBridge.createEntity(jsonObject.getJSONObject(key)));
                     break;
                 case "outputNodeData":
-                    group.getOutputNodeData().fromJSON(jsonObject.getJSONObject(key));
+                    group.setOutputNodeData(GroupBridge.createEntity(jsonObject.getJSONObject(key)));
                     break;
             }
         }
@@ -38,8 +34,8 @@ public class Group extends JOIComponent {
         JSONObject jsonObject = super.toJSON();
 
         jsonObject.put("componentType", "NodeGroup");
-        jsonObject.put("inputNodeData", inputNodeData.toJSON());
-        jsonObject.put("outputNodeData", outputNodeData.toJSON());
+        jsonObject.put("inputNodeData", getInputNodeData().toJSON());
+        jsonObject.put("outputNodeData", getOutputNodeData().toJSON());
 
         return jsonObject;
     }
@@ -48,8 +44,8 @@ public class Group extends JOIComponent {
     public Object clone() throws CloneNotSupportedException {
         Group group = (Group) super.clone();
 
-        setInnerNode(getInputNodeData(), group.getInputNodeData());
-        setInnerNode(getOutputNodeData(), group.getOutputNodeData());
+        group.setInputNodeData(getInputNodeData());
+        group.setOutputNodeData(getOutputNodeData());
 
         return group;
     }
@@ -71,61 +67,19 @@ public class Group extends JOIComponent {
         componentVisitor.visit(this);
     }
 
-    public InnerNode getInputNodeData() {
+    public GroupBridge getInputNodeData() {
         return inputNodeData;
     }
-    public InnerNode getOutputNodeData() {
+
+    public GroupBridge getOutputNodeData() {
         return outputNodeData;
     }
 
-    private void setInnerNode(InnerNode fromNode, InnerNode toNode) {
-        fromNode.connectedScenes = toNode.connectedScenes;
-        fromNode.layoutXPosition = toNode.layoutXPosition;
-        fromNode.layoutYPosition = toNode.layoutYPosition;
+    public void setInputNodeData(GroupBridge inputNodeData) {
+        this.inputNodeData = inputNodeData;
     }
 
-
-
-    private static class InnerNode {
-        public ArrayList<Integer> connectedScenes = new ArrayList<>();
-        public int layoutXPosition = 0, layoutYPosition = 0;
-
-        public JSONObject toJSON() {
-            JSONObject jsonObject = new JSONObject();
-            jsonObject.put("layoutXPosition", layoutXPosition);
-            jsonObject.put("layoutYPosition", layoutYPosition);
-            jsonObject.put("connectedScenes", connectedScenes);
-
-            return jsonObject;
-        }
-
-        public void fromJSON(JSONObject jsonObject) {
-            for (String key : jsonObject.keySet()) {
-                switch (key) {
-                    case "layoutXPosition":
-                        layoutXPosition = jsonObject.getInt(key);
-                        break;
-                    case "layoutYPosition":
-                        layoutYPosition = jsonObject.getInt(key);
-                        break;
-                    case "connectedScenes":
-                        connectedScenes = convertJSONArrayToList(jsonObject.getJSONArray(key));
-                        break;
-
-                }
-            }
-        }
-
-        @Override
-        public boolean equals(Object o) {
-            if (this == o) return true;
-            if (!(o instanceof InnerNode)) return false;
-
-            InnerNode innerNode = (InnerNode) o;
-
-            if (layoutXPosition != innerNode.layoutXPosition) return false;
-            if (layoutYPosition != innerNode.layoutYPosition) return false;
-            return connectedScenes.equals(innerNode.connectedScenes);
-        }
+    public void setOutputNodeData(GroupBridge outputNodeData) {
+        this.outputNodeData = outputNodeData;
     }
 }

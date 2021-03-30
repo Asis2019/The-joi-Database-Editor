@@ -64,6 +64,9 @@ public class JOI implements JSONString, Cloneable {
                 } else if(array.getJSONObject(i).has("componentType") && array.getJSONObject(i).getString("componentType").equals("Arithmetic")) {
                     Arithmetic arithmetic = Arithmetic.createEntity(array.getJSONObject(i));
                     joi.getJoiComponents().add(arithmetic);
+                } else if(array.getJSONObject(i).has("componentType") && array.getJSONObject(i).getString("componentType").equals("NodeGroup")) {
+                    Group group = Group.createEntity(array.getJSONObject(i));
+                    joi.getJoiComponents().add(group);
                 } else {
                     Scene scene = Scene.createEntity(array.getJSONObject(i));
                     joi.getJoiComponents().add(scene);

@@ -50,8 +50,7 @@ public class CreateComponentConnectionsResolver implements ComponentVisitor {
 
     @Override
     public void visit(Group group) {
-        //final AsisConnectionButton output = editorWindow.getNodeManager().getJOIComponentNodeWithId(group.getComponentId()).getOutputButtons().get(0);
-        //createConnections(group.getGotoScene(), output);
+
     }
 
     private void createConnectionsForDialogOutputs(Scene scene) {

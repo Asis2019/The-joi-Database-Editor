@@ -2,11 +2,9 @@ package com.asis.controllers;
 
 import com.asis.joi.model.entities.Arithmetic;
 import com.asis.joi.model.entities.Condition;
-import com.asis.joi.model.entities.Group;
 import com.asis.joi.model.entities.VariableSetter;
 import com.asis.ui.InfinityPane;
 import com.asis.ui.asis_node.*;
-import com.asis.ui.asis_node.node_group.NodeGroup;
 import com.asis.utilities.StageManager;
 import javafx.scene.control.ContextMenu;
 import javafx.scene.control.MenuItem;
@@ -69,7 +67,7 @@ public abstract class EditorWindow {
         });
         newNodeGroupItem.setOnAction(actionEvent -> {
             getNodeManager().calledFromContextMenu = true;
-            getNodeManager().addJOIComponentNode(NodeGroup.class, Group.class);
+            getNodeManager().addGroup();
         });
         reset_view.setOnAction(actionEvent -> getInfinityPane().resetPosition());
 
