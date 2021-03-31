@@ -3,7 +3,7 @@ package com.asis.ui.asis_node;
 import com.asis.controllers.Controller;
 import com.asis.controllers.EditorWindow;
 import com.asis.controllers.NodeGroupWindow;
-import com.asis.controllers.dialogs.DialogSceneTitle;
+import com.asis.controllers.dialogs.DialogNodeTitle;
 import com.asis.joi.model.JOIPackage;
 import com.asis.joi.model.entities.Group;
 import com.asis.joi.model.entities.JOIComponent;
@@ -65,7 +65,7 @@ public class ComponentNodeManager {
         final int sceneId = getJoiPackage().getJoi().getSceneIdCounter() + 1;
         final String defaultTitle = "Group " + sceneId;
 
-        String title = DialogSceneTitle.addNewSceneDialog(defaultTitle, "Node Group Title");
+        String title = DialogNodeTitle.getNewNodeTitleDialog(defaultTitle, "Node Group Title");
         if (title == null) return;
 
         addJOIComponentNode(NodeGroup.class, Group.class, 10, 0, title, sceneId - 1, false);
@@ -79,7 +79,7 @@ public class ComponentNodeManager {
         if (isFirstScene) {
             title = defaultTitle;
         } else {
-            title = DialogSceneTitle.addNewSceneDialog(defaultTitle);
+            title = DialogNodeTitle.getNewNodeTitleDialog(defaultTitle);
             if (title == null) return;
         }
 

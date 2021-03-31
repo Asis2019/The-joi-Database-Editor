@@ -7,9 +7,7 @@ import com.asis.joi.model.entities.JOIComponent;
 import com.asis.ui.InfinityPane;
 import com.asis.ui.asis_node.node_functional_expansion.AddComponentNodeResolver;
 import com.asis.ui.asis_node.node_functional_expansion.CreateComponentConnectionsResolver;
-import com.asis.ui.asis_node.node_group.NodeGroupBridge;
 import com.asis.utilities.Config;
-import com.asis.utilities.Draggable;
 import com.asis.utilities.StageManager;
 import javafx.fxml.FXML;
 import javafx.scene.control.MenuBar;
@@ -42,7 +40,7 @@ public class NodeGroupWindow extends EditorWindow {
         try {
             resetEditorWindow();
 
-            //Load the input/output bridging nodes
+            //Create the input/output bridging nodes if needed
             loadGroupInternals();
 
             //Create component nodes
@@ -61,65 +59,33 @@ public class NodeGroupWindow extends EditorWindow {
 
         } catch (RuntimeException e) {
             e.printStackTrace();
-            DialogMessage.messageDialog("LOADING FAILED", "The editor was unable to load this joi for the following reason:\n" + e.getMessage(), 600, 200);
+            DialogMessage.messageDialog("LOADING FAILED", "The editor was unable to load this group for the following reason:\n" + e.getMessage(), 600, 200);
         }
     }
 
     private void loadGroupInternals() {
-        if(getGroup().getInputNodeData() == null) {
-            final int sceneId = Controller.getInstance().getJoiPackage().getJoi().getSceneIdCounter() + 1;
+        if (getGroup().getInputNodeData() == null) {
+            final int componentId = Controller.getInstance().getJoiPackage().getJoi().getSceneIdCounter() + 1;
 
-            GroupBridge groupBridge = new GroupBridge(sceneId);
-            addNodeGroupBridgeToPane(0, 30, "Input", groupBridge, true);
+            Controller.getInstance().getJoiPackage().getJoi().addNewComponent(GroupBridge.class, componentId);
+            GroupBridge groupBridge = (GroupBridge) Controller.getInstance().getJoiPackage().getJoi().getComponent(componentId);
 
+            groupBridge.setInputBridge(true);
+            groupBridge.setGroupId(getGroup().getComponentId());
             getGroup().setInputNodeData(groupBridge);
-        } else {
-            addNodeGroupBridgeToPane(getGroup().getInputNodeData().getLayoutXPosition(),
-                    getGroup().getInputNodeData().getLayoutYPosition(), "Input", getGroup().getInputNodeData(), true);
         }
 
-        if(getGroup().getOutputNodeData() == null) {
-            final int sceneId = Controller.getInstance().getJoiPackage().getJoi().getSceneIdCounter() + 1;
+        if (getGroup().getOutputNodeData() == null) {
+            final int componentId = Controller.getInstance().getJoiPackage().getJoi().getSceneIdCounter() + 1;
 
-            GroupBridge groupBridge = new GroupBridge(sceneId);
-            addNodeGroupBridgeToPane(400, 30, "Output", groupBridge, false);
+            Controller.getInstance().getJoiPackage().getJoi().addNewComponent(GroupBridge.class, componentId);
+            GroupBridge groupBridge = (GroupBridge) Controller.getInstance().getJoiPackage().getJoi().getComponent(componentId);
 
+            groupBridge.setLayoutXPosition(400);
+            groupBridge.setInputBridge(false);
+            groupBridge.setGroupId(getGroup().getComponentId());
             getGroup().setOutputNodeData(groupBridge);
-        } else {
-            addNodeGroupBridgeToPane(getGroup().getOutputNodeData().getLayoutXPosition(),
-                    getGroup().getOutputNodeData().getLayoutYPosition(), "Output", getGroup().getOutputNodeData(), false);
         }
-
-    }
-
-    private void addNodeGroupBridgeToPane(double xPosition, double yPosition, String title, GroupBridge component, boolean isInput) {
-        NodeGroupBridge componentNode = new NodeGroupBridge(100, 150, -100, component, this);
-
-        if(component.getConnectedScenes().isEmpty()) {
-            if (isInput) {
-                componentNode.createNewOutputConnectionPoint("out", "01");
-            } else {
-                componentNode.createNewInputConnectionPoint("in");
-            }
-        } else {
-            component.getConnectedScenes().forEach(integer -> {
-                if (isInput) {
-                    componentNode.createNewOutputConnectionPoint("out", "01");
-                } else {
-                    componentNode.createNewInputConnectionPoint("in");
-                }
-            });
-        }
-
-
-        new Draggable.Nature(componentNode);
-        componentNode.setTitle(title);
-
-        componentNode.positionInGrid(xPosition, yPosition);
-
-        componentNode.toBack();
-        getInfinityPane().getContainer().getChildren().add(componentNode);
-
     }
 
     @FXML

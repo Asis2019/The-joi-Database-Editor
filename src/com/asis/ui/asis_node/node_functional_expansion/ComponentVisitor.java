@@ -17,4 +17,5 @@ public interface ComponentVisitor {
 
     void visit(Group group);
 
+    void visit(GroupBridge groupBridge);
 }

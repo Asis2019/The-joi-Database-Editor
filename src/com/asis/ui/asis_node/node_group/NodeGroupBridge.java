@@ -1,44 +1,27 @@
 package com.asis.ui.asis_node.node_group;
 
 import com.asis.controllers.EditorWindow;
+import com.asis.joi.model.entities.GroupBridge;
 import com.asis.joi.model.entities.JOIComponent;
-import com.asis.ui.asis_node.AsisConnectionButton;
 import com.asis.ui.asis_node.JOIComponentNode;
-import javafx.geometry.Pos;
-import javafx.scene.control.Label;
-import javafx.scene.layout.HBox;
-import javafx.scene.paint.Color;
-
-import java.util.ArrayList;
 
 /**
  * This class adds a way for nodes inside a group to be piped to the group node itself.
  */
 public class NodeGroupBridge extends JOIComponentNode {
 
-    private ArrayList<AsisConnectionButton> inputConnections = new ArrayList<>();
-
     public NodeGroupBridge(int width, int height, int componentId, JOIComponent component, EditorWindow editorWindow) {
-        super(width, height, componentId, component, editorWindow);
-    }
+        super(150, 0, componentId, component, editorWindow);
 
-    public AsisConnectionButton createNewInputConnectionPoint(String labelText) {
-        AsisConnectionButton connection = new AsisConnectionButton(true, getJoiComponent(), getEditorWindow().getInfinityPane().getContainer());
-        attachHandlers(connection);
+        setUserData("group_bridge");
+        setId("NodeGroupBridge");
 
-        Label connectionLabel = new Label(labelText);
-        connectionLabel.setTextFill(Color.WHITE);
-        HBox hBox = new HBox();
-        hBox.setAlignment(Pos.CENTER_RIGHT);
-        hBox.setSpacing(5);
-        hBox.getChildren().addAll(connectionLabel, connection);
+        if(((GroupBridge) getJoiComponent()).isInputBridge()) {
+            createNewOutputConnectionPoint("group input", "normal_output");
+        } else {
+            createNewInputConnectionPoint("group output");
+        }
 
-        //Add button to list
-        inputConnections.add(connection);
-
-        inputContainer.getChildren().add(hBox);
-
-        return connection;
     }
 
     @Override
@@ -65,10 +48,4 @@ public class NodeGroupBridge extends JOIComponentNode {
         return true;
     }
 
-    public ArrayList<AsisConnectionButton> getInputConnections() {
-        return inputConnections;
-    }
-    public void setInputConnections(ArrayList<AsisConnectionButton> inputConnections) {
-        this.inputConnections = inputConnections;
-    }
 }

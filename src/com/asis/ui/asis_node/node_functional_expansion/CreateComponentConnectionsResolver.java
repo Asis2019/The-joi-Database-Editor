@@ -50,7 +50,19 @@ public class CreateComponentConnectionsResolver implements ComponentVisitor {
 
     @Override
     public void visit(Group group) {
+        final AsisConnectionButton output = editorWindow.getNodeManager().getJOIComponentNodeWithId(group.getComponentId()).getOutputButtons().get(0);
+        createConnections(group.getGotoScene(), output);
+    }
 
+    @Override
+    public void visit(GroupBridge groupBridge) {
+        AsisConnectionButton output;
+        if(groupBridge.isInputBridge())
+            output = editorWindow.getNodeManager().getJOIComponentNodeWithId(groupBridge.getComponentId()).getOutputButtons().get(0);
+        else
+            output = editorWindow.getNodeManager().getJOIComponentNodeWithId(groupBridge.getComponentId()).getInputConnection();
+
+        createConnections(groupBridge.getGotoScene(), output);
     }
 
     private void createConnectionsForDialogOutputs(Scene scene) {
@@ -85,7 +97,7 @@ public class CreateComponentConnectionsResolver implements ComponentVisitor {
                 }
             }
         } catch (NullPointerException e) {
-            throw new RuntimeException("Failed to load scene: " + output.getJoiComponent().getComponentTitle());
+            throw new RuntimeException("Failed to load component: " + output.getJoiComponent().getComponentTitle());
         }
     }
 

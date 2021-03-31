@@ -1,11 +1,12 @@
 package com.asis.joi.model.entities;
 
 import com.asis.ui.asis_node.node_functional_expansion.ComponentVisitor;
+import org.json.JSONArray;
 import org.json.JSONObject;
 
 public class Group extends JOIComponent {
-    private GroupBridge inputNodeData;
-    private GroupBridge outputNodeData;
+    private GroupBridge inputNodeData, outputNodeData;
+    private GotoScene gotoScene;
 
     public Group(int componentId) {
         super(componentId);
@@ -17,11 +18,17 @@ public class Group extends JOIComponent {
 
         for (String key : jsonObject.keySet()) {
             switch (key) {
-                case "inputNodeData":
-                    group.setInputNodeData(GroupBridge.createEntity(jsonObject.getJSONObject(key)));
+                case "gotoSceneInRange":
+                    JSONObject gotoRangeObject = new JSONObject();
+                    gotoRangeObject.put("array", jsonObject.getJSONArray(key));
+
+                    group.setGotoScene(GotoScene.createEntity(gotoRangeObject));
                     break;
-                case "outputNodeData":
-                    group.setOutputNodeData(GroupBridge.createEntity(jsonObject.getJSONObject(key)));
+                case "gotoScene":
+                    JSONObject gotoObject = new JSONObject();
+                    gotoObject.put("array", new JSONArray(new int[]{jsonObject.getInt(key)}));
+
+                    group.setGotoScene(GotoScene.createEntity(gotoObject));
                     break;
             }
         }
@@ -34,8 +41,8 @@ public class Group extends JOIComponent {
         JSONObject jsonObject = super.toJSON();
 
         jsonObject.put("componentType", "NodeGroup");
-        jsonObject.put("inputNodeData", getInputNodeData().toJSON());
-        jsonObject.put("outputNodeData", getOutputNodeData().toJSON());
+        jsonObject.put("inputBridge", getInputNodeData().getComponentId());
+        if(getGotoScene() != null)  jsonObject.put(getGotoScene().getJsonKeyName(), getGotoScene().getJsonValue());
 
         return jsonObject;
     }
@@ -44,6 +51,7 @@ public class Group extends JOIComponent {
     public Object clone() throws CloneNotSupportedException {
         Group group = (Group) super.clone();
 
+        group.setGotoScene(getGotoScene());
         group.setInputNodeData(getInputNodeData());
         group.setOutputNodeData(getOutputNodeData());
 
@@ -58,8 +66,11 @@ public class Group extends JOIComponent {
 
         Group group = (Group) o;
 
-        if (!getInputNodeData().equals(group.getInputNodeData())) return false;
-        return getOutputNodeData().equals(group.getOutputNodeData());
+        if (getInputNodeData() != null ? !getInputNodeData().equals(group.getInputNodeData()) : group.getInputNodeData() != null)
+            return false;
+        if (getOutputNodeData() != null ? !getOutputNodeData().equals(group.getOutputNodeData()) : group.getOutputNodeData() != null)
+            return false;
+        return getGotoScene() != null ? getGotoScene().equals(group.getGotoScene()) : group.getGotoScene() == null;
     }
 
     @Override
@@ -70,7 +81,6 @@ public class Group extends JOIComponent {
     public GroupBridge getInputNodeData() {
         return inputNodeData;
     }
-
     public GroupBridge getOutputNodeData() {
         return outputNodeData;
     }
@@ -78,8 +88,14 @@ public class Group extends JOIComponent {
     public void setInputNodeData(GroupBridge inputNodeData) {
         this.inputNodeData = inputNodeData;
     }
-
     public void setOutputNodeData(GroupBridge outputNodeData) {
         this.outputNodeData = outputNodeData;
+    }
+
+    public GotoScene getGotoScene() {
+        return gotoScene;
+    }
+    public void setGotoScene(GotoScene gotoScene) {
+        this.gotoScene = gotoScene;
     }
 }

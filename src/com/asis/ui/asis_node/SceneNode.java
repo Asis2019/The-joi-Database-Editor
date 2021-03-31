@@ -4,7 +4,6 @@ import com.asis.Main;
 import com.asis.controllers.Controller;
 import com.asis.controllers.EditorWindow;
 import com.asis.controllers.SceneDetails;
-import com.asis.controllers.dialogs.DialogSceneTitle;
 import com.asis.joi.model.entities.JOIComponent;
 import com.asis.joi.model.entities.Scene;
 import com.asis.joi.model.entities.SceneImage;
@@ -133,22 +132,11 @@ public class SceneNode extends JOIComponentNode {
     protected void setupContextMenu() {
         super.setupContextMenu();
 
-        MenuItem editNameItem = new MenuItem("Change Name");
         MenuItem goodEndItem = new MenuItem("Set as Good End");
         MenuItem badEndItem = new MenuItem("Set as Bad End");
-        contextMenu.getItems().addAll(1, Arrays.asList(editNameItem, goodEndItem, badEndItem));
+        contextMenu.getItems().addAll(2, Arrays.asList(goodEndItem, badEndItem));
 
         //Handle menu actions
-        editNameItem.setOnAction(actionEvent -> {
-            if (getJoiComponent() != null) {
-                String title = DialogSceneTitle.addNewSceneDialog(getTitle());
-                if(title == null) return;
-
-                Controller.getInstance().getJoiPackage().getJoi().getComponent(getComponentId()).setComponentTitle(title);
-                setTitle(title);
-            }
-        });
-
         goodEndItem.setOnAction(actionEvent -> {
             if (getJoiComponent() != null) getJOIScene().goodEndProperty().set(!isGoodEnd());
         });

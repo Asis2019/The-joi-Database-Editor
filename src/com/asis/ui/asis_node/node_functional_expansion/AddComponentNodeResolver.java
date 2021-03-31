@@ -7,6 +7,7 @@ import com.asis.ui.asis_node.ConditionNode;
 import com.asis.ui.asis_node.SceneNode;
 import com.asis.ui.asis_node.VariableSetterNode;
 import com.asis.ui.asis_node.node_group.NodeGroup;
+import com.asis.ui.asis_node.node_group.NodeGroupBridge;
 
 /**
  * This class is used to tell the ComponentNodeManager how to create the different types of components.
@@ -58,5 +59,13 @@ public class AddComponentNodeResolver implements ComponentVisitor {
                 NodeGroup.class, Group.class,
                 group.getLayoutXPosition(), group.getLayoutYPosition(), group.getComponentTitle(),
                 group.getComponentId(), true);
+    }
+
+    @Override
+    public void visit(GroupBridge groupBridge) {
+        editorWindow.getNodeManager().addJOIComponentNode(
+                NodeGroupBridge.class, GroupBridge.class,
+                groupBridge.getLayoutXPosition(), groupBridge.getLayoutYPosition(), groupBridge.getComponentTitle(),
+                groupBridge.getComponentId(), true);
     }
 }

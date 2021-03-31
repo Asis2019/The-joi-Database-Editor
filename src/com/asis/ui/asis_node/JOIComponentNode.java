@@ -2,6 +2,7 @@ package com.asis.ui.asis_node;
 
 import com.asis.controllers.Controller;
 import com.asis.controllers.EditorWindow;
+import com.asis.controllers.dialogs.DialogNodeTitle;
 import com.asis.joi.model.entities.JOIComponent;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
@@ -23,7 +24,7 @@ import java.util.List;
 public abstract class JOIComponentNode extends BorderPane {
     protected final JOIComponent joiComponent;
     private final VBox outputContainer = new VBox();
-    protected final VBox inputContainer = new VBox();
+    private final VBox inputContainer = new VBox();
     protected final Label titleLabel = new Label("Undefined");
     private List<AsisConnectionButton> outputConnections = new ArrayList<>();
     private AsisConnectionButton inputConnection;
@@ -65,17 +66,27 @@ public abstract class JOIComponentNode extends BorderPane {
         });
     }
 
+    private void renameNode() {
+        String title = DialogNodeTitle.getNewNodeTitleDialog(getTitle(), "Change node title");
+        if(title == null) return;
+
+        setTitle(title);
+    }
+
     public abstract void focusState(boolean value);
 
     protected abstract boolean openDialog();
 
     protected void setupContextMenu() {
         MenuItem editSceneItem = new MenuItem("Edit "+getId());
+        MenuItem editNameItem = new MenuItem("Change Name");
         SeparatorMenuItem separatorMenuItem = new SeparatorMenuItem();
         MenuItem deleteNodeItem = new MenuItem("Delete");
-        contextMenu.getItems().addAll(editSceneItem, separatorMenuItem, deleteNodeItem);
+        contextMenu.getItems().addAll(editSceneItem, editNameItem, separatorMenuItem, deleteNodeItem);
 
         //Handle menu actions
+        editNameItem.setOnAction(actionEvent -> renameNode());
+
         editSceneItem.setOnAction(actionEvent -> {
             if (getJoiComponent() != null) openDialog();
         });
@@ -94,9 +105,23 @@ public abstract class JOIComponentNode extends BorderPane {
     }
 
     protected void createNewInputConnectionPoint() {
+        createNewInputConnectionPoint(null);
+    }
+
+    public void createNewInputConnectionPoint(String labelText) {
         inputConnection = new AsisConnectionButton(true, getJoiComponent(), getEditorWindow().getInfinityPane().getContainer());
         attachHandlers(inputConnection);
-        inputContainer.getChildren().add(inputConnection);
+
+        Label connectionLabel = new Label(labelText);
+        connectionLabel.setTextFill(Color.WHITE);
+        HBox hBox = new HBox();
+        hBox.setAlignment(Pos.CENTER_RIGHT);
+        hBox.setSpacing(5);
+        hBox.getChildren().addAll(inputConnection, connectionLabel);
+
+        inputConnection.setId("input");
+
+        inputContainer.getChildren().add(hBox);
     }
 
     public AsisConnectionButton createNewOutputConnectionPoint(String labelText, String connectionId) {
@@ -153,6 +178,8 @@ public abstract class JOIComponentNode extends BorderPane {
         setRight(outputContainer);
 
         inputContainer.setAlignment(Pos.CENTER_LEFT);
+        inputContainer.setSpacing(5);
+        inputContainer.setPadding(new Insets(20, 0, 20, 0));
         setLeft(inputContainer);
     }
 

@@ -9,6 +9,7 @@ import com.asis.utilities.StageManager;
 import javafx.scene.control.ContextMenu;
 import javafx.scene.control.MenuItem;
 import javafx.scene.control.SeparatorMenuItem;
+import javafx.stage.Stage;
 
 public abstract class EditorWindow {
 
@@ -94,5 +95,9 @@ public abstract class EditorWindow {
 
     public ComponentNodeManager getNodeManager() {
         return nodeManager;
+    }
+
+    protected Stage getStage() {
+        return  (Stage) getInfinityPane().getScene().getWindow();
     }
 }

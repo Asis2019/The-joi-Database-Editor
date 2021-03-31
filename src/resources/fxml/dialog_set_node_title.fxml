@@ -6,7 +6,7 @@
 <?import javafx.scene.control.TextField?>
 <?import javafx.scene.control.ToolBar?>
 <?import javafx.scene.layout.*?>
-<BorderPane id="darkThemeBackground" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="150.0" prefWidth="400.0" stylesheets="@../../resources/css/main_stylesheet.css" xmlns="http://javafx.com/javafx/8.0.999-ea" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.asis.controllers.dialogs.DialogSceneTitle">
+<BorderPane id="darkThemeBackground" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="150.0" prefWidth="400.0" stylesheets="@../../resources/css/main_stylesheet.css" xmlns="http://javafx.com/javafx/8.0.999-ea" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.asis.controllers.dialogs.DialogNodeTitle">
    <bottom>
        <ToolBar prefHeight="40.0" prefWidth="200.0" BorderPane.alignment="CENTER">
            <Pane HBox.hgrow="ALWAYS" />
@@ -18,7 +18,7 @@
            <padding>
                <Insets bottom="16.0" left="16.0" right="16.0" top="16.0" />
            </padding>
-           <Label text="Scene Title:" textFill="WHITE" />
+           <Label text="Node Title:" textFill="WHITE" />
            <TextField fx:id="sceneTitleTextField" onAction="#actionSave" promptText="Title" stylesheets="@../../resources/css/text_field_stylesheet.css" />
        </VBox>
    </center>

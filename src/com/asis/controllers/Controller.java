@@ -6,6 +6,8 @@ import com.asis.controllers.dialogs.DialogNewProject;
 import com.asis.controllers.dialogs.DialogUnsavedChanges;
 import com.asis.joi.JOIPackageManager;
 import com.asis.joi.model.JOIPackage;
+import com.asis.joi.model.entities.Group;
+import com.asis.joi.model.entities.GroupBridge;
 import com.asis.joi.model.entities.JOIComponent;
 import com.asis.ui.InfinityPane;
 import com.asis.ui.asis_node.SceneNode;
@@ -130,7 +132,7 @@ public class Controller extends EditorWindow {
     }
 
     public void actionExit() {
-        Stage stage = (Stage) getInfinityPane().getScene().getWindow();
+        Stage stage = getStage();
         stage.fireEvent(new WindowEvent(stage, WindowEvent.WINDOW_CLOSE_REQUEST));
     }
 
@@ -209,6 +211,19 @@ public class Controller extends EditorWindow {
                 for (JOIComponent component : getJoiPackage().getJoi().getJoiComponents()) {
                     if (component.getGroupId() != NOT_GROUPED) continue;
                     component.accept(new CreateComponentConnectionsResolver(this));
+                }
+
+                // Linkup groups to there bridges
+                for(JOIComponent component : Controller.getInstance().getJoiPackage().getJoi().getJoiComponents()) {
+                    if(component instanceof GroupBridge) {
+                        GroupBridge groupBridge = (GroupBridge) component;
+
+                        int groupId = component.getGroupId();
+                        Group group = (Group) Controller.getInstance().getJoiPackage().getJoi().getComponent(groupId);
+
+                        if(groupBridge.isInputBridge()) group.setInputNodeData(groupBridge);
+                        else group.setOutputNodeData(groupBridge);
+                    }
                 }
 
                 //Loading completed successfully

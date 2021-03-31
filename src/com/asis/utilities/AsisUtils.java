@@ -50,7 +50,7 @@ public class AsisUtils {
     }
 
     public static boolean renameFile(File fileToRename, String newName) {
-        // This method will rename a File that is passed in
+        // This method will renameNode a File that is passed in
         String oldFileName = fileToRename.getName();
         String oldFilePath = fileToRename.getPath();
         String newPath = oldFilePath.replace(oldFileName, newName);

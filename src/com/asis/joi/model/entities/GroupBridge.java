@@ -1,18 +1,17 @@
 package com.asis.joi.model.entities;
 
 import com.asis.ui.asis_node.node_functional_expansion.ComponentVisitor;
+import org.json.JSONArray;
 import org.json.JSONObject;
-
-import java.util.ArrayList;
-
-import static com.asis.utilities.AsisUtils.convertJSONArrayToList;
 
 public class GroupBridge extends JOIComponent {
 
-    private ArrayList<Integer> connectedScenes = new ArrayList<>();
+    private GotoScene gotoScene;
+    private boolean isInputBridge = false;
 
     public GroupBridge(int componentId) {
         super(componentId);
+        setComponentTitle("");
     }
 
     public static GroupBridge createEntity(JSONObject jsonObject) {
@@ -20,15 +19,24 @@ public class GroupBridge extends JOIComponent {
         createEntity(jsonObject, groupBridge);
 
         for (String key : jsonObject.keySet()) {
-            if ("inputNodeData".equals(key)) {
-                groupBridge.setConnectedScenes(convertJSONArrayToList(jsonObject.getJSONArray(key)));
-                break;
+            switch (key) {
+                case "isInputBridge":
+                    groupBridge.setInputBridge(jsonObject.getBoolean(key));
+                    break;
+                case "gotoSceneInRange":
+                    JSONObject gotoRangeObject = new JSONObject();
+                    gotoRangeObject.put("array", jsonObject.getJSONArray(key));
+
+                    groupBridge.setGotoScene(GotoScene.createEntity(gotoRangeObject));
+                    break;
+                case "gotoScene":
+                    JSONObject gotoObject = new JSONObject();
+                    gotoObject.put("array", new JSONArray(new int[]{jsonObject.getInt(key)}));
+
+                    groupBridge.setGotoScene(GotoScene.createEntity(gotoObject));
+                    break;
             }
         }
-
-        //group.getInputNodeData().layoutYPosition = 30;
-        //group.getOutputNodeData().layoutYPosition = 30;
-        //group.getOutputNodeData().layoutXPosition = 400;
 
         return groupBridge;
     }
@@ -37,7 +45,9 @@ public class GroupBridge extends JOIComponent {
     public JSONObject toJSON() {
         JSONObject jsonObject = super.toJSON();
 
-        jsonObject.put("connectedScenes", connectedScenes);
+        jsonObject.put("componentType", "NodeGroupBridge");
+        jsonObject.put("isInputBridge", isInputBridge());
+        if(getGotoScene() != null)  jsonObject.put(getGotoScene().getJsonKeyName(), getGotoScene().getJsonValue());
 
         return jsonObject;
     }
@@ -46,7 +56,8 @@ public class GroupBridge extends JOIComponent {
     public Object clone() throws CloneNotSupportedException {
         GroupBridge groupBridge = (GroupBridge) super.clone();
 
-        groupBridge.setConnectedScenes(new ArrayList<>(getConnectedScenes()));
+        groupBridge.setGotoScene(getGotoScene());
+        groupBridge.setInputBridge(isInputBridge());
 
         return groupBridge;
     }
@@ -59,20 +70,27 @@ public class GroupBridge extends JOIComponent {
 
         GroupBridge that = (GroupBridge) o;
 
-        return getConnectedScenes().equals(that.getConnectedScenes());
+        if (isInputBridge() != that.isInputBridge()) return false;
+        return getGotoScene() != null ? getGotoScene().equals(that.getGotoScene()) : that.getGotoScene() == null;
     }
 
     @Override
     public void accept(ComponentVisitor componentVisitor) {
-
+        componentVisitor.visit(this);
     }
 
     //Getters and setters
-
-    public ArrayList<Integer> getConnectedScenes() {
-        return connectedScenes;
+    public GotoScene getGotoScene() {
+        return gotoScene;
     }
-    public void setConnectedScenes(ArrayList<Integer> connectedScenes) {
-        this.connectedScenes = connectedScenes;
+    public void setGotoScene(GotoScene gotoScene) {
+        this.gotoScene = gotoScene;
+    }
+
+    public boolean isInputBridge() {
+        return isInputBridge;
+    }
+    public void setInputBridge(boolean inputBridge) {
+        isInputBridge = inputBridge;
     }
 }
