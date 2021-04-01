@@ -8,7 +8,6 @@ import com.asis.joi.JOIPackageManager;
 import com.asis.joi.model.JOIPackage;
 import com.asis.joi.model.entities.JOIComponent;
 import com.asis.ui.InfinityPane;
-import com.asis.ui.asis_node.SceneNode;
 import com.asis.ui.asis_node.node_functional_expansion.AddComponentNodeResolver;
 import com.asis.ui.asis_node.node_functional_expansion.CreateComponentConnectionsResolver;
 import com.asis.utilities.AsisUtils;
@@ -292,10 +291,7 @@ public class Controller extends EditorWindow {
         else
             imageView = new ImageView(new Image(getClass().getResourceAsStream("/resources/images/ic_thumbnail_off.png")));
 
-        getNodeManager().getJoiComponentNodes().forEach(joiComponentNode -> {
-            if (joiComponentNode instanceof SceneNode)
-                ((SceneNode) joiComponentNode).toggleSceneThumbnail(showThumbnail);
-        });
+        toggleSceneThumbnails(showThumbnail);
 
         imageView.setFitHeight(20);
         imageView.setFitWidth(20);

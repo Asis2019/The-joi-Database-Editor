@@ -104,7 +104,7 @@ public class SceneDetails {
 
     private void addDialogTab(Dialog dialog) {
         try {
-            TabDialogOptionController tabDialogOptionController = new TabDialogOptionController("Dialog", dialog, getEditorWindow());
+            TabDialogOptionController tabDialogOptionController = new TabDialogOptionController("Dialog", dialog);
             setTabDialogOptionController(tabDialogOptionController);
             createNewTab(tabDialogOptionController, "/resources/fxml/tab_dialog_option.fxml", 1);
             menuItemAddDialog.setDisable(true);
@@ -125,6 +125,8 @@ public class SceneDetails {
     }
 
     private void createNewTab(final TabController tabController, final String fxmlResourcePath, final int... indexPosition) throws IOException {
+        tabController.setEditorWindow(getEditorWindow());
+
         FXMLLoader fxmlLoader = new FXMLLoader(SceneDetails.class.getResource(fxmlResourcePath));
         fxmlLoader.setController(tabController);
         Parent root = fxmlLoader.load();

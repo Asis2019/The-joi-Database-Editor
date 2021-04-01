@@ -77,6 +77,17 @@ public abstract class EditorWindow {
     }
 
     /**
+     * Toggles the visibility of scene thumbnails.
+     * @param showThumbnail - boolean whether to show the thumbnail or not
+     */
+    public void toggleSceneThumbnails(boolean showThumbnail) {
+        getNodeManager().getJoiComponentNodes().forEach(joiComponentNode -> {
+            if (joiComponentNode instanceof SceneNode)
+                ((SceneNode) joiComponentNode).toggleSceneThumbnail(showThumbnail);
+        });
+    }
+
+    /**
      * Forces all editor windows to have an infinity pane implementation.
      * @return InfinityPane - the editor window's infinity pane
      */
