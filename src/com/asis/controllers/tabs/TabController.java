@@ -7,7 +7,6 @@ import com.asis.joi.model.entities.Line;
 import com.asis.joi.model.entities.Scene;
 import com.asis.joi.model.entities.SceneComponent;
 import com.asis.ui.ImageViewPane;
-import com.asis.ui.asis_node.SceneNode;
 import javafx.scene.Node;
 import javafx.scene.control.CheckBox;
 import javafx.scene.control.TextField;
@@ -28,11 +27,6 @@ public abstract class TabController {
         setTabTitle(tabTitle);
     }
 
-    TabController(String tabTitle, EditorWindow editorWindow) {
-        setTabTitle(tabTitle);
-        setEditorWindow(editorWindow);
-    }
-
     void setVisibleImage(StackPane stackPane, ImageViewPane viewPane, File workingFile, Scene scene) {
         if(viewPane.getImageFile() != workingFile) {
             //Remove image if any is present
@@ -47,13 +41,7 @@ public abstract class TabController {
             viewPane.setImageFile(workingFile);
             stackPane.getChildren().add(0, viewPane);
 
-            if(Controller.getInstance().isShowThumbnail()) {
-                getEditorWindow().getNodeManager().getJoiComponentNodes().forEach(joiComponentNode -> {
-                    if (joiComponentNode.getComponentId() == scene.getComponentId() && joiComponentNode instanceof SceneNode) {
-                        ((SceneNode) joiComponentNode).toggleSceneThumbnail(true);
-                    }
-                });
-            }
+            if(Controller.getInstance().isShowThumbnail()) getEditorWindow().toggleSceneThumbnails(true);
         }
     }
 
