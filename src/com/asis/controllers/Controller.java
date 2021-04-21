@@ -21,12 +21,9 @@ import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
-import javafx.scene.control.Button;
 import javafx.scene.control.MenuBar;
-import javafx.scene.control.ToolBar;
 import javafx.scene.control.Tooltip;
 import javafx.scene.image.Image;
-import javafx.scene.image.ImageView;
 import javafx.stage.DirectoryChooser;
 import javafx.stage.FileChooser;
 import javafx.stage.Stage;
@@ -45,8 +42,6 @@ import static com.asis.joi.model.entities.JOIComponent.NOT_GROUPED;
 
 public class Controller extends EditorWindow {
     private static Controller instance = null;
-    private boolean snapToGrid = false;
-    private boolean showThumbnail = false;
 
     private final SelectionModel selectionModel = new SelectionModel();
     private JOIPackage joiPackage;
@@ -55,10 +50,6 @@ public class Controller extends EditorWindow {
     private InfinityPane infinityPane;
     @FXML
     public MenuBar mainMenuBar;
-    @FXML
-    public ToolBar toolBar;
-    @FXML
-    private Button gridToggle, thumbnailToggle;
 
     @Override
     public void initialize() {
@@ -290,34 +281,6 @@ public class Controller extends EditorWindow {
         getNodeManager().addScene(false);
     }
 
-    public void actionToggleGrid() {
-        snapToGrid = !snapToGrid;
-        ImageView imageView;
-        if (snapToGrid)
-            imageView = new ImageView(new Image(getClass().getResourceAsStream("/resources/images/ic_grid_on.png")));
-        else
-            imageView = new ImageView(new Image(getClass().getResourceAsStream("/resources/images/ic_grid_off.png")));
-
-        imageView.setFitHeight(20);
-        imageView.setFitWidth(20);
-        gridToggle.setGraphic(imageView);
-    }
-
-    public void actionToggleThumbnail() {
-        showThumbnail = !showThumbnail;
-        ImageView imageView;
-        if (showThumbnail)
-            imageView = new ImageView(new Image(getClass().getResourceAsStream("/resources/images/ic_thumbnail_on.png")));
-        else
-            imageView = new ImageView(new Image(getClass().getResourceAsStream("/resources/images/ic_thumbnail_off.png")));
-
-        toggleSceneThumbnails(showThumbnail);
-
-        imageView.setFitHeight(20);
-        imageView.setFitWidth(20);
-        thumbnailToggle.setGraphic(imageView);
-    }
-
     //Getters and setters
     @Override
     public InfinityPane getInfinityPane() {
@@ -330,14 +293,6 @@ public class Controller extends EditorWindow {
 
     public void setJoiPackage(JOIPackage joiPackage) {
         this.joiPackage = joiPackage;
-    }
-
-    public boolean isSnapToGrid() {
-        return snapToGrid;
-    }
-
-    public boolean isShowThumbnail() {
-        return showThumbnail;
     }
 
     public SelectionModel getSelectionModel() {

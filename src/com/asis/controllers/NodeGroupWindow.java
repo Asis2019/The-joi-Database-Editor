@@ -95,6 +95,7 @@ public class NodeGroupWindow extends EditorWindow {
     }
 
     // Getters and setters
+    @Override
     public InfinityPane getInfinityPane() {
         return infinityPane;
     }

@@ -1,9 +1,10 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
 <?import com.asis.ui.InfinityPane?>
-<?import javafx.scene.control.Menu?>
-<?import javafx.scene.control.MenuBar?>
-<?import javafx.scene.control.MenuItem?>
+<?import javafx.geometry.Rectangle2D?>
+<?import javafx.scene.control.*?>
+<?import javafx.scene.image.Image?>
+<?import javafx.scene.image.ImageView?>
 <?import javafx.scene.layout.BorderPane?>
 <?import javafx.scene.layout.VBox?>
 <?import java.net.URL?>
@@ -15,6 +16,32 @@
                 <MenuItem mnemonicParsing="false" onAction="#actionClose" text="Close"/>
             </Menu>
         </MenuBar>
+        <ToolBar fx:id="toolBar">
+            <Button fx:id="gridToggle" contentDisplay="GRAPHIC_ONLY" mnemonicParsing="false" onAction="#actionToggleGrid" prefHeight="26.0" text="Button">
+                <graphic>
+                    <ImageView fitHeight="20.0" fitWidth="20.0" pickOnBounds="true" smooth="false">
+                        <image>
+                            <Image url="@../images/ic_grid_off.png" />
+                        </image>
+                        <viewport>
+                            <Rectangle2D />
+                        </viewport>
+                    </ImageView>
+                </graphic>
+            </Button>
+            <Button fx:id="thumbnailToggle" contentDisplay="GRAPHIC_ONLY" mnemonicParsing="false" onAction="#actionToggleThumbnail" prefHeight="26.0" text="Button">
+                <graphic>
+                    <ImageView fitHeight="20.0" fitWidth="20.0" pickOnBounds="true" smooth="false">
+                        <image>
+                            <Image url="@../images/ic_thumbnail_off.png" />
+                        </image>
+                        <viewport>
+                            <Rectangle2D />
+                        </viewport>
+                    </ImageView>
+                </graphic>
+            </Button>
+        </ToolBar>
     </VBox>
 </top>
 <center>

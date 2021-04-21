@@ -184,7 +184,7 @@ public abstract class JOIComponentNode extends BorderPane {
     }
 
     public void positionInGrid(double x, double y) {
-        if(Controller.getInstance().isSnapToGrid()) {
+        if(getEditorWindow().isSnapToGrid()) {
             setTranslateX(round(x));
             setTranslateY(round(y));
         } else {
