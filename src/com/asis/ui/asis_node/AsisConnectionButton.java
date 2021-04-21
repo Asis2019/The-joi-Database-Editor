@@ -49,7 +49,7 @@ public class AsisConnectionButton extends Button {
                     "-fx-border-width: 1;" +
                     "-fx-background-insets: 1;";
 
-    AsisConnectionButton(boolean connectionType, JOIComponent joiComponent, Pane workspacePane) {
+    public AsisConnectionButton(boolean connectionType, JOIComponent joiComponent, Pane workspacePane) {
         this.connectionType = connectionType;
         this.joiComponent = joiComponent;
         this.workspacePane = workspacePane;

@@ -64,6 +64,12 @@ public class JOI implements JSONString, Cloneable {
                 } else if(array.getJSONObject(i).has("componentType") && array.getJSONObject(i).getString("componentType").equals("Arithmetic")) {
                     Arithmetic arithmetic = Arithmetic.createEntity(array.getJSONObject(i));
                     joi.getJoiComponents().add(arithmetic);
+                } else if(array.getJSONObject(i).has("componentType") && array.getJSONObject(i).getString("componentType").equals("NodeGroup")) {
+                    Group group = Group.createEntity(array.getJSONObject(i));
+                    joi.getJoiComponents().add(group);
+                } else if(array.getJSONObject(i).has("componentType") && array.getJSONObject(i).getString("componentType").equals("NodeGroupBridge")) {
+                    GroupBridge groupBridge = GroupBridge.createEntity(array.getJSONObject(i));
+                    joi.getJoiComponents().add(groupBridge);
                 } else {
                     Scene scene = Scene.createEntity(array.getJSONObject(i));
                     joi.getJoiComponents().add(scene);
@@ -142,4 +148,5 @@ public class JOI implements JSONString, Cloneable {
     private void setJoiComponents(ArrayList<JOIComponent> joiComponents) {
         this.joiComponents = joiComponents;
     }
+
 }

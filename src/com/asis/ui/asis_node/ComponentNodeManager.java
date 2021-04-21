@@ -2,10 +2,13 @@ package com.asis.ui.asis_node;
 
 import com.asis.controllers.Controller;
 import com.asis.controllers.EditorWindow;
-import com.asis.controllers.dialogs.DialogSceneTitle;
+import com.asis.controllers.NodeGroupWindow;
+import com.asis.controllers.dialogs.DialogNodeTitle;
 import com.asis.joi.model.JOIPackage;
+import com.asis.joi.model.entities.Group;
 import com.asis.joi.model.entities.JOIComponent;
 import com.asis.joi.model.entities.Scene;
+import com.asis.ui.asis_node.node_group.NodeGroup;
 import com.asis.utilities.AsisUtils;
 import com.asis.utilities.Draggable;
 import javafx.geometry.Point2D;
@@ -58,6 +61,16 @@ public class ComponentNodeManager {
         getJoiComponentNodes().add(componentNode);
     }
 
+    public void addGroup() {
+        final int sceneId = getJoiPackage().getJoi().getSceneIdCounter() + 1;
+        final String defaultTitle = "Group " + sceneId;
+
+        String title = DialogNodeTitle.getNewNodeTitleDialog(defaultTitle, "Node Group Title");
+        if (title == null) return;
+
+        addJOIComponentNode(NodeGroup.class, Group.class, 10, 0, title, sceneId - 1, false);
+    }
+
     public void addScene(final boolean isFirstScene) {
         final int sceneId = getJoiPackage().getJoi().getSceneIdCounter() + 1;
         final String defaultTitle = "Scene " + sceneId;
@@ -66,7 +79,7 @@ public class ComponentNodeManager {
         if (isFirstScene) {
             title = defaultTitle;
         } else {
-            title = DialogSceneTitle.addNewSceneDialog(defaultTitle);
+            title = DialogNodeTitle.getNewNodeTitleDialog(defaultTitle);
             if (title == null) return;
         }
 
@@ -84,6 +97,9 @@ public class ComponentNodeManager {
         if (!suppressJSONUpdating) {
             getJoiPackage().getJoi().addNewComponent(componentClass, componentId);
             getJoiPackage().getJoi().getComponent(componentId).setComponentTitle(title);
+
+            if(editorWindow instanceof NodeGroupWindow)
+                getJoiPackage().getJoi().getComponent(componentId).setGroupId(((NodeGroupWindow) editorWindow).getGroup().getComponentId());
         }
 
         try {

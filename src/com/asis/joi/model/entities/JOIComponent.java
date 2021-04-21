@@ -5,7 +5,10 @@ import org.json.JSONObject;
 import org.json.JSONString;
 
 public abstract class JOIComponent implements JSONString, Cloneable, ComponentVisitable {
+    public static int NOT_GROUPED = -1; //-1 means not in a group. The id of the group the component belongs too.
+
     private int componentId; //AKA sceneId | same thing
+    private int groupId = NOT_GROUPED;
     private double layoutXPosition=0, layoutYPosition=10;
     private final ReadOnlyStringWrapper componentTitle = new ReadOnlyStringWrapper("Undefined");
 
@@ -25,6 +28,8 @@ public abstract class JOIComponent implements JSONString, Cloneable, ComponentVi
         object.put("layoutXPosition", getLayoutXPosition());
         object.put("layoutYPosition", getLayoutYPosition());
 
+        if(getGroupId() != -1) object.put("groupId", getGroupId());
+
         return object;
     }
 
@@ -43,6 +48,9 @@ public abstract class JOIComponent implements JSONString, Cloneable, ComponentVi
                 case "layoutYPosition":
                     joiComponent.setLayoutYPosition(jsonObject.getDouble(key));
                     break;
+                case "groupId":
+                    joiComponent.setGroupId(jsonObject.getInt(key));
+                    break;
             }
         }
     }
@@ -55,6 +63,7 @@ public abstract class JOIComponent implements JSONString, Cloneable, ComponentVi
         component.setLayoutYPosition(getLayoutYPosition());
         component.setComponentId(getComponentId());
         component.setComponentTitle(getComponentTitle());
+        component.setGroupId(getGroupId());
 
         return component;
     }
@@ -67,6 +76,7 @@ public abstract class JOIComponent implements JSONString, Cloneable, ComponentVi
         JOIComponent component = (JOIComponent) o;
 
         if (getComponentId() != component.getComponentId()) return false;
+        if (getGroupId() != component.getGroupId()) return false;
         if (Double.compare(component.getLayoutXPosition(), getLayoutXPosition()) != 0) return false;
         if (Double.compare(component.getLayoutYPosition(), getLayoutYPosition()) != 0) return false;
         return getComponentTitle() != null ? getComponentTitle().equals(component.getComponentTitle()) : component.getComponentTitle() == null;
@@ -102,5 +112,12 @@ public abstract class JOIComponent implements JSONString, Cloneable, ComponentVi
     }
     public ReadOnlyStringWrapper componentTitleProperty() {
         return componentTitle;
+    }
+
+    public int getGroupId() {
+        return groupId;
+    }
+    public void setGroupId(int groupId) {
+        this.groupId = groupId;
     }
 }

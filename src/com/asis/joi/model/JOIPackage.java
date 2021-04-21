@@ -47,7 +47,7 @@ public class JOIPackage implements Cloneable {
                 }
             }
 
-            //Copy icon to export directory and rename it appropriately
+            //Copy icon to export directory and renameNode it appropriately
             if(getMetaData().getJoiIcon() != null) {
                 File metaDataIcon = getMetaData().getJoiIcon();
                 Files.copy(metaDataIcon.toPath(), exportDirectory.toPath().resolve(metaDataIcon.getName()), StandardCopyOption.REPLACE_EXISTING);

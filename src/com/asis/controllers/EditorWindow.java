@@ -6,9 +6,11 @@ import com.asis.joi.model.entities.VariableSetter;
 import com.asis.ui.InfinityPane;
 import com.asis.ui.asis_node.*;
 import com.asis.utilities.StageManager;
-import javafx.scene.control.ContextMenu;
-import javafx.scene.control.MenuItem;
-import javafx.scene.control.SeparatorMenuItem;
+import javafx.fxml.FXML;
+import javafx.scene.control.*;
+import javafx.scene.image.Image;
+import javafx.scene.image.ImageView;
+import javafx.stage.Stage;
 
 public abstract class EditorWindow {
 
@@ -16,6 +18,14 @@ public abstract class EditorWindow {
 
     protected ComponentNodeManager nodeManager = new ComponentNodeManager(this);
     protected ComponentConnectionManager connectionManager = new ComponentConnectionManager(this);
+
+    protected boolean snapToGrid = false;
+    protected boolean showThumbnail = false;
+
+    @FXML
+    public ToolBar toolBar;
+    @FXML
+    protected Button gridToggle, thumbnailToggle;
 
     public void initialize() {
         getInfinityPane().setUserData(this);
@@ -34,17 +44,19 @@ public abstract class EditorWindow {
     /**
      * Creates and sets the context menu for the editor windows infinity pane.
      */
-    protected void setupInfinityPaneContextMenu() {
+    private void setupInfinityPaneContextMenu() {
         //Create items and add them to there menu
         MenuItem newSceneItem = new MenuItem("New Scene");
         MenuItem newVariableSetterItem = new MenuItem("New Variable");
         MenuItem newConditionItem = new MenuItem("New Condition");
         MenuItem newArithmeticItem = new MenuItem("New Arithmetic");
         SeparatorMenuItem separatorMenuItem = new SeparatorMenuItem();
+        MenuItem newNodeGroupItem = new MenuItem("New Node Group");
+        SeparatorMenuItem separatorMenuItem2 = new SeparatorMenuItem();
 
         MenuItem reset_view = new MenuItem("Reset view");
         editorWindowContextMenu.getItems().addAll(newSceneItem, newVariableSetterItem, newConditionItem,
-                newArithmeticItem, separatorMenuItem, reset_view);
+                newArithmeticItem, separatorMenuItem, newNodeGroupItem, separatorMenuItem2, reset_view);
 
         //Handle menu actions
         newSceneItem.setOnAction(event -> {
@@ -62,6 +74,10 @@ public abstract class EditorWindow {
         newArithmeticItem.setOnAction(actionEvent -> {
             getNodeManager().calledFromContextMenu = true;
             getNodeManager().addJOIComponentNode(ArithmeticNode.class, Arithmetic.class);
+        });
+        newNodeGroupItem.setOnAction(actionEvent -> {
+            getNodeManager().calledFromContextMenu = true;
+            getNodeManager().addGroup();
         });
         reset_view.setOnAction(actionEvent -> getInfinityPane().resetPosition());
 
@@ -87,6 +103,36 @@ public abstract class EditorWindow {
         });
     }
 
+    @FXML
+    protected void actionToggleGrid() {
+        snapToGrid = !snapToGrid;
+        ImageView imageView;
+        if (snapToGrid)
+            imageView = new ImageView(new Image(getClass().getResourceAsStream("/resources/images/ic_grid_on.png")));
+        else
+            imageView = new ImageView(new Image(getClass().getResourceAsStream("/resources/images/ic_grid_off.png")));
+
+        imageView.setFitHeight(20);
+        imageView.setFitWidth(20);
+        gridToggle.setGraphic(imageView);
+    }
+
+    @FXML
+    protected void actionToggleThumbnail() {
+        showThumbnail = !showThumbnail;
+        ImageView imageView;
+        if (showThumbnail)
+            imageView = new ImageView(new Image(getClass().getResourceAsStream("/resources/images/ic_thumbnail_on.png")));
+        else
+            imageView = new ImageView(new Image(getClass().getResourceAsStream("/resources/images/ic_thumbnail_off.png")));
+
+        toggleSceneThumbnails(showThumbnail);
+
+        imageView.setFitHeight(20);
+        imageView.setFitWidth(20);
+        thumbnailToggle.setGraphic(imageView);
+    }
+
     /**
      * Forces all editor windows to have an infinity pane implementation.
      * @return InfinityPane - the editor window's infinity pane
@@ -99,5 +145,17 @@ public abstract class EditorWindow {
 
     public ComponentNodeManager getNodeManager() {
         return nodeManager;
+    }
+
+    protected Stage getStage() {
+        return  (Stage) getInfinityPane().getScene().getWindow();
+    }
+
+    public boolean isSnapToGrid() {
+        return snapToGrid;
+    }
+
+    public boolean isShowThumbnail() {
+        return showThumbnail;
     }
 }

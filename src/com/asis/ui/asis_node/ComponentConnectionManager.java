@@ -239,19 +239,19 @@ public class ComponentConnectionManager {
 
     private static class RemoveConnectionResolver implements ComponentVisitor {
         final boolean isMultiLined;
-        final int inputSceneId;
+        final int inputComponentId;
         final String outputConnectionId;
 
-        public RemoveConnectionResolver(boolean isMultiLined, int inputSceneId, String outputConnectionId) {
+        public RemoveConnectionResolver(boolean isMultiLined, int inputComponentId, String outputConnectionId) {
             this.isMultiLined = isMultiLined;
-            this.inputSceneId = inputSceneId;
+            this.inputComponentId = inputComponentId;
             this.outputConnectionId = outputConnectionId;
         }
 
         @Override
         public void visit(Scene scene) {
             if(isMultiLined)
-                scene.getComponent(GotoScene.class).removeValue(inputSceneId);
+                scene.getComponent(GotoScene.class).removeValue(inputComponentId);
             else
                 scene.removeComponent(GotoScene.class);
         }
@@ -260,9 +260,9 @@ public class ComponentConnectionManager {
         public void visit(Condition condition) {
             if(isMultiLined) {
                 if (outputConnectionId.equals("true_output"))
-                    condition.getGotoSceneTrue().removeValue(inputSceneId);
+                    condition.getGotoSceneTrue().removeValue(inputComponentId);
                 else if (outputConnectionId.equals("false_output"))
-                    condition.getGotoSceneFalse().removeValue(inputSceneId);
+                    condition.getGotoSceneFalse().removeValue(inputComponentId);
                 else throw new RuntimeException("connection id was not true or false!");
             } else {
                 if (outputConnectionId.equals("true_output")) condition.setGotoSceneTrue(null);
@@ -273,7 +273,7 @@ public class ComponentConnectionManager {
         @Override
         public void visit(VariableSetter variableSetter) {
             if(isMultiLined)
-                variableSetter.getGotoScene().removeValue(inputSceneId);
+                variableSetter.getGotoScene().removeValue(inputComponentId);
             else
                 variableSetter.setGotoScene(null);
         }
@@ -281,9 +281,25 @@ public class ComponentConnectionManager {
         @Override
         public void visit(Arithmetic arithmetic) {
             if(isMultiLined)
-                arithmetic.getGotoScene().removeValue(inputSceneId);
+                arithmetic.getGotoScene().removeValue(inputComponentId);
             else
                 arithmetic.setGotoScene(null);
+        }
+
+        @Override
+        public void visit(Group group) {
+            if(isMultiLined)
+                group.getGotoScene().removeValue(inputComponentId);
+            else
+                group.setGotoScene(null);
+        }
+
+        @Override
+        public void visit(GroupBridge groupBridge) {
+            if(isMultiLined)
+                groupBridge.getGotoScene().removeValue(inputComponentId);
+            else
+                groupBridge.setGotoScene(null);
         }
     }
 
@@ -343,6 +359,24 @@ public class ComponentConnectionManager {
             gotoScene.addValue(parentSceneId);
 
             arithmetic.setGotoScene(gotoScene);
+        }
+
+        @Override
+        public void visit(Group group) {
+            GotoScene gotoScene = group.getGotoScene();
+            if (gotoScene == null) gotoScene = new GotoScene();
+            gotoScene.addValue(parentSceneId);
+
+            group.setGotoScene(gotoScene);
+        }
+
+        @Override
+        public void visit(GroupBridge groupBridge) {
+            GotoScene gotoScene = groupBridge.getGotoScene();
+            if (gotoScene == null) gotoScene = new GotoScene();
+            gotoScene.addValue(parentSceneId);
+
+            groupBridge.setGotoScene(gotoScene);
         }
     }
 }

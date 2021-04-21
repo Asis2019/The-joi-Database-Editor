@@ -1,14 +1,13 @@
 package com.asis.ui.asis_node.node_functional_expansion;
 
 import com.asis.controllers.EditorWindow;
-import com.asis.joi.model.entities.Arithmetic;
-import com.asis.joi.model.entities.Condition;
-import com.asis.joi.model.entities.Scene;
-import com.asis.joi.model.entities.VariableSetter;
+import com.asis.joi.model.entities.*;
 import com.asis.ui.asis_node.ArithmeticNode;
 import com.asis.ui.asis_node.ConditionNode;
 import com.asis.ui.asis_node.SceneNode;
 import com.asis.ui.asis_node.VariableSetterNode;
+import com.asis.ui.asis_node.node_group.NodeGroup;
+import com.asis.ui.asis_node.node_group.NodeGroupBridge;
 
 /**
  * This class is used to tell the ComponentNodeManager how to create the different types of components.
@@ -54,4 +53,19 @@ public class AddComponentNodeResolver implements ComponentVisitor {
                 arithmetic.getComponentId(), true);
     }
 
+    @Override
+    public void visit(Group group) {
+        editorWindow.getNodeManager().addJOIComponentNode(
+                NodeGroup.class, Group.class,
+                group.getLayoutXPosition(), group.getLayoutYPosition(), group.getComponentTitle(),
+                group.getComponentId(), true);
+    }
+
+    @Override
+    public void visit(GroupBridge groupBridge) {
+        editorWindow.getNodeManager().addJOIComponentNode(
+                NodeGroupBridge.class, GroupBridge.class,
+                groupBridge.getLayoutXPosition(), groupBridge.getLayoutYPosition(), groupBridge.getComponentTitle(),
+                groupBridge.getComponentId(), true);
+    }
 }

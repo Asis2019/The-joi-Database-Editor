@@ -6,6 +6,8 @@ import com.asis.controllers.dialogs.DialogNewProject;
 import com.asis.controllers.dialogs.DialogUnsavedChanges;
 import com.asis.joi.JOIPackageManager;
 import com.asis.joi.model.JOIPackage;
+import com.asis.joi.model.entities.Group;
+import com.asis.joi.model.entities.GroupBridge;
 import com.asis.joi.model.entities.JOIComponent;
 import com.asis.ui.InfinityPane;
 import com.asis.ui.asis_node.node_functional_expansion.AddComponentNodeResolver;
@@ -19,12 +21,9 @@ import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
-import javafx.scene.control.Button;
 import javafx.scene.control.MenuBar;
-import javafx.scene.control.ToolBar;
 import javafx.scene.control.Tooltip;
 import javafx.scene.image.Image;
-import javafx.scene.image.ImageView;
 import javafx.stage.DirectoryChooser;
 import javafx.stage.FileChooser;
 import javafx.stage.Stage;
@@ -39,11 +38,10 @@ import java.util.Objects;
 
 import static com.asis.controllers.dialogs.DialogUnsavedChanges.CHOICE_CANCEL;
 import static com.asis.controllers.dialogs.DialogUnsavedChanges.CHOICE_SAVE;
+import static com.asis.joi.model.entities.JOIComponent.NOT_GROUPED;
 
 public class Controller extends EditorWindow {
     private static Controller instance = null;
-    private boolean snapToGrid = false;
-    private boolean showThumbnail = false;
 
     private final SelectionModel selectionModel = new SelectionModel();
     private JOIPackage joiPackage;
@@ -52,10 +50,6 @@ public class Controller extends EditorWindow {
     private InfinityPane infinityPane;
     @FXML
     public MenuBar mainMenuBar;
-    @FXML
-    public ToolBar toolBar;
-    @FXML
-    private Button gridToggle, thumbnailToggle;
 
     @Override
     public void initialize() {
@@ -128,7 +122,7 @@ public class Controller extends EditorWindow {
     }
 
     public void actionExit() {
-        Stage stage = (Stage) getInfinityPane().getScene().getWindow();
+        Stage stage = getStage();
         stage.fireEvent(new WindowEvent(stage, WindowEvent.WINDOW_CLOSE_REQUEST));
     }
 
@@ -198,12 +192,29 @@ public class Controller extends EditorWindow {
                 resetEditorWindow();
 
                 //Create component nodes
-                for (JOIComponent component : getJoiPackage().getJoi().getJoiComponents())
+                for (JOIComponent component : getJoiPackage().getJoi().getJoiComponents()) {
+                    if (component.getGroupId() != NOT_GROUPED) continue;
                     component.accept(new AddComponentNodeResolver(this));
+                }
 
                 //Create connections
-                for (JOIComponent component : getJoiPackage().getJoi().getJoiComponents())
+                for (JOIComponent component : getJoiPackage().getJoi().getJoiComponents()) {
+                    if (component.getGroupId() != NOT_GROUPED) continue;
                     component.accept(new CreateComponentConnectionsResolver(this));
+                }
+
+                // Linkup groups to there bridges
+                for(JOIComponent component : Controller.getInstance().getJoiPackage().getJoi().getJoiComponents()) {
+                    if(component instanceof GroupBridge) {
+                        GroupBridge groupBridge = (GroupBridge) component;
+
+                        int groupId = component.getGroupId();
+                        Group group = (Group) Controller.getInstance().getJoiPackage().getJoi().getComponent(groupId);
+
+                        if(groupBridge.isInputBridge()) group.setInputNodeData(groupBridge);
+                        else group.setOutputNodeData(groupBridge);
+                    }
+                }
 
                 //Loading completed successfully
                 return true;
@@ -270,34 +281,6 @@ public class Controller extends EditorWindow {
         getNodeManager().addScene(false);
     }
 
-    public void actionToggleGrid() {
-        snapToGrid = !snapToGrid;
-        ImageView imageView;
-        if (snapToGrid)
-            imageView = new ImageView(new Image(getClass().getResourceAsStream("/resources/images/ic_grid_on.png")));
-        else
-            imageView = new ImageView(new Image(getClass().getResourceAsStream("/resources/images/ic_grid_off.png")));
-
-        imageView.setFitHeight(20);
-        imageView.setFitWidth(20);
-        gridToggle.setGraphic(imageView);
-    }
-
-    public void actionToggleThumbnail() {
-        showThumbnail = !showThumbnail;
-        ImageView imageView;
-        if (showThumbnail)
-            imageView = new ImageView(new Image(getClass().getResourceAsStream("/resources/images/ic_thumbnail_on.png")));
-        else
-            imageView = new ImageView(new Image(getClass().getResourceAsStream("/resources/images/ic_thumbnail_off.png")));
-
-        toggleSceneThumbnails(showThumbnail);
-
-        imageView.setFitHeight(20);
-        imageView.setFitWidth(20);
-        thumbnailToggle.setGraphic(imageView);
-    }
-
     //Getters and setters
     @Override
     public InfinityPane getInfinityPane() {
@@ -310,14 +293,6 @@ public class Controller extends EditorWindow {
 
     public void setJoiPackage(JOIPackage joiPackage) {
         this.joiPackage = joiPackage;
-    }
-
-    public boolean isSnapToGrid() {
-        return snapToGrid;
-    }
-
-    public boolean isShowThumbnail() {
-        return showThumbnail;
     }
 
     public SelectionModel getSelectionModel() {
