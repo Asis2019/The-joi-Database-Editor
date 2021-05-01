@@ -31,7 +31,12 @@ public class JOI implements JSONString, Cloneable {
     }
 
     public boolean removeComponent(int sceneId) {
-        return getJoiComponents().remove(getComponent(sceneId));
+        JOIComponent component = getComponent(sceneId);
+        if(component instanceof Group) {
+            getJoiComponents().remove(((Group) component).getInputNodeData());
+            getJoiComponents().remove(((Group) component).getOutputNodeData());
+        }
+        return getJoiComponents().remove(component);
     }
 
     public JOIComponent getComponent(int componentId) {
