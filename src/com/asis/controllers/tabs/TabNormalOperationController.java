@@ -1,5 +1,6 @@
 package com.asis.controllers.tabs;
 
+import com.asis.controllers.AddableSceneImage;
 import com.asis.joi.model.entities.Line;
 import com.asis.joi.model.entities.LineGroup;
 import com.asis.joi.model.entities.SceneImage;
@@ -19,7 +20,7 @@ import java.util.NoSuchElementException;
 
 import static com.asis.utilities.AsisUtils.colorToHex;
 
-public class TabNormalOperationController extends TabController {
+public class TabNormalOperationController extends TabController implements AddableSceneImage {
     private String outlineColor = "#000000";
     private String fillColor = "#ffffff";
     private int totalLines = 1;
@@ -65,15 +66,6 @@ public class TabNormalOperationController extends TabController {
             addColorPickerListeners();
 
             addBeatFieldListeners();
-
-            try {
-                if(getScene(getLineGroup()).getComponent(SceneImage.class).getFrameRate() != -1) {
-                    imageSpeedMultiplier.setVisible(true);
-                    imageSpeedMultiplier.setManaged(true);
-                    imageSpeedMultiplier.textProperty().addListener((observableValue, s, t1) ->
-                            getLineGroup().getLine(onLine).setFrameRateMultiplier(imageSpeedMultiplier.getDoubleNumber()));
-                }
-            } catch (NoSuchElementException ignored) {}
 
             //Set total lines
             totalLines = getLineGroup().getLineArrayList().size();
@@ -123,10 +115,8 @@ public class TabNormalOperationController extends TabController {
 
         if (file != null) {
             if (getScene(getLineGroup()) != null) {
-                SceneImage image = new SceneImage();
-                image.setImage(file);
-                getScene(getLineGroup()).addComponent(image);
-                setVisibleImage();
+                boolean result = createNewSceneImage(file, getScene(getLineGroup()));
+                if (result) setVisibleImage();
             }
         }
     }
@@ -252,7 +242,16 @@ public class TabNormalOperationController extends TabController {
     }
 
     public void setVisibleImage() {
-        super.setVisibleImage(stackPane, viewPane, getImageFile(), getScene(getLineGroup()));
+        try {
+            if(getScene(getLineGroup()).getComponent(SceneImage.class).getFrameRate() != -1) {
+                imageSpeedMultiplier.setVisible(true);
+                imageSpeedMultiplier.setManaged(true);
+                imageSpeedMultiplier.textProperty().addListener((observableValue, s, t1) ->
+                        getLineGroup().getLine(onLine).setFrameRateMultiplier(imageSpeedMultiplier.getDoubleNumber()));
+            }
+        } catch (NoSuchElementException ignored) {}
+
+        setVisibleImage(getEditorWindow(), stackPane, viewPane, getImageFile(), getScene(getLineGroup()));
     }
 
     //Getters and setters

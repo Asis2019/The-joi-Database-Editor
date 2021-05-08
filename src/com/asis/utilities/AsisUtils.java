@@ -149,8 +149,9 @@ public class AsisUtils {
         FileChooser fileChooser = new FileChooser();
         fileChooser.setInitialDirectory(JOIPackageManager.getInstance().getJoiPackageDirectory());
         fileChooser.getExtensionFilters().addAll(new FileChooser.ExtensionFilter("png", "*.png"));
-        fileChooser.getExtensionFilters().addAll(new FileChooser.ExtensionFilter("jpg", "*.jpg"));
-        fileChooser.getExtensionFilters().addAll(new FileChooser.ExtensionFilter("jpeg", "*.jpeg"));
+        fileChooser.getExtensionFilters().addAll(new FileChooser.ExtensionFilter("gif", "*.gif"));
+        fileChooser.getExtensionFilters().addAll(new FileChooser.ExtensionFilter("(dev only) jpg", "*.jpg"));
+        fileChooser.getExtensionFilters().addAll(new FileChooser.ExtensionFilter("(dev only) jpg", "*.jpeg"));
 
         return fileChooser.showOpenDialog(null);
     }

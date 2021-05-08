@@ -23,7 +23,7 @@ import javafx.stage.Stage;
 import java.io.File;
 import java.io.IOException;
 
-public class SceneDetails {
+public class SceneDetails implements AddableSceneImage {
     private SceneNode sceneNode;
     private EditorWindow editorWindow;
 
@@ -234,17 +234,16 @@ public class SceneDetails {
         if (file != null) {
             //Add image to json object
             if (getScene().hasComponent(SceneImage.class)) getScene().removeComponent(SceneImage.class);
-            SceneImage sceneImage = new SceneImage();
-            sceneImage.setImage(file);
-            getScene().addComponent(sceneImage);
+            boolean result = createNewSceneImage(file, getScene());
 
-            //setVisibleImage();
-            if (getTabNormalOperationController() != null) {
-                getTabNormalOperationController().setVisibleImage();
-            }
+            if (result) {
+                if (getTabNormalOperationController() != null) {
+                    getTabNormalOperationController().setVisibleImage();
+                }
 
-            if (getTabTimerController() != null) {
-                getTabTimerController().setVisibleImage();
+                if (getTabTimerController() != null) {
+                    getTabTimerController().setVisibleImage();
+                }
             }
         }
     }

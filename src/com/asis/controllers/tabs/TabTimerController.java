@@ -1,5 +1,6 @@
 package com.asis.controllers.tabs;
 
+import com.asis.controllers.AddableSceneImage;
 import com.asis.joi.model.entities.Line;
 import com.asis.joi.model.entities.SceneImage;
 import com.asis.joi.model.entities.Timer;
@@ -23,7 +24,7 @@ import java.util.NoSuchElementException;
 
 import static com.asis.utilities.AsisUtils.colorToHex;
 
-public class TabTimerController extends TabController {
+public class TabTimerController extends TabController implements AddableSceneImage {
     private String outlineColor = "#000000";
     private String fillColor = "#ffffff";
     private int totalSeconds = 0;
@@ -107,12 +108,13 @@ public class TabTimerController extends TabController {
                         Line emptyLine = new Line();
                         emptyLine.setLineNumber(line.getLineNumber());
 
-                        if(line.equals(emptyLine))
+                        if (line.equals(emptyLine))
                             getTimer().getLineGroup().getLineArrayList().remove(getTimer().getLineGroup().getLine(Integer.parseInt(s)));
                     }
                 }
 
-                if (!isLockTextAreaFunctionality() && getTimer().getLineGroup().getLine(onSecond) == null) getTimer().getLineGroup().addNewLine(onSecond);
+                if (!isLockTextAreaFunctionality() && getTimer().getLineGroup().getLine(onSecond) == null)
+                    getTimer().getLineGroup().addNewLine(onSecond);
 
                 deleteLineButton.setDisable(getTimer().getLineGroup().getLineArrayList().size() == 0);
 
@@ -125,20 +127,6 @@ public class TabTimerController extends TabController {
 
             addCheckBoxFieldListeners();
             addBeatFieldListeners();
-
-            try {
-                if (getScene(getTimer()).getComponent(SceneImage.class).getFrameRate() != -1) {
-                    imageSpeedMultiplier.setVisible(true);
-                    imageSpeedMultiplier.setManaged(true);
-                    imageSpeedMultiplier.textProperty().addListener((observableValue, s, t1) -> {
-                        if (getTimer().getLineGroup().getLine(onSecond) != null) {
-                            getTimer().getLineGroup().getLine(onSecond).setFrameRateMultiplier(imageSpeedMultiplier.getDoubleNumber());
-                            updateObjectTree();
-                        }
-                    });
-                }
-            } catch (NoSuchElementException ignore) {
-            }
 
             //timer
             asisCenteredArc.setMaxLength(0);
@@ -265,10 +253,8 @@ public class TabTimerController extends TabController {
 
         if (file != null) {
             if (getScene(getTimer()) != null) {
-                SceneImage image = new SceneImage();
-                image.setImage(file);
-                getScene(getTimer()).addComponent(image);
-                setVisibleImage();
+                boolean result = createNewSceneImage(file, getScene(getTimer()));
+                if (result) setVisibleImage();
             }
         }
     }
@@ -288,7 +274,7 @@ public class TabTimerController extends TabController {
         getTimer().getLineGroup().getLineArrayList().remove(getTimer().getLineGroup().getLine(onSecond));
 
         Line line = getTimer().getLineGroup().getMaxLine();
-        if(line != null)
+        if (line != null)
             goToSecondsTextField.setText(String.valueOf(line.getLineNumber()));
         else {
             setLockTextAreaFunctionality(true);
@@ -345,7 +331,7 @@ public class TabTimerController extends TabController {
         if (workingLine.getOutlineColor() != null)
             textOutlineColorPicker.setValue(Color.web(workingLine.getOutlineColor()));
 
-        if(workingLine.getStopAmbience() != null)
+        if (workingLine.getStopAmbience() != null)
             checkStopAmbience.setSelected(true);
 
         timerTextArea.setText(workingLine.getText().replaceAll("#", "\n"));
@@ -380,7 +366,7 @@ public class TabTimerController extends TabController {
     }
 
     public void actionStopAmbience() {
-        if(checkStopAmbience.isSelected())
+        if (checkStopAmbience.isSelected())
             getTimer().getLineGroup().getLine(onSecond).setStopAmbience(checkStopAmbience.isSelected());
         else
             getTimer().getLineGroup().getLine(onSecond).setStopAmbience(null);
@@ -399,7 +385,20 @@ public class TabTimerController extends TabController {
     }
 
     public void setVisibleImage() {
-        super.setVisibleImage(timerStackPane, viewPane, getImageFile(), getScene(getTimer()));
+        try {
+            if (getScene(getTimer()).getComponent(SceneImage.class).getFrameRate() != -1) {
+                imageSpeedMultiplier.setVisible(true);
+                imageSpeedMultiplier.setManaged(true);
+                imageSpeedMultiplier.textProperty().addListener((observableValue, s, t1) -> {
+                    if (getTimer().getLineGroup().getLine(onSecond) != null) {
+                        getTimer().getLineGroup().getLine(onSecond).setFrameRateMultiplier(imageSpeedMultiplier.getDoubleNumber());
+                        updateObjectTree();
+                    }
+                });
+            }
+        } catch (NoSuchElementException ignore) {}
+
+        setVisibleImage(getEditorWindow(), timerStackPane, viewPane, getImageFile(), getScene(getTimer()));
     }
 
     //Getters and setters
