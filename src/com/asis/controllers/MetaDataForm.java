@@ -13,7 +13,6 @@ import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.scene.layout.VBox;
 import javafx.scene.paint.Color;
-import javafx.stage.FileChooser;
 import javafx.stage.Stage;
 import javafx.stage.WindowEvent;
 import org.json.JSONArray;
@@ -122,7 +121,27 @@ public class MetaDataForm {
     }
 
     public void addIcon() {
-        FileChooser fileChooser = new FileChooser();
+        // Open Icon creator
+
+        Image image = IconCreator.show();
+        if(image != null) {
+            //Image file to memory
+            setIconFile(new File(
+                    JOIPackageManager.getInstance().getJoiPackageDirectory(), "joi_icon.png"
+            ));
+
+            mainVBox.getChildren().remove(getImageView());
+
+            getImageView().setImage(image);
+
+            if(iconControllerBox != null) {
+                mainVBox.getChildren().remove(iconControllerBox);
+            }
+
+            mainVBox.getChildren().add(0, getImageView());
+        }
+
+        /*FileChooser fileChooser = new FileChooser();
         fileChooser.setTitle("Add Icon");
         fileChooser.setInitialDirectory(JOIPackageManager.getInstance().getJoiPackageDirectory());
         fileChooser.getExtensionFilters().add(new FileChooser.ExtensionFilter("png", "*.png"));
@@ -142,7 +161,7 @@ public class MetaDataForm {
             }
 
             mainVBox.getChildren().add(0, getImageView());
-        }
+        }*/
     }
 
     public void actionSaveButton() {
