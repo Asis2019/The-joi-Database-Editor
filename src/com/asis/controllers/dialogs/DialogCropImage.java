@@ -56,7 +56,10 @@ public class DialogCropImage {
         imageView.setPreserveRatio(true);
         imageView.setFitWidth(300);
         imageView.setFitHeight(300);
-        return imageView.snapshot(null, null);
+
+        SnapshotParameters parameters = new SnapshotParameters();
+        parameters.setFill(Color.TRANSPARENT);
+        return imageView.snapshot(parameters, null);
     }
 
     private void cropImage(Bounds bounds, ImageView imageView) {

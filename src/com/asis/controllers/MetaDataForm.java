@@ -121,14 +121,9 @@ public class MetaDataForm {
     }
 
     public void addIcon() {
-        // Open Icon creator
-
         Image image = IconCreator.show();
         if(image != null) {
-            //Image file to memory
-            setIconFile(new File(
-                    JOIPackageManager.getInstance().getJoiPackageDirectory(), "joi_icon.png"
-            ));
+            setIconFile(new File(JOIPackageManager.getInstance().getJoiPackageDirectory(), "joi_icon.png"));
 
             mainVBox.getChildren().remove(getImageView());
 
@@ -140,28 +135,6 @@ public class MetaDataForm {
 
             mainVBox.getChildren().add(0, getImageView());
         }
-
-        /*FileChooser fileChooser = new FileChooser();
-        fileChooser.setTitle("Add Icon");
-        fileChooser.setInitialDirectory(JOIPackageManager.getInstance().getJoiPackageDirectory());
-        fileChooser.getExtensionFilters().add(new FileChooser.ExtensionFilter("png", "*.png"));
-        File file = fileChooser.showOpenDialog(new Stage());
-
-        if(file != null) {
-            //Image file to memory
-            setIconFile(file);
-
-            mainVBox.getChildren().remove(getImageView());
-
-            Image image = new Image(file.toURI().toString());
-            getImageView().setImage(image);
-
-            if(iconControllerBox != null) {
-                mainVBox.getChildren().remove(iconControllerBox);
-            }
-
-            mainVBox.getChildren().add(0, getImageView());
-        }*/
     }
 
     public void actionSaveButton() {
@@ -171,10 +144,6 @@ public class MetaDataForm {
         //Close window
         Stage stage = (Stage) mainVBox.getScene().getWindow();
         stage.fireEvent(new WindowEvent(stage, WindowEvent.WINDOW_CLOSE_REQUEST));
-    }
-
-    public void actionCustomDuration() {
-        //estimatedDurationField.setDisable(!customDuration.isSelected());
     }
 
     private MetaData addFieldDataToMetaData() {
