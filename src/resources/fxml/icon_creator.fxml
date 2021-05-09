@@ -37,7 +37,9 @@
    <bottom>
       <ToolBar prefHeight="40.0" prefWidth="200.0" BorderPane.alignment="CENTER">
         <items>
-          <Button mnemonicParsing="false" onAction="#actionUseFile" text="Use file" />
+            <Button mnemonicParsing="false" onAction="#actionUseFile" text="Use file" >
+                <tooltip><Tooltip text="Use an already existing icon"/></tooltip>
+            </Button>
             <Pane HBox.hgrow="ALWAYS" />
             <Button mnemonicParsing="false" onAction="#actionCancel" text="Cancel" />
             <Button mnemonicParsing="false" onAction="#actionSaveIcon" text="Save Icon" />

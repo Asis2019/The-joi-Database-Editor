@@ -30,7 +30,7 @@ public class IconCreator {
     @FXML
     private ColorPicker borderPicker, fillPicker;
 
-    private Image characterImage;
+    private static Image characterImage;
     private static Image finalImage;
 
     public void initialize() {

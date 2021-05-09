@@ -40,9 +40,13 @@ public class DialogCropImage {
     private static Image finalImage;
 
     public void initialize() {
-        Platform.runLater(()->{
+        Platform.runLater(() -> {
             mainImageViewPane = new ImageViewPane();
             mainImageViewPane.setImageView(mainImageView);
+            mainImageView.setPreserveRatio(true);
+            mainImageViewPane.minWidthProperty().bind(selectionGroup.getScene().widthProperty());
+            mainImageViewPane.minHeightProperty().bind(selectionGroup.getScene().heightProperty());
+
             selectionGroup.getChildren().add(mainImageViewPane);
 
             mainImageView.setImage(finalImage);
@@ -75,14 +79,19 @@ public class DialogCropImage {
     }
 
     private void clearSelection(Group group) {
-        group.getChildren().remove(1,group.getChildren().size());
+        group.getChildren().remove(1, group.getChildren().size());
     }
 
     public void actionSaveSelection() {
-        cropImage(areaSelection.selectArea(selectionGroup).getBoundsInParent(),mainImageView);
+        try {
+            cropImage(areaSelection.selectArea(selectionGroup).getBoundsInParent(), mainImageView);
 
-        Stage stage = (Stage) selectionGroup.getScene().getWindow();
-        stage.close();
+            Stage stage = (Stage) selectionGroup.getScene().getWindow();
+            stage.close();
+        } catch (NullPointerException e) {
+            DialogMessage.messageDialog("WARNING", "Please create a selection by clicking and dragging",
+                    300, 150);
+        }
     }
 
     public static Image openImageCrop(File image) {
@@ -93,7 +102,7 @@ public class DialogCropImage {
             FXMLLoader fxmlLoader = new FXMLLoader(DialogCropImage.class.getResource("/resources/fxml/dialog_crop_image.fxml"));
             Parent root = fxmlLoader.load();
 
-            Scene main_scene = new Scene(root, 800, 800);
+            Scene main_scene = new Scene(root);
 
             stage.setResizable(true);
             stage.getIcons().add(new Image(Controller.class.getResourceAsStream("/resources/images/icon.png")));
@@ -118,7 +127,7 @@ public class DialogCropImage {
         private ResizableRectangle selectionRectangle = null;
         private double rectangleStartX;
         private double rectangleStartY;
-        private final Paint darkAreaColor = Color.color(0,0,0,0.5);
+        private final Paint darkAreaColor = Color.color(0, 0, 0, 0.5);
 
         private ResizableRectangle selectArea(Group group) {
             this.group = group;
@@ -140,7 +149,6 @@ public class DialogCropImage {
             clearSelection(group);
 
             selectionRectangle = new ResizableRectangle(rectangleStartX, rectangleStartY, 0, 0, group);
-
             darkenOutsideRectangle(selectionRectangle);
         };
 
@@ -152,19 +160,19 @@ public class DialogCropImage {
 
             double size = max(offsetX, offsetY);
 
-            if(size > 0) {
+            if (size > 0) {
                 selectionRectangle.setWidth(size);
                 selectionRectangle.setHeight(size);
             }
         };
 
         private void darkenOutsideRectangle(Rectangle rectangle) {
-            Rectangle darkAreaTop = new Rectangle(0,0,darkAreaColor);
-            Rectangle darkAreaLeft = new Rectangle(0,0,darkAreaColor);
-            Rectangle darkAreaRight = new Rectangle(0,0,darkAreaColor);
-            Rectangle darkAreaBottom = new Rectangle(0,0,darkAreaColor);
+            Rectangle darkAreaTop = new Rectangle(0, 0, darkAreaColor);
+            Rectangle darkAreaLeft = new Rectangle(0, 0, darkAreaColor);
+            Rectangle darkAreaRight = new Rectangle(0, 0, darkAreaColor);
+            Rectangle darkAreaBottom = new Rectangle(0, 0, darkAreaColor);
 
-            darkAreaTop.widthProperty().bind(finalImage.widthProperty());
+            darkAreaTop.widthProperty().bind(selectionGroup.getScene().widthProperty());
             darkAreaTop.heightProperty().bind(rectangle.yProperty());
 
             darkAreaLeft.yProperty().bind(rectangle.yProperty());
@@ -173,20 +181,20 @@ public class DialogCropImage {
 
             darkAreaRight.xProperty().bind(rectangle.xProperty().add(rectangle.widthProperty()));
             darkAreaRight.yProperty().bind(rectangle.yProperty());
-            darkAreaRight.widthProperty().bind(finalImage.widthProperty().subtract(
+            darkAreaRight.widthProperty().bind(selectionGroup.getScene().widthProperty().subtract(
                     rectangle.xProperty().add(rectangle.widthProperty())));
             darkAreaRight.heightProperty().bind(rectangle.heightProperty());
 
             darkAreaBottom.yProperty().bind(rectangle.yProperty().add(rectangle.heightProperty()));
-            darkAreaBottom.widthProperty().bind(finalImage.widthProperty());
-            darkAreaBottom.heightProperty().bind(finalImage.heightProperty().subtract(
+            darkAreaBottom.widthProperty().bind(selectionGroup.getScene().widthProperty());
+            darkAreaBottom.heightProperty().bind(selectionGroup.getScene().heightProperty().subtract(
                     rectangle.yProperty().add(rectangle.heightProperty())));
 
             // adding dark area rectangles before the selectionRectangle. So it can't overlap rectangle
-            group.getChildren().add(1,darkAreaTop);
-            group.getChildren().add(1,darkAreaLeft);
-            group.getChildren().add(1,darkAreaBottom);
-            group.getChildren().add(1,darkAreaRight);
+            group.getChildren().add(1, darkAreaTop);
+            group.getChildren().add(1, darkAreaLeft);
+            group.getChildren().add(1, darkAreaBottom);
+            group.getChildren().add(1, darkAreaRight);
 
             // make dark area container layer as well
             darkAreaTop.addEventHandler(MouseEvent.MOUSE_PRESSED, onMousePressedEventHandler);

@@ -5,9 +5,9 @@
 <?import javafx.scene.control.ToolBar?>
 <?import javafx.scene.Group?>
 <?import javafx.scene.layout.BorderPane?>
-<BorderPane id="darkThemeBackground" stylesheets="@../css/scene_details_stylesheet.css" prefHeight="400.0" prefWidth="600.0" xmlns="http://javafx.com/javafx/11.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.asis.controllers.dialogs.DialogCropImage">
+<BorderPane id="darkThemeBackground" prefHeight="480.0" prefWidth="640.0" stylesheets="@../css/scene_details_stylesheet.css" xmlns="http://javafx.com/javafx/11.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.asis.controllers.dialogs.DialogCropImage">
     <center>
-        <ScrollPane id="darkThemeBackground" prefHeight="200.0" prefWidth="200.0" BorderPane.alignment="CENTER">
+        <ScrollPane id="darkThemeBackground" fitToHeight="true" fitToWidth="true" BorderPane.alignment="CENTER">
             <content>
                 <Group id="darkThemeBackground" fx:id="selectionGroup">
 
