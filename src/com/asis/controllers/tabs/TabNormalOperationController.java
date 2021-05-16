@@ -251,7 +251,7 @@ public class TabNormalOperationController extends TabController implements Addab
             }
         } catch (NoSuchElementException ignored) {}
 
-        setVisibleImage(getEditorWindow(), stackPane, viewPane, getImageFile(), getScene(getLineGroup()));
+        setVisibleImage(getEditorWindow(), stackPane, viewPane, getImageFile());
     }
 
     //Getters and setters

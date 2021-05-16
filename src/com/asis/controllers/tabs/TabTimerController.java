@@ -398,7 +398,7 @@ public class TabTimerController extends TabController implements AddableSceneIma
             }
         } catch (NoSuchElementException ignore) {}
 
-        setVisibleImage(getEditorWindow(), timerStackPane, viewPane, getImageFile(), getScene(getTimer()));
+        setVisibleImage(getEditorWindow(), timerStackPane, viewPane, getImageFile());
     }
 
     //Getters and setters

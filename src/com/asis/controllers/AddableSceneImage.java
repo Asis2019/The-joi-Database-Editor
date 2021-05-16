@@ -34,7 +34,9 @@ public interface AddableSceneImage {
                 ImageIO.write(spriteSheet, "png", spriteSheetFile);
 
                 image.setFrames(getGifFrameRate(file));
-                image.setFrameRate(image.getFrames() / 60d);
+                double value = (double) image.getFrames() / ((double) getDelays(file) / 100d);
+
+                image.setFrameRate(value / 60d);
                 image.setImage(spriteSheetFile);
             } else image.setImage(file);
 
@@ -46,6 +48,17 @@ public interface AddableSceneImage {
         }
 
         return false;
+    }
+
+    static int getDelays(File file) throws IOException {
+        FileInputStream data = new FileInputStream(file);
+        GifDecoder.GifImage gif = GifDecoder.read(data);
+        int n = gif.getFrameCount();
+        int totalDelay = 0;
+        for (int i = 0; i < n; i++) {
+            totalDelay += gif.getDelay(i);
+        }
+        return totalDelay;
     }
 
     /**
@@ -97,7 +110,7 @@ public interface AddableSceneImage {
         return gif.getFrameCount();
     }
 
-    default void setVisibleImage(EditorWindow editorWindow, StackPane stackPane, ImageViewPane viewPane, File workingFile, Scene scene) {
+    default void setVisibleImage(EditorWindow editorWindow, StackPane stackPane, ImageViewPane viewPane, File workingFile) {
         if (viewPane.getImageFile() != workingFile) {
             //Remove image if any is present
             stackPane.getChildren().remove(viewPane);
