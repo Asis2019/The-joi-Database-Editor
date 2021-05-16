@@ -161,7 +161,6 @@ public class InfinityPane extends StackPane {
     }
 
     private static void clipChildren(Region region) {
-
         final Rectangle outputClip = new Rectangle(region.getWidth(), region.getHeight());
         outputClip.heightProperty().bind(region.heightProperty());
         outputClip.widthProperty().bind(region.widthProperty());
@@ -212,8 +211,6 @@ public class InfinityPane extends StackPane {
 
                 this.lastMouseX = event.getSceneX();
                 this.lastMouseY = event.getSceneY();
-
-                event.consume();
             }
         }
     }

@@ -5,12 +5,14 @@ import com.asis.joi.model.entities.Condition;
 import com.asis.joi.model.entities.VariableSetter;
 import com.asis.ui.InfinityPane;
 import com.asis.ui.asis_node.*;
+import com.asis.utilities.Config;
 import com.asis.utilities.StageManager;
 import javafx.fxml.FXML;
 import javafx.scene.control.*;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.stage.Stage;
+import org.json.JSONObject;
 
 public abstract class EditorWindow {
 
@@ -30,7 +32,14 @@ public abstract class EditorWindow {
     public void initialize() {
         getInfinityPane().setUserData(this);
         setupInfinityPaneContextMenu();
+
+        try {
+            JSONObject object = (JSONObject) Config.get("ZOOM");
+            if (object.has("minimum")) getInfinityPane().setMinimumScale(object.getDouble("minimum"));
+            if (object.has("maximum")) getInfinityPane().setMaximumScale(object.getDouble("maximum"));
+        } catch (ClassCastException ignore) {}
     }
+
 
     /**
      * Clears all nodes and connections from the editor panel. And close all related windows.
@@ -94,6 +103,7 @@ public abstract class EditorWindow {
 
     /**
      * Toggles the visibility of scene thumbnails.
+     *
      * @param showThumbnail - boolean whether to show the thumbnail or not
      */
     public void toggleSceneThumbnails(boolean showThumbnail) {
@@ -135,6 +145,7 @@ public abstract class EditorWindow {
 
     /**
      * Forces all editor windows to have an infinity pane implementation.
+     *
      * @return InfinityPane - the editor window's infinity pane
      */
     public abstract InfinityPane getInfinityPane();
@@ -148,7 +159,7 @@ public abstract class EditorWindow {
     }
 
     protected Stage getStage() {
-        return  (Stage) getInfinityPane().getScene().getWindow();
+        return (Stage) getInfinityPane().getScene().getWindow();
     }
 
     public boolean isSnapToGrid() {

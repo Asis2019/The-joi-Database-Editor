@@ -18,7 +18,7 @@
                                 <MenuItem mnemonicParsing="false" onAction="#actionNewProject" text="New Project" />
                                 <MenuItem mnemonicParsing="false" onAction="#actionLoadProject" text="Load Project" />
                                 <MenuItem mnemonicParsing="false" onAction="#actionExportToZip" text="Export to Zip" />
-                                <MenuItem mnemonicParsing="false" onAction="#actionSaveProject" text="Save" accelerator="Shortcut+S"/>
+                                <MenuItem accelerator="Shortcut+S" mnemonicParsing="false" onAction="#actionSaveProject" text="Save" />
                                 <MenuItem mnemonicParsing="false" onAction="#actionSaveProjectAs" text="Save As..." />
                                 <SeparatorMenuItem mnemonicParsing="false" />
                                 <MenuItem mnemonicParsing="false" onAction="#actionExit" text="Exit" />

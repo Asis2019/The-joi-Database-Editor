@@ -13,7 +13,7 @@
     <VBox BorderPane.alignment="CENTER">
         <MenuBar fx:id="mainMenuBar">
             <Menu mnemonicParsing="false" text="File">
-                <MenuItem mnemonicParsing="false" onAction="#actionClose" text="Close"/>
+                <MenuItem mnemonicParsing="false" onAction="#actionClose" text="Close" />
             </Menu>
         </MenuBar>
         <ToolBar fx:id="toolBar">

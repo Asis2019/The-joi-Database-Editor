@@ -7,12 +7,10 @@ import com.asis.joi.model.entities.JOIComponent;
 import com.asis.ui.InfinityPane;
 import com.asis.ui.asis_node.node_functional_expansion.AddComponentNodeResolver;
 import com.asis.ui.asis_node.node_functional_expansion.CreateComponentConnectionsResolver;
-import com.asis.utilities.Config;
 import com.asis.utilities.StageManager;
 import javafx.fxml.FXML;
 import javafx.scene.control.MenuBar;
 import javafx.stage.Stage;
-import org.json.JSONObject;
 
 public class NodeGroupWindow extends EditorWindow {
 
@@ -25,13 +23,6 @@ public class NodeGroupWindow extends EditorWindow {
 
     public void initialize(Group group) {
         this.group = group;
-
-        try {
-            JSONObject object = (JSONObject) Config.get("ZOOM");
-            if (object.has("minimum")) getInfinityPane().setMinimumScale(object.getDouble("minimum"));
-            if (object.has("maximum")) getInfinityPane().setMaximumScale(object.getDouble("maximum"));
-        } catch (ClassCastException ignore) {
-        }
 
         loadNodes();
     }
