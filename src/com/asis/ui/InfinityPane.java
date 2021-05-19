@@ -141,8 +141,7 @@ public class InfinityPane extends StackPane {
     }
 
     public Point2D sceneToWorld(double sceneX, double sceneY) {
-        Controller controller = Controller.getInstance();
-        final double menuBarOffset = controller.mainMenuBar.getHeight() + controller.toolBar.getHeight();
+        final double menuBarOffset = Controller.getInstance().getMenuHeight();
 
         double localToSceneTranslateX = getContainer().getLocalToSceneTransform().getTx();
         double localToSceneTranslateY = getContainer().getLocalToSceneTransform().getTy();

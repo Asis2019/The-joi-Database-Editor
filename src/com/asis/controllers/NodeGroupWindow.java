@@ -9,7 +9,6 @@ import com.asis.ui.asis_node.node_functional_expansion.AddComponentNodeResolver;
 import com.asis.ui.asis_node.node_functional_expansion.CreateComponentConnectionsResolver;
 import com.asis.utilities.StageManager;
 import javafx.fxml.FXML;
-import javafx.scene.control.MenuBar;
 import javafx.stage.Stage;
 
 public class NodeGroupWindow extends EditorWindow {
@@ -18,8 +17,6 @@ public class NodeGroupWindow extends EditorWindow {
 
     @FXML
     private InfinityPane infinityPane;
-    @FXML
-    public MenuBar mainMenuBar;
 
     public void initialize(Group group) {
         this.group = group;

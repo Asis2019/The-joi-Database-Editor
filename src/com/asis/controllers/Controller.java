@@ -19,7 +19,6 @@ import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
-import javafx.scene.control.MenuBar;
 import javafx.scene.control.Tooltip;
 import javafx.scene.image.Image;
 import javafx.stage.DirectoryChooser;
@@ -44,8 +43,6 @@ public class Controller extends EditorWindow {
 
     @FXML
     private InfinityPane infinityPane;
-    @FXML
-    public MenuBar mainMenuBar;
 
     @Override
     public void initialize() {
