@@ -6,6 +6,7 @@ import com.asis.joi.model.entities.VariableSetter;
 import com.asis.ui.InfinityPane;
 import com.asis.ui.asis_node.*;
 import com.asis.utilities.Config;
+import com.asis.utilities.SelectionModel;
 import com.asis.utilities.StageManager;
 import javafx.fxml.FXML;
 import javafx.scene.control.*;
@@ -17,6 +18,7 @@ import org.json.JSONObject;
 public abstract class EditorWindow {
 
     private final ContextMenu editorWindowContextMenu = new ContextMenu();
+    private final SelectionModel selectionModel = new SelectionModel();
 
     protected ComponentNodeManager nodeManager = new ComponentNodeManager(this);
     protected ComponentConnectionManager connectionManager = new ComponentConnectionManager(this);
@@ -168,5 +170,9 @@ public abstract class EditorWindow {
 
     public boolean isShowThumbnail() {
         return showThumbnail;
+    }
+
+    public SelectionModel getSelectionModel() {
+        return selectionModel;
     }
 }

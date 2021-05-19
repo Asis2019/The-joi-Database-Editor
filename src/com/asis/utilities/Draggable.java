@@ -1,6 +1,5 @@
 package com.asis.utilities;
 
-import com.asis.controllers.Controller;
 import com.asis.ui.asis_node.JOIComponentNode;
 import javafx.event.EventHandler;
 import javafx.scene.Cursor;
@@ -59,7 +58,7 @@ public class Draggable {
 
         @Override
         public final void handle(final MouseEvent event) {
-            SelectionModel selectionModel = Controller.getInstance().getSelectionModel();
+            SelectionModel selectionModel = ((JOIComponentNode) eventNode).getEditorWindow().getSelectionModel();
 
             if (MouseEvent.MOUSE_PRESSED == event.getEventType()) {
                 if (this.eventNode.contains(event.getX(), event.getY())) {

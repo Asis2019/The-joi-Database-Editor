@@ -13,7 +13,6 @@ import com.asis.ui.InfinityPane;
 import com.asis.ui.asis_node.node_functional_expansion.AddComponentNodeResolver;
 import com.asis.ui.asis_node.node_functional_expansion.CreateComponentConnectionsResolver;
 import com.asis.utilities.AsisUtils;
-import com.asis.utilities.SelectionModel;
 import com.asis.utilities.StageManager;
 import javafx.application.Platform;
 import javafx.fxml.FXML;
@@ -41,7 +40,6 @@ import static com.asis.joi.model.entities.JOIComponent.NOT_GROUPED;
 public class Controller extends EditorWindow {
     private static Controller instance = null;
 
-    private final SelectionModel selectionModel = new SelectionModel();
     private JOIPackage joiPackage;
 
     @FXML
@@ -285,9 +283,5 @@ public class Controller extends EditorWindow {
 
     public void setJoiPackage(JOIPackage joiPackage) {
         this.joiPackage = joiPackage;
-    }
-
-    public SelectionModel getSelectionModel() {
-        return selectionModel;
     }
 }
