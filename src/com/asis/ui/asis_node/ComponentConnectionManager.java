@@ -95,8 +95,7 @@ public class ComponentConnectionManager {
      * @param mouseEvent a mouse event
      */
     void mouseMoved(MouseEvent mouseEvent) {
-        Controller controller = Controller.getInstance();
-        final double menuBarOffset = controller.mainMenuBar.getHeight() + controller.toolBar.getHeight();
+        final double menuBarOffset = editorWindow.getMenuHeight();
 
         Point2D placementCoordinates = editorWindow.getInfinityPane().sceneToWorld(mouseEvent.getSceneX(), mouseEvent.getSceneY());
 

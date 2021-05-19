@@ -29,6 +29,8 @@ public abstract class EditorWindow {
     @FXML
     public ToolBar toolBar;
     @FXML
+    protected MenuBar mainMenuBar;
+    @FXML
     protected Button gridToggle, thumbnailToggle;
 
     public void initialize() {
@@ -174,5 +176,9 @@ public abstract class EditorWindow {
 
     public SelectionModel getSelectionModel() {
         return selectionModel;
+    }
+
+    public double getMenuHeight() {
+        return toolBar.getHeight() + mainMenuBar.getHeight();
     }
 }
