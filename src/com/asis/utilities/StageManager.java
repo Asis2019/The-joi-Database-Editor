@@ -47,13 +47,17 @@ public class StageManager {
     }
 
     public Stage getStageUnderPoint(Point screenCoordinates) {
+        Stage returnStage = null;
         for (Stage stage : StageHelper.getStages()) {
-            if (inRange(stage.getX(), stage.getX() + stage.getWidth(), screenCoordinates.getX()) &&
-                    inRange(stage.getY(), stage.getY() + stage.getHeight(), screenCoordinates.getY())) {
-                return stage;
+            if (stage.getUserData() != null && stage.getUserData().equals("editor-window")) {
+                if (inRange(stage.getX(), stage.getX() + stage.getWidth(), screenCoordinates.getX()) &&
+                        inRange(stage.getY(), stage.getY() + stage.getHeight(), screenCoordinates.getY())) {
+                    if (returnStage != null) return null;
+                    returnStage = stage;
+                }
             }
         }
-        return null;
+        return returnStage;
     }
 
     private boolean inRange(double low, double high, double number) {

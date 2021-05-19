@@ -9,6 +9,7 @@ import com.asis.joi.model.entities.Group;
 import com.asis.joi.model.entities.JOIComponent;
 import com.asis.joi.model.entities.Scene;
 import com.asis.ui.asis_node.node_group.NodeGroup;
+import com.asis.ui.asis_node.node_group.NodeGroupBridge;
 import com.asis.utilities.AsisUtils;
 import com.asis.utilities.Draggable;
 import com.asis.utilities.StageManager;
@@ -40,20 +41,19 @@ public class ComponentNodeManager {
 
     private void initializeComponentNode(JOIComponentNode componentNode, double xPosition, double yPosition, String title,
                                          int componentId, boolean suppressJSONUpdating) {
-        new Draggable.Nature(componentNode).addListener((draggableNature, dragEvent) -> {
-            switch (dragEvent) {
-                case DragEnd:
-                    Point point = MouseInfo.getPointerInfo().getLocation().getLocation();
-                    Stage stage = StageManager.getInstance().getStageUnderPoint(point);
-                    if (stage != null) {
-                        MouseDragEvent mouseEvent = new MouseDragEvent(
-                                MouseDragEvent.MOUSE_DRAG_RELEASED, 0, 0, point.getX(), point.getY(),
-                                MouseButton.PRIMARY, 1,
-                                false, false, false, false, false, false, false,
-                                false, false, new PickResult(stage, point.getX(), point.getY()), componentNode);
-                        stage.fireEvent(mouseEvent);
-                    }
-                    break;
+        Draggable.Nature nature = new Draggable.Nature(componentNode);
+        if(!(componentNode instanceof NodeGroupBridge)) nature.addListener((draggableNature, dragEvent) -> {
+            if (dragEvent == Draggable.Event.DragEnd) {
+                Point point = MouseInfo.getPointerInfo().getLocation().getLocation();
+                Stage stage = StageManager.getInstance().getStageUnderPoint(point);
+                if (stage != null) {
+                    MouseDragEvent mouseEvent = new MouseDragEvent(
+                            MouseDragEvent.MOUSE_DRAG_RELEASED, 0, 0, point.getX(), point.getY(),
+                            MouseButton.PRIMARY, 1,
+                            false, false, false, false, false, false, false,
+                            false, false, new PickResult(stage, point.getX(), point.getY()), componentNode);
+                    stage.fireEvent(mouseEvent);
+                }
             }
         });
 

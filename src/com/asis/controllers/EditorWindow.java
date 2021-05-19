@@ -53,6 +53,7 @@ public abstract class EditorWindow {
 
     private void attachStageEventHandlers() {
         Platform.runLater(() -> {
+            getStage().setUserData("editor-window");
             Stage stage = (Stage) getInfinityPane().getScene().getWindow();
 
             stage.addEventHandler(MouseDragEvent.MOUSE_DRAG_RELEASED, event -> {
@@ -62,11 +63,12 @@ public abstract class EditorWindow {
                     if (transferNode != null) {
                         getInfinityPane().getContainer().getChildren().add(transferNode);
 
-                        Point2D point2D = screenToStage(stage, new Point2D(event.getScreenX(), event.getScreenY()));
+                        Point2D stageCoordinates = screenToStage(stage, new Point2D(event.getScreenX(), event.getScreenY()));
+                        Point2D paneTransformedCoordinates = getInfinityPane().getContainer().sceneToLocal(stageCoordinates);
 
-                        Controller controller = Controller.getInstance();
-                        double y = controller.mainMenuBar.getHeight() + controller.toolBar.getHeight();
-                        ((JOIComponentNode) transferNode).positionInGrid(point2D.getX(), point2D.getY() - y);
+                        ((JOIComponentNode) transferNode).positionInGrid(
+                                paneTransformedCoordinates.getX(),
+                                paneTransformedCoordinates.getY());
 
                         event.consume();
                     }
