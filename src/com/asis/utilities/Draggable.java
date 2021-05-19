@@ -88,7 +88,7 @@ public class Draggable {
                     final double deltaX = (event.getSceneX() - this.lastMouseX) / scale;
                     final double deltaY = (event.getSceneY() - this.lastMouseY) / scale;
 
-                    for (Node dragNode: selectionModel.selection) {
+                    for (Node dragNode: selectionModel.getSelection()) {
                         if(dragNode instanceof JOIComponentNode) {
                             JOIComponentNode draggingScene = (JOIComponentNode) dragNode;
 

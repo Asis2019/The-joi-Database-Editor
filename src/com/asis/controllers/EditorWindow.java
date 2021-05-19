@@ -10,12 +10,16 @@ import com.asis.utilities.SelectionModel;
 import com.asis.utilities.StageManager;
 import javafx.application.Platform;
 import javafx.fxml.FXML;
+import javafx.geometry.Point2D;
+import javafx.scene.Node;
 import javafx.scene.control.*;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.scene.input.MouseDragEvent;
 import javafx.stage.Stage;
 import org.json.JSONObject;
+
+import static com.asis.utilities.AsisUtils.screenToStage;
 
 public abstract class EditorWindow {
 
@@ -50,38 +54,22 @@ public abstract class EditorWindow {
             Stage stage = (Stage) getInfinityPane().getScene().getWindow();
 
             stage.addEventHandler(MouseDragEvent.MOUSE_DRAG_RELEASED, event -> {
-            /*if (transferNode.getScene().getWindow() != stage) {
-                if (transferNode != null) {
-                    //((AnchorPane) stage.getScene().getRoot()).getChildren().remove(overlay);
-                    getInfinityPane().getContainer().getChildren().add(transferNode);
+            if (((JOIComponentNode)event.getGestureSource()).getScene().getWindow() != stage) {
+                SelectionModel selectionModel = ((JOIComponentNode)event.getGestureSource()).getEditorWindow().getSelectionModel();
+                for(Node transferNode: selectionModel.getSelection()) {
+                    if (transferNode != null) {
+                        getInfinityPane().getContainer().getChildren().add(transferNode);
 
-                    Point2D point2D = screenToStage(stage, new Point2D(event.getScreenX(), event.getScreenY()));
+                        Point2D point2D = screenToStage(stage, new Point2D(event.getScreenX(), event.getScreenY()));
 
-                    transferNode.setTranslateX(point2D.getX());
-                    transferNode.setTranslateY(point2D.getY());
+                        Controller controller = Controller.getInstance();
+                        double y = controller.mainMenuBar.getHeight() + controller.toolBar.getHeight();
+                        ((JOIComponentNode) transferNode).positionInGrid(point2D.getX(), point2D.getY() - y);
 
-                    transferNode = null;
-                    event.consume();
+                        event.consume();
+                    }
                 }
-            }*/
-            });
-
-            stage.addEventHandler(MouseDragEvent.MOUSE_DRAG_ENTERED, event -> {
-                //((MouseDragState) stage.getUserData()).setHasMouseEntered(true);
-
-            /*StackPane pane = new StackPane();
-            pane.setPrefSize(stage.getWidth(), stage.getHeight());
-            pane.setOpacity(0.5);
-            pane.setStyle("-fx-background-color: black;");
-            pane.getChildren().add(new Label("MOVE"));*/
-                //overlay = pane;
-
-                //((AnchorPane) stage.getScene().getRoot()).getChildren().add(0, overlay);
-            });
-
-            stage.addEventHandler(MouseDragEvent.MOUSE_DRAG_EXITED, event -> {
-                //((MouseDragState) stage.getUserData()).setHasMouseEntered(false);
-                //((AnchorPane) stage.getScene().getRoot()).getChildren().remove(overlay);
+            }
             });
         });
     }

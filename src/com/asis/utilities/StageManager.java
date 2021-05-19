@@ -1,7 +1,9 @@
 package com.asis.utilities;
 
+import com.sun.javafx.stage.StageHelper;
 import javafx.stage.Stage;
 
+import java.awt.*;
 import java.util.ArrayList;
 
 public class StageManager {
@@ -42,6 +44,20 @@ public class StageManager {
     public void closeAllStages() {
         for(Stage stage: getOpenStages()) stage.close();
         getOpenStages().clear();
+    }
+
+    public Stage getStageUnderPoint(Point screenCoordinates) {
+        for (Stage stage : StageHelper.getStages()) {
+            if (inRange(stage.getX(), stage.getX() + stage.getWidth(), screenCoordinates.getX()) &&
+                    inRange(stage.getY(), stage.getY() + stage.getHeight(), screenCoordinates.getY())) {
+                return stage;
+            }
+        }
+        return null;
+    }
+
+    private boolean inRange(double low, double high, double number) {
+        return (number >= low && number <= high);
     }
 
     //Getters and setters

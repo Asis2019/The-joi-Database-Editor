@@ -6,9 +6,11 @@ import com.asis.joi.JOIPackageManager;
 import com.asis.joi.model.entities.JOIComponent;
 import javafx.animation.KeyFrame;
 import javafx.animation.Timeline;
+import javafx.geometry.Point2D;
 import javafx.scene.control.Tooltip;
 import javafx.scene.paint.Color;
 import javafx.stage.FileChooser;
+import javafx.stage.Stage;
 import javafx.util.Duration;
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -195,5 +197,11 @@ public class AsisUtils {
         } catch (Exception e) {
             e.printStackTrace();
         }
+    }
+
+    public static Point2D screenToStage(Stage stage, Point2D screenPoint) {
+        double x = (screenPoint.getX() - stage.getX());
+        double y = (screenPoint.getY() - stage.getY() - (stage.getHeight() - stage.getScene().getHeight()));
+        return new Point2D(x, y);
     }
 }

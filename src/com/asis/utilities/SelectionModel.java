@@ -7,7 +7,7 @@ import java.util.HashSet;
 import java.util.Set;
 
 public class SelectionModel {
-    Set<Node> selection = new HashSet<>();
+    private Set<Node> selection = new HashSet<>();
 
     public void add(Node node) {
         if(node instanceof JOIComponentNode) {
@@ -37,5 +37,9 @@ public class SelectionModel {
 
     public int size() {
         return selection.size();
+    }
+
+    public Set<Node> getSelection() {
+        return selection;
     }
 }

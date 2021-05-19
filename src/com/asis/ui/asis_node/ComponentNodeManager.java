@@ -11,8 +11,14 @@ import com.asis.joi.model.entities.Scene;
 import com.asis.ui.asis_node.node_group.NodeGroup;
 import com.asis.utilities.AsisUtils;
 import com.asis.utilities.Draggable;
+import com.asis.utilities.StageManager;
 import javafx.geometry.Point2D;
+import javafx.scene.input.MouseButton;
+import javafx.scene.input.MouseDragEvent;
+import javafx.scene.input.PickResult;
+import javafx.stage.Stage;
 
+import java.awt.*;
 import java.lang.reflect.InvocationTargetException;
 import java.util.ArrayList;
 
@@ -34,7 +40,23 @@ public class ComponentNodeManager {
 
     private void initializeComponentNode(JOIComponentNode componentNode, double xPosition, double yPosition, String title,
                                          int componentId, boolean suppressJSONUpdating) {
-        new Draggable.Nature(componentNode);
+        new Draggable.Nature(componentNode).addListener((draggableNature, dragEvent) -> {
+            switch (dragEvent) {
+                case DragEnd:
+                    Point point = MouseInfo.getPointerInfo().getLocation().getLocation();
+                    Stage stage = StageManager.getInstance().getStageUnderPoint(point);
+                    if (stage != null) {
+                        MouseDragEvent mouseEvent = new MouseDragEvent(
+                                MouseDragEvent.MOUSE_DRAG_RELEASED, 0, 0, point.getX(), point.getY(),
+                                MouseButton.PRIMARY, 1,
+                                false, false, false, false, false, false, false,
+                                false, false, new PickResult(stage, point.getX(), point.getY()), componentNode);
+                        stage.fireEvent(mouseEvent);
+                    }
+                    break;
+            }
+        });
+
         componentNode.setTitle(title);
 
         //Set and save position
