@@ -7,10 +7,12 @@ import com.asis.ui.InfinityPane;
 import com.asis.ui.asis_node.*;
 import com.asis.utilities.Config;
 import com.asis.utilities.StageManager;
+import javafx.application.Platform;
 import javafx.fxml.FXML;
 import javafx.scene.control.*;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
+import javafx.scene.input.MouseDragEvent;
 import javafx.stage.Stage;
 import org.json.JSONObject;
 
@@ -32,6 +34,7 @@ public abstract class EditorWindow {
     public void initialize() {
         getInfinityPane().setUserData(this);
         setupInfinityPaneContextMenu();
+        attachStageEventHandlers();
 
         try {
             JSONObject object = (JSONObject) Config.get("ZOOM");
@@ -40,6 +43,46 @@ public abstract class EditorWindow {
         } catch (ClassCastException ignore) {}
     }
 
+    private void attachStageEventHandlers() {
+        Platform.runLater(() -> {
+            Stage stage = (Stage) getInfinityPane().getScene().getWindow();
+
+            stage.addEventHandler(MouseDragEvent.MOUSE_DRAG_RELEASED, event -> {
+            /*if (transferNode.getScene().getWindow() != stage) {
+                if (transferNode != null) {
+                    //((AnchorPane) stage.getScene().getRoot()).getChildren().remove(overlay);
+                    getInfinityPane().getContainer().getChildren().add(transferNode);
+
+                    Point2D point2D = screenToStage(stage, new Point2D(event.getScreenX(), event.getScreenY()));
+
+                    transferNode.setTranslateX(point2D.getX());
+                    transferNode.setTranslateY(point2D.getY());
+
+                    transferNode = null;
+                    event.consume();
+                }
+            }*/
+            });
+
+            stage.addEventHandler(MouseDragEvent.MOUSE_DRAG_ENTERED, event -> {
+                //((MouseDragState) stage.getUserData()).setHasMouseEntered(true);
+
+            /*StackPane pane = new StackPane();
+            pane.setPrefSize(stage.getWidth(), stage.getHeight());
+            pane.setOpacity(0.5);
+            pane.setStyle("-fx-background-color: black;");
+            pane.getChildren().add(new Label("MOVE"));*/
+                //overlay = pane;
+
+                //((AnchorPane) stage.getScene().getRoot()).getChildren().add(0, overlay);
+            });
+
+            stage.addEventHandler(MouseDragEvent.MOUSE_DRAG_EXITED, event -> {
+                //((MouseDragState) stage.getUserData()).setHasMouseEntered(false);
+                //((AnchorPane) stage.getScene().getRoot()).getChildren().remove(overlay);
+            });
+        });
+    }
 
     /**
      * Clears all nodes and connections from the editor panel. And close all related windows.
