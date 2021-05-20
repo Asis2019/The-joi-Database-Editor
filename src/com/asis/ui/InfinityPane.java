@@ -1,6 +1,5 @@
 package com.asis.ui;
 
-import com.asis.controllers.Controller;
 import javafx.application.Platform;
 import javafx.event.EventHandler;
 import javafx.geometry.Bounds;
@@ -31,6 +30,14 @@ public class InfinityPane extends StackPane {
             scrollEvent.consume();
             zoom(scrollEvent);
         });
+        addEventHandler(MouseEvent.MOUSE_PRESSED, mouseEvent -> requestFocus());
+        addEventHandler(MouseEvent.MOUSE_RELEASED, mouseEvent -> {
+            contextMenu.hide();
+            ((Node) mouseEvent.getSource()).setCursor(Cursor.DEFAULT);
+        });
+        focusedProperty().addListener((observableValue, aBoolean, t1) -> {
+            if(!t1) contextMenu.hide();
+        });
 
         container.setStyle("-fx-background-color: transparent");
         container.translateXProperty().addListener((observableValue, number, t1) -> reSetStyle());
@@ -38,22 +45,6 @@ public class InfinityPane extends StackPane {
 
         getChildren().add(container);
         new Pannable(container);
-
-        addEventHandler(MouseEvent.MOUSE_PRESSED, mouseEvent -> {
-            requestFocus();
-
-            if(!nodeAtPosition(mouseEvent.getSceneX(), mouseEvent.getSceneY()))
-                Controller.getInstance().getSelectionModel().clear();
-        });
-        addEventHandler(MouseEvent.MOUSE_RELEASED, mouseEvent -> {
-            contextMenu.hide();
-
-            if(MouseEvent.MOUSE_RELEASED == mouseEvent.getEventType())
-                ((Node) mouseEvent.getSource()).setCursor(Cursor.DEFAULT);
-        });
-        focusedProperty().addListener((observableValue, aBoolean, t1) -> {
-            if(!t1) contextMenu.hide();
-        });
 
         Platform.runLater(()-> {
             minWidthProperty().bind(getScene().widthProperty());
