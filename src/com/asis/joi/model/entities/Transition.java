@@ -1,9 +1,10 @@
 package com.asis.joi.model.entities;
 
-import com.asis.utilities.AsisUtils;
 import org.json.JSONArray;
 import org.json.JSONObject;
 import org.json.JSONString;
+
+import static com.sun.javafx.util.Utils.clamp;
 
 public class Transition implements JSONString, SceneComponent<JSONArray> {
     private String fadeColor, transitionTextColor="#ffffff", transitionTextOutlineColor="#000000", transitionText;
@@ -41,7 +42,7 @@ public class Transition implements JSONString, SceneComponent<JSONArray> {
 
     private static double convertSecondsToGameTime(double timeInSeconds) {
         final double fadeSpeed = 1 / (timeInSeconds * 60);
-        return AsisUtils.clamp(fadeSpeed, 0.0000000001, 5);
+        return clamp(0.0000000001, fadeSpeed, 5);
     }
 
     public double getDuration() {

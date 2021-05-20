@@ -79,7 +79,7 @@ public class ComponentConnectionManager {
         if (!asisConnectionButton.getConnectionType()) {
             //Connection is an output type
             createNewBoundLine();
-        } else if(asisConnectionButton.hasBoundLine()) {
+        } else if (asisConnectionButton.hasBoundLine()) {
             //Connection is an input type
             BoundLine line = asisConnectionButton.getBoundLine();
             line.unbindEnd();
@@ -97,7 +97,8 @@ public class ComponentConnectionManager {
     void mouseMoved(MouseEvent mouseEvent) {
         final double menuBarOffset = editorWindow.getMenuHeight();
 
-        Point2D placementCoordinates = editorWindow.getInfinityPane().sceneToWorld(mouseEvent.getSceneX(), mouseEvent.getSceneY());
+        Point2D placementCoordinates = editorWindow.getInfinityPane().getContainer().sceneToLocal(mouseEvent.getSceneX(),
+                mouseEvent.getSceneY() + menuBarOffset);
 
         mouseX.set(placementCoordinates.getX());
         mouseY.set(placementCoordinates.getY() - menuBarOffset);
@@ -158,11 +159,11 @@ public class ComponentConnectionManager {
         }
 
         // Mouse was released above invalid connection area
-         cancelLineOperation();
+        cancelLineOperation();
     }
 
     private void cancelLineOperation() {
-        if(currentlyActiveConnection.hasBoundLine()) {
+        if (currentlyActiveConnection.hasBoundLine()) {
             BoundLine boundLine = currentlyActiveConnection.getBoundLine();
             removeLine(boundLine);
         }
@@ -202,7 +203,7 @@ public class ComponentConnectionManager {
 
     private void addConnectionToStory(AsisConnectionButton outputConnection, AsisConnectionButton inputConnection) {
         final JOIComponent component = Controller.getInstance().getJoiPackage().getJoi().getComponent(outputConnection.getParentSceneId());
-        if(component == null) return;
+        if (component == null) return;
 
         //Process where to add the jump to
         if (outputConnection.getId().contains("dialog_option")) {
@@ -218,7 +219,7 @@ public class ComponentConnectionManager {
 
     private void removeConnectionFromStory(AsisConnectionButton outputConnection, int inputSceneId) {
         final JOIComponent joiComponent = Controller.getInstance().getJoiPackage().getJoi().getComponent(outputConnection.getParentSceneId());
-        if(joiComponent == null) return;
+        if (joiComponent == null) return;
 
         final boolean isMultiLined = outputConnection.getBoundLines().size() > 1;
 
@@ -230,7 +231,8 @@ public class ComponentConnectionManager {
 
                 if (isMultiLined) dialogOption.getGotoScene().removeValue(inputSceneId);
                 else dialogOption.setGotoScene(null);
-            } catch (NullPointerException ignore) {}
+            } catch (NullPointerException ignore) {
+            }
         } else {
             joiComponent.accept(new RemoveConnectionResolver(isMultiLined, inputSceneId, outputConnection.getId()));
         }
@@ -249,7 +251,7 @@ public class ComponentConnectionManager {
 
         @Override
         public void visit(Scene scene) {
-            if(isMultiLined)
+            if (isMultiLined)
                 scene.getComponent(GotoScene.class).removeValue(inputComponentId);
             else
                 scene.removeComponent(GotoScene.class);
@@ -257,7 +259,7 @@ public class ComponentConnectionManager {
 
         @Override
         public void visit(Condition condition) {
-            if(isMultiLined) {
+            if (isMultiLined) {
                 if (outputConnectionId.equals("true_output"))
                     condition.getGotoSceneTrue().removeValue(inputComponentId);
                 else if (outputConnectionId.equals("false_output"))
@@ -271,7 +273,7 @@ public class ComponentConnectionManager {
 
         @Override
         public void visit(VariableSetter variableSetter) {
-            if(isMultiLined)
+            if (isMultiLined)
                 variableSetter.getGotoScene().removeValue(inputComponentId);
             else
                 variableSetter.setGotoScene(null);
@@ -279,7 +281,7 @@ public class ComponentConnectionManager {
 
         @Override
         public void visit(Arithmetic arithmetic) {
-            if(isMultiLined)
+            if (isMultiLined)
                 arithmetic.getGotoScene().removeValue(inputComponentId);
             else
                 arithmetic.setGotoScene(null);
@@ -287,7 +289,7 @@ public class ComponentConnectionManager {
 
         @Override
         public void visit(Group group) {
-            if(isMultiLined)
+            if (isMultiLined)
                 group.getGotoScene().removeValue(inputComponentId);
             else
                 group.setGotoScene(null);
@@ -295,7 +297,7 @@ public class ComponentConnectionManager {
 
         @Override
         public void visit(GroupBridge groupBridge) {
-            if(isMultiLined)
+            if (isMultiLined)
                 groupBridge.getGotoScene().removeValue(inputComponentId);
             else
                 groupBridge.setGotoScene(null);

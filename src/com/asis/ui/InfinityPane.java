@@ -4,7 +4,6 @@ import com.asis.controllers.Controller;
 import javafx.application.Platform;
 import javafx.event.EventHandler;
 import javafx.geometry.Bounds;
-import javafx.geometry.Point2D;
 import javafx.scene.Cursor;
 import javafx.scene.Node;
 import javafx.scene.control.ContextMenu;
@@ -15,7 +14,7 @@ import javafx.scene.layout.Region;
 import javafx.scene.layout.StackPane;
 import javafx.scene.shape.Rectangle;
 
-import static com.asis.utilities.AsisUtils.clamp;
+import static com.sun.javafx.util.Utils.clamp;
 
 public class InfinityPane extends StackPane {
 
@@ -29,10 +28,6 @@ public class InfinityPane extends StackPane {
         super();
 
         addEventFilter(ScrollEvent.ANY, scrollEvent -> {
-            scrollEvent.consume();
-            zoom(scrollEvent);
-        });
-        setOnScroll(scrollEvent -> {
             scrollEvent.consume();
             zoom(scrollEvent);
         });
@@ -100,7 +95,7 @@ public class InfinityPane extends StackPane {
         double nonZoomedYOffset = container.getTranslateY() / scale;
 
         //Rounding is needed because java will cause floating point errors otherwise
-        scale = clamp(Math.round((container.getScaleX() + scaleFactor) * 1000d)/1000d, minimumScale, maximumScale);
+        scale = clamp(minimumScale, Math.round((container.getScaleX() + scaleFactor) * 1000d)/1000d, maximumScale);
 
         container.setScaleX(scale);
         container.setScaleY(scale);
@@ -138,21 +133,6 @@ public class InfinityPane extends StackPane {
         }
 
         return false;
-    }
-
-    public Point2D sceneToWorld(double sceneX, double sceneY) {
-        final double menuBarOffset = Controller.getInstance().getMenuHeight();
-
-        double localToSceneTranslateX = getContainer().getLocalToSceneTransform().getTx();
-        double localToSceneTranslateY = getContainer().getLocalToSceneTransform().getTy();
-
-        double offsetX = localToSceneTranslateX / scale - getContainer().getTranslateX();
-        double offsetY = localToSceneTranslateY / scale - menuBarOffset - getContainer().getTranslateY();
-
-        double lowestXPixelShown = -1 * getContainer().getTranslateX();
-        double lowestYPixelShown = -1 * getContainer().getTranslateY();
-
-        return new Point2D((lowestXPixelShown + sceneX / scale) - offsetX, (lowestYPixelShown + sceneY / scale) - offsetY);
     }
 
     public Pane getContainer() {
