@@ -2,7 +2,6 @@ package com.asis.ui;
 
 import javafx.application.Platform;
 import javafx.event.EventHandler;
-import javafx.geometry.Bounds;
 import javafx.scene.Cursor;
 import javafx.scene.Node;
 import javafx.scene.control.ContextMenu;
@@ -114,13 +113,7 @@ public class InfinityPane extends StackPane {
         for (Node n : getContainer().getChildren()) {
             if (n.getUserData() == null) continue;
 
-            Bounds boundsInScene = n.localToScene(n.getBoundsInLocal());
-            if (x >= boundsInScene.getMinX() &&
-                    x <= boundsInScene.getMaxX() &&
-                    y >= boundsInScene.getMinY() &&
-                    y <= boundsInScene.getMaxY()) {
-                return true;
-            }
+            if (n.localToScene(n.getBoundsInLocal()).contains(x, y)) return true;
         }
 
         return false;
