@@ -2,9 +2,11 @@ package com.asis.controllers;
 
 import com.asis.joi.model.entities.Arithmetic;
 import com.asis.joi.model.entities.Condition;
+import com.asis.joi.model.entities.JOIComponent;
 import com.asis.joi.model.entities.VariableSetter;
 import com.asis.ui.InfinityPane;
 import com.asis.ui.asis_node.*;
+import com.asis.utilities.AsisUtils;
 import com.asis.utilities.Config;
 import com.asis.utilities.SelectionModel;
 import com.asis.utilities.StageManager;
@@ -65,14 +67,27 @@ public abstract class EditorWindow {
                 SelectionModel selectionModel = ((JOIComponentNode)event.getGestureSource()).getEditorWindow().getSelectionModel();
                 for(Node transferNode: selectionModel.getSelection()) {
                     if (transferNode != null) {
-                        getInfinityPane().getContainer().getChildren().add(transferNode);
-
                         Point2D stageCoordinates = screenToStage(stage, new Point2D(event.getScreenX(), event.getScreenY()));
                         Point2D paneTransformedCoordinates = getInfinityPane().getContainer().sceneToLocal(stageCoordinates);
 
-                        ((JOIComponentNode) transferNode).positionInGrid(
-                                paneTransformedCoordinates.getX(),
-                                paneTransformedCoordinates.getY());
+                        JOIComponentNode componentNode = ((JOIComponentNode) transferNode);
+
+                        try {
+                            JOIComponent component = (JOIComponent) componentNode.getJoiComponent().clone();
+                            componentNode.removeComponentNode(componentNode);
+                            Controller.getInstance().getJoiPackage().getJoi().getJoiComponents().add(component);
+
+                            componentNode.positionInGrid(paneTransformedCoordinates.getX(), paneTransformedCoordinates.getY());
+                            getNodeManager().addJOIComponentNode(componentNode.getClass(),
+                                    componentNode.getJoiComponent().getClass(),
+                                    componentNode.getTranslateX(),
+                                    componentNode.getTranslateY(),
+                                    componentNode.getTitle(),
+                                    componentNode.getComponentId(),
+                                    true);
+                        } catch (CloneNotSupportedException e) {
+                            AsisUtils.errorDialogWindow(e);
+                        }
 
                         event.consume();
                     }
