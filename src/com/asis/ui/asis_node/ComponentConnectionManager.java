@@ -95,13 +95,11 @@ public class ComponentConnectionManager {
      * @param mouseEvent a mouse event
      */
     void mouseMoved(MouseEvent mouseEvent) {
-        final double menuBarOffset = editorWindow.getMenuHeight();
-
         Point2D placementCoordinates = editorWindow.getInfinityPane().getContainer().sceneToLocal(mouseEvent.getSceneX(),
-                mouseEvent.getSceneY() + menuBarOffset);
+                mouseEvent.getSceneY());
 
         mouseX.set(placementCoordinates.getX());
-        mouseY.set(placementCoordinates.getY() - menuBarOffset);
+        mouseY.set(placementCoordinates.getY());
     }
 
     /**

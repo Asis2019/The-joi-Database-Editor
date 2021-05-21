@@ -27,7 +27,7 @@ public abstract class EditorWindow {
     protected boolean showThumbnail = false;
 
     @FXML
-    public ToolBar toolBar;
+    protected ToolBar toolBar;
     @FXML
     protected MenuBar mainMenuBar;
     @FXML
