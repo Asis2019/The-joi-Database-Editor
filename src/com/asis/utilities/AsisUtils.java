@@ -47,10 +47,6 @@ public class AsisUtils {
         DialogMessage.messageDialog("Error", "Oh no an error! Send it to Asis so he can feel bad.\n" + e.getMessage());
     }
 
-    public static double clamp(double val, double min, double max) {
-        return Math.max(min, Math.min(max, val));
-    }
-
     public static boolean renameFile(File fileToRename, String newName) {
         // This method will renameNode a File that is passed in
         String oldFileName = fileToRename.getName();

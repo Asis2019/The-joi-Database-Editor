@@ -44,6 +44,10 @@ public abstract class EditorWindow {
         setupInfinityPaneContextMenu();
         attachStageEventHandlers();
 
+        getInfinityPane().setOnMouseReleased(event -> {
+            if(!getInfinityPane().nodeAtPosition(event.getSceneX(), event.getSceneY())) getSelectionModel().clear();
+        });
+
         try {
             JSONObject object = (JSONObject) Config.get("ZOOM");
             if (object.has("minimum")) getInfinityPane().setMinimumScale(object.getDouble("minimum"));

@@ -68,7 +68,8 @@ public class ComponentNodeManager {
                 getJoiPackage().getJoi().getComponent(componentId).setLayoutYPosition(yPosition);
             }
         } else {
-            Point2D placementCoordinates = editorWindow.getInfinityPane().sceneToWorld(menuEventX, menuEventY);
+            Point2D placementCoordinates = editorWindow.getInfinityPane().getContainer().sceneToLocal(menuEventX,
+                    menuEventY + editorWindow.getMenuHeight());
 
             componentNode.positionInGrid(placementCoordinates.getX(), placementCoordinates.getY());
             calledFromContextMenu = false;
@@ -120,7 +121,7 @@ public class ComponentNodeManager {
             getJoiPackage().getJoi().addNewComponent(componentClass, componentId);
             getJoiPackage().getJoi().getComponent(componentId).setComponentTitle(title);
 
-            if(editorWindow instanceof NodeGroupWindow)
+            if (editorWindow instanceof NodeGroupWindow)
                 getJoiPackage().getJoi().getComponent(componentId).setGroupId(((NodeGroupWindow) editorWindow).getGroup().getComponentId());
         }
 
