@@ -2,14 +2,15 @@ package com.asis.ui;
 
 import javafx.application.Platform;
 import javafx.event.EventHandler;
+import javafx.geometry.Insets;
 import javafx.scene.Cursor;
 import javafx.scene.Node;
 import javafx.scene.control.ContextMenu;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.input.ScrollEvent;
-import javafx.scene.layout.Pane;
-import javafx.scene.layout.Region;
-import javafx.scene.layout.StackPane;
+import javafx.scene.layout.*;
+import javafx.scene.paint.LinearGradient;
+import javafx.scene.paint.Paint;
 import javafx.scene.shape.Rectangle;
 
 import static com.sun.javafx.util.Utils.clamp;
@@ -54,25 +55,19 @@ public class InfinityPane extends StackPane {
     }
 
     private void reSetStyle() {
-        double startPointX = container.getTranslateX()+(getScene().getWidth()/2)+(0.5*scale);
-        double endPointX = container.getTranslateX()+(getScene().getWidth()/2)+(10.5*scale);
-        double zeroX = container.getTranslateX()+(getScene().getWidth()/2)*scale;
-
-        startPointX = Math.round(startPointX * 1000d)/1000d;
-        endPointX = Math.round(endPointX * 1000d)/1000d;
-        zeroX = Math.round(zeroX * 1000d)/1000d;
-
-        double startPointY = container.getTranslateY()+(getScene().getHeight()/2)+(0.5*scale);
-        double endPointY = container.getTranslateY()+(getScene().getHeight()/2)+(10.5*scale);
-        double zeroY = container.getTranslateY()+(getScene().getHeight()/2)*scale;
-
-        startPointY = Math.round(startPointY * 1000d)/1000d;
-        endPointY = Math.round(endPointY * 1000d)/1000d;
-        zeroY = Math.round(zeroY * 1000d)/1000d;
-
-        setStyle("-fx-background-color: #393939," +
-                "linear-gradient(from "+startPointX+"px "+zeroX+"px to "+endPointX+"px "+zeroX+"px, repeat, #2f2f2f 5%, transparent 6%)," +
-                "linear-gradient(from "+zeroY+"px "+startPointY+"px to "+zeroY+"px "+endPointY+"px, repeat, #2f2f2f 5%, transparent 6%);");
+        double defaultBlockSize = 30;//px Default size of the grid at 100% scale
+        double gridSize = Math.ceil(defaultBlockSize * scale);
+        double xStart = Math.ceil(container.getTranslateX()+getScene().getWidth()/2);
+        double xEnd = xStart + gridSize;
+        double yStart = Math.ceil(container.getTranslateY()+getScene().getHeight()/2);
+        double yEnd = yStart + gridSize;
+        double linePx = 2; // the line thickness in px
+        String vLines = "linear-gradient(from "+xStart+"px 0px to " + xEnd + "px 0px , repeat, transparent " + (gridSize - linePx) + "px, #2f2f2f 1px)";
+        String hLines = "linear-gradient(from 0px "+yStart+"px to 0px " + yEnd + "px , repeat, transparent " + (gridSize - linePx) + "px , #2f2f2f 1px)";
+        Background background = new Background(new BackgroundFill(Paint.valueOf("#393939"), CornerRadii.EMPTY, Insets.EMPTY),
+                new BackgroundFill(LinearGradient.valueOf(vLines), CornerRadii.EMPTY, Insets.EMPTY),
+                new BackgroundFill(LinearGradient.valueOf(hLines), CornerRadii.EMPTY, Insets.EMPTY));
+        setBackground(background);
     }
 
     private void zoom(ScrollEvent scrollEvent) {
