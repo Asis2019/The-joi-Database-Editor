@@ -1,0 +1,78 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import com.asis.ui.InfinityPane?>
+<?import javafx.geometry.Rectangle2D?>
+<?import javafx.scene.control.*?>
+<?import javafx.scene.image.Image?>
+<?import javafx.scene.image.ImageView?>
+<?import javafx.scene.layout.*?>
+<?import java.net.URL?>
+<BorderPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="400.0" prefWidth="600.0" xmlns="http://javafx.com/javafx/11.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.asis.controllers.Controller">
+    <top>
+        <VBox BorderPane.alignment="CENTER">
+            <children>
+                <MenuBar fx:id="mainMenuBar">
+                    <menus>
+                        <Menu mnemonicParsing="false" text="File">
+                            <items>
+                                <MenuItem mnemonicParsing="false" onAction="#actionNewProject" text="New Project" />
+                                <MenuItem mnemonicParsing="false" onAction="#actionLoadProject" text="Load Project" />
+                                <MenuItem mnemonicParsing="false" onAction="#actionExportToZip" text="Export to Zip" />
+                                <MenuItem accelerator="Shortcut+S" mnemonicParsing="false" onAction="#actionSaveProject" text="Save" />
+                                <MenuItem mnemonicParsing="false" onAction="#actionSaveProjectAs" text="Save As..." />
+                                <SeparatorMenuItem mnemonicParsing="false" />
+                                <MenuItem mnemonicParsing="false" onAction="#actionExit" text="Exit" />
+                            </items>
+                        </Menu>
+                        <Menu mnemonicParsing="false" text="Help">
+                            <items>
+                                <MenuItem mnemonicParsing="false" onAction="#actionGettingStarted" text="Getting Started" />
+                                <MenuItem mnemonicParsing="false" onAction="#actionProjectDetailsHelp" text="Project Details" />
+                                <MenuItem mnemonicParsing="false" onAction="#actionSceneEditor" text="Scene Editor" />
+                                <SeparatorMenuItem mnemonicParsing="false" />
+                                <MenuItem mnemonicParsing="false" onAction="#actionAbout" text="About" />
+                            </items>
+                        </Menu>
+                    </menus>
+                </MenuBar>
+                <ToolBar fx:id="toolBar">
+                    <Button mnemonicParsing="false" onAction="#actionAddSceneButton" text="Add new scene" />
+                    <Button layoutX="10.0" layoutY="11.0" mnemonicParsing="false" onAction="#actionOpenMetadata" text="Project Details" />
+             <Button fx:id="gridToggle" contentDisplay="GRAPHIC_ONLY" mnemonicParsing="false" onAction="#actionToggleGrid" prefHeight="26.0" text="Button">
+                  <graphic>
+                     <ImageView fitHeight="20.0" fitWidth="20.0" pickOnBounds="true" smooth="false">
+                        <image>
+                           <Image url="@../images/ic_grid_off.png" />
+                        </image>
+                        <viewport>
+                           <Rectangle2D />
+                        </viewport>
+                     </ImageView>
+                  </graphic>
+               </Button>
+                <Button fx:id="thumbnailToggle" contentDisplay="GRAPHIC_ONLY" mnemonicParsing="false" onAction="#actionToggleThumbnail" prefHeight="26.0" text="Button">
+                    <graphic>
+                        <ImageView fitHeight="20.0" fitWidth="20.0" pickOnBounds="true" smooth="false">
+                            <image>
+                                <Image url="@../images/ic_thumbnail_off.png" />
+                            </image>
+                            <viewport>
+                                <Rectangle2D />
+                            </viewport>
+                        </ImageView>
+                    </graphic>
+                </Button>
+                    <Pane HBox.hgrow="ALWAYS" />
+                    <Button layoutX="10.0" layoutY="11.0" mnemonicParsing="false" onAction="#actionOpenTranslationEditor" text="Translation Editor" />
+                </ToolBar>
+            </children>
+        </VBox>
+    </top>
+    <center>
+        <InfinityPane fx:id="infinityPane" BorderPane.alignment="TOP_LEFT" />
+    </center>
+    <stylesheets>
+        <URL value="@../css/main_stylesheet.css" />
+        <URL value="@../css/menu_bar_stylesheet.css" />
+    </stylesheets>
+</BorderPane>

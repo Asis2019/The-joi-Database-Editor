@@ -1,8 +1,3 @@
-**.idea
-**.iml
-compile.bat
-makeRuntime.bat
-run.bat
+/.idea
 /defaultWorkspace
-/out
-/The joi Database Editor
+/target

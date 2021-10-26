@@ -1,0 +1,69 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import com.asis.ui.NumberField?>
+<?import javafx.geometry.Insets?>
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+<?import javafx.scene.paint.Color?>
+<?import javafx.scene.text.Font?>
+<BorderPane stylesheets="@../css/scene_details_stylesheet.css" xmlns="http://javafx.com/javafx/8.0.172-ea" xmlns:fx="http://javafx.com/fxml/1">
+<center>
+    <SplitPane id="darkThemeBackground" dividerPositions="0.835" styleClass="edge-to-edge">
+        <AnchorPane>
+            <BorderPane prefHeight="500.0" prefWidth="780.0" AnchorPane.bottomAnchor="0.0"
+                        AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
+                <center>
+                    <StackPane fx:id="mainView" BorderPane.alignment="CENTER">
+                        <Pane fx:id="transitionPaneMask" opacity="0.0" prefHeight="200.0" prefWidth="200.0"
+                              style="-fx-background-color: black;"/>
+                        <Label id="transitionTextLabel" fx:id="transitionTextLabel" alignment="CENTER"
+                               contentDisplay="CENTER" layoutX="191.0" layoutY="213.0" lineSpacing="5.0"
+                               text="Transition Text" textAlignment="CENTER" textFill="WHITE" wrapText="true">
+                            <font>
+                                <Font size="130.0"/>
+                            </font>
+                            <opaqueInsets>
+                                <Insets/>
+                            </opaqueInsets>
+                        </Label>
+                    </StackPane>
+                </center>
+            </BorderPane>
+        </AnchorPane>
+        <VBox minHeight="0.0" minWidth="0.0" stylesheets="@../css/titled_pane_stylesheet.css">
+            <TitledPane animated="false" text="Scene Transition Properties" wrapText="true">
+                <VBox spacing="5.0">
+                    <TextField fx:id="transitionTextField" promptText="Transition Text"/>
+                    <Label fx:id="transitionTextColorLabel" text="Text Color"/>
+                    <ColorPicker fx:id="transitionTextColor" promptText="Transition Text Color"/>
+                    <Label fx:id="transitionTextOutlineColorLabel" layoutX="20.0" layoutY="72.0"
+                           text="Text Outline Color"/>
+                    <ColorPicker fx:id="transitionTextOutlineColor"
+                                 promptText="Transition Text Outline Color">
+                        <value>
+                            <Color/>
+                        </value>
+                    </ColorPicker>
+                    <Separator prefWidth="200.0"/>
+                    <NumberField fx:id="waitTimeField" promptText="Wait Time (default 0)" formatType="INTEGER"/>
+                    <NumberField fx:id="fadeSpeedField" promptText="Fade Speed (default 1)"/>
+                    <Label fx:id="transitionFadeColorLabel" text="Fade Color:"/>
+                    <ColorPicker fx:id="transitionFadeColor" onAction="#actionFadeColor"
+                                 promptText="Fade Color">
+                        <value>
+                            <Color/>
+                        </value>
+                    </ColorPicker>
+                </VBox>
+            </TitledPane>
+        </VBox>
+    </SplitPane>
+</center>
+<top>
+    <ToolBar prefHeight="40.0" prefWidth="200.0" BorderPane.alignment="CENTER">
+        <Button fx:id="playTransitionButton" mnemonicParsing="false" onAction="#actionPlayTransitionButton"
+                text="Play Transition"/>
+        <Pane HBox.hgrow="ALWAYS"/>
+    </ToolBar>
+</top>
+</BorderPane>
