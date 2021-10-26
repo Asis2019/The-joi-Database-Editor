@@ -11,7 +11,6 @@ import javafx.geometry.Bounds;
 import javafx.scene.Cursor;
 import javafx.scene.control.Button;
 import javafx.scene.control.Tooltip;
-import javafx.scene.layout.Pane;
 
 import java.util.ArrayList;
 
@@ -35,8 +34,6 @@ public class AsisConnectionButton extends Button {
 
     private final boolean connectionType; //false is output true is input
 
-    private final Pane workspacePane;
-
     private static final String outputConnectorStyle =
             "-fx-background-color: " + DEFAULT_COLOR + ", transparent, transparent;" +
                     "-fx-background-radius: 5em;" +
@@ -49,10 +46,9 @@ public class AsisConnectionButton extends Button {
                     "-fx-border-width: 1;" +
                     "-fx-background-insets: 1;";
 
-    public AsisConnectionButton(boolean connectionType, JOIComponent joiComponent, Pane workspacePane) {
+    public AsisConnectionButton(boolean connectionType, JOIComponent joiComponent) {
         this.connectionType = connectionType;
         this.joiComponent = joiComponent;
-        this.workspacePane = workspacePane;
 
         setStyle(outputConnectorStyle);
         setCursor(Cursor.HAND);
@@ -125,9 +121,13 @@ public class AsisConnectionButton extends Button {
     }
 
     private void calcCenter() {
-        Bounds bounds = workspacePane.sceneToLocal(localToScene(getBoundsInLocal()));
-        centerX.set(bounds.getMinX() + bounds.getWidth() / 2);
-        centerY.set(bounds.getMinY() + bounds.getHeight() / 2);
+        //If you want to solve the incorrect centers when loading, do this with in Platform.runLater. Also no, passing
+        //the correct pane doesn't fix that.
+        try {
+            Bounds bounds = getParent().getParent().getParent().getParent().sceneToLocal(localToScene(getBoundsInLocal()));
+            centerX.set(bounds.getMinX() + bounds.getWidth() / 2);
+            centerY.set(bounds.getMinY() + bounds.getHeight() / 2);
+        } catch (NullPointerException ignore) {}
     }
 
     void processConnectionColors() {

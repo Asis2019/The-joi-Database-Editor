@@ -104,12 +104,13 @@ public abstract class JOIComponentNode extends BorderPane {
         });
     }
 
+    //REFACTOR: Connection system can be extracted into a composite class? Or some other structure
     protected void createNewInputConnectionPoint() {
         createNewInputConnectionPoint(null);
     }
 
     public void createNewInputConnectionPoint(String labelText) {
-        inputConnection = new AsisConnectionButton(true, getJoiComponent(), getEditorWindow().getInfinityPane().getContainer());
+        inputConnection = new AsisConnectionButton(true, getJoiComponent());
         attachHandlers(inputConnection);
 
         Label connectionLabel = new Label(labelText);
@@ -125,7 +126,7 @@ public abstract class JOIComponentNode extends BorderPane {
     }
 
     public AsisConnectionButton createNewOutputConnectionPoint(String labelText, String connectionId) {
-        AsisConnectionButton connection = new AsisConnectionButton(false, getJoiComponent(), getEditorWindow().getInfinityPane().getContainer());
+        AsisConnectionButton connection = new AsisConnectionButton(false, getJoiComponent());
         attachHandlers(connection);
 
         Label connectionLabel = new Label(labelText);
@@ -201,6 +202,7 @@ public abstract class JOIComponentNode extends BorderPane {
         return multiple * (Math.round(v / multiple));
     }
 
+    //REFACTOR: This code makes more sense in EditorWindow
     public void removeComponentNode(JOIComponentNode joiComponentNode) {
         Controller controller = Controller.getInstance();
         controller.getJoiPackage().getJoi().removeComponent(joiComponentNode.getComponentId());
