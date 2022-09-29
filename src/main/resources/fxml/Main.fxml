@@ -7,7 +7,7 @@
 <?import javafx.scene.image.ImageView?>
 <?import javafx.scene.layout.*?>
 <?import java.net.URL?>
-<BorderPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="400.0" prefWidth="600.0" xmlns="http://javafx.com/javafx/11.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.asis.controllers.Controller">
+<BorderPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="400.0" prefWidth="600.0" xmlns="http://javafx.com/javafx/17.0.2-ea" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.asis.controllers.Controller">
     <top>
         <VBox BorderPane.alignment="CENTER">
             <children>
@@ -31,6 +31,7 @@
                                 <MenuItem mnemonicParsing="false" onAction="#actionSceneEditor" text="Scene Editor" />
                                 <SeparatorMenuItem mnemonicParsing="false" />
                                 <MenuItem mnemonicParsing="false" onAction="#actionAbout" text="About" />
+                                <MenuItem mnemonicParsing="false" onAction="#actionScenicView" text="Scenic View" />
                             </items>
                         </Menu>
                     </menus>
@@ -74,5 +75,6 @@
     <stylesheets>
         <URL value="@../css/main_stylesheet.css" />
         <URL value="@../css/menu_bar_stylesheet.css" />
+      <URL value="@../css/joi_node_stylesheet.css" />
     </stylesheets>
 </BorderPane>

@@ -39,16 +39,8 @@ public abstract class JOIComponentNode extends BorderPane {
         this.joiComponent = component;
         this.joiComponent.setComponentId(componentId);
         setEditorWindow(editorWindow);
-
-        titleLabel.setStyle(
-                "-fx-text-fill: white;" +
-                        "-fx-font-size: 25px;" +
-                        "-fx-focus-color: blue;"
-        );
-
         setMinSize(width, height);
         setFocusTraversable(true);
-        setCenter(titleLabel);
 
         translateXProperty().addListener((observableValue, number, t1) -> joiComponent.setLayoutXPosition(t1.doubleValue()));
         translateYProperty().addListener((observableValue, number, t1) -> joiComponent.setLayoutYPosition(t1.doubleValue()));
@@ -56,9 +48,9 @@ public abstract class JOIComponentNode extends BorderPane {
         setDoubleClickAction();
         initializeVBoxes();
 
-        focusState(false);
-
+        titleLabel.getStyleClass().add("node-title");
         titleLabel.textProperty().bindBidirectional(component.componentTitleProperty());
+        setCenter(titleLabel);
 
         setOnContextMenuRequested(contextMenuEvent -> {
             contextMenu.hide();
@@ -68,17 +60,15 @@ public abstract class JOIComponentNode extends BorderPane {
 
     private void renameNode() {
         String title = DialogNodeTitle.getNewNodeTitleDialog(getTitle(), "Change node title");
-        if(title == null) return;
+        if (title == null) return;
 
         setTitle(title);
     }
 
-    public abstract void focusState(boolean value);
-
     protected abstract boolean openDialog();
 
     protected void setupContextMenu() {
-        MenuItem editSceneItem = new MenuItem("Edit "+getId());
+        MenuItem editSceneItem = new MenuItem("Edit " + getId());
         MenuItem editNameItem = new MenuItem("Change Name");
         SeparatorMenuItem separatorMenuItem = new SeparatorMenuItem();
         MenuItem deleteNodeItem = new MenuItem("Delete");
@@ -185,7 +175,7 @@ public abstract class JOIComponentNode extends BorderPane {
     }
 
     public void positionInGrid(double x, double y) {
-        if(getEditorWindow().isSnapToGrid()) {
+        if (getEditorWindow().isSnapToGrid()) {
             setTranslateX(round(x));
             setTranslateY(round(y));
         } else {
@@ -218,6 +208,7 @@ public abstract class JOIComponentNode extends BorderPane {
     public String getTitle() {
         return titleLabel.getText();
     }
+
     public void setTitle(String title) {
         titleLabel.setText(title);
     }
@@ -236,6 +227,7 @@ public abstract class JOIComponentNode extends BorderPane {
     public List<AsisConnectionButton> getOutputButtons() {
         return this.outputConnections;
     }
+
     public AsisConnectionButton getInputConnection() {
         return this.inputConnection;
     }
@@ -243,6 +235,7 @@ public abstract class JOIComponentNode extends BorderPane {
     public EditorWindow getEditorWindow() {
         return editorWindow;
     }
+
     public void setEditorWindow(EditorWindow editorWindow) {
         this.editorWindow = editorWindow;
     }

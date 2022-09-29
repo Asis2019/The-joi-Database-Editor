@@ -20,27 +20,6 @@ public class VariableSetterNode extends JOIComponentNode {
     }
 
     @Override
-    public void focusState(boolean value) {
-        if (value) {
-            setStyle(
-                    "-fx-background-color: #5a5a5a, rgb(60, 63, 65), #5a5a5a;" +
-                            "-fx-background-radius: 10;" +
-                            "-fx-background-insets: 8, 8 17 8 17, 8 22 8 22;" +
-                            "-fx-effect: dropshadow(three-pass-box, deepskyblue, 10, 0, 0, 1);" +
-                            "-fx-opacity: 1;"
-            );
-        } else {
-            setStyle(
-                    "-fx-background-color: #5a5a5a, rgb(60, 63, 65), #5a5a5a;" +
-                            "-fx-background-radius: 10;" +
-                            "-fx-background-insets: 8, 8 17 8 17, 8 22 8 22;" +
-                            "-fx-effect: dropshadow(three-pass-box, black, 10, 0, 0, 1);" +
-                            "-fx-opacity: 1;"
-            );
-        }
-    }
-
-    @Override
     protected boolean openDialog() {
         return DialogVariableSetter.openVariableSetter((VariableSetter) getJoiComponent());
     }

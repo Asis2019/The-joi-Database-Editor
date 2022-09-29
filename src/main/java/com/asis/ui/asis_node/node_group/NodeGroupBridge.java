@@ -25,25 +25,6 @@ public class NodeGroupBridge extends JOIComponentNode {
     }
 
     @Override
-    public void focusState(boolean value) {
-        if (value) {
-            setStyle("-fx-background-color: #5a5a5a;" +
-                    "-fx-background-radius: 10;" +
-                    "-fx-background-insets: 8;" +
-                    "-fx-effect: dropshadow(three-pass-box, deepskyblue, 10, 0, 0, 1);" +
-                            "-fx-opacity: 1;"
-            );
-        } else {
-            setStyle("-fx-background-color: #5a5a5a;" +
-                    "-fx-background-radius: 10;" +
-                    "-fx-background-insets: 8;" +
-                    "-fx-effect: dropshadow(three-pass-box, black, 10, 0, 0, 1);" +
-                            "-fx-opacity: 1;"
-            );
-        }
-    }
-
-    @Override
     protected boolean openDialog() {
         return true;
     }

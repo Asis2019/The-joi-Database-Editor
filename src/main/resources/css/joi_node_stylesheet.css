@@ -1,0 +1,77 @@
+.node-title {
+    -fx-text-fill: white;
+    -fx-font-size: 25px;
+    -fx-focus-color: blue;
+}
+
+SceneNode {
+    -fx-background-color: #5a5a5a;
+    -fx-background-radius: 10;
+    -fx-background-insets: 8;
+    -fx-effect: dropshadow(three-pass-box, black, 10, 0, 0, 1);
+    -fx-opacity: 1;
+}
+
+SceneNode:focused {
+    -fx-effect: dropshadow(three-pass-box, deepskyblue, 10, 0, 0, 1);
+}
+
+ConditionNode {
+    -fx-background-color: #5a5a5a, rgb(60, 63, 65), #5a5a5a, rgb(60, 63, 65), #5a5a5a;
+    -fx-background-radius: 10;
+    -fx-background-insets: 8, 8 17 8 17, 8 22 8 22, 8 27 8 27, 8 32 8 32;
+    -fx-effect: dropshadow(three-pass-box, black, 10, 0, 0, 1);
+    -fx-opacity: 1;
+}
+
+ConditionNode:focused {
+    -fx-effect: dropshadow(three-pass-box, deepskyblue, 10, 0, 0, 1);
+}
+
+ArithmeticNode {
+    -fx-background-color: #5a5a5a, #5a5a5a, #5a5a5a, #273036, #5a5a5a;
+    -fx-background-radius: 10;
+    -fx-background-insets: 8, 8 17 8 17, 8 22 8 22, 8 27 8 27, 8 32 8 32;
+    -fx-effect: dropshadow(three-pass-box, black, 10, 0, 0, 1);
+    -fx-opacity: 1;
+}
+
+ArithmeticNode:focused {
+    -fx-effect: dropshadow(three-pass-box, deepskyblue, 10, 0, 0, 1);
+}
+
+VariableSetterNode {
+    -fx-background-color: #5a5a5a, rgb(60, 63, 65), #5a5a5a;
+    -fx-background-radius: 10;
+    -fx-background-insets: 8, 8 17 8 17, 8 22 8 22;
+    -fx-effect: dropshadow(three-pass-box, black, 10, 0, 0, 1);
+    -fx-opacity: 1;
+}
+
+VariableSetterNode:focused {
+    -fx-effect: dropshadow(three-pass-box, deepskyblue, 10, 0, 0, 1);
+}
+
+NodeGroup {
+    -fx-background-color: #5a5a5a, #273036, #273036, #273036, #5a5a5a;
+    -fx-background-radius: 10, 0, 10, 10;
+    -fx-background-insets: 8, 8 17 8 17, 8 22 8 22, 8 27 8 27, 8 32 8 32;
+    -fx-effect: dropshadow(three-pass-box, black, 10, 0, 0, 1);
+    -fx-opacity: 1;
+}
+
+NodeGroup:focused {
+    -fx-effect: dropshadow(three-pass-box, deepskyblue, 10, 0, 0, 1);
+}
+
+NodeGroupBridge {
+    -fx-background-color: #5a5a5a;
+    -fx-background-radius: 10;
+    -fx-background-insets: 8;
+    -fx-effect: dropshadow(three-pass-box, black, 10, 0, 0, 1);
+    -fx-opacity: 1;
+}
+
+NodeGroupBridge:focused {
+    -fx-effect: dropshadow(three-pass-box, deepskyblue, 10, 0, 0, 1);
+}

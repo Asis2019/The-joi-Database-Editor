@@ -25,6 +25,7 @@ import javafx.stage.DirectoryChooser;
 import javafx.stage.FileChooser;
 import javafx.stage.Stage;
 import javafx.stage.WindowEvent;
+import org.scenicview.ScenicView;
 
 import java.io.File;
 import java.io.IOException;
@@ -191,14 +192,14 @@ public class Controller extends EditorWindow {
                 }
 
                 // Linkup groups to there bridges
-                for(JOIComponent component : Controller.getInstance().getJoiPackage().getJoi().getJoiComponents()) {
-                    if(component instanceof GroupBridge) {
+                for (JOIComponent component : Controller.getInstance().getJoiPackage().getJoi().getJoiComponents()) {
+                    if (component instanceof GroupBridge) {
                         GroupBridge groupBridge = (GroupBridge) component;
 
                         int groupId = component.getGroupId();
                         Group group = (Group) Controller.getInstance().getJoiPackage().getJoi().getComponent(groupId);
 
-                        if(groupBridge.isInputBridge()) group.setInputNodeData(groupBridge);
+                        if (groupBridge.isInputBridge()) group.setInputNodeData(groupBridge);
                         else group.setOutputNodeData(groupBridge);
                     }
                 }
@@ -280,5 +281,9 @@ public class Controller extends EditorWindow {
 
     public void setJoiPackage(JOIPackage joiPackage) {
         this.joiPackage = joiPackage;
+    }
+
+    public void actionScenicView() {
+        ScenicView.show(getStage().getScene());
     }
 }

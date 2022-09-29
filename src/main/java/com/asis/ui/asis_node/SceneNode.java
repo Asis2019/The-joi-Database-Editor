@@ -43,8 +43,8 @@ public class SceneNode extends JOIComponentNode {
         imageView.setPreserveRatio(true);
         imageView.setCache(true);
         imageView.setFitWidth(200);
-        imageView.setLayoutX(getLayoutX()+10);
-        imageView.setLayoutY(getLayoutY()+10);
+        imageView.setLayoutX(getLayoutX() + 10);
+        imageView.setLayoutY(getLayoutY() + 10);
         imageView.setManaged(false);
 
         GaussianBlur blur = new GaussianBlur(5);
@@ -56,8 +56,8 @@ public class SceneNode extends JOIComponentNode {
         mask.setArcWidth(10);
         mask.setArcHeight(10);
         heightProperty().addListener((observableValue, number, t1) -> {
-            mask.setHeight(t1.doubleValue()-20);
-            textBackdrop.setY((t1.doubleValue()/2)-(textBackdrop.getHeight()/2));
+            mask.setHeight(t1.doubleValue() - 20);
+            textBackdrop.setY((t1.doubleValue() / 2) - (textBackdrop.getHeight() / 2));
         });
         imageView.setClip(mask);
 
@@ -65,7 +65,7 @@ public class SceneNode extends JOIComponentNode {
         textBackdrop.setOpacity(0.5);
         textBackdrop.setHeight(25);
         textBackdrop.setWidth(200);
-        textBackdrop.setX(titleLabel.getLayoutX()+10);
+        textBackdrop.setX(titleLabel.getLayoutX() + 10);
         textBackdrop.setManaged(false);
 
         StackPane stackPane = new StackPane();
@@ -82,7 +82,7 @@ public class SceneNode extends JOIComponentNode {
     }
 
     public void toggleSceneThumbnail(boolean show) {
-        if(show) {
+        if (show) {
             try {
                 textBackdrop.setVisible(true);
                 imageView.setVisible(true);
@@ -91,7 +91,7 @@ public class SceneNode extends JOIComponentNode {
 
                 imageView.setImage(image);
 
-                if(imageView.getBoundsInParent().getHeight() < (getHeight()-20)) {
+                if (imageView.getBoundsInParent().getHeight() < (getHeight() - 20)) {
                     imageView.setFitWidth(0);
                     imageView.setFitHeight(getHeight());
                 }
@@ -174,27 +174,6 @@ public class SceneNode extends JOIComponentNode {
             }
             contextMenu.show(this, contextMenuEvent.getScreenX(), contextMenuEvent.getScreenY());
         });
-    }
-
-    @Override
-    public void focusState(boolean value) {
-        if (value) {
-            setStyle(
-                    "-fx-background-color: #5a5a5a;" +
-                            "-fx-background-radius: 10;" +
-                            "-fx-background-insets: 8;" +
-                            "-fx-effect: dropshadow(three-pass-box, deepskyblue, 10, 0, 0, 1);" +
-                            "-fx-opacity: 1;"
-            );
-        } else {
-            setStyle(
-                    "-fx-background-color: #5a5a5a;" +
-                            "-fx-background-radius: 10;" +
-                            "-fx-background-insets: 8;" +
-                            "-fx-effect: dropshadow(three-pass-box, black, 10, 0, 0, 1);" +
-                            "-fx-opacity: 1;"
-            );
-        }
     }
 
     @Override
