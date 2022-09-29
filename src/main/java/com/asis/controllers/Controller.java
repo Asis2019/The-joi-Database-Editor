@@ -191,7 +191,7 @@ public class Controller extends EditorWindow {
                     component.accept(new CreateComponentConnectionsResolver(this));
                 }
 
-                // Linkup groups to there bridges
+                // Linkup groups to their bridges
                 for (JOIComponent component : Controller.getInstance().getJoiPackage().getJoi().getJoiComponents()) {
                     if (component instanceof GroupBridge) {
                         GroupBridge groupBridge = (GroupBridge) component;
